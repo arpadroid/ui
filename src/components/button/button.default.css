@@ -1,0 +1,69 @@
+button[is='arpadroid-ui'] {
+    display: flex;
+    text-transform: uppercase;
+    align-items: center;
+    background-color: var(--color-primary-light);
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    height: 52px;
+    padding: 0 12px;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
+    transition: var(--theme-transition);
+    cursor: pointer;
+
+    &:hover,
+    &:focus {
+        &:not(:disabled) {
+            background-color: var(--color-primary);
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+            .button__content {
+                text-decoration: underline;
+            }
+        }
+    }
+
+    arpa-icon {
+        color: var(--text-inverted-color);
+    }
+
+    &[variant='white'] {
+        background-color: var(--grey-0);
+        &:hover,
+        &:focus {
+            &:not(:disabled) {
+                background-color: var(--grey-10);
+            }
+        }
+    }
+
+    &[variant='secondary'] {
+        background-color: var(--color-secondary);
+        &:hover,
+        &:focus {
+            &:not(:disabled) {
+                background-color: var(--color-secondary);
+            }
+        }
+    }
+
+    &[variant='tertiary'] {
+        background-color: var(--color-tertiary);
+        &:hover,
+        &:focus {
+            &:not(:disabled) {
+                background-color: var(--color-tertiary);
+            }
+        }
+    }
+}
+
+.button__content {
+    flex: 1 1 auto;
+    padding: 0 8px;
+    color: var(--text-inverted-color);
+    max-height: 100%;
+    height: auto;
+    display: block;
+    white-space: nowrap;
+    font-weight: 500;
+}

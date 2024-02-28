@@ -1,0 +1,20 @@
+:root {
+    --striped-area: repeating-linear-gradient(
+        45deg,
+        var(--grey-50),
+        var(--grey-50) 10px,
+        var(--color-background) 10px,
+        var(--color-background) 20px
+    );
+    --striped-area-outline: 2px solid var(--grey-50);
+    --striped-area-border: 2px solid var(--color-background);
+}
+
+.stripedArea {
+    background: var(--striped-area);
+    border: var(--striped-area-border);
+    border-radius: 8px;
+    box-shadow: var(--box-shadow);
+    outline: var(--striped-area-outline);
+    padding: 16px;
+}

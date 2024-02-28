@@ -1,0 +1,171 @@
+:root {
+    /* Greys */
+    --grey-1000: #000000;
+    --grey-950: #0d0d0d;
+    --grey-900: #1a1a1a;
+    --grey-850: #262626;
+    --grey-800: #333333;
+    --grey-750: #404040;
+    --grey-700: #4d4d4d;
+    --grey-650: #595959;
+    --grey-600: #666666;
+    --grey-550: #737373;
+    --grey-500: #808080;
+    --grey-450: #8c8c8c;
+    --grey-400: #999999;
+    --grey-350: #a6a6a6;
+    --grey-300: #b3b3b3;
+    --grey-250: #bfbfbf;
+    --grey-200: #cccccc;
+    --grey-150: #d9d9d9;
+    --grey-100: #e5e5e5;
+    --grey-50: #f2f2f2;
+    --grey-40: #f5f5f5;
+    --grey-30: #f9f9f9;
+    --grey-20: #fcfcfc;
+    --grey-10: #fefefe;
+    --grey-0: #ffffff;
+
+    /* Reds */
+    --color-darkest-red: #581507;
+    --color-dark-red: #a11f05;
+    --color-red: #db3121;
+    --color-red-orange: #f52a00;
+    --color-light-red: #f7e4e6;
+    --color-lightest-red: #fff5f4;
+    --color-warning: #ef3c52;
+    --color-crimson: #dc143c;
+    --color-ruby: #e0115f;
+    --color-maroon: #800000;
+
+    /* Oranges */
+    --color-orange-tangerine: #ff6600;
+    --color-orange-pumpkin: #ff8800;
+    --color-orange-carrot: #ff9900;
+    --color-orange-mango: #ffaa00;
+    --color-orange-nectarine: #ffbb00;
+    --color-orange-amber: #ffcc00;
+    --color-orange-honey: #ffdd00;
+    --color-orange-sunrise: #ffee00;
+    --color-orange-sunflower: #ffff00;
+    --color-orange-goldenrod: #ffea00;
+    --color-orange-apricot: #ffd500;
+    --color-orange-cantaloupe: #ffc000;
+    --color-orange-saffron: #ffa500;
+    --color-orange-torch: #ff8c00;
+    --color-orange-flame: #ff4500;
+
+    /* Yellows */
+    --color-yellow: #f3ad2e;
+    --search-hilight: #ffe18f;
+    --color-light-yellow: #fff8ce;
+    --color-lightest-yellow: #fffced;
+    --color-goldenrod: #f3ad2e;
+    --color-yellow-honey: #ffe18f;
+    --color-yellow-pale: #fff8ce;
+    --color-yellow-cream: #fffced;
+    --color-yellow-mustard: #f9d835;
+    --color-yellow-gold: #ffd700;
+    --color-yellow-amber: #ffeb3b;
+    --color-yellow-pastel: #ffef99;
+    --color-yellow-banana: #f5e050;
+    --color-yellow-butter: #f7e967;
+
+    /* Blues */
+    --color-dark-blue: #00008b;
+    --color-deep-blue: #0000cd;
+    --color-blue: #0266c8;
+    --color-medium-blue: #4169e1;
+    --color-light-blue: #add8e6;
+    --color-pale-blue: #afeeee;
+    --color-sky-blue: #87ceeb;
+    --color-cornflower-blue: #6495ed;
+    --color-steel-blue: #4682b4;
+    --color-dodger-blue: #1e90ff;
+    --color-royal-blue: #4169e1;
+    --color-navy-blue: #000080;
+    --color-teal-blue: #008080;
+    --color-turquoise-blue: #40e0d0;
+    --color-aqua-blue: #00ffff;
+    --color-blue-navy-dark: #10234b;
+    --color-blue-navy: #204595;
+    --color-medium-blue: #2f58b8;
+    --color-cyan: #007dc3;
+    --light-cyan: #00afef;
+    --color-light-blue: #edf6fe;
+    --color-lightest-blue: #f1faff;
+    --color-blue-neon: #5e57ea;
+    --color-blue-neon-light: #8883e2;
+    --color-blue-neon-dark: #312e77;
+    --color-blue-neon-darkest: #252359;
+
+    /* Purples */
+    --color-dark-purple: #4b0082;
+    --color-deep-purple: #663399;
+    --color-purple: #800080;
+    --color-medium-purple: #9370db;
+    --color-light-purple: #a020f0;
+    --color-pale-purple: #d8bfd8;
+    --color-lavender: #e6e6fa;
+    --color-lilac: #c8a2c8;
+    --color-mauve: #e0b0ff;
+    --color-amethyst: #9966cc;
+
+    /* Violet */
+    --color-dark-violet: #9400d3;
+    --color-deep-violet: #8a2be2;
+    --color-violet: #ee82ee;
+    --color-medium-violet: #ba55d3;
+    --color-light-violet: #da70d6;
+    --color-pale-violet: #db7093;
+    --color-lavender-violet: #e6e6fa;
+    --color-lilac-violet: #c8a2c8;
+    --color-mauve-violet: #e0b0ff;
+    --color-amethyst-violet: #9966cc;
+    --color-plum-violet: #dda0dd;
+    --color-orchid-violet: #da70d6;
+    --color-thistle-violet: #d8bfd8;
+    --color-mulberry-violet: #c54b8c;
+    --color-eggplant-violet: #614051;
+
+    /* Greens */
+    --color-dark-green: #006400;
+    --color-forest-green: #228b22;
+    --color-green: #008000;
+    --color-lime-green: #00ff00;
+    --color-light-green: #90ee90;
+    --color-pale-green: #98fb98;
+    --color-sea-green: #2e8b57;
+    --color-medium-sea-green: #3cb371;
+    --color-dark-sea-green: #8fbc8f;
+    --color-olive: #808000;
+    --color-dark-olive-green: #556b2f;
+    --color-chartreuse: #7fff00;
+    --color-spring-green: #00ff7f;
+    --color-medium-spring-green: #00fa9a;
+    --color-yellow-green: #9acd32;
+
+    /* Browns */
+    --color-brown-chocolate: #d2691e;
+    --color-brown-saddle: #8b4513;
+    --color-brown-maroon: #800000;
+    --color-brown-mahogany: #c04000;
+    --color-brown-walnut: #773f1a;
+    --color-brown-cocoa: #d2691e;
+    --color-brown-coffee: #6f4e37;
+    --color-brown-hickory: #c76114;
+    --color-brown-chestnut: #954535;
+    --color-brown-tan: #d2b48c;
+    --color-brown-sand: #c2b280;
+    --color-brown-beige: #f5f5dc;
+    --color-brown-caramel: #ffdd99;
+    --color-brown-ginger: #b06500;
+    --color-brown-bronze: #cd7f32;
+
+    /* Metallic */
+    --color-metallic-gold: #d4af37;
+    --color-metallic-silver: #c0c0c0;
+    --color-metallic-bronze: #cd7f32;
+    --color-metallic-copper: #b87333;
+
+}

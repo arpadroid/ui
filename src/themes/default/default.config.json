@@ -1,0 +1,18 @@
+{
+    "includes": [
+        "vars/vars",
+        "vars/pallette",
+        "vars/colors",
+        "vars/easing",
+        "vars/fonts",
+        "vars/screen",
+        "vars/sizes",
+        "default",
+        "utils/utils",
+        "utils/stripedArea",
+        "elements/headings",
+        "elements/link",
+        "elements/scrollbar",
+        "elements/lists"
+    ]
+}
