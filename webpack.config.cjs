@@ -57,7 +57,7 @@ module.exports = (async () => {
             mode: MODE,
             stats: 'errors-only',
             devServer: {
-                port: 9001,
+                port: 9003,
                 hot: true,
                 open: true,
                 watchFiles: ['src/**/*'],
@@ -119,7 +119,8 @@ module.exports = (async () => {
             },
             plugins: [
                 new HtmlWebpackPlugin({
-                    template: 'src/demo.html'
+                    template: 'src/demo.ejs',
+                    inject: false
                 }),
                 new webpack.optimize.ModuleConcatenationPlugin(),
                 new webpack.DefinePlugin({

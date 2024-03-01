@@ -1,4 +1,5 @@
-button[is='arpadroid-ui'] {
+button[is='arpadroid-ui'],
+button[is='submit-button'] {
     display: flex;
     text-transform: uppercase;
     align-items: center;
@@ -11,6 +12,10 @@ button[is='arpadroid-ui'] {
     transition: var(--theme-transition);
     cursor: pointer;
 
+    .icon {
+        color: var(--text-inverted-color);
+    }
+
     &:hover,
     &:focus {
         &:not(:disabled) {
@@ -20,10 +25,6 @@ button[is='arpadroid-ui'] {
                 text-decoration: underline;
             }
         }
-    }
-
-    arpa-icon {
-        color: var(--text-inverted-color);
     }
 
     &[variant='white'] {

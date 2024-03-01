@@ -1,4 +1,4 @@
-import { processTemplate } from '../../utils/uiTool.js';
+import { processTemplate } from '@arpadroid/tools';
 
 const html = String.raw;
 class Button extends HTMLButtonElement {
