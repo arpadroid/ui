@@ -28,5 +28,5 @@ class Button extends HTMLButtonElement {
         });
     }
 }
-customElements.define('arpadroid-ui', Button, { extends: 'button' });
+customElements.define('arpa-button', Button, { extends: 'button' });
 export default Button;

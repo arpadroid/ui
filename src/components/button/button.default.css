@@ -1,4 +1,4 @@
-button[is='arpadroid-ui'],
+button[is='arpa-button'],
 button[is='submit-button'] {
     display: flex;
     text-transform: uppercase;

@@ -1,4 +1,5 @@
 {
+    "patterns": ["../../../src/components/**/*"],
     "includes": [
         "vars/vars",
         "vars/pallette",

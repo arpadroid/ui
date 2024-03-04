@@ -30,7 +30,7 @@
     },
     "homepage": "https://github.com/arpadroid/ui#readme",
     "devDependencies": {
-        "@arpadroid/stylesheet-bundler": "^1.0.3",
+        "@arpadroid/stylesheet-bundler": "^1.1.1",
         "@babel/core": "^7.23.9",
         "@babel/plugin-syntax-import-assertions": "^7.23.3",
         "@babel/preset-env": "^7.23.9",
