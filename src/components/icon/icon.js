@@ -7,6 +7,6 @@ class Icon extends HTMLElement {
     }
 }
 
-customElements.define('arpa-icon', Icon );
+customElements.define('arpa-icon', Icon);
 
 export default Icon;

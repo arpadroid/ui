@@ -51,7 +51,7 @@
         "webpack-dev-server": "^5.0.2"
     },
     "dependencies": {
-        "@arpadroid/tools": "^0.0.17",
+        "@arpadroid/tools": "file:../tools",
         "material-symbols": "^0.15.0"
     }
 }

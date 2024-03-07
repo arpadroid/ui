@@ -21,4 +21,8 @@
     --border-color: #e9e9e9;
     --border-dark-color: var(--grey-250);
     --border-light-color: var(--grey-100);
+
+    /* Errors */
+    --color-error: var(--color-red);
+    --color-error-light: var(--color-lightest-red);
 }

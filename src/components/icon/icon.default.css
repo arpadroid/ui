@@ -1,7 +1,14 @@
-.material-symbols-outlined {
-    font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+arpa-icon {
+    height: 20px;
+    display: flex;
+    align-items: center;
+    color: var(--grey-600)
 }
 
 arpa-icon.material-symbols-outlined {
     font-size: 22px;
 }
+
+/* .material-symbols-outlined {
+    font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+} */
