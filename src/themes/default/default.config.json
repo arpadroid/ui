@@ -11,6 +11,7 @@
         "default",
         "utils/utils",
         "utils/stripedArea",
+        "utils/comboBox",
         "elements/headings",
         "elements/link",
         "elements/scrollbar",

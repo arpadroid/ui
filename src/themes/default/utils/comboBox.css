@@ -1,0 +1,59 @@
+
+.comboBox {
+    background-color: var(--color-background);
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--select-combo-box-shadow);
+    display: flex;
+    flex-direction: column;
+    margin-top: 4px;
+    max-height: 305px;
+    min-width: 190px;
+    overflow-x: hidden;
+    overflow: auto;
+    position: absolute;
+    right: 0px;
+    top: 100%;
+    transition: var(--theme-transition);
+    z-index: 100;
+}
+
+.comboBox--loading {
+    min-height: 200px;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.comboBox__item {
+    cursor: pointer;
+    transition: var(--theme-transition);
+
+    button {
+        background: none;
+        border: none;
+    }
+
+    > button,
+    > a {
+        color: var(--text-color);
+        cursor: pointer;
+        font-size: 14px;
+        padding: 0;
+        text-align: left;
+        width: 100%;
+        padding: 10px 15px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        &:hover {
+            background-color: var(--color-lightest-blue);
+            color: var(--color-primary);
+            arpa-icon {
+                color: var(--color-primary);
+            }
+        }
+    }
+}

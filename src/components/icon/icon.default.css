@@ -1,8 +1,8 @@
 arpa-icon {
-    height: 20px;
+    height: 22px;
     display: flex;
     align-items: center;
-    color: var(--grey-600)
+    color: var(--grey-400)
 }
 
 arpa-icon.material-symbols-outlined {

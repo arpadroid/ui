@@ -1,5 +1,7 @@
 :root {
     /* Text */
+    --color-white: #ffffff;
+
     --text-color: var(--grey-750);
     --text-inverted-color: var(--grey-50);
     --label-color: var(--grey-600);
@@ -25,4 +27,12 @@
     /* Errors */
     --color-error: var(--color-red);
     --color-error-light: var(--color-lightest-red);
+
+    --color-background: var(--color-white);
+    --overlay: rgba(255, 255, 255, 0.9);
+    --overlay-light: rgba(255, 255, 255, 0.5);
+    --selected-hilight: var(--color-light-blue);
+    --group-box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px 2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+    --current-hilight: var(--color-lightest-yellow);
 }
+
