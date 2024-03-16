@@ -10,6 +10,7 @@
         "generate-docs": "jsdoc2md src/services/*.js src/components/*/*.js > README.md",
         "build": "webpack --mode production",
         "build:run": "npm run build && npm run dev",
+        "build:watch": "webpack --mode production --watch",
         "dev": "webpack serve --mode development",
         "test": "jest",
         "test:coverage": "jest --coverage"

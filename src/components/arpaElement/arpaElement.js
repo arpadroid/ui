@@ -4,6 +4,7 @@ import { dashedToCamel, mergeObjects, processTemplate } from '@arpadroid/tools';
  * Base class for custom elements.
  */
 class ArpaElement extends HTMLElement {
+    _hasRendered = false;
     /**
      * Creates a new instance of ArpaElement.
      * @param {Record<string, unknown>} config - The configuration object for the element.
@@ -18,10 +19,7 @@ class ArpaElement extends HTMLElement {
      * Initializes the element's internal state.
      * @private
      */
-    _initialize() {
-        this._content = '';
-        this._childNodes = [];
-    }
+    _initialize() {}
 
     /**
      * Sets the configuration for the element.
@@ -53,9 +51,41 @@ class ArpaElement extends HTMLElement {
      * Called when the element is connected to the DOM.
      */
     connectedCallback() {
+        if (!this._hasRendered) {
+            this._render();    
+        }
+        
+        this._onConnected();
+        this.update();
+    }
+
+    /**
+     * Called when the element is connected to the DOM.
+     */
+    _onConnected() {
+        // abstract method   
+    }
+
+    attributeChangedCallback(att, oldValue, newValue) {
+        this.update();
+        this._onAttributeChanged(att, oldValue, newValue);
+    }
+
+    // eslint-disable-next-line no-unused-vars
+    _onAttributeChanged(att, oldValue, newValue) {
+        // abstract method
+    }
+    
+
+    update() {
+        // abstract method
+    }
+
+    _render() {
         this._content = this.innerHTML;
         this._childNodes = [...this.childNodes];
         this.render();
+        this._hasRendered = true;
     }
 
     /**
@@ -75,7 +105,8 @@ class ArpaElement extends HTMLElement {
     renderTemplate() {
         const { template } = this._config;
         if (template) {
-            return processTemplate(template, this.getTemplateVars());
+            const vars = this.getTemplateVars();
+            return processTemplate(template, vars);
         }
     }
 

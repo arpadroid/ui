@@ -14,9 +14,10 @@ class Button extends HTMLButtonElement {
 
     constructor() {
         super();
+        this.render();
     }
 
-    connectedCallback() {
+    update() {
         this.render();
     }
 

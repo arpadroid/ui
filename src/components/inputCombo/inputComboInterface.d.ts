@@ -1,6 +1,5 @@
 // import { NodePositionInterface } from "../../utils/nodePositionInterface";
 
-
 export interface InputComboInterface {
     closeOnBlur?: boolean;
     closeOnClick?: boolean;

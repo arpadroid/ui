@@ -7,12 +7,23 @@ class Tooltip extends HTMLElement {
         return ['text', 'handler', 'icon', 'label'];
     }
 
-    connectedCallback() {
+    constructor() {
+        super();
+        this._initializeProperties();
         this.render();
     }
 
+    _initializeProperties() {
+        this.content = this.innerHTML;
+        this._childNodes = Array.from(this.childNodes);
+        this.text = this.getAttribute('text');
+        const handler = this.getAttribute('handler');
+        this.handler = resolveNode(handler);
+        this.icon = this.getAttribute('icon') ?? 'info';
+        this.label = this.getAttribute('label');
+    }
+
     render() {
-        
         this._initializeProperties();
         this.innerHTML = '';
         if (!this._childNodes?.length) {
@@ -58,19 +69,6 @@ class Tooltip extends HTMLElement {
         }
     }
 
-    _initializeProperties() {
-        this.content = this.innerHTML;
-        this._childNodes = Array.from(this.childNodes);
-        this.text = this.getAttribute('text');
-        const handler = this.getAttribute('handler');
-        try {
-            this.handler = resolveNode(handler);
-        } catch(exception) {
-            // empty
-        }
-        this.icon = this.getAttribute('icon') ?? 'info';
-        this.label = this.getAttribute('label');
-    }
 }
 
 customElements.define('arpa-tooltip', Tooltip);

@@ -2,7 +2,7 @@
  * @typedef {import('./inputComboInterface.js').InputComboInterface} InputComboInterface
  */
 
-import { isIOsSafari, mergeObjects } from '@arpadroid/tools';
+import { isIOsSafari, mergeObjects, placeNode } from '@arpadroid/tools';
 
 /**
  * Represents an input combo component.
@@ -29,7 +29,7 @@ class InputCombo {
     activeInstance = null;
 
     /**
-     * An array of all instances of the InputCombo class.   
+     * An array of all instances of the InputCombo class.
      * @type {InputCombo[]}
      * @static
      */
@@ -54,8 +54,7 @@ class InputCombo {
         isActive: false,
         containerSelector: 'li',
         position: {
-            align: 'left',
-            appendToBody: true
+            position: 'bottom-left'
         },
         onOpen: () => {},
         onClose: () => {}
@@ -350,7 +349,7 @@ class InputCombo {
         }
         const { position } = this._config;
         if (position) {
-            // NodePosition.place(this.combo, this.input, position);
+            placeNode(this.combo, this.input, position);
         }
     }
 
@@ -433,7 +432,7 @@ class InputCombo {
 
     /**
      * Returns the next available option after the currently focused option.
-     * @returns {HTMLElement} 
+     * @returns {HTMLElement}
      * @private
      */
     _getNextAvailableOption() {

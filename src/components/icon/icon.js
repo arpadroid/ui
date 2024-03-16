@@ -1,6 +1,10 @@
 class Icon extends HTMLElement {
-    connectedCallback() {
+    constructor() {
+        super();
         this.classList.add('material-symbols-outlined', 'icon');
+    }
+
+    connectedCallback() {
         if (this.innerHTML === '') {
             this.remove();
         }
