@@ -49,6 +49,7 @@
         "jsdoc-to-markdown": "^8.0.1",
         "jsdom": "^24.0.0",
         "mini-css-extract-plugin": "^2.8.0",
+        "typescript": "^5.4.2",
         "webpack": "^5.90.3",
         "webpack-cli": "^5.1.4",
         "webpack-dev-server": "^5.0.2"

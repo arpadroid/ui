@@ -12,6 +12,8 @@ class ArpaElement extends HTMLElement {
     constructor(config) {
         super();
         this.setConfig(config);
+        this._content = this.innerHTML;
+        this._childNodes = [...this.childNodes];
         this._initialize();
     }
 
@@ -54,7 +56,6 @@ class ArpaElement extends HTMLElement {
         if (!this._hasRendered) {
             this._render();    
         }
-        
         this._onConnected();
         this.update();
     }
@@ -82,8 +83,6 @@ class ArpaElement extends HTMLElement {
     }
 
     _render() {
-        this._content = this.innerHTML;
-        this._childNodes = [...this.childNodes];
         this.render();
         this._hasRendered = true;
     }

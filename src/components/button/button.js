@@ -14,6 +14,8 @@ class Button extends HTMLButtonElement {
 
     constructor() {
         super();
+        this._content = this.innerHTML;
+        this._childNodes = [...this.childNodes];
         this.render();
     }
 
@@ -21,9 +23,13 @@ class Button extends HTMLButtonElement {
         this.render();
     }
 
+    attributeChangedCallback() {
+        // abstract
+    }
+
     render() {
         this.innerHTML = processTemplate(this.template, {
-            content: this.innerHTML,
+            content: this._content,
             icon: this.getAttribute('icon'),
             iconRight: this.getAttribute('icon-right')
         });
