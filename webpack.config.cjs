@@ -1,3 +1,4 @@
+const { execSync } = require('child_process');
 const argv = require('yargs').argv;
 const MODE = argv.mode === 'production' ? 'production' : 'development';
 const path = require('path');
@@ -6,48 +7,29 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const StylesheetBundler = require('@arpadroid/stylesheet-bundler');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-
 const cwd = process.cwd();
-const mode = argv.mode === 'production' ? 'production' : 'development';
 
 const basePath = cwd + '/src/themes';
 const bundler = new StylesheetBundler.ThemesBundler({
     themes: [
-        { path: basePath + '/default' }, 
+        { path: basePath + '/default' }
         // { path: basePath + '/dark' }
     ],
     patterns: [cwd + '/src/components/**/*'],
-    minify: mode === 'production',
+    minify: MODE === 'production',
     commonThemePath: basePath + '/common'
 });
 
-const copyPatterns = [
-    {
-        from: 'src/lang',
-        to: 'lang'
-    },
-    {
-        from: 'node_modules/material-symbols',
-        to: cwd + '/dist/material-symbols'
-    }
-];
-if (mode === 'production') {
-    copyPatterns.push({
-        from: 'src/themes/default/default.min.css',
-        to: cwd + '/dist/themes/default/default.min.css'
-    });
-} else {
-    copyPatterns.push({
-        from: 'src/themes/default/default.bundled.css',
-        to: cwd + '/dist/themes/default/default.bundled.css'
-    });
+const themeExt = MODE === 'production' ? 'min.css' : 'bundled.css';
+if (MODE === 'production') {
+    execSync('npm run build:types');
 }
 
 module.exports = (async () => {
     await bundler.promise;
     bundler.cleanup();
     await bundler.bundle();
-    if (mode === 'development') {
+    if (MODE === 'development') {
         bundler.watch();
     }
     return [
@@ -127,7 +109,24 @@ module.exports = (async () => {
                     APPLICATION_MODE: JSON.stringify(MODE)
                 }),
                 new CopyPlugin({
-                    patterns: copyPatterns
+                    patterns: [
+                        {
+                            from: 'src/lang',
+                            to: 'lang'
+                        },
+                        {
+                            from: 'node_modules/material-symbols',
+                            to: cwd + '/dist/material-symbols'
+                        },
+                        {
+                            from: `src/themes/default/default.${themeExt}`,
+                            to: cwd + `/dist/themes/default/default.${themeExt}`
+                        },
+                        {
+                            from: 'src/types.compiled.d.ts',
+                            to: cwd + '/dist/types.d.ts'
+                        }
+                    ]
                 }),
                 new MiniCssExtractPlugin({
                     // filename: 'themes/default/default.min.css'

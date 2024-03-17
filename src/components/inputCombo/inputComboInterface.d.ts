@@ -1,11 +1,11 @@
-// import { NodePositionInterface } from "../../utils/nodePositionInterface";
+import { PlaceToolOptionsInterface } from '@arpadroid/tools/dist/types';
 
 export interface InputComboInterface {
     closeOnBlur?: boolean;
     closeOnClick?: boolean;
     hasToggle?: boolean;
     isActive?: boolean;
-    position?: Record<string, unknown>;
+    position?: PlaceToolOptionsInterface;
     onOpen?: () => void;
     onClose?: () => void;
     containerSelector?: string;

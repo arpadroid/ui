@@ -196,7 +196,7 @@ class InputCombo {
     /**
      * Handles the keydown event on the combo element.
      * @param {KeyboardEvent} event - The keydown event.
-     * @private
+     * @protected
      */
     _onComboKeyDown(event) {
         if (event.keyCode === 38) {
@@ -220,7 +220,7 @@ class InputCombo {
 
     /**
      * Initializes the input element of the InputCombo component.
-     * @private
+     * @protected
      */
     _initializeInput() {
         this.input.addEventListener('keyup', this._onInputKeyUp);
@@ -233,7 +233,7 @@ class InputCombo {
     /**
      * Handles the click event on the input element.
      * @param {MouseEvent} event
-     * @private
+     * @protected
      */
     _onClick(event) {
         const isSafari = isIOsSafari();
@@ -250,7 +250,7 @@ class InputCombo {
 
     /**
      * Handles the mousedown event on the input element.
-     * @private
+     * @protected
      */
     _onMouseDown() {
         if (!this.isFocused()) {
@@ -263,7 +263,7 @@ class InputCombo {
     /**
      * Handles the keyup event on the input element.
      * @param {KeyboardEvent} event - The keyup event.
-     * @private
+     * @protected
      */
     _onInputKeyUp(event) {
         if (event.keyCode === 27) {
@@ -276,7 +276,7 @@ class InputCombo {
 
     /**
      * Handles the focus event on the input element.
-     * @private
+     * @protected
      */
     _onFocus() {
         setTimeout(() => !this._isActive && this.open(), 100);
@@ -284,7 +284,7 @@ class InputCombo {
 
     /**
      * Handles the blur event on the input element.
-     * @private
+     * @protected
      */
     _onBlur() {
         if (!this._config.closeOnBlur) {
@@ -312,15 +312,15 @@ class InputCombo {
      * Closes the InputCombo component.
      */
     close() {
-        this._isActive = false;
-        this.combo.style.display = 'none';
         this.combo.classList.remove('inputCombo--active');
-        if (typeof this._config.onClose === 'function') {
+        if (!this._isActive && typeof this._config.onClose === 'function') {
             this._config.onClose();
         }
         if (this.combo.parentNode === document.body) {
             this.combo.remove();
         }
+        this._isActive = false;
+        this.combo.style.display = 'none';
     }
 
     /**
@@ -389,7 +389,7 @@ class InputCombo {
     /**
      * Returns the currently focused element within the combo.
      * @returns {HTMLElement | undefined} The currently focused element.
-     * @private
+     * @protected
      */
     _getFocused() {
         if (this.combo.contains(document.activeElement)) {
@@ -401,7 +401,7 @@ class InputCombo {
      * Returns the container element of the currently focused option.
      * @param {HTMLElement} node - The currently focused element.
      * @returns {HTMLElement} The container element of the currently focused option.
-     * @private
+     * @protected
      */
     _getFocusedOptionContainer(node) {
         return node?.closest(this._config.containerSelector) ?? node;
@@ -410,7 +410,7 @@ class InputCombo {
     /**
      * Returns the currently focused option.
      * @returns {HTMLElement} The currently focused option.
-     * @private
+     * @protected
      */
     _getFocusedItem() {
         return this._getFocusedOptionContainer(this._getFocused());
@@ -419,7 +419,7 @@ class InputCombo {
     /**
      * Returns the first available option within the combo.
      * @returns {HTMLElement}
-     * @private
+     * @protected
      */
     _getFirstAvailableOption() {
         const firstOption = this.combo.querySelector(this._optionFocusSelector);
@@ -433,7 +433,7 @@ class InputCombo {
     /**
      * Returns the next available option after the currently focused option.
      * @returns {HTMLElement}
-     * @private
+     * @protected
      */
     _getNextAvailableOption() {
         let node = this._getFocusedItem()?.nextSibling;
@@ -446,7 +446,7 @@ class InputCombo {
     /**
      * Returns the previous available option before the currently focused option.
      * @returns {HTMLElement} The previous available option.
-     * @private
+     * @protected
      */
     _getPreviousAvaliableOption() {
         let node = this._getFocusedItem()?.previousSibling;
@@ -459,7 +459,7 @@ class InputCombo {
     /**
      * Returns the last available option within the combo.
      * @returns {HTMLElement} The last available option.
-     * @private
+     * @protected
      */
     _getLastAvaliableOption() {
         let lastNode = this.combo.childNodes[this.combo.childNodes.length - 1];

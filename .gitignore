@@ -1,5 +1,6 @@
 node_modules/
 *.bundled.css
+*.compiled.d.ts
 *.min.css
 dist/
 junit.xml

@@ -26,14 +26,15 @@
 .comboBox__item {
     cursor: pointer;
     transition: var(--theme-transition);
-    
-    button {
-        background: none;
-        border: none;
-    }
+}
 
-    > button,
-    > a {
+.comboBox__item button {
+    background: none;
+    border: none;
+}
+
+.comboBox__item > button,
+.comboBox__item > a {
         color: var(--text-color);
         cursor: pointer;
         font-size: 14px;
@@ -54,4 +55,3 @@
             }
         }
     }
-}
