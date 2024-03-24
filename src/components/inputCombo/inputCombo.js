@@ -333,6 +333,10 @@ class InputCombo {
             this._isActive = true;
             InputCombo.activeInstance = this;
             this.place();
+            const selected = this.combo.querySelector('*[aria-selected="true"]');
+            if (selected) {
+                selected?.scrollIntoView();
+            }
         });
         this.combo.classList.add('inputCombo--active');
         if (typeof onOpen === 'function') {

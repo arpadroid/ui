@@ -53,6 +53,9 @@ class ArpaElement extends HTMLElement {
      * Called when the element is connected to the DOM.
      */
     connectedCallback() {
+        if (!this.isConnected) {
+            return;
+        }
         if (!this._hasRendered) {
             this._render();    
         }
