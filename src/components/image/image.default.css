@@ -1,0 +1,140 @@
+arpa-image {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+
+    picture {
+        object-fit: cover;
+        overflow: hidden;
+        border-radius: 4px;
+        position: relative;
+        transition: var(--theme-transition);
+    }
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: opacity 3s cubic-bezier(0.075, 0.82, 0.165, 1);
+        visibility: visible;
+        opacity: 0;
+    }
+    &.image--loaded img {
+        opacity: 1;
+    }
+
+    arpa-tooltip {
+        position: absolute;
+        inset: 0;
+        .iconButton {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .tooltip__content {
+            margin-top: 100%;
+        }
+    }
+}
+
+.image__thumbnail {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--grey-50);
+    border-radius: 8px;
+
+    arpa-icon {
+        font-size: 28px;
+        height: 28px;
+        width: 28px;
+        color: var(--color-primary);
+        width: 100%;
+        height: 100%;
+        padding: 4px;
+        display: flex;
+        align-items: center;
+        border-radius: 4px;
+        position: relative;
+        background-color: var(--primary-hilight);
+        color: var(--color-tertiary);
+        transition: var(--theme-transition);
+        justify-content: center;
+    }
+}
+
+/* .icon.imageComponent__icon--error {
+    color: rgba(177, 35, 0, 0.6);
+    background-color: var(--color-error-bg);
+} */
+
+.imageComponent .dropArea,
+.imageComponent__inputWrapper {
+    position: absolute;
+    display: flex;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    width: auto;
+    height: auto;
+    margin: 2px;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 12px;
+    flex: 1 1 auto;
+    outline: 2px solid var(--color-primary);
+    opacity: 0;
+    background: var(--overlay) !important;
+}
+
+.imageComponent:hover .dropArea--hasInput {
+    opacity: 1 !important;
+}
+
+.imageComponent__inputWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    z-index: 2;
+    transition: var(--theme-transition);
+}
+
+.imageComponent:hover .imageComponent__inputWrapper {
+    opacity: 1;
+}
+
+.imageComponent__inputWrapper input {
+    display: none;
+}
+
+.imageComponent__inputButton {
+    background: transparent;
+    border: none;
+    max-width: 100%;
+    white-space: normal;
+}
+
+.imageComponent .dropArea .button__content {
+    color: var(--grey-700);
+    font-family: var(--font-family-avant-garde-demi);
+    line-height: 15px;
+    margin-top: 8px;
+    white-space: normal;
+}
+
+.imageComponent .dropArea--active {
+    opacity: 1;
+}
+
+.imageComponent .dropArea .icon.icon {
+    font-size: 28px;
+    margin: 0;
+    padding: 0;
+    min-width: 28px;
+    color: var(--color-primary);
+}

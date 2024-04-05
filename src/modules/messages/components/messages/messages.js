@@ -41,7 +41,6 @@ class Messages extends ArpaElement {
     }
 
     _addMessage(message) {
-        console.log('_addMessage', message);
         const type = message.type;
         const node = document.createElement(`${type}-message`);
         message.node = node;
