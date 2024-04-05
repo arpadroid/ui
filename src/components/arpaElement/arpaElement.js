@@ -31,6 +31,10 @@ class ArpaElement extends HTMLElement {
         this._config = mergeObjects(this.getDefaultConfig(), config);
     }
 
+    getDefaultConfig() {
+        return {};
+    }
+
     /**
      * Gets the current configuration of the element.
      * @returns {Record<string, unknown>} The configuration object.
@@ -94,18 +98,18 @@ class ArpaElement extends HTMLElement {
      * Renders the element.
      */
     render() {
-        const template = this.renderTemplate();
-        if (template) {
-            this.innerHTML = template;
+        const content = this.renderTemplate();
+        if (content) {
+            this.innerHTML = content;
         }
     }
 
     /**
      * Renders the template for the element.
+     * @param {string} [template] - The template to render.
      * @returns {string | undefined} The rendered template.
      */
-    renderTemplate() {
-        const { template } = this._config;
+    renderTemplate(template = this._config.template) {
         if (template) {
             const vars = this.getTemplateVars();
             return processTemplate(template, vars);

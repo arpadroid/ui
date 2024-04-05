@@ -54,6 +54,8 @@
     --color-orange-saffron: #ffa500;
     --color-orange-torch: #ff8c00;
     --color-orange-flame: #ff4500;
+    --color-light-orange: #fff3e5;
+    --color-orange: var(--color-orange-pumpkin);
 
     /* Yellows */
     --color-yellow: #f3ad2e;

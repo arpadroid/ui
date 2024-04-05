@@ -1,5 +1,5 @@
 {
-    "patterns": ["../../../src/components/**/*"],
+    "patterns": ["../../../src/components/**/*", "../../../src/modules/**/*"],
     "includes": [
         "vars/vars",
         "vars/pallette",

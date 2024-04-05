@@ -77,7 +77,7 @@ class IconButton extends HTMLButtonElement {
     }
 
     getTooltipPosition() {
-        return this.getAttribute('tooltip-position') ?? this._config.tooltipPosition;
+        return this.getAttribute('tooltip-position') ?? this._config.tooltipPosition ?? 'left';
     }
 }
 customElements.define('icon-button', IconButton, { extends: 'button' });

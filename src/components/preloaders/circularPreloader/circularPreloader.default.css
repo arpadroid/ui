@@ -1,0 +1,95 @@
+:root {
+    --preloader-width: 40px;
+    --preloader-border-width: 3px;
+    --preloader-outline-width: 3px;
+}
+
+.circularPreloader {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-sizing: border-box;
+    border-radius: 60%;
+    z-index: 1000;
+}
+
+.circularPreloader__mask {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    background-color: var(--overlay);
+    box-sizing: border-box;
+    animation: maskFadeIn 0.5s var(--easeOutExpo);
+}
+
+.circularPreloader__text {
+    margin-top: 16px;
+    font-size: 1rem;
+    margin-left: 8px;
+    color: var(--grey-600);
+}
+
+.circularPreloader__spinnerContainer {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    z-index: 1;
+    width: 100%;
+}
+
+.circularPreloader__spinner {
+    margin: 0 auto;
+    box-sizing: border-box;
+    animation: spin 1.5s infinite linear;
+    width: var(--preloader-width);
+    height: var(--preloader-width);
+    min-width: var(--preloader-width);
+    min-height: var(--preloader-width);
+    border: var(--preloader-outline-width) solid #d9d9d9;
+    border-top: var(--preloader-border-width) solid var(--color-primary);
+    border-left: var(--preloader-border-width) solid var(--color-primary);
+    border-right: var(--preloader-border-width) solid var(--color-primary);
+    border-radius: 100%;
+}
+
+.circularPreloader--mini {
+    --preloader-width: 20px;
+    --preloader-border-width: 2px;
+    --preloader-outline-width: 2px;
+}
+
+.circularPreloader--small {
+    --preloader-width: 30px;
+    --preloader-border-width: 2px;
+    --preloader-outline-width: 2px;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes maskFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}

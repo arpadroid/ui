@@ -1,9 +1,7 @@
 .tooltip {
     display: flex;
     position: relative;
-    /* height: 24px; */
 }
-
 
 .tooltip__button:focus + .tooltip__content,
 .tooltip:hover .tooltip__content {
@@ -16,6 +14,8 @@
     padding: 0;
     transition: var(--theme-transition);
     color: var(--color-primary);
+    position: absolute;
+    inset: 0;
 }
 
 .tooltip__content,
@@ -36,7 +36,6 @@
     width: max-content;
     z-index: 1;
 }
-
 
 /* Tooltip Positions */
 
@@ -62,8 +61,6 @@
     bottom: 100%;
     top: auto;
     left: auto;
-    /* margin-bottom: -27px;
-    margin-right: 29px; */
 }
 
 /* TOP */

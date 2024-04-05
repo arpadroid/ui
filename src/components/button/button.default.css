@@ -1,4 +1,4 @@
-button[is='arpa-button'],
+button[is='arpa-button']:not([variant='minimal']),
 button[is='submit-button'] {
     display: flex;
     text-transform: uppercase;
@@ -67,4 +67,18 @@ button[is='submit-button'] {
     display: block;
     white-space: nowrap;
     font-weight: 500;
+}
+
+.button--link {
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    height: auto;
+    padding: 0px 0px;
+    color: var(--color-primary);
+    cursor: pointer;
+}
+
+.button--link:hover {
+    text-decoration: underline;
 }
