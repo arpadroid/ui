@@ -5,3 +5,7 @@ arpa-icon {
     color: var(--grey-400);
     font-size: 22px;
 }
+
+arpa-icon[size="mini"] {
+    color: var(--color-primary);
+}

@@ -36,7 +36,7 @@ a.iconButton,
     }
 }
 
-button.iconButton[variant="minimal"] {
+button.iconButton[variant='minimal'] {
     border: none;
     background: none;
     padding: 0;
@@ -82,8 +82,6 @@ a.iconButton:hover .icon,
 a.iconButton:focus .icon {
     color: var(--grey-800);
 }
-
-
 
 .iconLink:hover .icon,
 .iconButton:hover .iconButton__content {
@@ -146,17 +144,19 @@ button.iconButton--mini {
     min-width: 18px;
     min-height: 18px;
     background-color: transparent;
-}
+    &:hover,
+    &:focus {
+        border: transparent;
+    }
 
-button.iconButton--mini:hover,
-button.iconButton--mini:focus {
-    border: transparent;
-}
+    .iconButton__content {
+        font-size: 14px;
+    }
 
-button.iconButton--mini .iconButton__content {
-    font-size: 14px;
+    arpa-icon {
+        font-size: 22px;
+    }
 }
-
 /* Warning */
 
 .iconButton.button--warning:hover,

@@ -5,7 +5,9 @@
 .listItem {
     display: flex;
     align-items: center;
-    gap: 24px;
+    gap: 12px;
+    flex: 1 1 auto;
+    width: 100%;
 
     arpa-image {
         width: var(--img-size);
@@ -18,9 +20,10 @@
 .listItem__main {
     display: flex;
     align-items: center;
-    width: 100%;
     gap: 12px;
     padding: 8px 12px;
+    min-width: 0;
+    flex: 1 1 auto;
 }
 
 .listItem__titleWrapper {
@@ -37,6 +40,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
+    flex: 0 1 auto;
 }
 
 .listItem__content {
@@ -61,4 +65,11 @@
 .listItem__icon,
 .listItem__iconRight {
     align-self: flex-start;
+}
+
+.listItem__rhs {
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
+    flex: 0 1 auto;
 }

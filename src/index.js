@@ -5,7 +5,6 @@ export { default as ArpaElement } from './components/arpaElement/arpaElement.js'
 export { default as Icon } from './components/icon/icon.js';
 export { default as Tooltip } from './components/tooltip/tooltip.js';
 export { default as Image } from './components/image/image.js';
-export { default as ListItem } from './modules/list/components/listItem/listItem.js';
 
 /**
  * Buttons.
@@ -18,6 +17,14 @@ export { default as IconButton } from './components/iconButton/iconButton.js';
  */
 export { default as TruncateText } from './components/truncateText/truncateText.js';
 export { default as InputCombo } from './components/inputCombo/inputCombo.js';
+
+/**
+ * List.
+ */
+export { default as List } from './modules/list/components/list/list.js';
+export { default as ListItem } from './modules/list/components/listItem/listItem.js';
+export { default as TagList } from './components/tagList/tagList.js';
+export { default as Tag } from './components/tag/tag.js';
 
 /**
  * Messages.
@@ -33,3 +40,8 @@ export { default as ErrorMessage } from './modules/messages/components/errorMess
  * Preloaders.
  */
 export { default as CircularPreloader } from './components/preloaders/circularPreloader/circularPreloader.js';
+
+/**
+ * Inputs.
+ */
+export { default as DropArea } from './components/dropArea/dropArea.js';

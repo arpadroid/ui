@@ -57,6 +57,7 @@
     "dependencies": {
         "@arpadroid/tools": "file:../tools",
         "@arpadroid/application": "file:../application",
+        "@arpadroid/i18n": "file:../i18n",
         "material-symbols": "^0.15.0"
     }
 }

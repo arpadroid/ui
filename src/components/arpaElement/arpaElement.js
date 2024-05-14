@@ -1,21 +1,27 @@
-import { dashedToCamel, mergeObjects, processTemplate } from '@arpadroid/tools';
+import { dashedToCamel, mergeObjects } from '@arpadroid/tools';
+import { I18nTool } from '@arpadroid/i18n';
 
 /**
  * Base class for custom elements.
  */
 class ArpaElement extends HTMLElement {
     _hasRendered = false;
+    _hasInitialized = false;
+    _isReady = false;
     /**
      * Creates a new instance of ArpaElement.
      * @param {Record<string, unknown>} config - The configuration object for the element.
      */
     constructor(config) {
         super();
+        this._bindMethods();
         this.setConfig(config);
         this._content = this.innerHTML;
         this._childNodes = [...this.childNodes];
         this._initialize();
     }
+
+    _bindMethods() {}
 
     /**
      * Initializes the element's internal state.
@@ -23,12 +29,20 @@ class ArpaElement extends HTMLElement {
      */
     _initialize() {}
 
+    initializeProperties() {
+        return true;
+    }
+
     /**
      * Sets the configuration for the element.
      * @param {Record<string, unknown>} [config]
      */
     setConfig(config = {}) {
         this._config = mergeObjects(this.getDefaultConfig(), config);
+    }
+
+    addConfig(config = {}) {
+        this._config = mergeObjects(this._config, config);
     }
 
     getDefaultConfig() {
@@ -53,25 +67,63 @@ class ArpaElement extends HTMLElement {
         return this.getAttribute(name) || this._config[configName];
     }
 
+    deleteProperty(name) {
+        delete this._config[dashedToCamel(name)];
+        this.removeAttribute(name);
+    }
+
+    deleteProperties(...names) {
+        names.forEach(name => this.deleteProperty(name));
+    }
+
+    hasProperty(name) {
+        return this.hasAttribute(name) || this._config[dashedToCamel(name)];
+    }
+
+    async onReady() {
+        return new Promise(resolve => requestAnimationFrame(resolve));
+    }
+
+    getTagName() {
+        return this.tagName.toLowerCase();
+    }
+
     /**
      * Called when the element is connected to the DOM.
      */
-    connectedCallback() {
+    async connectedCallback() {
+        await this.onReady();
+        this._isReady = true;
+        if (!this._hasInitialized) {
+            this._hasInitialized = await this.initializeProperties();
+            if (this._hasInitialized) {
+                this._onInitialized();
+            }
+        }
         if (!this.isConnected) {
             return;
         }
         if (!this._hasRendered) {
-            this._render();    
+            this._render();
         }
         this._onConnected();
         this.update();
+    }
+
+    _onInitialized() {
+    }
+
+    reRender() {
+        this._hasInitialized = false;
+        this._hasRendered = false;
+        this.connectedCallback();
     }
 
     /**
      * Called when the element is connected to the DOM.
      */
     _onConnected() {
-        // abstract method   
+        // abstract method
     }
 
     attributeChangedCallback(att, oldValue, newValue) {
@@ -83,7 +135,6 @@ class ArpaElement extends HTMLElement {
     _onAttributeChanged(att, oldValue, newValue) {
         // abstract method
     }
-    
 
     update() {
         // abstract method
@@ -112,7 +163,7 @@ class ArpaElement extends HTMLElement {
     renderTemplate(template = this._config.template) {
         if (template) {
             const vars = this.getTemplateVars();
-            return processTemplate(template, vars);
+            return I18nTool.processTemplate(template, vars);
         }
     }
 

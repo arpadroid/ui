@@ -1,16 +1,12 @@
-import { processTemplate } from '@arpadroid/tools';
+import { I18nTool } from '@arpadroid/i18n';
 
 const html = String.raw;
 class Button extends HTMLButtonElement {
     template = html`
-        <arpa-icon className="button__lhsIcon">{icon}</arpa-icon>
+        <arpa-icon class="button__lhsIcon">{icon}</arpa-icon>
         <span class="button__content">{content}</span>
         <arpa-icon class="button__rhsIcon">{iconRight}</arpa-icon>
     `;
-
-    static get observedAttributes() {
-        return ['icon-right', 'icon'];
-    }
 
     constructor() {
         super();
@@ -19,16 +15,18 @@ class Button extends HTMLButtonElement {
         this.render();
     }
 
+    connectedCallback() {
+        if (!this.getAttribute('type')) {
+            this.setAttribute('type', 'button');
+        }
+    }
+
     update() {
         this.render();
     }
 
-    attributeChangedCallback() {
-        // abstract
-    }
-
     render() {
-        this.innerHTML = processTemplate(this.template, {
+        this.innerHTML = I18nTool.processTemplate(this.template, {
             content: this._content,
             icon: this.getAttribute('icon'),
             iconRight: this.getAttribute('icon-right')

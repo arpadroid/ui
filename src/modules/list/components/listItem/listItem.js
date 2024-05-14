@@ -10,10 +10,16 @@
  */
 
 import ArpaElement from '../../../../components/arpaElement/arpaElement.js';
-import { render } from '@arpadroid/tools';
+import { render, renderNode } from '@arpadroid/tools';
 
 const html = String.raw;
 class ListItem extends ArpaElement {
+    constructor(config = {}, payload, map) {
+        super(config);
+        this.payload = payload;
+        this.map = map;
+    }
+
     /**
      * Gets the default config for the component.
      * @returns {ListItemInterface}
@@ -23,13 +29,77 @@ class ListItem extends ArpaElement {
             lazyLoad: false,
             selectedClass: 'listItem--selected',
             truncateContent: 0,
+            rhsContent: '',
             imageConfig: {
                 showPreloader: true
-            }
+            },
         };
     }
 
     _initialize() {}
+
+    removeItem() {
+        if (this.listResource) {
+            this.listResource.removeItem({ id: this.getId()});
+        } else {
+            this.remove();
+        }
+    }
+
+    hasSelection() {
+        return (
+            this.listResource?.hasSelection() ??
+            this.hasAttribute('has-selection') ??
+            this.getProperty('has-selection')
+        );
+    }
+
+    setSelected() {
+        // const item = this.listResource?.getItem(this._config.id);
+        // if (this.checkbox.checked) {
+        //     this.listResource.selectItem(item);
+        //     this.node.classList.add(this._config.selectedClass);
+        // } else {
+        //     this.listResource.deselectItem(item);
+        //     this.node.classList.remove(this._config.selectedClass);
+        // }
+    }
+
+    getId() {
+        return this.payload?.id || this.getProperty('id');
+    }
+
+    getPayload() {
+        return this.payload ?? this._config;
+    }
+
+    getTitle() {
+        return this.getProperty('title');
+    }
+
+    getSubTitle() {
+        return this.getProperty('sub-title');
+    }
+
+    getTitleLink() {
+        return this.getProperty('title-link');
+    }
+
+    getIcon() {
+        return this.getProperty('icon');
+    }
+
+    getIconRight() {
+        return this.getProperty('icon-right');
+    }
+
+    getImage() {
+        return this.getProperty('image');
+    }
+
+    getImageAlt() {
+        return this.getProperty('image-alt');
+    }
 
     render() {
         this.classList.add('listItem');
@@ -47,11 +117,12 @@ class ListItem extends ArpaElement {
             </${mainTag}>
             ${this.renderRhs()}
         `;
+
         const content = this.renderTemplate(template);
         this.innerHTML = content;
     }
 
-    renderRhs(content = '') {
+    renderRhs(content = this._config.rhsContent) {
         const nav = this.renderNav();
         const checkbox = this.renderCheckbox();
         return render(
@@ -74,28 +145,7 @@ class ListItem extends ArpaElement {
         `;
     }
 
-    hasSelection() {
-        return (
-            this.listResource?.hasSelection() ??
-            this.hasAttribute('has-selection') ??
-            this.getProperty('has-selection')
-        );
-    }
-
-    setSelected() {
-        // const item = this.listResource?.getItem(this._config.id);
-        // if (this.checkbox.checked) {
-        //     this.listResource.selectItem(item);
-        //     this.node.classList.add(this._config.selectedClass);
-        // } else {
-        //     this.listResource.deselectItem(item);
-        //     this.node.classList.remove(this._config.selectedClass);
-        // }
-    }
-
-    renderTitleContainer() {
-        const title = this.getProperty('title');
-        const subTitle = this.getProperty('sub-title');
+    renderTitleContainer(title = this.getTitle(), subTitle = this.getSubTitle()) {
         return render(
             title || subTitle,
             html`
@@ -107,22 +157,22 @@ class ListItem extends ArpaElement {
         );
     }
 
-    renderTitle() {
-        const title = this.getProperty('title');
+    renderTitle(title = this.getTitle()) {
         if (!title) {
             return '';
         }
-        const titleLink = this.getProperty('title-link');
+        const titleLink = this.getTitleLink();
         const titleClass = 'listItem__title';
-        const titleContent = html`<arpa-icon>{titleIcon}</arpa-icon>${title}`;
         return titleLink
-            ? html` <a href="${titleLink}" class="${titleClass}">${titleContent}</a>`
-            : html`<span class="${titleClass}">${titleContent}</span>`;
+            ? html` <a href="${titleLink}" class="${titleClass}">${this.renderTitleContent()}</a>`
+            : html`<span class="${titleClass}">${this.renderTitleContent()}</span>`;
     }
 
-    renderImage() {
-        const image = this.getProperty('image');
-        const alt = this.getProperty('image-alt') ?? '';
+    renderTitleContent() {
+        return html`<arpa-icon>{titleIcon}</arpa-icon>{title}`;
+    }
+
+    renderImage(image = this.getImage(), alt = this.getImageAlt()) {
         return render(image, html`<arpa-image src="${image}" alt="${alt}"></arpa-image>`);
     }
 
@@ -130,14 +180,16 @@ class ListItem extends ArpaElement {
         return {
             icon: this.getProperty('icon'),
             iconRight: this.getProperty('icon-right'),
-            titleIcon: this.getProperty('title-icon')
+            titleIcon: this.getProperty('title-icon'),
+            title: this.getTitle(),
+            subTitle: this.getSubTitle()
         };
     }
 
     renderContent() {
         const truncate = this.getProperty('truncate-content');
         return render(
-            this.getContent(),
+            this.getContent() || this.getProperty('i18n'),
             html`<truncate-text max-length="${truncate}" class="listItem__content"></truncate-text>`
         );
     }
@@ -159,12 +211,23 @@ class ListItem extends ArpaElement {
         return '';
     }
 
-    _onConnected() {
+    async _onConnected() {
         this._initializeProperties();
         this._initializeNodes();
+        await this._initializeItem();
+        const payload = {
+            id: this.getId(),
+            ...this.getPayload()
+        };
+        this.listResource?.registerItem(payload, this);
     }
 
-    _initializeProperties() {}
+    _initializeItem() {}
+
+    _initializeProperties() {
+        this.list = this.closest('.arpaList');
+        this.listResource = this.list?.listResource;
+    }
 
     _initializeNodes() {
         this._initializeContent();
@@ -185,33 +248,16 @@ class ListItem extends ArpaElement {
             } else if (this._childNodes?.length) {
                 this.contentNode.append(...this._childNodes);
             }
+            const i18n = this.getProperty('i18n');
+            if (i18n) {
+                this.i18nNode = this.i18nNode ?? renderNode(html`<i18n-text key="${i18n}"></i18n-text>`);
+                this.contentNode?.appendChild(this.i18nNode);
+            }
         }
     }
 }
 
 customElements.define('list-item', ListItem);
-
-// class ListItem extends LayoutNode {
-//     /**
-//      * Gets the default config for the component.
-//      * @returns {ListItemInterface}
-//      */
-//     static getDefaultConfig() {
-//         return {
-//             tagName: 'li',
-//             childrenTagName: 'ul',
-//             contentTagName: 'div',
-//             contentAttributes: undefined,
-//             lazyLoad: false,
-//             selectedClass: 'listItem--selected',
-//             imageConfig: {
-//                 showPreloader: true
-//             },
-//             attributes: {
-//                 class: 'listItem'
-//             }
-//         };
-//     }
 
 //     _initializeProperties() {
 //         /** @type {List} */

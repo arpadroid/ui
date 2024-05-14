@@ -235,7 +235,6 @@ class ArpaImage extends ArpaElement {
      * @returns {HTMLElement} - The rendered image error.
      */
     renderImageError() {
-        console.log('renderImageError');
         const icon = new Icon('warning_amber', { tooltip: 'Error loading image' }).render();
         icon.classList.add('imageComponent__icon', 'imageComponent__icon--error');
         icon.title = 'Error loading image';

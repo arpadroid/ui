@@ -1,0 +1,46 @@
+.dropArea {
+    width: 100%;
+}
+.dropArea__handler {
+    display: flex;
+    align-items: center;
+    margin: 8px 0px;
+    width: 100%;
+    padding: 16px;
+    border-radius: 8px;
+    min-height: 80px;
+    justify-content: center;
+    border: var(--striped-area-border);
+    background: var(--striped-area);
+    outline: var(--striped-area-outline);
+    text-align: center;
+    transition: var(--theme-transition);
+    cursor: pointer;
+    &.dropArea__handler--active,
+    &:hover,
+    &:focus {
+        border: 2px solid var(--color-background);
+        outline: 2px solid var(--selected-hilight);
+        background: repeating-linear-gradient(
+            45deg,
+            var(--selected-hilight),
+            var(--selected-hilight) 10px,
+            var(--color-background) 10px,
+            var(--color-background) 20px
+        );
+
+        arpa-icon {
+            color: var(--color-primary);
+        }
+    }
+}
+
+.dropArea__content {
+    flex: 0 1 auto;
+    text-transform: none;
+    white-space: wrap;
+    line-height: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}

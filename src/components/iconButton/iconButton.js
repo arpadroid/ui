@@ -1,4 +1,4 @@
-import { attr, getSafeHtmlId, mergeObjects } from '@arpadroid/tools';
+import { attr, getSafeHtmlId, mergeObjects, render } from '@arpadroid/tools';
 
 const html = String.raw;
 class IconButton extends HTMLButtonElement {
@@ -31,20 +31,29 @@ class IconButton extends HTMLButtonElement {
             'aria-label': this.getLabel(),
             type: 'button'
         });
+        this.handleVariant();
         this.classList.add(...this.getClassNames());
         this.render();
-
         if (typeof this._config.onClick === 'function') {
             this.addEventListener('click', this._config.onClick);
         }
     }
 
-    getId() {
-        const id = this.getAttribute('id') ?? this._config.id;
-        const label = this.getLabel();
-        if (!id && label) {
-            return `iconButton-${getSafeHtmlId(label)}`;
+    handleVariant() {
+        const variant = this.getVariant();
+        if (variant === 'delete') {
+            this.classList.add('deleteButton');
+            const defaultConfig = {
+                icon: 'delete',
+                tooltipPosition: 'left',
+                tooltip: 'delete'
+            };
+            this._config = mergeObjects(defaultConfig, this._config);
         }
+    }
+
+    getId() {
+        return this.id || this._config.id || `iconButton-${getSafeHtmlId(this.getLabel())}`;
     }
 
     getClassNames() {
@@ -64,16 +73,25 @@ class IconButton extends HTMLButtonElement {
     }
 
     render() {
+        const template = html`
+            <arpa-icon>${this.getIcon()}</arpa-icon>
+            ${this.renderTooltip()}
+        `;
+
+        this.innerHTML = template;
+    }
+
+    renderTooltip() {
         const label = this.getLabel();
-        let template = html`<arpa-icon>${this.getIcon()}</arpa-icon>`;
-        if (label && this.id) {
-            template += html`
-                <arpa-tooltip position="${this.getTooltipPosition()}" handler="#${this.id}">
+        const id = this.getId();
+        return render(
+            label && id,
+            html`
+                <arpa-tooltip position="${this.getTooltipPosition()}" handler="#${id}">
                     ${label}
                 </arpa-tooltip>
-            `;
-        }
-        this.innerHTML = template;
+            `
+        );
     }
 
     getTooltipPosition() {

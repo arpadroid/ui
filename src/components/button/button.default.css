@@ -3,7 +3,7 @@ button[is='submit-button'] {
     display: flex;
     text-transform: uppercase;
     align-items: center;
-    background-color: var(--color-primary-light);
+    background-color: var(--color-background);
     border: 2px solid var(--border-color);
     border-radius: 12px;
     height: 52px;
@@ -12,14 +12,9 @@ button[is='submit-button'] {
     transition: var(--theme-transition);
     cursor: pointer;
 
-    .icon {
-        color: var(--text-inverted-color);
-    }
-
     &:hover,
     &:focus {
         &:not(:disabled) {
-            background-color: var(--color-primary);
             box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
             .button__content {
                 text-decoration: underline;
@@ -61,7 +56,6 @@ button[is='submit-button'] {
 .button__content {
     flex: 1 1 auto;
     padding: 0 8px;
-    color: var(--text-inverted-color);
     max-height: 100%;
     height: auto;
     display: block;
