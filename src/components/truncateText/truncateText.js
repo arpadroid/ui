@@ -4,6 +4,9 @@ import ArpaElement from '../arpaElement/arpaElement.js';
  */
 const html = String.raw;
 class TruncateText extends ArpaElement {
+    /////////////////////////
+    // #region INITIALIZATION
+    /////////////////////////
     /**
      * Returns the default component config.
      * @returns {TruncateTextInterface}
@@ -27,6 +30,12 @@ class TruncateText extends ArpaElement {
         this.renderButton();
     }
 
+    // #endregion
+
+    /////////////////////
+    // #region LIFECYCLE
+    /////////////////////
+
     _observeContents() {
         let nodeCount = this.childNodes.length;
         const observer = new MutationObserver(() => {
@@ -47,6 +56,12 @@ class TruncateText extends ArpaElement {
             this.truncateText();
         }
     }
+
+    // #endregion
+
+    ////////////////////
+    // #region ACCESSORS
+    ////////////////////
 
     getMaxLength() {
         return parseFloat(this.getProperty('max-length'));
@@ -74,7 +89,7 @@ class TruncateText extends ArpaElement {
         const ellipsis = this.getProperty('ellipsis');
         if (text.length > maxLength + threshold) {
             this.isTruncated = true;
-            this.innerHTML = `${text.slice(0, maxLength)}${ellipsis}`;
+            this.innerHTML = html`<span>${text.slice(0, maxLength)}</span>${ellipsis}</span></span>`;
             this.renderButton();
             this.append(this.button);
         }
@@ -96,6 +111,12 @@ class TruncateText extends ArpaElement {
             this.truncateText();
         }
     }
+
+    // #endregion
+
+    ////////////////////
+    // #region RENDERING
+    ////////////////////
 
     renderButton() {
         if (this.hasReadMoreButton()) {
@@ -121,6 +142,7 @@ class TruncateText extends ArpaElement {
         }
         return classes;
     }
+    // #endregion
 }
 
 customElements.define('truncate-text', TruncateText);

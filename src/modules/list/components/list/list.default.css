@@ -115,7 +115,7 @@
 }
 
 .arpaList[variant='mini'] {
-    min-height: 32px;
+    /* min-height: 32px; */
     .arpaList__noItems {
         flex-direction: row;
         height: 20px;

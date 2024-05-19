@@ -1,4 +1,4 @@
-import { dashedToCamel, mergeObjects } from '@arpadroid/tools';
+import { dashedToCamel, mergeObjects, renderNode } from '@arpadroid/tools';
 import { I18nTool } from '@arpadroid/i18n';
 
 /**
@@ -8,6 +8,10 @@ class ArpaElement extends HTMLElement {
     _hasRendered = false;
     _hasInitialized = false;
     _isReady = false;
+
+    /////////////////////////
+    // #region INITIALIZATION
+    /////////////////////////
     /**
      * Creates a new instance of ArpaElement.
      * @param {Record<string, unknown>} config - The configuration object for the element.
@@ -32,6 +36,12 @@ class ArpaElement extends HTMLElement {
     initializeProperties() {
         return true;
     }
+
+    // #endregion
+
+    /////////////////////
+    // #region ACCESSORS
+    /////////////////////
 
     /**
      * Sets the configuration for the element.
@@ -64,7 +74,20 @@ class ArpaElement extends HTMLElement {
      */
     getProperty(name) {
         const configName = dashedToCamel(name);
-        return this.getAttribute(name) || this._config[configName];
+        return this.getAttribute(name) ?? this._config[configName];
+    }
+
+    hasProperty(name) {
+        const attrVal = this.getAttribute(name);
+        if (attrVal === 'false') {
+            return false;
+        }
+        if (this.hasAttribute(name)) {
+            return true;
+        }
+        if (typeof this._config[dashedToCamel(name)] !== 'undefined') {
+            return this._config[dashedToCamel(name)];
+        }
     }
 
     deleteProperty(name) {
@@ -76,16 +99,32 @@ class ArpaElement extends HTMLElement {
         names.forEach(name => this.deleteProperty(name));
     }
 
-    hasProperty(name) {
-        return this.hasAttribute(name) || this._config[dashedToCamel(name)];
+    getTagName() {
+        return this.tagName.toLowerCase();
     }
+
+    setContent(content, contentContainer = this) {
+        if (typeof content === 'string') {
+            this._content = content;
+            this._childNodes = [renderNode(content)];
+        } else if (content instanceof HTMLElement) {
+            this._content = content.outerHTML;
+            this._childNodes = [...content.childNodes];
+        }
+        if (contentContainer instanceof HTMLElement) {
+            contentContainer.innerHTML = '';
+            contentContainer.append(...this._childNodes);
+        }
+    }
+
+    // #endregion
+
+    /////////////////////
+    // #region LIFECYCLE
+    /////////////////////
 
     async onReady() {
         return new Promise(resolve => requestAnimationFrame(resolve));
-    }
-
-    getTagName() {
-        return this.tagName.toLowerCase();
     }
 
     /**
@@ -110,14 +149,12 @@ class ArpaElement extends HTMLElement {
         this.update();
     }
 
-    _onInitialized() {
+    attributeChangedCallback(att, oldValue, newValue) {
+        this.update();
+        this._onAttributeChanged(att, oldValue, newValue);
     }
 
-    reRender() {
-        this._hasInitialized = false;
-        this._hasRendered = false;
-        this.connectedCallback();
-    }
+    _onInitialized() {}
 
     /**
      * Called when the element is connected to the DOM.
@@ -125,12 +162,6 @@ class ArpaElement extends HTMLElement {
     _onConnected() {
         // abstract method
     }
-
-    attributeChangedCallback(att, oldValue, newValue) {
-        this.update();
-        this._onAttributeChanged(att, oldValue, newValue);
-    }
-
     // eslint-disable-next-line no-unused-vars
     _onAttributeChanged(att, oldValue, newValue) {
         // abstract method
@@ -139,6 +170,12 @@ class ArpaElement extends HTMLElement {
     update() {
         // abstract method
     }
+
+    // #endregion
+
+    ////////////////////
+    // #region RENDERING
+    ////////////////////
 
     _render() {
         this.render();
@@ -174,6 +211,14 @@ class ArpaElement extends HTMLElement {
     getTemplateVars() {
         return {};
     }
+
+    reRender() {
+        this._hasInitialized = false;
+        this._hasRendered = false;
+        this.connectedCallback();
+    }
+
+    // #endregion
 }
 
 customElements.define('arpa-element', ArpaElement);

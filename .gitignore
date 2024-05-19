@@ -4,3 +4,4 @@ node_modules/
 *.min.css
 dist/
 junit.xml
+*storybook.log

@@ -1,9 +1,9 @@
 :root {
     --msg-border-color: var(--grey-600);
-    --msg-icon-color: var(--grey800);
+    --msg-icon-color: var(--grey-600);
     --msg-success-bg: #d4ebce;
     --msg-bg: var(--grey-50);
-    --msg-border-color: var(--msg-info-border-color);
+    --msg-border-color: var(--grey-400);
 }
 
 .message.message {

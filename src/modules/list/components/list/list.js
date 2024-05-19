@@ -212,7 +212,9 @@ class List extends ArpaElement {
     }
 
     onResourceRemoveItems() {
-        this.itemsNode.innerHTML = '';
+        if (this.itemsNode) {
+            this.itemsNode.innerHTML = '';
+        }
     }
 
     onResourceAddItem(payload, unshift = false) {
@@ -296,8 +298,9 @@ class List extends ArpaElement {
     }
 
     renderNoItemsContent(items = this.listResource.getItems()) {
+        const notItemsContent = this.getProperty('no-items-content');
         return render(
-            !items?.length,
+            notItemsContent && !items?.length,
             I18nTool.processTemplate(
                 html`
                     <div class="arpaList__noItems">

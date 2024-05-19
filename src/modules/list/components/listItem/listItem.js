@@ -32,7 +32,7 @@ class ListItem extends ArpaElement {
             rhsContent: '',
             imageConfig: {
                 showPreloader: true
-            },
+            }
         };
     }
 
@@ -40,7 +40,7 @@ class ListItem extends ArpaElement {
 
     removeItem() {
         if (this.listResource) {
-            this.listResource.removeItem({ id: this.getId()});
+            this.listResource.removeItem({ id: this.getId() });
         } else {
             this.remove();
         }
@@ -188,10 +188,22 @@ class ListItem extends ArpaElement {
 
     renderContent() {
         const truncate = this.getProperty('truncate-content');
+        const content = this.getContent();
         return render(
-            this.getContent() || this.getProperty('i18n'),
-            html`<truncate-text max-length="${truncate}" class="listItem__content"></truncate-text>`
+            content,
+            html`<truncate-text max-length="${truncate}" class="listItem__content">${content}</truncate-text>`
         );
+    }
+
+    setContent(content) {
+        this._config.content = content;
+        if (this.contentNode) {
+            if (typeof this.contentNode.setContent === 'function') {
+                this.contentNode.setContent(content);
+                return;
+            }
+            this.contentNode.innerHTML = content;
+        }
     }
 
     getContent() {
@@ -242,17 +254,19 @@ class ListItem extends ArpaElement {
 
     _initializeContent() {
         this.contentNode = this.querySelector('.listItem__content');
-        if (this.contentNode) {
-            if (this._config.content) {
-                this.contentNode.textContent = this._config.content;
-            } else if (this._childNodes?.length) {
-                this.contentNode.append(...this._childNodes);
-            }
-            const i18n = this.getProperty('i18n');
-            if (i18n) {
-                this.i18nNode = this.i18nNode ?? renderNode(html`<i18n-text key="${i18n}"></i18n-text>`);
-                this.contentNode?.appendChild(this.i18nNode);
-            }
+        if (!this.contentNode) {
+            return;
+        }
+        const content = this.getContent();
+        if (content) {
+            this.contentNode.textContent = content;
+        } else if (this._childNodes?.length) {
+            this.contentNode.append(...this._childNodes);
+        }
+        const i18n = this.getProperty('i18n');
+        if (i18n) {
+            this.i18nNode = this.i18nNode ?? renderNode(html`<i18n-text key="${i18n}"></i18n-text>`);
+            this.contentNode?.appendChild(this.i18nNode);
         }
     }
 }

@@ -1,13 +1,14 @@
-import { mergeObjects, render } from '@arpadroid/tools';
 /**
  * @typedef {import('./messageInterface.js').MessageInterface} MessageInterface
  * @typedef {import('@arpadroid/application/src/index.js').MessageResource} MessageResource
  */
-
+import { mergeObjects, render } from '@arpadroid/tools';
 import ListItem from '../../../list/components/listItem/listItem.js';
-
 const html = String.raw;
 class Message extends ListItem {
+    /////////////////////////
+    // #region INITIALIZATION
+    /////////////////////////
     /**
      * Returns the default config.
      * @returns {MessageInterface}
@@ -16,6 +17,7 @@ class Message extends ListItem {
         return mergeObjects(super.getDefaultConfig(), {
             closeLabel: 'Close',
             canClose: false,
+            icon: 'chat_bubble',
             timeout: 0,
             truncateContent: 190
         });
@@ -26,12 +28,46 @@ class Message extends ListItem {
         super._initialize();
     }
 
-    renderRhs() {
-        return super.renderRhs(this.renderCloseButton());
+    _initializeProperties() {
+        this.messagesComponent = this.closest('arpa-messages');
+        /** @type {MessageResource} */
+        this.resource = this._config.resource ?? this.messagesComponent?.resource;
     }
+
+    // #endregion
+
+    ////////////////////
+    // #region ACCESSORS
+    ////////////////////
 
     canClose() {
         return this.hasAttribute('can-close') || this._config.canClose;
+    }
+
+    close() {
+        if (this.resource) {
+            this.resource.deleteMessage(this._config);
+        } else {
+            this.remove();
+        }
+    }
+
+    getTimeout() {
+        return parseFloat(this.getProperty('timeout'));
+    }
+
+    getContent() {
+        return (super.getContent() ?? this.getProperty('text')) || this.getProperty('i18n');
+    }
+
+    // #endregion
+
+    ////////////////////
+    // #region RENDERING
+    ////////////////////
+
+    renderRhs() {
+        return super.renderRhs(this.renderCloseButton());
     }
 
     renderCloseButton() {
@@ -48,11 +84,24 @@ class Message extends ListItem {
         );
     }
 
+    // #endregion
+
+    /////////////////////
+    // #region LIFECYCLE
+    /////////////////////
+
     _onConnected() {
         this.classList.add('message');
         super._onConnected();
         this._initializeMessage();
         this.handleTimeout();
+    }
+
+    _initializeNodes() {
+        super._initializeNodes();
+        this.closeButton = this.querySelector('.message__closeButton');
+        this.closeButton?.removeEventListener('click', this._onClose);
+        this.closeButton?.addEventListener('click', this._onClose);
     }
 
     _initializeMessage() {
@@ -70,26 +119,11 @@ class Message extends ListItem {
         }
     }
 
-    getTimeout() {
-        return parseFloat(this.getProperty('timeout'));
-    }
-
     disconnectedCallback() {
         clearTimeout(this.timeout);
     }
 
-    _initializeProperties() {
-        this.messagesComponent = this.closest('arpa-messages');
-        /** @type {MessageResource} */
-        this.resource = this._config.resource ?? this.messagesComponent?.resource;
-    }
-
-    _initializeNodes() {
-        super._initializeNodes();
-        this.closeButton = this.querySelector('.message__closeButton');
-        this.closeButton?.removeEventListener('click', this._onClose);
-        this.closeButton?.addEventListener('click', this._onClose);
-    }
+    // #endregion
 
     _onClose() {
         const { onClose } = this._config;
@@ -97,14 +131,6 @@ class Message extends ListItem {
             onClose();
         }
         this.close();
-    }
-
-    close() {
-        if (this.resource) {
-            this.resource.deleteMessage(this._config);
-        } else {
-            this.remove();
-        }
     }
 }
 

@@ -11,6 +11,15 @@ class Messages extends ArpaElement {
     messagesByText = {};
     messagesByType = {};
 
+    //////////////////////////
+    // #region INITIALIZATION
+    /////////////////////////
+
+    _bindMethods() {
+        super._bindMethods();
+        this.onResourceAddMessage = this.onResourceAddMessage.bind(this);
+    }
+
     /**
      * Returns default config.
      * @returns {MessagesInterface}
@@ -18,7 +27,8 @@ class Messages extends ArpaElement {
     getDefaultConfig() {
         return mergeObjects(super.getDefaultConfig(), {
             messages: [],
-            resourceConfig: {}
+            resourceConfig: {},
+            prependNewMessages: true
         });
     }
 
@@ -32,22 +42,38 @@ class Messages extends ArpaElement {
 
     _initializeResource() {
         if (!this.resource) {
-            /** @type {MessageResource} */
+            /** @type { MessageResource } */
             this.resource = new MessageResource({ id: this.getProperty('id') });
             this.resource.listen('DELETE_MESSAGE', message => message?.node?.remove());
             this.resource.listen('DELETE_MESSAGES', () => (this.innerHTML = ''));
-            this.resource.listen('ADD_MESSAGE', message => this._addMessage(message));
+            this.resource.listen('ADD_MESSAGE', this.onResourceAddMessage);
         }
     }
 
-    _addMessage(message) {
-        const type = message.type;
+    // #endregion
+
+    ///////////////////////////
+    // #region RESOURCE EVENTS
+    //////////////////////////
+    onResourceAddMessage(message) {
+        const prependNewMessages = this.hasProperty('prepend-new-messages');
+        let { type = 'arpa' } = message;
+        if (!this.getMessageTypes().includes(type)) {
+            type = 'arpa';
+        }
         const node = document.createElement(`${type}-message`);
         message.node = node;
         node.setConfig(message);
-        requestAnimationFrame(() => {
-            this.appendChild(node);
-        });
+        prependNewMessages ? this.prepend(node) : this.appendChild(node);
+    }
+    // #endregion
+
+    ////////////////////
+    // #region ACCESSORS
+    ////////////////////
+
+    getMessageTypes() {
+        return ['arpa', 'info', 'success', 'warning', 'error'];
     }
 
     /**
@@ -82,6 +108,8 @@ class Messages extends ArpaElement {
     deleteMessages() {
         return this.resource.deleteMessages();
     }
+
+    // #endregion
 }
 
 customElements.define('arpa-messages', Messages);
