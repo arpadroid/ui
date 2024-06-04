@@ -36,6 +36,10 @@ class ListItem extends ArpaElement {
         };
     }
 
+    getTagName() {
+        return 'list-item';
+    }
+
     _initialize() {}
 
     removeItem() {
@@ -140,7 +144,7 @@ class ListItem extends ArpaElement {
         const checked = render(isSelected, 'checked');
         return html`
             <label class="listItem__checkboxContainer" for="${htmlId}">
-                <input class="listItem__checkbox" type="checkbox" id="${htmlId}" ${checked} />
+                <input class="listItem__checkbox arpaCheckbox" type="checkbox" id="${htmlId}" ${checked} />
             </label>
         `;
     }
@@ -271,7 +275,7 @@ class ListItem extends ArpaElement {
     }
 }
 
-customElements.define('list-item', ListItem);
+customElements.define(ListItem.prototype.getTagName(), ListItem);
 
 //     _initializeProperties() {
 //         /** @type {List} */

@@ -18,8 +18,10 @@
         "start:application": "cd ../application && npm run build:watch",
         "start:i18n": "cd ../i18n && npm run build:watch",
         "start:tools": "cd ../tools && npm run build:watch",
-        "start:dev": "npm run start:application & npm run start:i18n & npm run start:tools & npm run build:watch",
-        "storybook:dev": "npm run start:dev & storybook dev -p 6007",
+        "start:forms": "cd ../forms && npm run build:watch",
+        "start:dev": "npm run start:application & npm run start:i18n & npm run start:tools & npm run start:forms & npm run build:watch",
+        "storybook:dev": "npm run start:dev & npm run storybook",
+        "storybook": "storybook dev -p 6007",
         "test": "npm run test:storybook",
         "test:storybook": "test-storybook --url http://127.0.0.1:6007"
     },
@@ -39,7 +41,7 @@
     },
     "homepage": "https://github.com/arpadroid/ui#readme",
     "devDependencies": {
-        "@arpadroid/stylesheet-bundler": "^1.1.1",
+        "@arpadroid/stylesheet-bundler": "file:../stylesheet-bundler",
         "@babel/core": "^7.23.9",
         "@babel/plugin-syntax-import-assertions": "^7.23.3",
         "@babel/preset-env": "^7.23.9",
@@ -75,10 +77,12 @@
         "webpack-cli": "^5.1.4",
         "webpack-dev-server": "^5.0.2"
     },
-    "dependencies": {
+    "peerDependencies": {
         "@arpadroid/application": "file:../application",
         "@arpadroid/i18n": "file:../i18n",
-        "@arpadroid/tools": "file:../tools",
+        "@arpadroid/tools": "file:../tools"
+    },
+    "dependencies": {
         "material-symbols": "^0.15.0"
     }
 }

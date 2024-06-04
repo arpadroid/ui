@@ -5,7 +5,7 @@ class Icon extends HTMLElement {
     }
 
     connectedCallback() {
-        if (this.innerHTML === '') {
+        if (['', 'none'].includes(this.innerHTML)) {
             this.remove();
         }
     }

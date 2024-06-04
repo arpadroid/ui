@@ -15,7 +15,7 @@ const bundler = new StylesheetBundler.ThemesBundler({
         { path: basePath + '/default' }
         // { path: basePath + '/dark' }
     ],
-    patterns: [cwd + '/src/components/**/*'],
+    patterns: [cwd + '/src/components/**/*', cwd + '/src/modules/**/*'],
     minify: MODE === 'production',
     commonThemePath: basePath + '/common'
 });
@@ -26,12 +26,7 @@ if (MODE === 'production') {
 }
 
 module.exports = (async () => {
-    await bundler.promise;
-    bundler.cleanup();
-    await bundler.bundle();
-    if (MODE === 'development') {
-        bundler.watch();
-    }
+    await bundler.initialize();
     return [
         {
             entry: './src/index.js',
@@ -123,9 +118,21 @@ module.exports = (async () => {
                             to: cwd + `/dist/themes/default/default.${themeExt}`
                         },
                         {
+                            from: `src/themes/default/fonts`,
+                            to: cwd + `/dist/themes/default/fonts`
+                        },
+                        {
                             from: 'src/types.compiled.d.ts',
                             to: cwd + '/dist/types.d.ts'
-                        }
+                        },
+                        {
+                            from: `../forms/dist/forms.js`,
+                            to: cwd + `/dist/forms.js`
+                        },
+                        {
+                            from: `../forms/dist/themes`,
+                            to: cwd + `/dist/forms/themes`
+                        },
                     ]
                 }),
                 new MiniCssExtractPlugin({

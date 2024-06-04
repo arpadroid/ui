@@ -2,7 +2,6 @@ import { attr, resolveNode } from '@arpadroid/tools';
 import IconButton from '../iconButton/iconButton.js';
 
 class Tooltip extends HTMLElement {
-
     static get observedAttributes() {
         return ['text', 'handler', 'icon', 'label'];
     }
@@ -40,7 +39,7 @@ class Tooltip extends HTMLElement {
     }
 
     getPosition() {
-        return this.getAttribute('position') ?? 'top';
+        return this.getAttribute('position').trim() || 'top';
     }
 
     renderContent() {
@@ -49,7 +48,7 @@ class Tooltip extends HTMLElement {
             class: 'tooltip__content',
             role: 'tooltip',
             'aria-hidden': 'true',
-            'aria-describedby': this.handler?.id ?? this?.button?.id,
+            'aria-describedby': this.handler?.id ?? this?.button?.id
         });
         content.append(...this._childNodes);
         return content;
@@ -68,7 +67,6 @@ class Tooltip extends HTMLElement {
             return button;
         }
     }
-
 }
 
 customElements.define('arpa-tooltip', Tooltip);

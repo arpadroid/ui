@@ -55,12 +55,15 @@ class List extends ArpaElement {
             template: List.template,
             isCollapsed: true,
             hasSearch: false,
+            hasSort: false,
+            sortOptions: [],
+            sortDefault: null,
             hasMiniSearch: true,
             hasPager: true,
             hasViews: false,
             defaultView: 'list',
             hasFilters: false,
-            hasStickyControls: false,
+            stickyControls: false,
             hasStickyFilters: false,
             itemComponent: ListItem,
             // filtersClass: ListFilters,
@@ -81,6 +84,10 @@ class List extends ArpaElement {
     /////////////////////
     // #region ACCESSORS
     /////////////////////
+
+    getId() {
+        return this._config.id;
+    }
 
     /**
      * Sets the heading.
@@ -111,6 +118,34 @@ class List extends ArpaElement {
      */
     hasSearch() {
         return this.hasProperty('has-search');
+    }
+
+    /**
+     * Whether the list has sort.
+     * @returns {boolean}
+     */
+    hasSort() {
+        return this.hasProperty('has-sort');
+    }
+
+    getSortOptions() {
+        return this.getProperty('sort-options');
+    }
+
+    getSortDefault() {
+        return this.getProperty('sort-default');
+    }
+
+    setSortOptions(options, defaultValue = null) {
+        this._config.sortOptions = options;
+        this._config.sortDefault = defaultValue;
+        if (this.sortField) {
+            this.sortField.setOptions(options, defaultValue);
+        }
+    }
+
+    hasStickyControls() {
+        return this.hasProperty('sticky-controls');
     }
 
     /**
@@ -235,6 +270,7 @@ class List extends ArpaElement {
 
     getTemplateVars() {
         return {
+            id: this._config.id,
             title: this.getProperty('title'),
             // search: this.controlsComponent?.getControl('searchControl')?.render(),
             // views: this.controlsComponent?.getControl('viewsControl')?.render(),
@@ -257,7 +293,7 @@ class List extends ArpaElement {
         this.innerHTML = I18nTool.processTemplate(
             html`
                 ${this.renderTitle()}
-                <div class="arpaList__controls">{search}{views}{filters}</div>
+                <list-controls></list-controls>
                 <div class="arpaList__body">
                     <div class="arpaList__bodyMain">{heading} {items} {pager}</div>
                     <div class="arpaList__bodyAside"></div>
@@ -378,6 +414,12 @@ class List extends ArpaElement {
         this.bodyMainNode = this.querySelector('.arpaList__bodyMain');
         this.itemsNode = this.querySelector('.arpaList__items');
         this.noItemsNode = this.querySelector('.arpaList__noItems');
+        this.addItemNodes(this.getInitialItems());
+    }
+
+    getInitialItems() {
+        const { itemComponent } = this._config;
+        return this._childNodes.filter(node => node instanceof itemComponent) || [];
     }
 
     // #endregion

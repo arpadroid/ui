@@ -10,3 +10,72 @@
     --font-4xl: 32px;
     --font-5xl: 36px;
 }
+
+@font-face {
+    font-family: AvantGarde-Bk;
+    src: url('fonts/AvantGardeBQ-Book.otf');
+}
+
+@font-face {
+    font-family: AvantGarde-GothicBook;
+    src: url('fonts/AvantGardeGothicC-Book.otf');
+}
+
+@font-face {
+    font-family: AvantGarde-Light;
+    src: url('fonts/AvantGardeXLight.otf');
+}
+
+@font-face {
+    font-family: AvantGarde-Thin;
+    src: url('fonts/AvantGarde-Thin.ttf');
+}
+
+@font-face {
+    font-family: AvantGarde-ExtraLight;
+    src: url('fonts/AvantGardeExtLitITCTT.woff');
+}
+
+@font-face {
+    font-family: DIN;
+    src: url('fonts/DIN-Regular.otf');
+}
+
+@font-face {
+    font-family: DIN-LIGHT;
+    src: url('fonts/DIN-Light.otf');
+}
+
+@font-face {
+    font-family: DIN-BOLD;
+    src: url('fonts/DIN-Bold.otf');
+}
+
+@font-face {
+    font-family: DIN-MEDIUM;
+    src: url('fonts/DIN-Medium.otf');
+}
+
+@font-face {
+    font-family: BurfordRustic;
+    src: url('fonts/Burford_Rustic-LineBold.otf');
+}
+
+:root {
+    /* Avant Garde */
+    --font-avant-garde: AvantGarde-Bk, Times, Helvetica, sans-serif;
+    --font-avant-garde-exlt: AvantGarde-ExtraLight, Arial, Helvetica, sans-serif;
+    --font-avant-garde-lt: AvantGarde-Light, Arial, Helvetica, sans-serif;
+    --font-avant-garde-thin: AvantGarde-Thin, Arial, Helvetica, sans-serif;
+
+    /* DIN */
+    --font-din: DIN, Arial, Helvetica, sans-serif;
+    --font-din-light: DIN-LIGHT, Arial, Helvetica, sans-serif;
+    --font-din-bold: DIN-BOLD, Arial, Helvetica, sans-serif;
+    --font-din-md: DIN-MEDIUM, Arial, Helvetica, sans-serif;
+
+    /* Vars */
+    --primary-font: var(--font-avant-garde);
+    --secondary-font: var(--font-avant-garde);
+    --tertiary-font: var(--font-avant-garde-exlt);
+}

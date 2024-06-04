@@ -1,10 +1,14 @@
 import { dashedToCamel, mergeObjects, renderNode } from '@arpadroid/tools';
 import { I18nTool } from '@arpadroid/i18n';
+import { CustomElementTool } from '@arpadroid/tools';
+
+const { getProperty, hasProperty } = CustomElementTool;
 
 /**
  * Base class for custom elements.
  */
 class ArpaElement extends HTMLElement {
+    _bindings = [];
     _hasRendered = false;
     _hasInitialized = false;
     _isReady = false;
@@ -23,6 +27,14 @@ class ArpaElement extends HTMLElement {
         this._content = this.innerHTML;
         this._childNodes = [...this.childNodes];
         this._initialize();
+    }
+
+    _doBindings(bindings = this._bindings) {
+        bindings.forEach(method => {
+            if (typeof this[method] === 'function') {
+                this[method] = this[method].bind(this);
+            }
+        });
     }
 
     _bindMethods() {}
@@ -73,21 +85,11 @@ class ArpaElement extends HTMLElement {
      * @returns {string} The value of the property.
      */
     getProperty(name) {
-        const configName = dashedToCamel(name);
-        return this.getAttribute(name) ?? this._config[configName];
+        return getProperty(this, name);
     }
 
     hasProperty(name) {
-        const attrVal = this.getAttribute(name);
-        if (attrVal === 'false') {
-            return false;
-        }
-        if (this.hasAttribute(name)) {
-            return true;
-        }
-        if (typeof this._config[dashedToCamel(name)] !== 'undefined') {
-            return this._config[dashedToCamel(name)];
-        }
+        return hasProperty(this, name);
     }
 
     deleteProperty(name) {
@@ -134,6 +136,7 @@ class ArpaElement extends HTMLElement {
         await this.onReady();
         this._isReady = true;
         if (!this._hasInitialized) {
+            this._doBindings();
             this._hasInitialized = await this.initializeProperties();
             if (this._hasInitialized) {
                 this._onInitialized();
@@ -221,6 +224,6 @@ class ArpaElement extends HTMLElement {
     // #endregion
 }
 
-customElements.define('arpa-element', ArpaElement);
+customElements.get('arpa-element') || customElements.define('arpa-element', ArpaElement);
 
 export default ArpaElement;
