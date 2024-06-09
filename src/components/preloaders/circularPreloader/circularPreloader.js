@@ -26,10 +26,6 @@ class CircularPreloader extends ArpaElement {
         };
     }
 
-    getVariant() {
-        return this.getProperty('variant');
-    }
-
     getTemplateVars() {
         const text = this.getProperty('text');
         return {

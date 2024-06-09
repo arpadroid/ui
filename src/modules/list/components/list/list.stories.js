@@ -11,16 +11,19 @@ const ListStory = {
     getArgs: () => {
         return {
             id: 'test-list',
-            hasSearch: true,
-            hasSort: true,
-            hasViews: true
+            hasSearch: false,
+            hasSort: false,
+            hasViews: false,
+            allControls: true
         };
     },
     getArgTypes: (category = 'List Props') => {
         return {
             id: { control: { type: 'text' }, table: { category } },
+            allControls: { control: { type: 'boolean' }, table: { category } },
             hasSearch: { control: { type: 'boolean' }, table: { category } },
-            hasViews: { control: { type: 'boolean' }, table: { category } }
+            hasViews: { control: { type: 'boolean' }, table: { category } },
+            hasSort: { control: { type: 'boolean' }, table: { category } }
         };
     },
     render: args => {

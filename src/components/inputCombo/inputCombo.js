@@ -348,13 +348,11 @@ class InputCombo {
      * Places the InputCombo component in the correct position.
      */
     place() {
-        if (!this._isActive) {
+        const { position } = this._config;
+        if (!position || !this._isActive) {
             return;
         }
-        const { position } = this._config;
-        if (position) {
-            placeNode(this.combo, this.input, position);
-        }
+        placeNode(this.combo, this.input, position);
     }
 
     /**
@@ -387,7 +385,7 @@ class InputCombo {
      * Focuses the previous option within the combo.
      */
     focusPreviousOption() {
-        this.focusOption(this._getPreviousAvaliableOption() ?? this._getLastAvaliableOption());
+        this.focusOption(this._getPreviousAvailableOption() ?? this._getLastAvailableOption());
     }
 
     /**
@@ -449,24 +447,28 @@ class InputCombo {
 
     /**
      * Returns the previous available option before the currently focused option.
-     * @returns {HTMLElement} The previous available option.
-     * @protected
+     * @param {boolean} loop - Indicates whether to loop to the last available option if the first option is reached.
+     * @returns {HTMLElement}
      */
-    _getPreviousAvaliableOption() {
+    _getPreviousAvailableOption(loop = true) {
         let node = this._getFocusedItem()?.previousSibling;
         while (node?.style?.display === 'none') {
             node = node.previousSibling;
         }
-        return node;
+        return node || loop && this._getLastAvailableOption();
+    }
+
+    getItems() {
+        return Array.from(this.combo.querySelectorAll(this._config.containerSelector));
     }
 
     /**
      * Returns the last available option within the combo.
-     * @returns {HTMLElement} The last available option.
-     * @protected
+     * @returns {HTMLElement}
      */
-    _getLastAvaliableOption() {
-        let lastNode = this.combo.childNodes[this.combo.childNodes.length - 1];
+    _getLastAvailableOption() {
+        const items = this.getItems();
+        let lastNode = items[items.length - 1];
         while (lastNode?.style?.display === 'none') {
             lastNode = lastNode.previousSibling;
         }

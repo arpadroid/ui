@@ -52,27 +52,30 @@ class List extends ArpaElement {
         this.onResourceAddItems = this.onResourceAddItems.bind(this);
 
         return mergeObjects(super.getDefaultConfig(), {
-            template: List.template,
-            isCollapsed: true,
-            hasSearch: false,
-            hasSort: false,
-            sortOptions: [],
-            sortDefault: null,
+            allControls: false,
+            defaultView: 'list',
+            fixPager: false,
+            hasFilters: false,
             hasMiniSearch: true,
             hasPager: true,
-            hasViews: false,
-            defaultView: 'list',
-            hasFilters: false,
-            stickyControls: false,
+            hasSearch: false,
+            hasSort: false,
             hasStickyFilters: false,
+            hasViews: false,
+            isCollapsed: true,
             itemComponent: ListItem,
-            // filtersClass: ListFilters,
-            showResultsText: true,
-            fixPager: false,
-            resetScrollOnLoad: false,
-            noItemsIcon: 'info',
             noItemsContent: html`<i18n-text key="modules.list.txtNoItemsFound"></i18n-text>`,
+            noItemsIcon: 'info',
+            resetScrollOnLoad: false,
+            showResultsText: true,
+            sortDefault: null,
+            sortOptions: [],
+            stickyControls: false,
+            template: List.template,
+            preProcessItem: undefined,
+            renderMode: 'full',
             title: ''
+            // filtersClass: ListFilters,
             // selectors: {
             //     searchNodes: '.listItem__titleText, .listItem__subTitle'
             // }
@@ -89,6 +92,10 @@ class List extends ArpaElement {
         return this._config.id;
     }
 
+    getRenderMode() {
+        return this.getProperty('render-mode');
+    }
+
     /**
      * Sets the heading.
      * @param {AbstractContentInterface} heading
@@ -98,6 +105,14 @@ class List extends ArpaElement {
         if (this.headingComponent) {
             this.headingNode = this.headingComponent.setContent(heading);
         }
+    }
+
+    setPreProcessItem(callback) {
+        this.listResource?.setPreProcessItem(callback);
+    }
+
+    preProcessNode(callback) {
+        this.listResource?.setPreProcessNode(callback);
     }
 
     /**
@@ -112,12 +127,24 @@ class List extends ArpaElement {
         return this.layout.getRootNode()?.node;
     }
 
+    hasAllControls() {
+        return this.hasProperty('all-controls');
+    }
+
     /**
      * Whether the list has search.
      * @returns {boolean}
      */
     hasSearch() {
-        return this.hasProperty('has-search');
+        return this.hasAllControls() || this.hasProperty('has-search');
+    }
+
+    hasViews() {
+        return this.hasAllControls() || this.hasProperty('has-views');
+    }
+
+    hasMultiSelect() {
+        return this.hasAllControls() || this.hasProperty('has-multiSelect');
     }
 
     /**
@@ -125,7 +152,7 @@ class List extends ArpaElement {
      * @returns {boolean}
      */
     hasSort() {
-        return this.hasProperty('has-sort');
+        return this.hasAllControls() || this.hasProperty('has-sort');
     }
 
     getSortOptions() {
@@ -181,7 +208,8 @@ class List extends ArpaElement {
         this.listResource?.addItems(items);
     }
 
-    addItemNode(item, unshift = false) {
+    async addItemNode(item, unshift = false) {
+        await this.onReady();
         if (unshift) {
             this.itemsNode?.prepend(item);
         } else {
@@ -270,6 +298,7 @@ class List extends ArpaElement {
 
     getTemplateVars() {
         return {
+            aside: this.renderAside(),
             id: this._config.id,
             title: this.getProperty('title'),
             // search: this.controlsComponent?.getControl('searchControl')?.render(),
@@ -290,17 +319,24 @@ class List extends ArpaElement {
     // }
 
     render() {
-        this.innerHTML = I18nTool.processTemplate(
-            html`
-                ${this.renderTitle()}
-                <list-controls></list-controls>
-                <div class="arpaList__body">
-                    <div class="arpaList__bodyMain">{heading} {items} {pager}</div>
-                    <div class="arpaList__bodyAside"></div>
-                </div>
-            `,
-            this.getTemplateVars()
-        );
+        const renderMode = this.getRenderMode();
+        const template = renderMode === 'minimal' ? this.getMinimalTemplate() : this.renderFullTemplate();
+        this.innerHTML = I18nTool.processTemplate(template, this.getTemplateVars());
+    }
+
+    getMinimalTemplate() {
+        return html`{items}`;
+    }
+
+    renderFullTemplate() {
+        return html`
+            ${this.renderTitle()}
+            <list-controls></list-controls>
+            <div class="arpaList__body">
+                <div class="arpaList__bodyMain">{heading} {items} {pager}</div>
+                {aside}
+            </div>
+        `;
     }
 
     renderTitle(title = this.getTitle()) {
@@ -313,8 +349,15 @@ class List extends ArpaElement {
     }
 
     renderItems() {
+        if (this.getRenderMode() === 'minimal') {
+            return '';
+        }
         const ariaLabel = I18nTool.processTemplate(this.getProperty('heading'), {}, 'text');
         return html` <div class="arpaList__items" role="list" ${renderAttr('aria-label', ariaLabel)}></div> `;
+    }
+
+    renderAside() {
+        return html`<div class="arpaList__aside" slot="aside"></div>`;
     }
 
     renderPager() {
@@ -410,9 +453,12 @@ class List extends ArpaElement {
     }
 
     _onConnected() {
+        const renderMode = this.getProperty('render-mode');
         this.classList.add('arpaList');
         this.bodyMainNode = this.querySelector('.arpaList__bodyMain');
-        this.itemsNode = this.querySelector('.arpaList__items');
+        this.bodyMainNode?.append(...this._childNodes);
+        this.itemsNode = renderMode === 'minimal' ? this : this.querySelector('.arpaList__items');
+        this.controlsNode = this.querySelector('list-controls');
         this.noItemsNode = this.querySelector('.arpaList__noItems');
         this.addItemNodes(this.getInitialItems());
     }

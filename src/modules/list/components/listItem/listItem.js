@@ -29,7 +29,9 @@ class ListItem extends ArpaElement {
             lazyLoad: false,
             selectedClass: 'listItem--selected',
             truncateContent: 0,
+            wrapperComponent: 'div',
             rhsContent: '',
+            role: 'listitem',
             imageConfig: {
                 showPreloader: true
             }
@@ -105,25 +107,48 @@ class ListItem extends ArpaElement {
         return this.getProperty('image-alt');
     }
 
+    setAction(action) {
+        if (typeof action !== 'function') {
+            throw new Error('Action must be a function');
+        }
+        this._config.action = action;
+    }
+
     render() {
         this.classList.add('listItem');
-        const link = this.getProperty('link');
-        const mainTag = link ? 'a' : 'div';
-        const href = render(link, `href="${link}"`);
+        if (this._config.role) {
+            this.setAttribute('role', this._config.role);
+        }
+        this.link = this.getProperty('link');
+        if (!this.link && this.hasAttribute('link')) {
+            this.removeAttribute('link');
+        }
+        const href = this.link ? `href="${this.link}"` : '';
+        const wrapperComponent = href ? 'a' : this.getWrapperComponent();
         const template = html`
-            <${mainTag} ${href} class="listItem__main${render(link, ' listItem__link')}">
+            <${wrapperComponent} ${href} class="listItem__main ${render(this.link, 'listItem__link')}">
                 <arpa-icon class="listItem__icon">{icon}</arpa-icon>
                 ${this.renderImage()}
                 <div class="listItem__contentWrapper">
                     ${this.renderTitleContainer()} ${this.renderTags()} ${this.renderContent()}
                 </div>
                 <arpa-icon class="listItem__iconRight">{iconRight}</arpa-icon>
-            </${mainTag}>
+            </${wrapperComponent}>
             ${this.renderRhs()}
         `;
-
         const content = this.renderTemplate(template);
         this.innerHTML = content;
+    }
+
+    getWrapperComponent() {
+        const { action } = this._config;
+        if (this.link) {
+            return 'a';
+        }
+        if (typeof action === 'function') {
+            return 'button';
+        }
+        return this.getProperty('wrapper-component');
     }
 
     renderRhs(content = this._config.rhsContent) {
@@ -231,11 +256,6 @@ class ListItem extends ArpaElement {
         this._initializeProperties();
         this._initializeNodes();
         await this._initializeItem();
-        const payload = {
-            id: this.getId(),
-            ...this.getPayload()
-        };
-        this.listResource?.registerItem(payload, this);
     }
 
     _initializeItem() {}
@@ -246,14 +266,28 @@ class ListItem extends ArpaElement {
     }
 
     _initializeNodes() {
-        this._initializeContent();
+        this.mainNode = this.querySelector('.listItem__main');
         this.checkbox = this.querySelector('.listItem__checkbox');
+    }
+
+    async _onInitialized() {
+        await this.onReady();
+        this._initializeContent();
         if (this.checkbox && this.hasSelection()) {
-            this.checkbox.addEventListener('change', () => {
-                this.setSelected();
-            });
+            this.checkbox.addEventListener('change', () => this.setSelected());
             this.setSelected();
         }
+        const { action } = this._config;
+        const doAction = event => action(event, this);
+        if (this.mainNode && typeof action === 'function') {
+            this.mainNode.removeEventListener('click', doAction);
+            this.mainNode.addEventListener('click', doAction);
+        }
+        const payload = {
+            id: this.getId(),
+            ...this.getPayload()
+        };
+        this.listResource?.registerItem(payload, this);
     }
 
     _initializeContent() {

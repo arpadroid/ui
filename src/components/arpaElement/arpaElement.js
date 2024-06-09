@@ -25,6 +25,7 @@ class ArpaElement extends HTMLElement {
         this._bindMethods();
         this.setConfig(config);
         this._content = this.innerHTML;
+        this._extractSlots();
         this._childNodes = [...this.childNodes];
         this._initialize();
     }
@@ -68,7 +69,16 @@ class ArpaElement extends HTMLElement {
     }
 
     getDefaultConfig() {
-        return {};
+        return {
+            removeEmptySlotNodes: true,
+            className: '',
+            variant: undefined,
+            classNames: []
+        };
+    }
+
+    getVariant() {
+        return this.getProperty('variant');
     }
 
     /**
@@ -134,6 +144,7 @@ class ArpaElement extends HTMLElement {
      */
     async connectedCallback() {
         await this.onReady();
+        this._addClassNames();
         this._isReady = true;
         if (!this._hasInitialized) {
             this._doBindings();
@@ -142,14 +153,16 @@ class ArpaElement extends HTMLElement {
                 this._onInitialized();
             }
         }
-        if (!this.isConnected) {
-            return;
+        if (this.isConnected) {
+            !this._hasRendered && this._render();
+            this._onConnected();
+            this.update();
         }
-        if (!this._hasRendered) {
-            this._render();
-        }
-        this._onConnected();
-        this.update();
+    }
+
+    _addClassNames() {
+        const classes = [this._config.className ?? '', ...this._config.classNames ?? []].filter(Boolean);
+        classes.length && this.classList.add(...classes);
     }
 
     attributeChangedCallback(att, oldValue, newValue) {
@@ -177,12 +190,53 @@ class ArpaElement extends HTMLElement {
     // #endregion
 
     ////////////////////
+    // #region SLOTS
+    ////////////////////
+
+    getSlots() {
+        return Array.from(this.querySelectorAll('slot'));
+    }
+
+    getSlotNodes() {
+        return Array.from(this.querySelectorAll('[slot]'));
+    }
+
+    _fillSlots() {
+        this._slots.forEach(slot => {
+            const name = slot.getAttribute('name');
+            if (name) {
+                const container = this.querySelector(`[slot="${name}"]`);
+                container?.append(...slot.childNodes);
+            }
+        });
+    }
+
+    _handleSlots() {
+        this._fillSlots();
+        const { removeEmptySlotNodes } = this._config;
+        removeEmptySlotNodes && this._removeEmptySlotNodes();
+    }
+
+    _removeEmptySlotNodes() {
+        this._slotNodes = this.getSlotNodes();
+        this._slotNodes.forEach(node => !node.hasChildNodes() && node.remove());
+    }
+
+    _extractSlots() {
+        this._slots = this.getSlots();
+        this._slots.forEach(slot => slot.remove());
+    }
+
+    // #endregion
+
+    ////////////////////
     // #region RENDERING
     ////////////////////
 
-    _render() {
-        this.render();
+    async _render() {
+        await this.render();
         this._hasRendered = true;
+        this._handleSlots();
     }
 
     /**

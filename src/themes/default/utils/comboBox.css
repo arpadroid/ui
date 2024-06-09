@@ -9,7 +9,6 @@
     min-width: 190px;
     overflow-x: hidden;
     overflow: auto;
-    position: absolute;
     right: 0px;
     top: 100%;
     transition: var(--theme-transition);
@@ -38,7 +37,6 @@
 .comboBox__item > a {
     color: var(--text-color);
     cursor: pointer;
-    font-size: 14px;
     padding: 0;
     text-align: left;
     width: 100%;
@@ -46,10 +44,14 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 12px;
+    height: var(--input-height);
 }
 
 .comboBox__item[aria-selected='true'] > button,
 .comboBox__item[aria-selected='true'] > a,
+.comboBox__item > a[aria-current],
+.comboBox__item > button[aria-current],
 .comboBox__item > button:focus,
 .comboBox__item > button:hover,
 .comboBox__item > a:focus,
@@ -58,6 +60,10 @@
     background-color: var(--color-lightest-blue);
     color: var(--color-primary);
     arpa-icon {
+        color: var(--color-primary);
+    }
+
+    .listItem__title {
         color: var(--color-primary);
     }
 }

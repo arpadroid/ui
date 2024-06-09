@@ -1,0 +1,29 @@
+.navList[variant="horizontal"] {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: .8rem;
+    > nav-link {
+        width: auto;
+        flex: 1 0 auto;
+        
+        .listItem__content {
+            text-align: center;
+        }
+    }
+}
+
+.navList[variant="vertical"] {
+    flex-direction: column;
+    padding: .8rem;
+}
+
+.navLink__divider.navLink__divider {
+    text-align: center;
+    width: 100%;
+    color: var(--grey-200);
+    font-weight: 600;
+    font-size: 1.2rem;
+    flex: 0 1 auto;
+    max-width: 40px;
+}

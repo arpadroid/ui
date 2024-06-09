@@ -10,4 +10,6 @@ export interface ListInterface extends AbstractComponentInterface {
     heading?: string;
     onSearch?: (value: string) => void;
     filters?: AbstractContentInterface;
+    preProcessItem?: (item) => void;
+    renderMode?: 'minimal' | 'full';
 }

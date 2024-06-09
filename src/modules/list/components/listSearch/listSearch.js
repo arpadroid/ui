@@ -8,7 +8,7 @@
  * @typedef {import('@arpadroid/application/src/resources/listResource/listFilter').default} ListFilter
  */
 
-import { editURL, attrString, render } from '@arpadroid/tools';
+import { editURL, attrString } from '@arpadroid/tools';
 import { Context } from '@arpadroid/application';
 import ArpaElement from '../../../../components/arpaElement/arpaElement.js';
 import { I18nTool } from '@arpadroid/i18n';
@@ -76,7 +76,7 @@ class ListSearch extends ArpaElement {
         this.innerHTML = I18nTool.processTemplate(
             html`<form id="{formId}" is="arpa-form" variant="mini">
                 <search-field id="search" ${searchAttr}></search-field>
-                ${render(this.list?.hasSort(), html`<list-sort></list-sort>`)}
+                ${this.list?.hasSort() ? html`<list-sort></list-sort>` : ''}
             </form>`,
             this.getTemplateVars()
         );

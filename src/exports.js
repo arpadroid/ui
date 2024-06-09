@@ -26,8 +26,16 @@ export { default as ListItem } from './modules/list/components/listItem/listItem
 export { default as ListControls } from './modules/list/components/listControls/listControls.js';
 export { default as ListSearch } from './modules/list/components/listSearch/listSearch.js';
 export { default as ListSort } from './modules/list/components/listSort/listSort.js';
+export { default as ListViews } from './modules/list/components/listViews/listViews.js';
 export { default as TagList } from './components/tagList/tagList.js';
 export { default as Tag } from './components/tag/tag.js';
+
+/**
+ * Navigation.
+ */
+export { default as NavList } from './modules/navigation/components/navList/navList.js';
+export { default as NavLink } from './modules/navigation/components/navLink/navLink.js';
+export { default as IconMenu } from './modules/navigation/components/iconMenu/iconMenu.js';
 
 /**
  * Messages.

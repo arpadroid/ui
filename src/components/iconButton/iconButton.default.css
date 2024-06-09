@@ -1,4 +1,5 @@
 :root {
+    --icon-button-width: 44px;
     --icon-button-hilight-bg: var(--selected-hilight);
     --icon-button-hilight-border: 2px solid var(--color-primary);
 }
@@ -10,10 +11,10 @@ a.iconButton,
     align-items: center;
     justify-content: center;
     position: relative;
-    width: 38px;
-    height: 38px;
-    min-width: 38px;
-    min-height: 38px;
+    width: var(--icon-button-width);
+    height: var(--icon-button-width);
+    min-width: var(--icon-button-width);
+    min-height: var(--icon-button-width);
     border-radius: 50%;
     border: 2px solid transparent;
     padding: 0;

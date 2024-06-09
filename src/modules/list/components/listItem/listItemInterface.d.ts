@@ -7,6 +7,7 @@ import { TagInterface } from '../../../../components/tag/tagInterface';
 export interface ListItemInterface {
     id?: string;
     link?: string;
+    action?: () => void;
     title?: string;
     titleLink?: string;
     titleIcon?: string;
