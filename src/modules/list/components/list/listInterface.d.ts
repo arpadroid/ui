@@ -1,5 +1,6 @@
 import { AbstractContentInterface } from '../../../../types';
 import { ListResource } from '@arpadroid/application';
+import { NavLinkInterface } from '../../../navigation/components/navLink/navLinkInterface';
 
 export interface ListInterface extends AbstractComponentInterface {
     isCollapsed?: boolean;
@@ -12,4 +13,6 @@ export interface ListInterface extends AbstractComponentInterface {
     filters?: AbstractContentInterface;
     preProcessItem?: (item) => void;
     renderMode?: 'minimal' | 'full';
+    views?: string[],
+    viewOptions?: NavLinkInterface[];
 }

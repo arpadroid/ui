@@ -29,7 +29,7 @@ const ListStory = {
     render: args => {
         delete args.text;
         return html`
-            <arpa-list ${attrString(args)}>
+            <arpa-list ${attrString(args)} views="grid, list">
                 <list-item
                     title-link="http://museovaquero.local/api/image/convert?source=%2Fcmsx%2Fassets%2Fhqrvutmy_museovaquero_assets%2Fgallery%2Fimages%2F449.jpg&width=400&height=400&quality=70"
                     image="http://museovaquero.local/api/image/convert?source=%2Fcmsx%2Fassets%2Fhqrvutmy_museovaquero_assets%2Fgallery%2Fimages%2F449.jpg&width=400&height=400&quality=70"

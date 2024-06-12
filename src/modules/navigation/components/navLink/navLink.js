@@ -22,7 +22,6 @@ class NavLink extends ListItem {
     }
 
     _initialize() {
-        super._initialize();
         this.cleanup = [Context?.Router?.listen('ROUTE_CHANGED', () => this.updateAriaCurrent())];
     }
 
@@ -37,7 +36,7 @@ class NavLink extends ListItem {
     _initializeNodes() {
         super._initializeNodes();
         this.linkNode = this.mainNode;
-        attr(this.linkNode, {
+        !this._hasRendered && attr(this.linkNode, {
             ...(this._config.handlerAttributes ?? {}),
             'aria-current': this.getAriaCurrent()
         });

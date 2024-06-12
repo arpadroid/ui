@@ -42,8 +42,6 @@ class ListItem extends ArpaElement {
         return 'list-item';
     }
 
-    _initialize() {}
-
     removeItem() {
         if (this.listResource) {
             this.listResource.removeItem({ id: this.getId() });
@@ -88,7 +86,12 @@ class ListItem extends ArpaElement {
     }
 
     getTitleLink() {
-        return this.getProperty('title-link');
+        const titleLink = this.getProperty('title-link');
+        if (titleLink) {
+            this.titleLink = titleLink;
+            this.removeAttribute('title-link');
+        }
+        return this.titleLink;
     }
 
     getIcon() {

@@ -12,6 +12,7 @@ class ArpaElement extends HTMLElement {
     _hasRendered = false;
     _hasInitialized = false;
     _isReady = false;
+    _onRenderedCallbacks = [];
 
     /////////////////////////
     // #region INITIALIZATION
@@ -152,6 +153,7 @@ class ArpaElement extends HTMLElement {
             if (this._hasInitialized) {
                 this._onInitialized();
             }
+            setTimeout(() => this._onRendered(), 10);
         }
         if (this.isConnected) {
             !this._hasRendered && this._render();
@@ -161,7 +163,7 @@ class ArpaElement extends HTMLElement {
     }
 
     _addClassNames() {
-        const classes = [this._config.className ?? '', ...this._config.classNames ?? []].filter(Boolean);
+        const classes = [this._config.className ?? '', ...(this._config.classNames ?? [])].filter(Boolean);
         classes.length && this.classList.add(...classes);
     }
 
@@ -171,6 +173,18 @@ class ArpaElement extends HTMLElement {
     }
 
     _onInitialized() {}
+
+    onRendered(callback) {
+        if (this._hasRendered) {
+            callback();
+        } else {
+            this._onRenderedCallbacks.push(callback);
+        }
+    }
+
+    _onRendered() {
+        this._onRenderedCallbacks.forEach(callback => callback());
+    }
 
     /**
      * Called when the element is connected to the DOM.

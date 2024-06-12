@@ -13,7 +13,6 @@
     top: 100%;
     transition: var(--theme-transition);
     z-index: 100;
-    min-height: 120px;
 }
 
 .comboBox--loading {
