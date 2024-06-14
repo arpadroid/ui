@@ -290,7 +290,9 @@ class ListItem extends ArpaElement {
             id: this.getId(),
             ...this.getPayload()
         };
-        this.listResource?.registerItem(payload, this);
+        if (this.isConnected) {
+            this.listResource?.registerItem(payload, this);
+        }
     }
 
     _initializeContent() {
