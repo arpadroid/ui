@@ -2,6 +2,7 @@ nav-list.navList {
     gap: 0;
 }
 .navList[variant='horizontal'] {
+    display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: center;

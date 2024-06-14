@@ -2,11 +2,12 @@ const { execSync } = require('child_process');
 const argv = require('yargs').argv;
 const MODE = argv.mode === 'production' ? 'production' : 'development';
 const path = require('path');
+const fs = require('fs');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const StylesheetBundler = require('@arpadroid/stylesheet-bundler');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+// const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const cwd = process.cwd();
 
 const basePath = cwd + '/src/themes';
@@ -24,6 +25,20 @@ const themeExt = MODE === 'production' ? 'min.css' : 'bundled.css';
 if (MODE === 'production') {
     execSync('npm run build:types');
 }
+
+const formsScript = cwd + '/../forms/dist/forms.js';
+const formsScriptExists = fs.existsSync(formsScript);
+
+const copyPatterns = [
+    formsScriptExists && {
+        from: `../forms/dist/forms.js`,
+        to: cwd + `/dist/forms.js`
+    },
+    formsScriptExists && {
+        from: `../forms/dist/themes`,
+        to: cwd + `/dist/forms/themes`
+    }
+].filter(Boolean);
 
 module.exports = (async () => {
     await bundler.initialize();
@@ -48,6 +63,9 @@ module.exports = (async () => {
             resolve: {
                 extensions: ['.js']
             },
+            watchOptions: {
+                ignored: ['*.css']
+            },
             module: {
                 rules: [
                     {
@@ -67,18 +85,18 @@ module.exports = (async () => {
                                 }
                             }
                         ]
-                    },
-                    {
-                        test: /\.(scss|css)$/,
-                        //      exclude: [`${cwd}/src/assets/ngivr.scss`],
-                        use: [
-                            {
-                                loader: MiniCssExtractPlugin.loader,
-                                options: {}
-                            },
-                            'css-loader'
-                        ]
                     }
+                    // {
+                    //     test: /\.(scss|css)$/,
+                    //     //      exclude: [`${cwd}/src/assets/ngivr.scss`],
+                    //     use: [
+                    //         {
+                    //             loader: MiniCssExtractPlugin.loader,
+                    //             options: {}
+                    //         },
+                    //         'css-loader'
+                    //     ]
+                    // }
                 ]
             },
             cache: {
@@ -125,19 +143,12 @@ module.exports = (async () => {
                             from: 'src/types.compiled.d.ts',
                             to: cwd + '/dist/types.d.ts'
                         },
-                        {
-                            from: `../forms/dist/forms.js`,
-                            to: cwd + `/dist/forms.js`
-                        },
-                        {
-                            from: `../forms/dist/themes`,
-                            to: cwd + `/dist/forms/themes`
-                        },
+                        ...copyPatterns
                     ]
-                }),
-                new MiniCssExtractPlugin({
-                    // filename: 'themes/default/default.min.css'
                 })
+                // new MiniCssExtractPlugin({
+                //     filename: 'themes/default/default.min.css'
+                // })
             ]
         }
     ];

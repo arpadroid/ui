@@ -11,13 +11,7 @@ import { ListResource } from '@arpadroid/application';
 import { I18nTool } from '@arpadroid/i18n';
 import { mergeObjects, getScrollableParent, isInView } from '@arpadroid/tools';
 import { sanitizeSearchInput, render, renderNode, renderAttr } from '@arpadroid/tools';
-// import IconMenu from '../../../navigation/components/iconMenu/iconMenu.js';
-// import ListControls from '../list-controls/listControls.js';
-// import ListItem from '../list-item/listItem.js';
-// import ListFilters from '../listFilters/listFilters.js';
-// import ListHeading from '../listHeading/listHeading.js';
-// import ListSelection from '../listSelection/listSelection.js';
-// import ListViews from '../listViews/listViews.js';
+
 const html = String.raw;
 class List extends ArpaElement {
     isSearchInitialized = false;
@@ -83,9 +77,7 @@ class List extends ArpaElement {
 
     // #endregion
 
-    /////////////////////
     // #region ACCESSORS
-    /////////////////////
 
     getId() {
         return this._config.id;
