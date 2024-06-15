@@ -43,7 +43,6 @@ class List extends ArpaElement {
         this.onResourceItemsUpdated = this.onResourceItemsUpdated.bind(this);
         this.onResourceSetItems = this.onResourceSetItems.bind(this);
         this.onResourceAddItems = this.onResourceAddItems.bind(this);
-
         return mergeObjects(super.getDefaultConfig(), {
             allControls: false,
             defaultView: 'list',

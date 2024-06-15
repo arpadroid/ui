@@ -2,7 +2,7 @@
  * @typedef {import('@arpadroid/application/dist/index.js').ListResource} ListResource
  * @typedef {import('../list/list.js').default} List
  */
-import { isObject, mergeObjects } from '@arpadroid/tools';
+import { mergeObjects } from '@arpadroid/tools';
 import { Context } from '@arpadroid/application';
 import IconMenu from '../../../navigation/components/iconMenu/iconMenu.js';
 
