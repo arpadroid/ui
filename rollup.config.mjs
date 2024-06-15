@@ -3,6 +3,7 @@ import { nodeResolve } from '@rollup/plugin-node-resolve';
 import terser from '@rollup/plugin-terser';
 import { dts } from 'rollup-plugin-dts';
 import fs from 'fs';
+import watch from "rollup-plugin-watch";
 
 const cwd = process.cwd();
 const formsScript = cwd + '/node_modules/@arpadroid/forms/dist/forms.js';
@@ -25,7 +26,8 @@ export default [
                     { src: 'src/lang', dest: 'dist' },
                     ...copyPatterns
                 ]
-            })
+            }),
+            watch({ dir: "src/themes" })
         ],
         output: {
             file: 'dist/arpadroid-ui.js',
