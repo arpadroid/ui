@@ -4,13 +4,14 @@ import terser from '@rollup/plugin-terser';
 import { dts } from 'rollup-plugin-dts';
 import fs from 'fs';
 import watch from "rollup-plugin-watch";
+const WATCH_ALL = process.env['watch'] === 'all';
 
 const cwd = process.cwd();
-const formsScript = cwd + '/node_modules/@arpadroid/forms/dist/forms.js';
+const formsScript = cwd + '/node_modules/@arpadroid/forms/dist/arpadroid-forms.js';
 const formsScriptExists = fs.existsSync(formsScript);
 const copyPatterns = [
     formsScriptExists && { src: 'node_modules/@arpadroid/forms/dist/themes', dest: 'dist/forms' },
-    formsScriptExists && { src: 'node_modules/@arpadroid/forms/dist/forms.js', dest: 'dist/forms' }
+    formsScriptExists && { src: 'node_modules/@arpadroid/forms/dist/arpadroid-forms.js', dest: 'dist/forms' }
 ].filter(Boolean);
 
 export default [
@@ -27,7 +28,8 @@ export default [
                     ...copyPatterns
                 ]
             }),
-            watch({ dir: "src/themes" })
+            watch({ dir: "src/themes" }),
+            WATCH_ALL && formsScriptExists && watch({ dir: "node_modules/@arpadroid/forms/dist" })
         ],
         output: {
             file: 'dist/arpadroid-ui.js',

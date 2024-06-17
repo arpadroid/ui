@@ -20,10 +20,6 @@ class List extends ArpaElement {
     // #region INITIALIZATION
     //////////////////////////
 
-    constructor(config = {}) {
-        super(config);
-    }
-
     setConfig(config = {}) {
         config.id = config.id || this.id;
         if (!config.id) {
