@@ -17,7 +17,7 @@
 
 guard 'livereload' do
   extensions = {
-    css: :css
+    css: :css,
   }
 
   rails_view_exts = %w(erb haml slim)
@@ -38,6 +38,6 @@ guard 'livereload' do
   end
 
   watch(%r{dist/themes/default/.*\.css})
-  watch(%r{dist/forms/arpadroid-forms.js})
+  #watch(%r{dist/forms/arpadroid-forms.js})
   
 end
