@@ -19,7 +19,7 @@ class TruncateText extends ArpaElement {
             readMoreLabel: 'Read more',
             readLessLabel: 'Read less',
             buttonClasses: ['truncateText__readMoreButton', 'button--link'],
-            hasReadMoreButton: true
+            hasButton: false
         };
     }
 
@@ -71,8 +71,10 @@ class TruncateText extends ArpaElement {
         return parseFloat(this.getProperty('threshold'));
     }
 
-    hasReadMoreButton() {
-        return this.getProperty('has-read-more-button');
+    hasButton() {
+        return (
+            this.hasProperty('has-button') && this.getProperty('has-button') !== 'false'
+        );
     }
 
     getButtonLabel() {
@@ -91,7 +93,9 @@ class TruncateText extends ArpaElement {
             this.isTruncated = true;
             this.innerHTML = html`<span>${text.slice(0, maxLength)}</span>${ellipsis}</span></span>`;
             this.renderButton();
-            this.append(this.button);
+            if (this.button) {
+                this.append(this.button);
+            }
         }
     }
 
@@ -119,7 +123,7 @@ class TruncateText extends ArpaElement {
     ////////////////////
 
     renderButton() {
-        if (this.hasReadMoreButton()) {
+        if (this.hasButton()) {
             if (!this.button) {
                 const button = document.createElement('button');
                 button.type = 'button';

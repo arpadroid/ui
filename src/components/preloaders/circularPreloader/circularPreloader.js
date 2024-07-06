@@ -1,5 +1,4 @@
 import ArpaElement from '../../arpaElement/arpaElement.js';
-import { attr } from '@arpadroid/tools';
 const html = String.raw;
 class CircularPreloader extends ArpaElement {
     static template = html`
@@ -10,11 +9,12 @@ class CircularPreloader extends ArpaElement {
         </div>
     `;
 
-    connectedCallback() {
-        this.classList.add('circularPreloader', `circularPreloader--${this.getVariant()}`);
-        attr(this, {
-            role: 'progressbar'
-        });
+    async connectedCallback() {
+        await super.connectedCallback();
+        this.classList.add('circularPreloader');
+        this.setAttribute('role', 'progressbar');
+        this.contentNode = this.querySelector('.circularPreloader__content');
+        this.contentNode?.append(...this._childNodes);
     }
 
     getDefaultConfig() {
@@ -27,9 +27,10 @@ class CircularPreloader extends ArpaElement {
     }
 
     getTemplateVars() {
-        const text = this.getProperty('text');
+        const text = this.getProperty('text') || '';
+        const hasContent = text || this._childNodes?.length;
         return {
-            text: text && html`<div class="circularPreloader__text">${text}</div>`,
+            text: hasContent && html`<div class="circularPreloader__content">${text}</div>`,
             mask: this.hasMask() && html`<div class="circularPreloader__mask"></div>`
         };
     }

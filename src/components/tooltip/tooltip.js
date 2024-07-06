@@ -1,71 +1,64 @@
-import { attr, resolveNode } from '@arpadroid/tools';
-import IconButton from '../iconButton/iconButton.js';
+import { resolveNode } from '@arpadroid/tools';
+import ArpaElement from '../arpaElement/arpaElement.js';
 
-class Tooltip extends HTMLElement {
+const html = String.raw;
+class Tooltip extends ArpaElement {
     static get observedAttributes() {
         return ['text', 'handler', 'icon', 'label'];
     }
 
-    constructor() {
-        super();
-        this._initializeProperties();
-        this.render();
+    initializeProperties() {
+        super.initializeProperties();
+        this.handler = this.getHandler();
     }
 
-    _initializeProperties() {
-        this.content = this.innerHTML;
-        this._childNodes = Array.from(this.childNodes);
-        this.text = this.getAttribute('text');
-        const handler = this.getAttribute('handler');
-        this.handler = resolveNode(handler);
-        this.icon = this.getAttribute('icon') ?? 'info';
-        this.label = this.getAttribute('label');
+    getDefaultConfig() {
+        return {
+            text: '',
+            handler: '',
+            icon: '',
+            label: '',
+            position: 'top'
+        };
+    }
+
+    getHandler() {
+        const handler = this.getProperty('handler');
+        return handler && resolveNode(handler);
+    }
+
+    getPosition() {
+        return this.getProperty('position')?.trim() ?? 'top';
     }
 
     render() {
-        this._initializeProperties();
         this.innerHTML = '';
         if (!this._childNodes?.length) {
             this.remove();
             return;
         }
-        if (!this.handler) {
-            this.button = this.renderButton();
-            this.appendChild(this.button);
-        }
-        this.contentNode = this.renderContent();
-        this.appendChild(this.contentNode);
+        const text = this.getProperty('text');
+        const template = html`
+            ${this.renderButton()}
+            <span slot="content" class="tooltip__content" role="tooltip" aria-hidden="true">${text}</span>
+        `;
+        this.innerHTML = template;
         this.classList.add('tooltip', `tooltip--${this.getPosition()}`);
-    }
-
-    getPosition() {
-        return this.getAttribute('position').trim() || 'top';
-    }
-
-    renderContent() {
-        const content = document.createElement('span');
-        attr(content, {
-            class: 'tooltip__content',
-            role: 'tooltip',
-            'aria-hidden': 'true',
-            'aria-describedby': this.handler?.id ?? this?.button?.id
-        });
-        content.append(...this._childNodes);
-        return content;
+        this.contentNode = this.querySelector('.tooltip__content');
+        this.button = this.querySelector('.tooltip__button');
     }
 
     renderButton() {
-        if (this.icon) {
-            const button = new IconButton();
-            button.classList.add('tooltip__button');
-            button.setAttribute('type', 'button');
-            button.setAttribute('variant', 'minimal');
-            button.innerHTML = this.icon;
-            if (this.label) {
-                button.textContent = this.label;
-            }
-            return button;
-        }
+        return !this.handler
+            ? html`<button
+                  slot="handler"
+                  is="icon-button"
+                  class="tooltip__button"
+                  type="button"
+                  variant="minimal"
+                  icon="${this.getProperty('icon')}"
+              ></button>`
+            : '';
     }
 }
 

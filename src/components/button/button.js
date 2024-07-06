@@ -27,7 +27,7 @@ class Button extends HTMLButtonElement {
 
     render() {
         this.innerHTML = I18nTool.processTemplate(this.template, {
-            content: this._content,
+            content: this._content || this.getAttribute('content'),
             icon: this.getAttribute('icon'),
             iconRight: this.getAttribute('icon-right')
         });

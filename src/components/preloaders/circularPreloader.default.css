@@ -30,7 +30,7 @@
     animation: maskFadeIn 0.5s var(--easeOutExpo);
 }
 
-.circularPreloader__text {
+.circularPreloader__content {
     margin-top: 16px;
     font-size: 1rem;
     margin-left: 8px;
