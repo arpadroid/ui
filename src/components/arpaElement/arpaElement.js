@@ -99,6 +99,13 @@ class ArpaElement extends HTMLElement {
         return getProperty(this, name);
     }
 
+    getProperties(...names) {
+        return names.reduce((acc, name) => {
+            acc[name] = this.getProperty(name);
+            return acc;
+        }, {});
+    }
+
     hasProperty(name) {
         return hasProperty(this, name);
     }
