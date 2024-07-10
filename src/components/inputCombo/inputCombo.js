@@ -287,7 +287,8 @@ class InputCombo {
      * @protected
      */
     _onBlur() {
-        if (!this._config.closeOnBlur) {
+        const { closeOnBlur } = this._config;
+        if (!closeOnBlur) {
             return;
         }
         setTimeout(() => {
@@ -455,7 +456,7 @@ class InputCombo {
         while (node?.style?.display === 'none') {
             node = node.previousSibling;
         }
-        return node || loop && this._getLastAvailableOption();
+        return node || (loop && this._getLastAvailableOption());
     }
 
     getItems() {

@@ -2,13 +2,15 @@ arpa-image {
     position: relative;
     display: flex;
     flex-direction: column;
-
+    
     picture {
         object-fit: cover;
         overflow: hidden;
         border-radius: 4px;
         position: relative;
         transition: var(--theme-transition);
+        width: 100%;
+        height: 100%;
     }
 
     img {

@@ -1,8 +1,8 @@
-import { dashedToCamel, mergeObjects, renderNode } from '@arpadroid/tools';
-import { I18nTool } from '@arpadroid/i18n';
-import { CustomElementTool } from '@arpadroid/tools';
+import { dashedToCamel, mergeObjects, renderNode, CustomElementTool } from '@arpadroid/tools';
+import { slotMixin, handleSlots } from '@arpadroid/tools';
+import { I18nTool, I18n } from '@arpadroid/i18n';
 
-const { getProperty, hasProperty } = CustomElementTool;
+const { getProperty, hasProperty, removeIfEmpty } = CustomElementTool;
 
 /**
  * Base class for custom elements.
@@ -23,16 +23,18 @@ class ArpaElement extends HTMLElement {
      */
     constructor(config) {
         super();
+        this.i18nKey = '';
         this._bindMethods();
         this.setConfig(config);
         this._content = this.innerHTML;
-        this._extractSlots();
+        slotMixin(this);
         this._childNodes = [...this.childNodes];
         this._initialize();
     }
 
     _doBindings(bindings = this._bindings) {
-        bindings.forEach(method => {
+        const internalBindings = ['_initializeSlot'];
+        [...internalBindings, ...bindings].forEach(method => {
             if (typeof this[method] === 'function') {
                 this[method] = this[method].bind(this);
             }
@@ -69,13 +71,16 @@ class ArpaElement extends HTMLElement {
         this._config = mergeObjects(this._config, config);
     }
 
-    getDefaultConfig() {
-        return {
-            removeEmptySlotNodes: true,
-            className: '',
-            variant: undefined,
-            classNames: []
-        };
+    getDefaultConfig(config = {}) {
+        return mergeObjects(
+            {
+                removeEmptySlotNodes: true,
+                className: '',
+                variant: undefined,
+                classNames: []
+            },
+            config
+        );
     }
 
     getVariant() {
@@ -104,6 +109,10 @@ class ArpaElement extends HTMLElement {
             acc[name] = this.getProperty(name);
             return acc;
         }, {});
+    }
+
+    getArrayProperty(name) {
+        return this.getProperty(name)?.split(',');
     }
 
     hasProperty(name) {
@@ -135,6 +144,10 @@ class ArpaElement extends HTMLElement {
             contentContainer.innerHTML = '';
             contentContainer.append(...this._childNodes);
         }
+    }
+
+    getText(key) {
+        return I18n.getText(`${this.i18nKey}.${key}`);
     }
 
     // #endregion
@@ -211,53 +224,16 @@ class ArpaElement extends HTMLElement {
     // #endregion
 
     ////////////////////
-    // #region SLOTS
-    ////////////////////
-
-    getSlots() {
-        return Array.from(this.querySelectorAll('slot'));
-    }
-
-    getSlotNodes() {
-        return Array.from(this.querySelectorAll('[slot]'));
-    }
-
-    _fillSlots() {
-        this._slots.forEach(slot => {
-            const name = slot.getAttribute('name');
-            if (name) {
-                const container = this.querySelector(`[slot="${name}"]`);
-                container?.append(...slot.childNodes);
-            }
-        });
-    }
-
-    _handleSlots() {
-        this._fillSlots();
-        const { removeEmptySlotNodes } = this._config;
-        removeEmptySlotNodes && this._removeEmptySlotNodes();
-    }
-
-    _removeEmptySlotNodes() {
-        this._slotNodes = this.getSlotNodes();
-        this._slotNodes.forEach(node => !node.hasChildNodes() && node.remove());
-    }
-
-    _extractSlots() {
-        this._slots = this.getSlots();
-        this._slots.forEach(slot => slot.remove());
-    }
-
-    // #endregion
-
-    ////////////////////
     // #region RENDERING
     ////////////////////
 
     async _render() {
         await this.render();
         this._hasRendered = true;
-        this._handleSlots();
+        await handleSlots(this);
+        if (this._config.removeIfEmpty) {
+            removeIfEmpty(this);
+        }
     }
 
     /**
