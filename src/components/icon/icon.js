@@ -9,6 +9,10 @@ class Icon extends HTMLElement {
             this.remove();
         }
     }
+
+    setIcon(icon) {
+        this.innerHTML = icon;
+    }
 }
 
 customElements.define('arpa-icon', Icon);

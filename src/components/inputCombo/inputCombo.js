@@ -286,19 +286,15 @@ class InputCombo {
      * Handles the blur event on the input element.
      * @protected
      */
-    _onBlur() {
+    async _onBlur() {
         const { closeOnBlur } = this._config;
-        if (!closeOnBlur) {
-            return;
+        await new Promise(resolve => setTimeout(resolve, 100));
+        const activeNode = document.activeElement;
+        const isContained = this.combo.contains(activeNode) || this.input.contains(activeNode);
+        const isCombo = this.combo === document.activeElement;
+        if (!isCombo && isContained && closeOnBlur) {
+            this.close();
         }
-        setTimeout(() => {
-            const isContained =
-                this.combo.contains(document.activeElement) || this.input.contains(document.activeElement);
-            const isCombo = isContained || this.combo === document.activeElement;
-            if (!isCombo) {
-                this.close();
-            }
-        }, 100);
     }
 
     /**

@@ -1,6 +1,7 @@
 import { dashedToCamel, mergeObjects, renderNode, CustomElementTool } from '@arpadroid/tools';
-import { slotMixin, handleSlots } from '@arpadroid/tools';
+import { slotMixin, handleSlots, camelToDashed } from '@arpadroid/tools';
 import { I18nTool, I18n } from '@arpadroid/i18n';
+const { renderI18n, processTemplate } = I18nTool;
 
 const { getProperty, hasProperty, removeIfEmpty } = CustomElementTool;
 
@@ -30,10 +31,10 @@ class ArpaElement extends HTMLElement {
         slotMixin(this);
         this._childNodes = [...this.childNodes];
         this._initialize();
+        this.promise = this.getPromise();
     }
 
-    _doBindings(bindings = this._bindings) {
-        const internalBindings = ['_initializeSlot'];
+    _doBindings(bindings = this._bindings, internalBindings = ['_initializeSlot']) {
         [...internalBindings, ...bindings].forEach(method => {
             if (typeof this[method] === 'function') {
                 this[method] = this[method].bind(this);
@@ -49,6 +50,13 @@ class ArpaElement extends HTMLElement {
      */
     _initialize() {}
 
+    getPromise() {
+        return new Promise((resolve, reject) => {
+            this.resolvePromise = resolve;
+            this.rejectPromise = reject;
+        });
+    }
+
     initializeProperties() {
         return true;
     }
@@ -58,6 +66,14 @@ class ArpaElement extends HTMLElement {
     /////////////////////
     // #region ACCESSORS
     /////////////////////
+
+    i18n(key, replacements) {
+        const parts = key.split('.');
+        const keyLast = parts.pop();
+        const attributeName = camelToDashed(keyLast);
+        const configValue = this.getProperty(attributeName);
+        return renderI18n(configValue ?? `${this.i18nKey}.${key}`, replacements);
+    }
 
     /**
      * Sets the configuration for the element.
@@ -173,11 +189,10 @@ class ArpaElement extends HTMLElement {
             if (this._hasInitialized) {
                 this._onInitialized();
             }
-            setTimeout(() => this._onRendered(), 10);
         }
         if (this.isConnected) {
             !this._hasRendered && this._render();
-            this._onConnected();
+            await this._onConnected();
             this.update();
         }
     }
@@ -192,18 +207,8 @@ class ArpaElement extends HTMLElement {
         this._onAttributeChanged(att, oldValue, newValue);
     }
 
-    _onInitialized() {}
-
-    onRendered(callback) {
-        if (this._hasRendered) {
-            callback();
-        } else {
-            this._onRenderedCallbacks.push(callback);
-        }
-    }
-
-    _onRendered() {
-        this._onRenderedCallbacks.forEach(callback => callback());
+    _onInitialized() {
+        // abstract method
     }
 
     /**
@@ -229,11 +234,29 @@ class ArpaElement extends HTMLElement {
 
     async _render() {
         await this.render();
+        handleSlots(() => this._onRenderComplete());
+    }
+
+    _onRenderComplete() {
         this._hasRendered = true;
-        await handleSlots(this);
+        this._onRenderedCallbacks.forEach(callback => callback());
         if (this._config.removeIfEmpty) {
             removeIfEmpty(this);
         }
+        this.resolvePromise?.();
+        this._onComplete();
+    }
+
+    onRendered(callback) {
+        if (this._hasRendered) {
+            callback();
+        } else {
+            this._onRenderedCallbacks.push(callback);
+        }
+    }
+
+    _onComplete() {
+        // abstract method
     }
 
     /**
@@ -254,7 +277,7 @@ class ArpaElement extends HTMLElement {
     renderTemplate(template = this._config.template) {
         if (template) {
             const vars = this.getTemplateVars();
-            return I18nTool.processTemplate(template, vars);
+            return processTemplate(template, vars);
         }
     }
 

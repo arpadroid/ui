@@ -48,6 +48,12 @@ class Tooltip extends ArpaElement {
         this.button = this.querySelector('.tooltip__button');
     }
 
+    setContent(content) {
+        if (this.contentNode) {
+            this.contentNode.innerHTML = content;
+        }
+    }
+
     renderButton() {
         return !this.handler
             ? html`<button
