@@ -26,6 +26,7 @@ class ArpaElement extends HTMLElement {
         super();
         this.i18nKey = '';
         this._bindMethods();
+        this._preInitialize();
         this.setConfig(config);
         this._content = this.innerHTML;
         slotMixin(this);
@@ -43,6 +44,8 @@ class ArpaElement extends HTMLElement {
     }
 
     _bindMethods() {}
+
+    _preInitialize() {}
 
     /**
      * Initializes the element's internal state.
