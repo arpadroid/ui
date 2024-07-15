@@ -23,11 +23,12 @@ class TruncateText extends ArpaElement {
         };
     }
 
-    _initialize() {
+    async _initialize() {
         this.truncateText = this.truncateText.bind(this);
         this.toggleTruncate = this.toggleTruncate.bind(this);
-        this._observeContents();
         this.renderButton();
+        await this.promise;
+        this._observeContents();
     }
 
     // #endregion

@@ -169,6 +169,10 @@ class ArpaElement extends HTMLElement {
         return I18n.getText(`${this.i18nKey}.${key}`);
     }
 
+    getSlots() {
+        return Object.values(this.slotsByName || {});
+    }
+
     // #endregion
 
     /////////////////////
