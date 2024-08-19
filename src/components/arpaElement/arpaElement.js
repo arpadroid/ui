@@ -233,6 +233,10 @@ class ArpaElement extends HTMLElement {
         // abstract method
     }
 
+    _onSlotPlaced() {
+        // abstract method
+    }
+
     // #endregion
 
     ////////////////////
@@ -254,6 +258,10 @@ class ArpaElement extends HTMLElement {
         this._onComplete();
     }
 
+    _onComplete() {
+        // abstract method
+    }
+    
     onRendered(callback) {
         if (this._hasRendered) {
             callback();
@@ -262,9 +270,6 @@ class ArpaElement extends HTMLElement {
         }
     }
 
-    _onComplete() {
-        // abstract method
-    }
 
     /**
      * Renders the element.

@@ -28,10 +28,7 @@ export const Default = {
         label: '',
         position: 'top'
     },
-    render: args => {
-        console.log('args', args);
-        return html` <arpa-tooltip ${attrString(args)}> </arpa-tooltip> `;
-    }
+    render: args => html` <arpa-tooltip ${attrString(args)}> </arpa-tooltip> `
 };
 
 export const Test = {
