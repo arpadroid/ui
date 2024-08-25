@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-duplicate-string */
 import ArpaElement from '../arpaElement/arpaElement.js';
 /**
  * @typedef {import('./truncateTextInterface').TruncateTextInterface } TruncateTextInterface
@@ -24,10 +25,11 @@ class TruncateText extends ArpaElement {
     }
 
     async _initialize() {
+        this.fullContent = this.textContent.trim();
         this.truncateText = this.truncateText.bind(this);
         this.toggleTruncate = this.toggleTruncate.bind(this);
+        await this.load;
         this.renderButton();
-        await this.promise;
         this._observeContents();
     }
 
@@ -38,15 +40,13 @@ class TruncateText extends ArpaElement {
     /////////////////////
 
     _observeContents() {
-        let nodeCount = this.childNodes.length;
         const observer = new MutationObserver(() => {
-            if (this.childNodes.length > nodeCount) {
-                nodeCount = this.childNodes.length;
-                if (!this.isTruncated) {
-                    this._childNodes = [...this.childNodes];
-                    this._content = this.innerHTML;
-                    this.truncateText();
-                }
+            const textNode = this.querySelector('.truncateText__content');
+            const content = this.textContent.trim();
+            if (!textNode && content !== this.fullContent) {
+                this._childNodes = [...this.childNodes];
+                this._content = this.innerHTML;
+                this.fullContent = this.textContent.trim();
             }
         });
         observer.observe(this, { childList: true });
@@ -74,7 +74,9 @@ class TruncateText extends ArpaElement {
 
     hasButton() {
         return (
-            this.hasProperty('has-button') && this.getProperty('has-button') !== 'false'
+            this.hasProperty('has-button') &&
+            this.getProperty('has-button') !== 'false' &&
+            this.shouldTruncate()
         );
     }
 
@@ -88,16 +90,20 @@ class TruncateText extends ArpaElement {
             return;
         }
         const text = this.textContent;
-        const threshold = this.getProperty('threshold');
         const ellipsis = this.getProperty('ellipsis');
-        if (text.length > maxLength + threshold) {
+        if (this.shouldTruncate()) {
             this.isTruncated = true;
-            this.innerHTML = html`<span>${text.slice(0, maxLength)}</span>${ellipsis}</span></span>`;
+            this.innerHTML = html`
+                <span class="truncateText__content"> ${text.slice(0, maxLength)} </span>
+                <span class="truncateText__ellipsis"> ${ellipsis} </span>
+            `;
+            this.textNode = this.querySelector('.truncateText__content');
             this.renderButton();
-            if (this.button) {
-                this.append(this.button);
-            }
         }
+    }
+
+    shouldTruncate() {
+        return this.fullContent.length > this.getMaxLength() + this.getThreshold();
     }
 
     showFullContent() {
@@ -134,6 +140,9 @@ class TruncateText extends ArpaElement {
             }
             this.button.textContent = this.getButtonLabel();
             this.button.setAttribute('aria-expanded', !this.isTruncated);
+            this.append(this.button);
+        } else if (this.button) {
+            this.button.remove();
         }
     }
 
