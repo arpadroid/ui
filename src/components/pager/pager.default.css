@@ -1,0 +1,40 @@
+arpa-pager {
+    width: 100%;
+    align-items: center;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: row;
+    gap: 0px 0px;
+    justify-content: center;
+    margin-left: auto;
+    padding: 12px 20px;
+    container-type: inline-flex;
+    container-name: pager-container;
+
+    &:empty {
+        display: none;
+    }
+    &.absoluteFix {
+        border-radius: 0px;
+        border-top: 2px solid var(--border-color);
+        background-color: var(--color-background);
+    }
+}
+
+.pager__numbers {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0px 2px;
+}
+
+.pager__spacer {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    margin: 0px 1px;
+    padding: 0;
+    width: 36px;
+}

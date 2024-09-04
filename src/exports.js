@@ -29,3 +29,9 @@ export { default as CircularPreloader } from './components/preloaders/circularPr
  * Inputs.
  */
 export { default as DropArea } from './components/dropArea/dropArea.js';
+
+/**
+ * Pager.
+ */
+export { default as Pager } from './components/pager/pager.js';
+export { default as PagerItem } from './components/pager/components/pagerItem/pagerItem.js';

@@ -12,6 +12,11 @@
 }
 
 @font-face {
+    font-family: OpenSans;
+    src: url('fonts/OpenSans-VF.ttf');
+}
+
+@font-face {
     font-family: AvantGarde-Bk;
     src: url('fonts/AvantGardeBQ-Book.otf');
 }
@@ -62,6 +67,8 @@
 }
 
 :root {
+    /* Open Sans */
+    --font-open-sans: OpenSans, Arial, Helvetica, sans-serif;
     /* Avant Garde */
     --font-avant-garde: AvantGarde-Bk, Times, Helvetica, sans-serif;
     --font-avant-garde-exlt: AvantGarde-ExtraLight, Arial, Helvetica, sans-serif;

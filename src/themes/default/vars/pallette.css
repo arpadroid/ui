@@ -98,6 +98,7 @@
     --color-lightest-blue: #f1faff;
     --color-blue-neon: #5e57ea;
     --color-blue-neon-light: #8883e2;
+    --color-blue-neon-lightest: #b7b5e4;
     --color-blue-neon-dark: #312e77;
     --color-blue-neon-darkest: #252359;
 
@@ -106,7 +107,7 @@
     --color-deep-purple: #663399;
     --color-purple: #800080;
     --color-medium-purple: #9370db;
-    --color-light-purple: #a020f0;
+    --color-light-purple: #dec9ee;
     --color-pale-purple: #d8bfd8;
     --color-lavender: #e6e6fa;
     --color-lilac: #c8a2c8;
