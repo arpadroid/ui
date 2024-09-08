@@ -253,6 +253,7 @@ class Pager extends ArpaElement {
         const { onClick } = this._config;
         const pagerItem = event.target.closest('pager-item');
         onClick({ page: Number(pagerItem.getAttribute('page')), node: pagerItem, event });
+        requestAnimationFrame(() => pagerItem.querySelector('a, button')?.focus());
     }
 
     async _handleClick(node) {
