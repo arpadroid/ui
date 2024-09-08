@@ -1,4 +1,4 @@
-import { getURLParam, attrString, renderNode } from '@arpadroid/tools';
+import { getURLParam, attrString, renderNode, editURL } from '@arpadroid/tools';
 import ArpaElement from '../arpaElement/arpaElement.js';
 
 const html = String.raw;
@@ -7,7 +7,11 @@ class Pager extends ArpaElement {
     // #region INITIALIZATION
     /////////////////////////
 
-    pagerItems = [];
+    pagerItems = {};
+    _initialize() {
+        super._initialize();
+        this.onHandlerClick = this.onHandlerClick.bind(this);
+    }
 
     getDefaultConfig() {
         return {
@@ -62,6 +66,7 @@ class Pager extends ArpaElement {
 
     getCurrentPage() {
         if (this.resource) {
+            console.log('getting current page from resource');
             return this.resource?.getCurrentPage();
         }
         const urlParam = this.getUrlParam();
@@ -142,50 +147,78 @@ class Pager extends ArpaElement {
     }
 
     addNodes(start, end, totalPages, hasLeftSpacer, hasRightSpacer) {
-        !this.frag && (this.frag = document.createDocumentFragment());
-
-        this.addPrev(this.frag);
+        this.innerHTML = '';
+        this.addPrev(this);
         this.numbersNode = document.createElement('div');
         this.numbersNode.classList.add('pager__numbers');
-        this.frag.appendChild(this.numbersNode);
-        this.renderItem(1);
-        hasLeftSpacer && this.addSpacer();
+        this.appendChild(this.numbersNode);
+        this.renderItem(1, { onUpdate: ({ node }) => this.updateNumberItem(node) });
+        hasLeftSpacer && this.addSpacer('pagerItem-spacer-left');
         this.addMain(start, end);
-        hasRightSpacer && this.addSpacer();
-        this.renderItem(totalPages);
-        this.addNext(this.frag);
-        requestAnimationFrame(() => {
-            this.innerHTML = '';
-            this.appendChild(this.frag);
-        });
+        hasRightSpacer && this.addSpacer('pagerItem-spacer-right');
+        this.renderItem(totalPages, { onUpdate: ({ node }) => this.updateNumberItem(node) });
+        this.addNext(this);
     }
 
-    renderItem(page, config = {}) {
+    async renderItem(page, config = {}) {
         const {
+            id = `pagerItem-${page}`,
             content = page.toString(),
             isActive = this.getCurrentPage() === Number(page),
             container = this.numbersNode,
+            onUpdate,
             className
         } = config;
-        const attr = { page, 'is-active': isActive, class: className };
-        const itemHTML = html`<pager-item ${attrString(attr)}>${content}</pager-item>`;
-        const item = renderNode(itemHTML);
-        this._handleClick(item, Number(page));
+        const isCurrent = this.getCurrentPage() === Number(page);
+        let item = this.pagerItems[id];
+        if (!item) {
+            const attr = { page, 'is-active': isActive, class: className };
+            const itemHTML = html`<pager-item ${attrString(attr)}>${content}</pager-item>`;
+            item = renderNode(itemHTML);
+            this.pagerItems[id] = item;
+        } else if (typeof onUpdate === 'function') {
+            onUpdate({ isCurrent, node: item });
+        }
+        this._handleClick(item);
         container.appendChild(item);
         return item;
     }
 
-    async _handleClick(node, page) {
-        await this.promise;
-        const { onClick } = this._config;
-        const clickHandlers = node.querySelectorAll('a.pagerItem__content, button.pagerItem__content');
-        clickHandlers.forEach(handler => {
-            handler.addEventListener('click', event => {
-                onClick({ page, node, event });
-                // event.preventDefault();
-            });
-            
+    addSpacer(id = 'pagerItem-spacer') {
+        this.renderItem(undefined, {
+            id,
+            content: '...',
+            container: this.numbersNode,
+            className: 'pager__spacer'
         });
+    }
+
+    addMain(start, end) {
+        for (let i = start; i <= end; i++) {
+            this.renderItem(i, {
+                container: this.numbersNode,
+                onUpdate: ({ node }) => this.updateNumberItem(node)
+            });
+        }
+    }
+
+    updateNumberItem(node) {
+        if (Number(node.getAttribute('page')) === this.getCurrentPage()) {
+            node.setAttribute('is-active', '');
+            node.render(true);
+        } else if (node.hasAttribute('is-active')) {
+            node.removeAttribute('is-active');
+            node.render(true);
+        }
+    }
+
+    // #region ARROW CONTROLS
+
+    updateArrowControl(node, page) {
+        node.setAttribute('page', page);
+        const link = node.querySelector('a');
+        link.href = editURL(link.href, { [this.getUrlParam()]: page });
+        link.setAttribute('data-page', page);
     }
 
     addPrev(frag = this) {
@@ -193,7 +226,9 @@ class Pager extends ArpaElement {
             this.renderItem(this.getPrevPage(), {
                 content: html`<arpa-icon>chevron_left</arpa-icon>`,
                 container: frag,
-                className: 'pager__prev'
+                id: 'pagerItem-prev',
+                className: 'pager__prev',
+                onUpdate: ({ node }) => this.updateArrowControl(node, this.getPrevPage())
             });
     }
 
@@ -202,21 +237,31 @@ class Pager extends ArpaElement {
             this.renderItem(this.getNextPage(), {
                 content: html`<arpa-icon>chevron_right</arpa-icon>`,
                 container: frag,
-                className: 'pager__next'
+                id: 'pagerItem-next',
+                className: 'pager__next',
+                onUpdate: ({ node }) => this.updateArrowControl(node, this.getNextPage())
             });
     }
 
-    addSpacer() {
-        this.numbersNode.append(renderNode(html`<span class="pager__spacer">...</span>`));
-    }
-
-    addMain(start, end) {
-        for (let i = start; i <= end; i++) {
-            this.numbersNode.append(this.renderItem(i));
-        }
-    }
+    // #endregion ARROW CONTROLS
 
     // #endregion RENDERING
+
+    // #region EVENT HANDLERS
+
+    onHandlerClick(event) {
+        const { onClick } = this._config;
+        const pagerItem = event.target.closest('pager-item');
+        onClick({ page: Number(pagerItem.getAttribute('page')), node: pagerItem, event });
+    }
+
+    async _handleClick(node) {
+        await this.promise;
+        const clickHandlers = node.querySelectorAll('a.pagerItem__content, button.pagerItem__content');
+        clickHandlers.forEach(handler => handler.addEventListener('click', this.onHandlerClick));
+    }
+
+    // #endregion EVENT HANDLERS
 }
 
 customElements.define('arpa-pager', Pager);

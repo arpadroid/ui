@@ -24,12 +24,12 @@ class PagerItem extends ArpaElement {
         }
     }
 
-    render() {
+    render(reRender = false) {
         super.render();
         if (this.isActive()) {
             this.classList.add('pagerItem--active');
         }
-        if (!this.contentNode) {
+        if (!this.contentNode || reRender) {
             this.innerHTML = '';
             this.contentNode = this.renderContent();
             this.appendChild(this.contentNode);
@@ -77,11 +77,15 @@ class PagerItem extends ArpaElement {
             }
             return renderNode(html`<span class="pagerItem__content">${this.getPage()}</span>`);
         }
-        const linkNode = renderNode(
-            html`<a class="pagerItem__content" href="${this.getLink()}" data-page="${this.getPage()}"></a>`
-        );
-        linkNode.addEventListener('click', this._onClick.bind(this));
-        return linkNode;
+        const page = this.getPage();
+        if (page) {
+            const linkNode = renderNode(
+                html`<a class="pagerItem__content" href="${this.getLink()}" data-page="${page}"></a>`
+            );
+            linkNode.addEventListener('click', this._onClick.bind(this));
+            return linkNode;
+        }
+        return renderNode(html`<span class="pagerItem__content"></span>`);
     }
 
     getLink() {
