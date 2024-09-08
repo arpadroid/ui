@@ -141,6 +141,10 @@ class ArpaElement extends HTMLElement {
         return renderI18n(configValue ?? `${this.i18nKey}.${key}`, replacements);
     }
 
+    i18nText(key, replacements) {
+        return I18n.getText(`${this.i18nKey}.${key}`, replacements);
+    }
+
     /**
      * Sets the configuration for the element.
      * @param {Record<string, unknown>} [config]

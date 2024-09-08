@@ -1,7 +1,7 @@
 /**
  * @typedef {import('../../pager').default} Pager
  */
-import { mergeObjects, editURL, renderNode, sanitizeURL } from '@arpadroid/tools';
+import { mergeObjects, editURL, renderNode, sanitizeURL, attrString } from '@arpadroid/tools';
 import ArpaElement from '../../../arpaElement/arpaElement';
 
 const html = String.raw;
@@ -13,7 +13,8 @@ class PagerItem extends ArpaElement {
             className: 'pagerItem',
             isActive: false,
             hasInput: true,
-            urlParam: this.pagerComponent?.getUrlParam()
+            urlParam: this.pagerComponent?.getUrlParam(),
+            ariaLabel: undefined
         });
     }
 
@@ -44,7 +45,7 @@ class PagerItem extends ArpaElement {
             html`<form class="pagerItem__form">
                 <input
                     class="pagerItem__input"
-                    aria-label="current page"
+                    aria-label="Current page"
                     type="number"
                     name="${this._config.urlParam}"
                     value="${this.getPage()}"
@@ -71,6 +72,7 @@ class PagerItem extends ArpaElement {
     }
 
     renderContent() {
+        
         if (this.isActive()) {
             if (this.hasInput()) {
                 return this.renderInput();
@@ -79,9 +81,15 @@ class PagerItem extends ArpaElement {
         }
         const page = this.getPage();
         if (page) {
-            const linkNode = renderNode(
-                html`<a class="pagerItem__content" href="${this.getLink()}" data-page="${page}"></a>`
-            );
+            const ariaLabel = this.getProperty('aria-label');
+            this.removeAttribute('aria-label');
+            const attr = {
+                'data-page': page,
+                href: this.getLink(),
+                class: 'pagerItem__content',
+                ariaLabel
+            };
+            const linkNode = renderNode(html`<a ${attrString(attr)}></a>`);
             linkNode.addEventListener('click', this._onClick.bind(this));
             return linkNode;
         }
