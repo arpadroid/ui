@@ -7,10 +7,12 @@ import ArpaElement from '../../../arpaElement/arpaElement';
 const html = String.raw;
 class PagerItem extends ArpaElement {
     getDefaultConfig() {
+        /** @type {Pager} */
+        this.pagerComponent = this.closest('arpa-pager');
         return mergeObjects(super.getDefaultConfig(), {
             className: 'pagerItem',
             isActive: false,
-            hasInput: false,
+            hasInput: true,
             urlParam: this.pagerComponent?.getUrlParam()
         });
     }
@@ -23,8 +25,6 @@ class PagerItem extends ArpaElement {
     }
 
     render() {
-        /** @type {Pager} */
-        this.pagerComponent = this.closest('arpa-pager');
         super.render();
         if (this.isActive()) {
             this.classList.add('pagerItem--active');
@@ -48,6 +48,7 @@ class PagerItem extends ArpaElement {
                     type="number"
                     name="${this._config.urlParam}"
                     value="${this.getPage()}"
+                    placeholder="${this.getPage()}"
                     min="1"
                     max="${this.pagerComponent.getTotalPages()}"
                 />
@@ -84,8 +85,9 @@ class PagerItem extends ArpaElement {
     }
 
     getLink() {
+        const urlParam = this.pagerComponent?.getUrlParam();
         return editURL(sanitizeURL(window.location.href), {
-            [this._config.urlParam]: this.getPage()
+            [urlParam]: this.getPage()
         });
     }
 

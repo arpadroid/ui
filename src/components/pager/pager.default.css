@@ -30,11 +30,3 @@ arpa-pager {
     gap: 0px 2px;
 }
 
-.pager__spacer {
-    align-items: center;
-    display: flex;
-    justify-content: center;
-    margin: 0px 1px;
-    padding: 0;
-    width: 36px;
-}

@@ -31,7 +31,15 @@ const PagerStory = {
             urlParam: { control: { type: 'text' }, table: { category } }
         };
     },
-    render: args => html`<arpa-pager ${attrString(args)} views="grid, list"> jo</arpa-pager>`
+    render: args => html`
+        <arpa-pager id="demo-pager" ${attrString(args)} views="grid, list"></arpa-pager>
+
+        <script type="module">
+            await customElements.whenDefined('arpa-pager');
+            const pager = document.getElementById('demo-pager');
+            pager.onChange(({ page }) => pager.set(page));
+        </script>
+    `
 };
 
 export const Default = {

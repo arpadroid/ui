@@ -62,9 +62,9 @@
             &::after {
                 content: '';
                 position: absolute;
-                bottom: 4px;
-                width: 16px;
-                margin-left: 2px;
+                bottom: 6px;
+                width: 10px;
+                margin-left: 1px;
                 height: 3px;
                 border-radius: 1px;
                 background-color: var(--grey-150);
@@ -82,8 +82,11 @@
 }
 
 .pager__spacer {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    width: var(--pagerItem-size);
     font-size: 1.2rem;
-    width: 16px;
 }
 
 .pagerItem__content {

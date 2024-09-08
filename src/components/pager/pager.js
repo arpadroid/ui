@@ -7,6 +7,8 @@ class Pager extends ArpaElement {
     // #region INITIALIZATION
     /////////////////////////
 
+    pagerItems = [];
+
     getDefaultConfig() {
         return {
             title: 'Pager',
@@ -45,14 +47,17 @@ class Pager extends ArpaElement {
 
     set(page, totalPages) {
         this.setCurrentPage(page);
-        this.setTotalPages(totalPages);
-        this.update();
-        return this.node;
+        totalPages && this.setTotalPages(totalPages);
+        this.reRender();
     }
 
     setCurrentPage(page) {
         this._config.currentPage = page;
         this.setAttribute('current-page', page);
+    }
+
+    onChange(onClick) {
+        this._config.onClick = onClick;
     }
 
     getCurrentPage() {
@@ -65,7 +70,7 @@ class Pager extends ArpaElement {
     }
 
     getUrlParam() {
-        return this.getProperty('url-param');
+        return this.getProperty('url-param') ?? 'page';
     }
 
     getTotalPages() {
@@ -113,7 +118,6 @@ class Pager extends ArpaElement {
     }
 
     renderPager() {
-        this.innerHTML = '';
         const currentPage = this.getCurrentPage();
         const totalPages = this.getTotalPages();
         if (totalPages <= 1) {
@@ -138,21 +142,25 @@ class Pager extends ArpaElement {
     }
 
     addNodes(start, end, totalPages, hasLeftSpacer, hasRightSpacer) {
-        this.addPrev();
+        !this.frag && (this.frag = document.createDocumentFragment());
+
+        this.addPrev(this.frag);
         this.numbersNode = document.createElement('div');
         this.numbersNode.classList.add('pager__numbers');
-        this.appendChild(this.numbersNode);
+        this.frag.appendChild(this.numbersNode);
         this.renderItem(1);
         hasLeftSpacer && this.addSpacer();
         this.addMain(start, end);
         hasRightSpacer && this.addSpacer();
         this.renderItem(totalPages);
-        this.addNext();
+        this.addNext(this.frag);
+        requestAnimationFrame(() => {
+            this.innerHTML = '';
+            this.appendChild(this.frag);
+        });
     }
 
     renderItem(page, config = {}) {
-        console.log('this.getCurrentPage()', this.getCurrentPage());
-        console.log('page', Number(page));
         const {
             content = page.toString(),
             isActive = this.getCurrentPage() === Number(page),
@@ -162,32 +170,38 @@ class Pager extends ArpaElement {
         const attr = { page, 'is-active': isActive, class: className };
         const itemHTML = html`<pager-item ${attrString(attr)}>${content}</pager-item>`;
         const item = renderNode(itemHTML);
-        this._handleClick(item, page);
+        this._handleClick(item, Number(page));
         container.appendChild(item);
         return item;
     }
 
-    _handleClick(node, page) {
+    async _handleClick(node, page) {
+        await this.promise;
         const { onClick } = this._config;
-        if (node && typeof onClick === 'function') {
-            node.addEventListener('click', event => onClick({ page, node, event }));
-        }
+        const clickHandlers = node.querySelectorAll('a.pagerItem__content, button.pagerItem__content');
+        clickHandlers.forEach(handler => {
+            handler.addEventListener('click', event => {
+                onClick({ page, node, event });
+                // event.preventDefault();
+            });
+            
+        });
     }
 
-    addPrev() {
+    addPrev(frag = this) {
         this.hasArrowControls() &&
             this.renderItem(this.getPrevPage(), {
                 content: html`<arpa-icon>chevron_left</arpa-icon>`,
-                container: this,
+                container: frag,
                 className: 'pager__prev'
             });
     }
 
-    addNext() {
+    addNext(frag = this) {
         this.hasArrowControls() &&
             this.renderItem(this.getNextPage(), {
                 content: html`<arpa-icon>chevron_right</arpa-icon>`,
-                container: this,
+                container: frag,
                 className: 'pager__next'
             });
     }
