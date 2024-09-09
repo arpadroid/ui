@@ -45,11 +45,14 @@ class ArpaElement extends HTMLElement {
     }
 
     _doBindings(bindings = this._bindings, internalBindings = ['_initializeSlot']) {
-        [...internalBindings, ...bindings].forEach(method => {
-            if (typeof this[method] === 'function') {
-                this[method] = this[method].bind(this);
-            }
-        });
+        if (!this.bindingsComplete) {
+            [...internalBindings, ...bindings].forEach(method => {
+                if (typeof this[method] === 'function') {
+                    this[method] = this[method].bind(this);
+                }
+            });
+        }
+        this.bindingsComplete = true;
     }
 
     _bindMethods() {}

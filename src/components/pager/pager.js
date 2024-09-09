@@ -50,7 +50,7 @@ class Pager extends ArpaElement {
     // #region ACCESSORS
     ////////////////////
 
-    set(page, totalPages) {
+    setPager(page, totalPages) {
         this.setCurrentPage(page);
         totalPages && this.setTotalPages(totalPages);
         this.reRender();

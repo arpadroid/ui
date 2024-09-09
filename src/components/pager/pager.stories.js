@@ -40,7 +40,7 @@ const PagerStory = {
             await customElements.whenDefined('arpa-pager');
             const pager = document.getElementById('demo-pager');
             pager.onChange(({ page }) => {
-                pager.set(page);
+                pager.setPager(page);
                 const newURL = editURL(window.location.href, { page });
                 window.history.pushState({}, '', newURL);
             });

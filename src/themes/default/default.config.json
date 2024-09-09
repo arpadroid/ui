@@ -12,6 +12,7 @@
         "utils/utils",
         "utils/stripedArea",
         "utils/comboBox",
+        "utils/placeTool",
         "elements/headings",
         "elements/link",
         "elements/scrollbar",
