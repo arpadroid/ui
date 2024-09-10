@@ -167,6 +167,7 @@ class Pager extends ArpaElement {
         const currentPage = this.getCurrentPage();
         const totalPages = this.getTotalPages();
         if (totalPages <= 1) {
+            this.innerHTML = '';
             return;
         }
         const _maxNodes = this.getMaxNodes();
