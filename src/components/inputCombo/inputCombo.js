@@ -96,7 +96,9 @@ class InputCombo {
             if (closeOnBlur && instance.isActive()) {
                 const isCombo = combo.contains(event.target) || combo === event.target;
                 const isInput = input.contains(event.target) || input === event.target;
-                if ((!isCombo && !isInput) || (isCombo && closeOnClick)) {
+                const activeNode = event.target;
+                const isContained = combo.contains(activeNode) || input.contains(activeNode);
+                if (!isContained && ((!isCombo && !isInput) || (isCombo && closeOnClick))) {
                     requestAnimationFrame(() => instance.close());
                 }
             }
@@ -199,6 +201,9 @@ class InputCombo {
      * @protected
      */
     _onComboKeyDown(event) {
+        if (document.activeElement !== this.input) {
+            return;
+        }
         if (event.keyCode === 38) {
             event.preventDefault();
             // UP AROW
@@ -284,15 +289,17 @@ class InputCombo {
 
     /**
      * Handles the blur event on the input element.
-     * @protected
+     * @param {FocusEvent} event
      */
-    async _onBlur() {
+    async _onBlur(event) {
         const { closeOnBlur } = this._config;
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise(resolve => setTimeout(resolve, 200));
         const activeNode = document.activeElement;
         const isContained = this.combo.contains(activeNode) || this.input.contains(activeNode);
+        const isTargetContained =
+            this.combo.contains(event.relatedTarget) || this.input.contains(event.relatedTarget);
         const isCombo = this.combo === document.activeElement;
-        if (!isCombo && isContained && closeOnBlur) {
+        if (!isCombo && !isContained && !isTargetContained && closeOnBlur) {
             this.close();
         }
     }

@@ -66,7 +66,7 @@ export const Slotted = {
         return html`
             <arpa-tooltip ${attrString(args)}>
                 <slot name="handler"><arpa-icon>info</arpa-icon>${args.handler}</slot>
-                <slot name="content">${args.content}</slot>
+                <slot name="tooltip-content">${args.content}</slot>
             </arpa-tooltip>
         `;
     }
