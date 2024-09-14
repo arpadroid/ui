@@ -14,11 +14,6 @@ arpa-pager {
     &:empty {
         display: none;
     }
-    &.absoluteFix {
-        border-radius: 0px;
-        border-top: 2px solid var(--border-color);
-        background-color: var(--color-background);
-    }
 }
 
 .pager__numbers {

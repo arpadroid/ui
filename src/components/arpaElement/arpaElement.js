@@ -3,7 +3,7 @@ import { slotMixin, handleSlots, camelToDashed, getAttributes, attr, extractSlot
 import { I18nTool, I18n } from '@arpadroid/i18n';
 const { renderI18n, processTemplate } = I18nTool;
 
-const { getProperty, hasProperty, removeIfEmpty, getArrayProperty } = CustomElementTool;
+const { getProperty, hasProperty, getArrayProperty } = CustomElementTool;
 
 /**
  * Base class for custom elements.
@@ -129,7 +129,7 @@ class ArpaElement extends HTMLElement {
     /////////////////////
 
     hasSlot(name) {
-        return this._slots.some(slot => slot.getAttribute('name') === name);
+        return this._slots.find(slot => slot.getAttribute('name') === name);
     }
 
     getSlot(name) {
@@ -321,9 +321,6 @@ class ArpaElement extends HTMLElement {
     _onRenderComplete() {
         this._hasRendered = true;
         this._onRenderedCallbacks.forEach(callback => callback());
-        if (this._config.removeIfEmpty) {
-            removeIfEmpty(this);
-        }
         this.resolvePromise?.();
         this._onComplete();
     }
