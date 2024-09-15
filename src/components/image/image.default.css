@@ -40,7 +40,7 @@ arpa-image {
     }
 }
 
-.image__thumbnail {
+.image__thumbnail.image__thumbnail {
     width: 100%;
     height: 100%;
     display: flex;
