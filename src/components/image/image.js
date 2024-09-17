@@ -41,7 +41,8 @@ class ArpaImage extends ArpaElement {
             lazyLoad: false,
             onLoad: undefined,
             onError: undefined,
-            onInput: undefined
+            onInput: undefined,
+            loadedClass: 'image--loaded'
         });
     }
     /**
@@ -58,13 +59,18 @@ class ArpaImage extends ArpaElement {
     render() {
         const template = `${this.renderPreloader()} ${this.renderPicture()} ${this.renderThumbnail()}`;
         this.innerHTML = this.renderTemplate(template);
+        
         if (this.isLoading()) {
-            this.classList.remove('image--loaded');
+            this.classList.remove(this.getLoadedClass());
         } else {
-            this.classList.add('image--loaded');
+            this.classList.add(this.getLoadedClass());
         }
         // this._initializeDropArea();
         // this._initializeImagePreview(node);
+    }
+
+    getLoadedClass() {
+       return this.getProperty('loaded-class');
     }
 
     _onConnected() {
@@ -302,10 +308,10 @@ class ArpaImage extends ArpaElement {
      * @param {number} timeout - The amount of time to wait before stopping preloading.
      */
     stopPreloading(timeout = 300) {
-        setTimeout(() => {
-            this.render();
-            // this.classList.add('imageComponent--loaded');
-        }, timeout);
+        if (this.classList.contains(this.getLoadedClass())) {
+            return;
+        }
+        setTimeout(() => this.render(), timeout);
     }
 
     /**

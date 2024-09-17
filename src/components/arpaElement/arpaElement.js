@@ -368,7 +368,6 @@ class ArpaElement extends HTMLElement {
     }
 
     reRender() {
-        this._hasInitialized = false;
         this._hasRendered = false;
         this.promise = this.getPromise();
         this.connectedCallback();
