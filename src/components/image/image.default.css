@@ -1,14 +1,42 @@
+:root {
+    --image-thumbnail-bg: #e7f1fd;
+    --image-thumbnail-color: #3271bf;
+    --image-thumbnail-font-size: 2rem;
+    --image-height: auto;
+    --image-width: 100%;
+}
+
 arpa-image {
+    --preloader-width: 60px;
     position: relative;
     display: flex;
     flex-direction: column;
-    
+    flex: 1 1 auto;
+    height: var(--image-height);
+    width: var(--image-width);
+    max-height: 100%;
+
+    figure {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: auto;
+    }
+
+    figcaption {
+        padding: 0.5rem;
+        margin-top: auto;
+    }
+
     picture {
         object-fit: cover;
         overflow: hidden;
         border-radius: 4px;
         position: relative;
-        transition: var(--theme-transition);
+
         width: 100%;
         height: 100%;
     }
@@ -16,13 +44,11 @@ arpa-image {
     img {
         width: 100%;
         height: 100%;
+        max-height: 100%;
         object-fit: cover;
-        transition: opacity 3s cubic-bezier(0.075, 0.82, 0.165, 1);
+        transition: opacity 1s ease;
         visibility: visible;
         opacity: 0;
-    }
-    &.image--loaded img {
-        opacity: 1;
     }
 
     arpa-tooltip {
@@ -38,105 +64,135 @@ arpa-image {
             margin-top: 100%;
         }
     }
-}
 
-.image__thumbnail.image__thumbnail {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: var(--grey-50);
-    border-radius: 8px;
-
-    arpa-icon {
-        font-size: 28px;
-        height: 28px;
-        width: 28px;
-        color: var(--color-primary);
+    .image__thumbnail {
         width: 100%;
         height: 100%;
-        padding: 4px;
         display: flex;
         align-items: center;
-        border-radius: 4px;
-        position: relative;
-        background-color: var(--primary-hilight);
-        color: var(--color-tertiary);
-        transition: var(--theme-transition);
         justify-content: center;
+        background-color: var(--grey-50);
+        border-radius: 8px;
+        position: absolute;
+        inset: 0;
+        
+        arpa-icon {
+            font-size: var(--image-thumbnail-font-size);
+            width: 100%;
+            height: 100%;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            border-radius: 4px;
+            position: relative;
+            background-color: var(--image-thumbnail-bg);
+            color: var(--image-thumbnail-color);
+            transition: opacity 0.5s ease;
+            justify-content: center;
+        }
+    }
+
+    circular-preloader {
+        transition: opacity 1s ease;
+    }
+
+    .circularPreloader__mask {
+        background-color: transparent;
+    }
+
+    /**
+    * Loaded
+    */
+    &.image--loaded {
+        img {
+            opacity: 1;
+        }
+        circular-preloader {
+            opacity: 0;
+            z-index: 0;
+        }
+        .image__thumbnail {
+            display: none;
+            opacity: 0;
+        }
+    }
+
+    /**
+    * Error
+    */
+    &.image--error {
+        circular-preloader {
+            display: none;
+        }
+        .image__thumbnail.image__thumbnail arpa-icon {
+            background-color: var(--color-error-light);
+        }
+        .image__thumbnail arpa-icon {
+            color: rgba(177, 35, 0, 0.6);
+            background-color: var(--color-error-bg);
+        }
+    }
+
+    /**
+    * Loading
+    */
+    &.image--loading {
+        img {
+            opacity: 0;
+        }
+    }
+
+    drop-area {
+        background: var(--overlay) !important;
+        display: flex;
+        flex-direction: column;
+        flex: 1 1 auto;
+        font-size: 12px;
+        gap: 8px;
+        height: auto;
+        inset: 0;
+        padding: 3px;
+        opacity: 0;
+        transition: var(--theme-transition);
+        outline: 2px solid var(--color-primary);
+        position: absolute;
+        width: auto;
+        outline: none;
+        z-index: 1;
     }
 }
 
-/* .icon.imageComponent__icon--error {
-    color: rgba(177, 35, 0, 0.6);
-    background-color: var(--color-error-bg);
-} */
+/**
+ * Image Sizes
+ */
 
-.imageComponent .dropArea,
-.imageComponent__inputWrapper {
-    position: absolute;
-    display: flex;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    width: auto;
-    height: auto;
-    margin: 2px;
-    flex-direction: column;
-    gap: 8px;
-    font-size: 12px;
-    flex: 1 1 auto;
-    outline: 2px solid var(--color-primary);
-    opacity: 0;
-    background: var(--overlay) !important;
+.image--square {
+    picture {
+        aspect-ratio: 1 / 1;
+    }
+    img {
+        aspect-ratio: 1 / 1;
+    }
 }
 
-.imageComponent:hover .dropArea--hasInput {
-    opacity: 1 !important;
+.image--size-big.image--size-big {
+    --preloader-width: 80px;
+    --preloader-border-width: 2px;
 }
 
-.imageComponent__inputWrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    z-index: 2;
-    transition: var(--theme-transition);
+.image--size-small.image--size-small {
+    --preloader-width: 60px;
+    --preloader-border-width: 2px;
 }
 
-.imageComponent:hover .imageComponent__inputWrapper {
-    opacity: 1;
+.image--size-x_small {
+    --preloader-width: 30px;
+    --preloader-border-width: 1.5px;
+    --preloader-outline-width: 1.5px;
 }
 
-.imageComponent__inputWrapper input {
-    display: none;
-}
-
-.imageComponent__inputButton {
-    background: transparent;
-    border: none;
-    max-width: 100%;
-    white-space: normal;
-}
-
-.imageComponent .dropArea .button__content {
-    color: var(--grey-700);
-    font-family: var(--font-family-avant-garde-demi);
-    line-height: 15px;
-    margin-top: 8px;
-    white-space: normal;
-}
-
-.imageComponent .dropArea--active {
-    opacity: 1;
-}
-
-.imageComponent .dropArea .icon.icon {
-    font-size: 28px;
-    margin: 0;
-    padding: 0;
-    min-width: 28px;
-    color: var(--color-primary);
+.image--size-xx_small {
+    --preloader-width: 20px;
+    --preloader-border-width: 1.5px;
+    --preloader-outline-width: 1.5px;
 }

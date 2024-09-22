@@ -1,27 +1,25 @@
-/* eslint-disable indent */
-import { editURL, attr, mergeObjects } from '@arpadroid/tools';
-import ArpaElement from '../arpaElement/arpaElement.js';
-import Icon from '../icon/icon.js';
-
 /**
+ * @typedef {import('../dropArea/dropArea.js').default } DropArea
  * @typedef {import('./imageInterface.js').ImageInterface} ImageInterface
  */
 
+import { attrString, classNames, attr, mergeObjects, lazyLoad as lazyLoader } from '@arpadroid/tools';
+import { editURL, mapHTML, eventContainsFiles, addCssRule } from '@arpadroid/tools';
+import ArpaElement from '../arpaElement/arpaElement.js';
+
 const html = String.raw;
 class ArpaImage extends ArpaElement {
-    static sizes = {
-        xxsmall: 80,
-        xsmall: 160,
-        small: 320,
-        medium: 640,
-        large: 1024,
-        xlarge: 1280
-    };
+    ////////////////////////////
+    // #region - INITIALIZATION
+    ////////////////////////////
+    _hasLoaded = false;
+    _hasError = false;
 
     constructor(config = {}) {
         super(config);
         this._onLoad = this._onLoad.bind(this);
         this._onError = this._onError.bind(this);
+        this._onInput = this._onInput.bind(this);
         this.src = this.getProperty('src');
     }
 
@@ -30,142 +28,384 @@ class ArpaImage extends ArpaElement {
      * @returns {ImageInterface} - The default configuration options.
      */
     getDefaultConfig() {
+        this.i18nKey = 'components.image';
         return mergeObjects(super.getDefaultConfig(), {
-            sizes: ArpaImage.sizes,
-            template: ArpaImage.template,
             alt: '',
+            caption: '',
+            defaultSize: 'medium',
+            dropAreaHandler: undefined,
+            errorClass: 'image--error',
+            loadingClass: 'image--loading',
+            hasPreloader: true,
+            hasPreview: false,
+            hasDropArea: false,
             highResSrc: '',
             icon: 'crop_original',
-            caption: '',
-            hasPreloader: true,
+            iconBroken: 'broken_image',
             lazyLoad: false,
-            onLoad: undefined,
+            loadedClass: 'image--loaded',
             onError: undefined,
             onInput: undefined,
-            loadedClass: 'image--loaded'
+            onLoad: undefined,
+            params: ['width', 'height', 'quality'],
+            quality: 80,
+            sizes: [],
+            sizeMap: {
+                xx_small: 50,
+                x_small: 100,
+                small: 200,
+                medium: 320,
+                big: 600,
+                large: 900,
+                x_large: 1200,
+                xx_large: 2500
+            },
+            // i18n
+            errLoad: this.i18n('errLoad'),
+            lblLoadingImage: this.i18n('lblLoadingImage'),
+            txtNoImage: this.i18n('txtNoImage'),
+            txtUploadImage: this.i18n('txtUploadImage')
         });
     }
+
+    // #endregion - INITIALIZATION
+
+    ///////////////////////
+    // #region - ACCESSORS
+    ///////////////////////
+
+    getLoadedClass() {
+        return this.getProperty('loaded-class');
+    }
+
+    getLoadingClass() {
+        return this.getProperty('loading-class');
+    }
+
+    getErrorClass() {
+        return this.getProperty('error-class');
+    }
+
+    // #region - - Size
+
+    getDefaultSize() {
+        const sizes = this.getArrayProperty('sizes');
+        const size = this.getProperty('default-size');
+        const sizeMap = this._config.sizeMap;
+        return sizeMap[size] ?? sizes[0];
+    }
+
+    getSize() {
+        return Number(this.getProperty('size') || this.getDefaultSize());
+    }
+
+    setSize(width, height = width) {
+        this._hasLoaded = false;
+        this.removeSizeClass();
+        width && (this._config.width = width);
+        height && (this._config.height = height);
+        this.setAttribute('size', width);
+        this._hasLoaded = false;
+        this._hasError = false;
+        this.classList.remove(this.getLoadedClass());
+        this.reRender();
+    }
+
+
+    getWidth() {
+        return this.getProperty('width') || this.getSize();
+    }
+
+    getHeight() {
+        return this.getProperty('height');
+    }
+
+    // #endregion - Size
+
+    loadImage(src) {
+        this.image.src = src;
+        this._hasLoaded = false;
+        this._hasError = false;
+        this.initializeImage();
+    }
+
+
+    getSource() {
+        return this.getProperty('src');
+    }
+
+    getQuality() {
+        return this.getProperty('quality');
+    }
+
+    getImageURL(width = this.getWidth(), height = this.getHeight(), quality = this.getQuality()) {
+        let src = this.getSource();
+        if (!height) {
+            src = src?.replace(/&height=\[height\]/, '');
+        }
+        return (
+            src?.replace('[width]', width)?.replace('[height]', height)?.replace('[quality]', quality) || ''
+        );
+    }
+
+    isLoading() {
+        return Boolean(this.src && !this.image?.naturalWidth && !this._hasLoaded);
+    }
+
+    // #region - - Has
+
+    hasError() {
+        return Boolean(this._hasError);
+    }
+
+    hasPreloader() {
+        return this.getProperty('has-preloader') && this.isLoading() && !this.hasError();
+    }
+
+    hasLoaded() {
+        return this._hasLoaded;
+    }
+
+    hasDropArea() {
+        return this.hasProperty('has-drop-area');
+    }
+
+    hasThumbnail() {
+        return !this.hasLoaded() || !this.getSource() || this.hasError();
+    }
+
+    // #endregion - Has
+
     /**
      * Determines whether the component has a high-resolution preview image.
      * @returns {boolean} - True if the component has a high-resolution preview image; otherwise, false.
      */
-    // hasPreview() {
-    //     return this._config?.highResSrc;
-    // }
+    hasPreview() {
+        return this._config?.highResSrc;
+    }
+
+    /**
+     * Busts the cache for the image.
+     */
+    bustCache() {
+        this.image.src = editURL(this.image.src, { bustCache: new Date().getTime() });
+    }
+
+    /**
+     * Preloads the component.
+     */
+    preload() {
+        this.src = null;
+        this.isUploading = true;
+        this.update();
+    }
+
+    /**
+     * Stops preloading the component.
+     * @param {string} addClass - The class to add to the component.
+     */
+    stopPreloading(addClass = this.getLoadedClass()) {
+        !this.classList.contains(addClass) && this.classList.add(addClass);
+        setTimeout(() => this.querySelector('circular-preloader')?.remove(), 1000);
+    }
+
+    /**
+     * Shows the drop area for the component.
+     */
+    showDropArea() {
+        this.dropAreaNode.style.display = '';
+        requestAnimationFrame(() => (this.dropAreaNode.style.opacity = 1));
+    }
+
+    /**
+     * Hides the drop area for the component.
+     */
+    hideDropArea() {
+        requestAnimationFrame(() => (this.dropArea.style.opacity = 0));
+    }
+
+    // #endregion - ACCESSORS
+
+    ///////////////////////
+    // #region - Rendering
+    ///////////////////////
 
     /**
      * Renders the component.
      */
+
     render() {
-        const template = `${this.renderPreloader()} ${this.renderPicture()} ${this.renderThumbnail()}`;
-        this.innerHTML = this.renderTemplate(template);
-        
+        this.initializeStyles();
         if (this.isLoading()) {
-            this.classList.remove(this.getLoadedClass());
-        } else {
-            this.classList.add(this.getLoadedClass());
+            this.classList.add(this.getLoadingClass());
         }
-        // this._initializeDropArea();
-        // this._initializeImagePreview(node);
-    }
-
-    getLoadedClass() {
-       return this.getProperty('loaded-class');
-    }
-
-    _onConnected() {
-        this.image = this.loadImage();
-        // this.initializeImage();
-    }
-
-    renderPreloader() {
-        const { hasPreloader } = this._config;
-        const showPreloader = hasPreloader && this.isLoading() && !this.hasError();
-        if (showPreloader) {
-            return html`<circular-preloader variant="small"></circular-preloader>`;
-        }
-        return '';
-    }
-
-    renderThumbnail() {
-        if (this.hasError()) {
-            return html`
-                <arpa-tooltip class="image__thumbnail" icon="{icon}" position="bottom">
-                    Error loading image
-                </arpa-tooltip>
-            `;
-        }
-        return '';
-    }
-
-    renderPicture() {
-        if (!this.hasError() && !this.isLoading()) {
-            return html`
-                <picture>
-                    ${this.renderSources()}
-                    <img src="{src}" alt="{alt}" />
-                </picture>
-            `;
-        }
-        return '';
+        const caption = this.getProperty('caption');
+        const template = html`
+            ${caption ? '<figure>' : ''} {picture}
+            ${caption ? html`<figcaption slot="caption">${caption}</figcaption>` : ''}
+            ${caption ? '</figure>' : ''}
+        `;
+        this.innerHTML = this.renderTemplate(template);
+        // this._initializeImagePreview();
     }
 
     getTemplateVars() {
         return {
+            preloader: this.renderPreloader(),
+            picture: this.renderPicture(),
+            thumbnail: this.renderThumbnail(),
+            dropArea: this.renderDropArea(),
             src: this.getProperty('src'),
             alt: this.getProperty('alt'),
             icon: this.getProperty('icon')
         };
     }
 
+    renderPicture() {
+        const src = this.getImageURL();
+        const lazyLoad = this.hasProperty('lazy-load');
+        console.log('renderPicture', lazyLoad);
+        const imageAttr = attrString({
+            alt: this.getProperty('alt'),
+            class: classNames({ 'image--lazy': lazyLoad }),
+            'data-src': lazyLoad ? src : '',
+            lazyLoad,
+            src: lazyLoad ? '' : src
+        });
+        return html`
+            <picture>
+                ${this.renderThumbnail()} ${this.renderPreloader()} ${this.renderSources()}
+                ${src ? html`<img ${imageAttr} />` : ''} ${this.renderDropArea()}
+            </picture>
+        `;
+    }
+
     renderSources() {
-        return '';
+        const quality = this.getProperty('quality');
+        const sizes = this.getArrayProperty('sizes');
+        return mapHTML(sizes, size => {
+            const src = this.getImageURL(size, quality);
+            return html`<source srcset="${src} ${size}px" />`;
+        });
     }
 
-    isLoading() {
-        // return true;
-        return Boolean((this.src && !this.image?.naturalWidth) || this.isUploading);
+    renderPreloader() {
+        return this.hasPreloader()
+            ? html`<circular-preloader
+                  aria-label="${this.getText('lblLoadingImage')}"
+                  variant="small"
+              ></circular-preloader>`
+            : '';
     }
 
-    hasError() {
-        return Boolean(this._hasError);
+    renderThumbnail(text = this.hasError() ? this.getProperty('errLoad') : this.getProperty('txtNoImage')) {
+        return this.hasThumbnail()
+            ? html`<arpa-tooltip class="image__thumbnail" icon="${this.getProperty('icon')}">
+                  <slot name="tooltip-content"> ${text} </slot>
+              </arpa-tooltip>`
+            : '';
+    }
+
+    // #endregion - Rendering
+
+    //////////////////////////
+    // #region - Drop Area
+    //////////////////////////
+
+    renderDropArea() {
+        return this.hasDropArea()
+            ? html`<drop-area><slot name="label">${this.getProperty('txtUploadImage')}</slot></drop-area>`
+            : '';
     }
 
     /**
-     * Loads the image.
-     * @param {string} src - The source of the image to load.
-     * @param {ImageInterface} config - The configuration options for the image.
-     * @returns {HTMLImageElement | undefined} - The image element.
+     * Initializes the drop area for the component.
      */
-    loadImage(src = this.src, config = this._config) {
-        const { lazyLoad, alt, width, height } = config;
-        if (src) {
-            const image = new Image();
-            image.addEventListener('load', this._onLoad);
-            image.addEventListener('error', this._onError);
-            attr(image, { alt, width, height });
-            if (lazyLoad) {
-                image.dataset.src = src;
-                image.classList.add('lazyload');
-            } else {
-                image.src = src;
+    async initializeDropArea() {
+        /** @type {DropArea} */
+        this.dropArea = this.querySelector('drop-area');
+        if (!this.dropArea) {
+            return;
+        }
+        await customElements.whenDefined('drop-area');
+        this.dropArea.addConfig({
+            hasInput: this.getProperty('has-drop-area-input'),
+            handler: this.getProperty('drop-area-handler') || this
+        });
+        await this.dropArea?.promise;
+        this.dropArea?.listen('onDrop', this._onInput);
+        this.dropArea?.listen('onError', this.hideDropArea);
+        this.addEventListener('dragenter', event => {
+            if (event.relatedTarget && this.contains(event.relatedTarget)) {
+                return;
             }
-            if (image.naturalWidth) {
-                this._onLoad();
+            if (eventContainsFiles(event)) {
+                this.dropArea.style.opacity = 1;
             }
-            return image;
+        });
+        this.addEventListener('dragleave', event => {
+            if (event.relatedTarget && this.contains(event.relatedTarget)) {
+                return;
+            }
+            this.dropArea.style.opacity = 0;
+        });
+    }
+
+    // #endregion - Drop Area
+
+    ////////////////////
+    // #region - Styles
+    ////////////////////
+
+    initializeStyles() {
+        const height = this.getHeight() || this.getSize();
+        const width = this.getWidth();
+        if (width || height) {
+            width === height && this.classList.add('image--square');
+            const className = `image--size-${width}x${height}`;
+            this.classList.add(className);
+            const css = `
+                max-width: ${width}px; 
+                width: ${width}px;
+                height: auto;
+            `;
+            addCssRule(`.${className}`, css);
+            addCssRule(`.${className} picture`, `aspect-ratio: ${width} / ${height};`);
+        }
+        this.addSizeClass();
+    }
+
+    removeSizeClass() {
+        this.classList.remove(`image--size-${this.getSizeKey()}`);
+    }
+
+    getSizeKey(width = this.getWidth()) {
+        for (const [key, value] of Object.entries(this._config.sizeMap)) {
+            if (value >= width) {
+                return key;
+            }
         }
     }
 
-    /**
-     * Initializes the image.
-     */
-    initializeImage() {
-        const src = this.image?.dataset?.src;
-        if (src) {
-            this.image.src = src;
-            delete this.image.dataset.src;
-        }
+    addSizeClass(width = this.getWidth()) {
+        const size = this.getSizeKey(width);
+        size && this.classList.add(`image--size-${size}`);
+    }
+
+    // #endregion - Styles
+
+    ///////////////////////
+    // #region - Lifecycle
+    ///////////////////////
+
+    async _onConnected() {
+        this.image = this.querySelector('img');
+        this.thumbnail = this.querySelector('.image__thumbnail');
+        this.picture = this.querySelector('picture');
+        this.initializeDropArea();
+        this.initializeImage();
+        const lazyLoad = this.hasProperty('lazy-load');
+        lazyLoad && lazyLoader(this.image);
     }
 
     /**
@@ -187,24 +427,31 @@ class ArpaImage extends ArpaElement {
         }
     }
 
+    // #endregion - LIFECYCLE
+
+    ///////////////////////
+    // #region - Events
+    ///////////////////////
+
     /**
-     * Waits for the image to finish loading.
-     * @returns {Promise} - A promise that resolves when the image has finished loading.
+     * Loads the image.
+     * @param {HTMLImageElement} image - The source of the image to load.
+     * @param {ImageInterface} config - The configuration options for the image.
+     * @returns {HTMLImageElement | undefined} - The image element.
      */
-    onLoad() {
-        return new Promise(resolve => {
-            const onLoad = () => {
-                this.image.removeEventListener('load', onLoad);
-                this.image.removeEventListener('error', onLoad);
-                resolve();
-            };
-            if (this.image?.naturalWidth) {
-                resolve();
-            } else {
-                this.image.addEventListener('load', onLoad);
-                this.image.addEventListener('error', onLoad);
+    initializeImage(image = this.image, config = this._config) {
+        const { alt, width, height } = config;
+        if (image instanceof HTMLImageElement) {
+            image.removeEventListener('load', this._onLoad);
+            image.removeEventListener('error', this._onError);
+            image.addEventListener('load', this._onLoad);
+            image.addEventListener('error', this._onError);
+            attr(image, { alt, width, height });
+            if (image.naturalWidth) {
+                this._onLoad();
             }
-        });
+            return image;
+        }
     }
 
     /**
@@ -213,14 +460,10 @@ class ArpaImage extends ArpaElement {
      */
     _onLoad(event) {
         const { onLoad } = this._config;
-        // this.node?.appendChild(this.renderImage());
-        // if (this.preloader) {
-        //     new Animation(this.preloader).fadeOut().then(() => {});
-        // }
-        if (typeof onLoad === 'function') {
-            onLoad(event, this);
-        }
+        typeof onLoad === 'function' && onLoad(event, this);
+        this._hasLoaded = true;
         this.stopPreloading();
+        this.classList.remove(this.getLoadingClass());
     }
 
     /**
@@ -229,58 +472,12 @@ class ArpaImage extends ArpaElement {
      */
     _onError(event) {
         this._hasError = true;
+        this._hasLoaded = true;
         const { onError } = this._config;
-        if (typeof onError === 'function') {
-            onError(event, this);
-        }
-        this.render();
-    }
-
-    /**
-     * Renders the image error.
-     * @returns {HTMLElement} - The rendered image error.
-     */
-    renderImageError() {
-        const icon = new Icon('warning_amber', { tooltip: 'Error loading image' }).render();
-        icon.classList.add('imageComponent__icon', 'imageComponent__icon--error');
-        icon.title = 'Error loading image';
-        return icon;
-    }
-
-    /**
-     * Busts the cache for the image.
-     */
-    bustCache() {
-        this.image.src = editURL(this.image.src, { bustCache: new Date().getTime() });
-    }
-
-    /**
-     * Initializes the drop area for the component.
-     */
-    _initializeDropArea() {
-        // const { onInput } = this._config;
-        // if (!onInput) {
-        //     return;
-        // }
-        // if (!this.dropArea) {
-        //     this.dropArea = new DropArea(this.node, {
-        //         content: 'Upload image',
-        //         hasInput: this._config.hasInput ?? false,
-        //         handler: this._config.dropAreaHandler ?? this.node,
-        //         onDrop: this._onInput.bind(this),
-        //         onError: this.hideDropArea.bind(this)
-        //     });
-        // }
-        // this.dropAreaNode = this.dropArea.render();
-        // this.node.addEventListener('dragover', event => {
-        //     if (eventContainsFiles(event)) {
-        //         this.dropAreaNode.style.opacity = 1;
-        //     }
-        // });
-        // this.node.addEventListener('dragleave', () => {
-        //     this.dropAreaNode.style.opacity = 0;
-        // });
-        // this.node.appendChild(this.dropAreaNode);
+        typeof onError === 'function' && onError(event, this);
+        this.stopPreloading(this.getErrorClass());
+        this.thumbnail.setContent(this.getProperty('errLoad'));
+        this.thumbnail.querySelector('arpa-icon')?.setIcon(this.getProperty('iconBroken'));
     }
 
     /**
@@ -290,73 +487,15 @@ class ArpaImage extends ArpaElement {
      */
     _onInput(files, event) {
         const { onInput } = this._config;
-        onInput(files, event, this);
+        typeof onInput === 'function' && onInput(files, event, this);
         this.hideDropArea();
     }
 
-    /**
-     * Preloads the component.
-     */
-    preload() {
-        this.src = null;
-        this.isUploading = true;
-        this.update();
-    }
+    // #endregion - EVENTS
 
-    /**
-     * Stops preloading the component.
-     * @param {number} timeout - The amount of time to wait before stopping preloading.
-     */
-    stopPreloading(timeout = 300) {
-        if (this.classList.contains(this.getLoadedClass())) {
-            return;
-        }
-        setTimeout(() => this.render(), timeout);
-    }
-
-    /**
-     * Shows the drop area for the component.
-     */
-    showDropArea() {
-        this.dropAreaNode.style.display = '';
-        requestAnimationFrame(() => (this.dropAreaNode.style.opacity = 1));
-    }
-
-    /**
-     * Hides the drop area for the component.
-     */
-    hideDropArea() {
-        requestAnimationFrame(() => (this.dropAreaNode.style.opacity = 0));
-    }
-
-    /**
-     * Uploads an image.
-     * @param {() => Promise} post - The function to call to upload the image.
-     * @returns {Promise} - A promise that resolves when the image has been uploaded.
-     */
-    uploadImage(post) {
-        return new Promise((resolve, reject) => {
-            const postImage = async dialog => {
-                dialog?.close();
-                this.preload();
-                return post()
-                    .then(response => {
-                        resolve(response);
-                        return this.onImageUploaded(response);
-                    })
-                    .catch(response => {
-                        dialog?.close();
-                        reject(response);
-                        return this.onImageUploadError(response);
-                    });
-            };
-            if (this.src) {
-                this.uploadConfirmModal(postImage);
-                return;
-            }
-            postImage();
-        });
-    }
+    //////////////////////////
+    // #region - Uploads
+    //////////////////////////
 
     /**
      * Called when the image has been uploaded.
@@ -381,8 +520,8 @@ class ArpaImage extends ArpaElement {
 
     /**
      * Displays a confirmation modal before uploading the image.
-     * @param {() => Promise} postImage - The function to call to upload the image.
      */
+    //  @param {() => Promise} postImage - The function to call to upload the image.
     uploadConfirmModal() {
         // params: postImage
         // const dialog = DialogService.openConfirmModal({
@@ -392,6 +531,34 @@ class ArpaImage extends ArpaElement {
         //     icon: 'upload',
         //     onConfirm: () => postImage(dialog)
         // });
+    }
+
+    /**
+     * Uploads an image.
+     * @param {() => Promise} post - The function to call to upload the image.
+     * @returns {Promise} - A promise that resolves when the image has been uploaded.
+     */
+    uploadImage(post) {
+        return new Promise((resolve, reject) => {
+            const postImage = async dialog => {
+                dialog?.close();
+                return post()
+                    .then(response => {
+                        resolve(response);
+                        return this.onImageUploaded(response);
+                    })
+                    .catch(response => {
+                        dialog?.close();
+                        reject(response);
+                        return this.onImageUploadError(response);
+                    });
+            };
+            if (this.src) {
+                this.uploadConfirmModal(postImage);
+                return;
+            }
+            postImage();
+        });
     }
 }
 

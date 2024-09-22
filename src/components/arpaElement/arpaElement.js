@@ -57,6 +57,9 @@ class ArpaElement extends HTMLElement {
 
     _bindMethods() {}
 
+    /**
+     * Called before any other initialization.
+     */
     _preInitialize() {}
 
     /**

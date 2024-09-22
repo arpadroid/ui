@@ -8,7 +8,7 @@ const DropAreaStory = {
     getArgTypes: (category = 'DropArea Props') => ({
         hasInput: { control: { type: 'boolean' }, table: { category } },
         icon: { control: { type: 'text' }, table: { category } },
-        content: { control: { type: 'text' }, table: { category } }
+        label: { control: { type: 'text' }, table: { category } }
     }),
     render: args => {
         return html`<drop-area ${attrString(args)}></drop-area>`;

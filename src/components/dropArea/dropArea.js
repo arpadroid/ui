@@ -2,7 +2,6 @@
  * @typedef {import('./dropAreaInterface.js').DropAreaInterface} DropAreaInterface
  */
 
-import { I18n } from '@arpadroid/i18n';
 import { eventContainsFiles, mergeObjects, render, ObserverTool } from '@arpadroid/tools';
 import ArpaElement from '../arpaElement/arpaElement.js';
 
@@ -27,9 +26,9 @@ class DropArea extends ArpaElement {
      * @returns {DropAreaInterface}
      */
     getDefaultConfig() {
-        this.i18n = I18n.get('components.dropArea');
+        this.i18nKey = 'components.dropArea';
         return mergeObjects(super.getDefaultConfig(), {
-            content: this.i18n.txtDropFiles,
+            label: this.i18n('txtDropFiles'),
             icon: 'file_upload',
             handler: undefined,
             hasInput: false,
@@ -38,7 +37,7 @@ class DropArea extends ArpaElement {
                 <button class="dropArea__handler" type="button">
                     <div class="dropArea__content">
                         <arpa-icon>{icon}</arpa-icon>
-                        <p>{content}</p>
+                        <p class="dropArea__label" slot="label">{label}</p>
                     </div>
                     {input}
                 </button>
@@ -54,7 +53,7 @@ class DropArea extends ArpaElement {
 
     getTemplateVars() {
         return {
-            content: this.getProperty('content'),
+            label: !this.hasSlot('label') && this.getProperty('label'),
             icon: this.getProperty('icon'),
             input: render(this.hasInput(), this._config.inputTemplate)
         };
@@ -67,7 +66,7 @@ class DropArea extends ArpaElement {
     /////////////////////
 
     hasInput() {
-        return this.hasAttribute('has-input') || this.getProperty('hasInput');
+        return this.hasProperty('has-input');
     }
 
     getInput() {

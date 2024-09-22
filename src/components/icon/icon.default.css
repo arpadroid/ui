@@ -1,9 +1,15 @@
+:root {
+    --icon-size: 1.5rem;
+    --icon-color: var(--grey-400);
+}
+
 arpa-icon {
-    height: 22px;
-    display: flex;
     align-items: center;
     color: var(--grey-400);
-    font-size: 22px;
+    display: flex;
+    font-size: var(--icon-size);
+    height: var(--icon-size);
+    width: var(--icon-size);
 }
 
 arpa-icon[size="mini"] {

@@ -101,9 +101,10 @@
 
 /* BOTTOM CENTER */
 .tooltip--bottom.tooltip--bottom .tooltip__content {
-    top: 100%;
+    bottom: 0%;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translateX(-50%) translateY(100%);
+    margin-top: 8px;
 }
 
 /* BOTTOM LEFT */

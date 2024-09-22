@@ -1,7 +1,7 @@
 :root {
     --preloader-width: 40px;
-    --preloader-border-width: 3px;
-    --preloader-outline-width: 3px;
+    --preloader-border-width: 2px;
+    --preloader-outline-width: 2px;
 }
 
 .circularPreloader {
