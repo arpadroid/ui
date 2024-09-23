@@ -32,11 +32,9 @@ arpa-image {
     }
 
     picture {
-        object-fit: cover;
         overflow: hidden;
         border-radius: 4px;
         position: relative;
-
         width: 100%;
         height: 100%;
     }
@@ -46,7 +44,7 @@ arpa-image {
         height: 100%;
         max-height: 100%;
         object-fit: cover;
-        transition: opacity 1s ease;
+        transition: opacity 0.5s ease;
         visibility: visible;
         opacity: 0;
     }
@@ -75,7 +73,7 @@ arpa-image {
         border-radius: 8px;
         position: absolute;
         inset: 0;
-        
+
         arpa-icon {
             font-size: var(--image-thumbnail-font-size);
             width: 100%;
@@ -101,19 +99,34 @@ arpa-image {
     }
 
     /**
+    * Loading
+    */
+
+    &.image--loading {
+        img {
+            opacity: 0;
+        }
+    }
+
+    /**
     * Loaded
     */
+
     &.image--loaded {
         img {
             opacity: 1;
+            z-index: 0;
+            position: relative;
         }
         circular-preloader {
             opacity: 0;
             z-index: 0;
         }
         .image__thumbnail {
-            display: none;
-            opacity: 0;
+            z-index: 0;
+            arpa-icon {
+                background-color: var(--grey-50);
+            }
         }
     }
 
@@ -130,15 +143,6 @@ arpa-image {
         .image__thumbnail arpa-icon {
             color: rgba(177, 35, 0, 0.6);
             background-color: var(--color-error-bg);
-        }
-    }
-
-    /**
-    * Loading
-    */
-    &.image--loading {
-        img {
-            opacity: 0;
         }
     }
 
@@ -186,13 +190,22 @@ arpa-image {
 }
 
 .image--size-x_small {
-    --preloader-width: 30px;
+    --preloader-width: 48px;
     --preloader-border-width: 1.5px;
     --preloader-outline-width: 1.5px;
 }
 
 .image--size-xx_small {
-    --preloader-width: 20px;
+    --preloader-width: 1rem;
     --preloader-border-width: 1.5px;
     --preloader-outline-width: 1.5px;
+    .image__thumbnail arpa-icon {
+        font-size: 1.8rem;
+    }
+
+    &.image--loading {
+        .image__thumbnail arpa-icon {
+            display: none;
+        }
+    }
 }

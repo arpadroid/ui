@@ -40,6 +40,7 @@ const ImageStory = {
                     justify-content: center;
                 }
             </style>
+
             <arpa-image ${attrString(args)}>${args.content}</arpa-image>
         `;
     }

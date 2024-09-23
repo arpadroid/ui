@@ -111,7 +111,6 @@ class ArpaImage extends ArpaElement {
         this.reRender();
     }
 
-
     getWidth() {
         return this.getProperty('width') || this.getSize();
     }
@@ -128,7 +127,6 @@ class ArpaImage extends ArpaElement {
         this._hasError = false;
         this.initializeImage();
     }
-
 
     getSource() {
         return this.getProperty('src');
@@ -264,7 +262,6 @@ class ArpaImage extends ArpaElement {
     renderPicture() {
         const src = this.getImageURL();
         const lazyLoad = this.hasProperty('lazy-load');
-        console.log('renderPicture', lazyLoad);
         const imageAttr = attrString({
             alt: this.getProperty('alt'),
             class: classNames({ 'image--lazy': lazyLoad }),
@@ -360,6 +357,7 @@ class ArpaImage extends ArpaElement {
     initializeStyles() {
         const height = this.getHeight() || this.getSize();
         const width = this.getWidth();
+        this.removeSizeClasses();
         if (width || height) {
             width === height && this.classList.add('image--square');
             const className = `image--size-${width}x${height}`;
@@ -375,9 +373,22 @@ class ArpaImage extends ArpaElement {
         this.addSizeClass();
     }
 
+    addSizeClass(width = this.getWidth()) {
+        const size = this.getSizeKey(width);
+        size && this.classList.add(`image--size-${size}`);
+    }
+
     removeSizeClass() {
         this.classList.remove(`image--size-${this.getSizeKey()}`);
     }
+
+    removeSizeClasses() {
+        const classes = Array.from(this.classList).filter(
+            className => !className.startsWith('image--size-') && className !== 'image--square'
+        );
+        this.setAttribute('class', classes.join(' '));
+    }
+        
 
     getSizeKey(width = this.getWidth()) {
         for (const [key, value] of Object.entries(this._config.sizeMap)) {
@@ -385,11 +396,6 @@ class ArpaImage extends ArpaElement {
                 return key;
             }
         }
-    }
-
-    addSizeClass(width = this.getWidth()) {
-        const size = this.getSizeKey(width);
-        size && this.classList.add(`image--size-${size}`);
     }
 
     // #endregion - Styles
@@ -476,6 +482,7 @@ class ArpaImage extends ArpaElement {
         const { onError } = this._config;
         typeof onError === 'function' && onError(event, this);
         this.stopPreloading(this.getErrorClass());
+        this.classList.remove(this.getLoadingClass());
         this.thumbnail.setContent(this.getProperty('errLoad'));
         this.thumbnail.querySelector('arpa-icon')?.setIcon(this.getProperty('iconBroken'));
     }
