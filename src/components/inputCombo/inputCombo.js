@@ -79,9 +79,7 @@ class InputCombo {
      * @static
      */
     static _onScroll() {
-        if (InputCombo.activeInstance) {
-            InputCombo.activeInstance.place();
-        }
+        InputCombo.instances.forEach(instance => instance.isActive() && instance.place());
     }
 
     /**

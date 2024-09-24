@@ -15,6 +15,8 @@ class ArpaElement extends HTMLElement {
     _isReady = false;
     _onRenderedCallbacks = [];
     _slots = [];
+    /** @type {() => void} */
+    _unsubscribes = [];
 
     /////////////////////////
     // #region INITIALIZATION
@@ -275,6 +277,10 @@ class ArpaElement extends HTMLElement {
             await this._onConnected();
             this.update();
         }
+    }
+
+    disconnectedCallback() {
+        this._unsubscribes?.forEach(unsubscribe => typeof unsubscribe === 'function' && unsubscribe());
     }
 
     _addClassNames() {
