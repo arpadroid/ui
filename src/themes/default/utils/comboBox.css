@@ -1,5 +1,5 @@
 .comboBox {
-    background-color: var(--overlay);
+    background-color: var(--color-background);
     border-radius: 6px;
     border: 1px solid var(--border-color);
     box-shadow: var(--select-combo-box-shadow);

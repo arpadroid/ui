@@ -10,6 +10,7 @@ arpa-icon {
     font-size: var(--icon-size);
     height: var(--icon-size);
     width: var(--icon-size);
+    text-align: center;
 }
 
 arpa-icon[size="mini"] {

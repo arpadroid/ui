@@ -1,6 +1,6 @@
 :root {
     --pagerItem-font: var(--primary-font);
-    --pagerItem-font-weight: 600;
+    --pagerItem-font-weight: 300;
     --pagerItem-font-size: 1.2rem;
     --pagerItem-color: var(--grey-550);
     --pagerItem-selected-color: var(--color-medium-blue);

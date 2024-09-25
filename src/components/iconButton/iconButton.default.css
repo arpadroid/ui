@@ -35,6 +35,12 @@ a.iconButton,
         position: absolute;
         inset: 0;
     }
+    
+    .listItem__main.listItem__main {
+        flex: none;
+        gap: 0;
+    }
+
 }
 
 button.iconButton[variant='minimal'] {

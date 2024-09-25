@@ -4,6 +4,9 @@
 
 import { isIOsSafari, mergeObjects, placeNode } from '@arpadroid/tools';
 
+/** @type {HTMLElement} */
+let lastClicked = undefined;
+
 /**
  * Represents an input combo component.
  */
@@ -88,6 +91,7 @@ class InputCombo {
      * @static
      */
     static _onDocumentClick(event) {
+        lastClicked = event.target;
         InputCombo.instances.forEach(instance => {
             const { closeOnClick, closeOnBlur } = instance._config;
             const { combo, input } = instance;
@@ -292,14 +296,24 @@ class InputCombo {
     async _onBlur(event) {
         const { closeOnBlur } = this._config;
         await new Promise(resolve => setTimeout(resolve, 200));
-        const activeNode = document.activeElement;
-        const isContained = this.combo.contains(activeNode) || this.input.contains(activeNode);
-        const isTargetContained =
-            this.combo.contains(event.relatedTarget) || this.input.contains(event.relatedTarget);
+        
         const isCombo = this.combo === document.activeElement;
-        if (!isCombo && !isContained && !isTargetContained && closeOnBlur) {
+        if (closeOnBlur && !isCombo && !this.isContained() && !this.isTargetContained(event)) {
             this.close();
         }
+    }
+
+    isContained() {
+        const activeNode = document.activeElement;
+        return this.combo.contains(activeNode) || this.input.contains(activeNode);
+    }
+
+    isTargetContained(event) {
+        return (
+            this.combo.contains(event.relatedTarget) ||
+            this.combo.contains(lastClicked) ||
+            this.input.contains(event.relatedTarget)
+        );
     }
 
     /**
@@ -315,6 +329,7 @@ class InputCombo {
      */
     close() {
         this.combo.classList.remove('inputCombo--active');
+        this.input.classList.remove('inputCombo__input--active');
         if (!this._isActive && typeof this._config.onClose === 'function') {
             this._config.onClose();
         }
@@ -341,6 +356,7 @@ class InputCombo {
             }
         });
         this.combo.classList.add('inputCombo--active');
+        this.input.classList.add('inputCombo__input--active');
         if (typeof onOpen === 'function') {
             onOpen();
         }
@@ -370,9 +386,7 @@ class InputCombo {
      */
     focusOption(node) {
         const item = node?.querySelector(this._optionFocusSelector) ?? node;
-        if (item) {
-            item.focus();
-        }
+        item?.focus();
     }
 
     /**

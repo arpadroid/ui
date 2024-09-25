@@ -24,7 +24,7 @@ class Tooltip extends ArpaElement {
 
     getHandler() {
         const handler = this.getProperty('handler');
-        return handler && resolveNode(handler);
+        return handler && resolveNode(handler, this);
     }
 
     getPosition() {
@@ -40,7 +40,9 @@ class Tooltip extends ArpaElement {
         const text = this.getProperty('text');
         const template = html`
             ${this.renderButton()}
-            <span slot="tooltip-content" class="tooltip__content" role="tooltip" aria-hidden="true">${text}</span>
+            <span slot="tooltip-content" class="tooltip__content" role="tooltip" aria-hidden="true">
+                ${text}
+            </span>
         `;
         this.innerHTML = template;
         this.classList.add('tooltip', `tooltip--${this.getPosition()}`);
@@ -48,9 +50,15 @@ class Tooltip extends ArpaElement {
         this.button = this.querySelector('.tooltip__button');
     }
 
-    setContent(content) {
-        if (this.contentNode) {
-            this.contentNode.innerHTML = content;
+    async setContent(content) {
+        await this.promise;
+        if (!this.contentNode) {
+            return;
+        }
+        typeof content === 'string' && (this.contentNode.innerHTML = content);
+        if (content instanceof HTMLElement) {
+            this.contentNode.innerHTML = '';
+            this.contentNode.appendChild(content);
         }
     }
 
