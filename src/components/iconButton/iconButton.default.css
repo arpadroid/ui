@@ -44,6 +44,7 @@ a.iconButton,
 }
 
 button.iconButton[variant='minimal'] {
+    --icon-button-width: 20px;
     border: none;
     background: none;
     padding: 0;

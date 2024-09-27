@@ -1,7 +1,10 @@
 .dropArea {
     width: 100%;
     box-shadow: var(--box-shadow);
-    min-height: 110px;
+    min-height: 6rem;
+    display: flex;
+    flex-direction: column;
+    position: relative;
 }
 .dropArea__handler {
     align-items: center;
@@ -17,6 +20,7 @@
     text-align: center;
     transition: var(--theme-transition);
     width: 100%;
+    flex: 1 1 auto;
 
     input {
         display: none;
@@ -27,13 +31,17 @@
         --icon-size: 3rem;
         font-size: var(--icon-size);
         font-weight: 500;
+        position: absolute;
+        --icon-size: 5rem;
+        font-weight: 200;
+        color: var(--grey-250);
     }
 
     &.dropArea__handler--active,
     &:hover,
     &:focus {
         border: 2px solid var(--color-background);
-        outline: 2px solid #887996;
+        outline: 2px solid var(--color-primary);
         background: repeating-linear-gradient(
             50deg,
             var(--color-background),
@@ -44,12 +52,13 @@
 
         .dropArea__label.dropArea__label,
         arpa-icon {
-            color: #887996;
+            /* color: #887996; */
+            color: var(--color-primary);
         }
 
         .dropArea__label.dropArea__label {
             text-decoration: underline;
-            color: #81708f;
+            color: var(--color-primary);
         }
     }
 }
@@ -66,14 +75,17 @@
     line-height: 20px;
     position: relative;
     text-transform: none;
-    top: -0.5rem;
     white-space: wrap;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    padding: 0 0.5rem;
 }
 
 .dropArea__label {
     margin: 0;
-    font-size: 1.2rem;
+    font-size: 0.9rem;
     color: var(--grey-400);
-    font-weight: 500;
+    font-weight: 600;
     padding: 0;
 }

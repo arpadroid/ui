@@ -1,7 +1,7 @@
 import { dashedToCamel, mergeObjects, renderNode, CustomElementTool } from '@arpadroid/tools';
-import { slotMixin, handleSlots, camelToDashed, getAttributes, attr, extractSlots } from '@arpadroid/tools';
+import { slotMixin, handleSlots, getAttributes, attr, extractSlots } from '@arpadroid/tools';
 import { I18nTool, I18n } from '@arpadroid/i18n';
-const { renderI18n, processTemplate } = I18nTool;
+const { processTemplate, arpaElementI18n } = I18nTool;
 
 const { getProperty, hasProperty, getArrayProperty } = CustomElementTool;
 
@@ -141,16 +141,12 @@ class ArpaElement extends HTMLElement {
         return this._slots.find(slot => slot.getAttribute('name') === name);
     }
 
-    i18n(key, replacements) {
-        const parts = key.split('.');
-        const keyLast = parts.pop();
-        const attributeName = camelToDashed(keyLast);
-        const configValue = this.getProperty(attributeName);
-        return renderI18n(configValue ?? `${this.i18nKey}.${key}`, replacements);
+    i18n(key, replacements, base = this.i18nKey) {
+        return arpaElementI18n(this, key, replacements, base);
     }
 
-    i18nText(key, replacements) {
-        return I18n.getText(`${this.i18nKey}.${key}`, replacements);
+    i18nText(key, replacements, base = this.i18nKey) {
+        return I18n.getText(`${base}.${key}`, replacements);
     }
 
     /**
@@ -323,8 +319,13 @@ class ArpaElement extends HTMLElement {
     ////////////////////
 
     async _render() {
+        this._preRender();
         await this.render();
         handleSlots(() => this._onRenderComplete());
+    }
+
+    _preRender() {
+        // abstract method
     }
 
     _onRenderComplete() {

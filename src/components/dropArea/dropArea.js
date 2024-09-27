@@ -36,9 +36,9 @@ class DropArea extends ArpaElement {
             template: html`
                 <button class="dropArea__handler" type="button">
                     <div class="dropArea__content">
-                        <arpa-icon>{icon}</arpa-icon>
                         <p class="dropArea__label" slot="label">{label}</p>
                     </div>
+                    <arpa-icon class="dropArea__icon">{icon}</arpa-icon>
                     {input}
                 </button>
             `
