@@ -16,9 +16,7 @@ class Button extends HTMLButtonElement {
     }
 
     connectedCallback() {
-        if (!this.getAttribute('type')) {
-            this.setAttribute('type', 'button');
-        }
+        !this.getAttribute('type') && this.setAttribute('type', 'button');
     }
 
     update() {

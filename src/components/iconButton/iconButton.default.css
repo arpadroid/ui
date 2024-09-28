@@ -170,9 +170,9 @@ button.iconButton--mini {
 .iconButton.button--warning:hover,
 .iconButton.button--warning:focus {
     background-color: var(--bg-light-orange) !important;
-    border: 2px solid var(--color-orange) !important;
+    border: 2px solid var(--orange) !important;
 }
 
 .iconButton.iconButton.button--warning .iconButton__content.iconButton__content {
-    color: var(--color-orange) !important;
+    color: var(--orange) !important;
 }

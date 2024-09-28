@@ -4,6 +4,9 @@ const html = String.raw;
 const DropAreaStory = {
     title: 'Components/Drop Area',
     tags: [],
+    parameters: {
+        layout: 'padded'
+    },
     getArgs: () => ({}),
     getArgTypes: (category = 'DropArea Props') => ({
         hasInput: { control: { type: 'boolean' }, table: { category } },
