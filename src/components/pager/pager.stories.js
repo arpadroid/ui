@@ -82,7 +82,6 @@ export const Test = {
     play: async ({ canvasElement, step }) => {
         const setup = await Test.playSetup(canvasElement);
         const { canvas, pagerNode } = setup;
-        console.log('listNode', pagerNode);
 
         await step('Renders the pager with the given props', async () => {
             const pagination = canvas.getByRole('navigation', { name: /Test pager/i });
