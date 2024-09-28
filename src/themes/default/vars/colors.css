@@ -25,8 +25,8 @@
     --border-light-color: var(--grey-100);
 
     /* Errors */
-    --color-error: var(--color-red);
-    --color-error-light: var(--color-lightest-red);
+    --color-error: var(--red);
+    --color-error-light: var(--red-lightest);
 
     --color-background: var(--color-white);
     --overlay: rgba(255, 255, 255, 0.9);

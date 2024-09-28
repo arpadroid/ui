@@ -28,6 +28,7 @@
     border: 1.5px solid var(--color-primary);
     box-shadow: 1px 1px 4px 0 rgba(0, 0, 0, 0.1);
     color: var(--grey-800);
+    font-weight: 600;
     display: none;
     font-size: 12px;
     line-height: 16px;

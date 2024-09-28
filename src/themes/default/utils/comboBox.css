@@ -1,8 +1,8 @@
 .comboBox {
     background-color: var(--color-background);
-    border-radius: 6px;
+    border-radius: 0.8rem;
     border: 1px solid var(--border-color);
-    box-shadow: var(--select-combo-box-shadow);
+    box-shadow: var(--comboBox-shadow);
     display: flex;
     flex-direction: column;
     max-height: 271px;
@@ -39,17 +39,28 @@
 .comboBox__item {
     > button,
     > a {
-        color: var(--text-color);
-        cursor: pointer;
-        padding: 0;
-        text-align: left;
-        width: 100%;
-        padding: 10px 15px;
-        display: flex;
         align-items: center;
-        justify-content: space-between;
+        color: var(--grey-600);
+        cursor: pointer;
+        display: flex;
+        flex: 1 1 auto;
+        font-family: var(--primary-font);
+        font-size: 0.9rem;
+        font-weight: 400;
         gap: 12px;
         height: var(--input-height);
+        justify-content: space-between;
+        padding-left: var(--input-padding);
+        padding-right: var(--input-padding);
+        text-align: left;
+        width: 100%;
+    }
+    .listItem__main.listItem__main {
+        display: flex;
+        align-items: center;
+        .listItem__contentWrapper {
+            align-self: center;
+        }
     }
 
     &[aria-selected='true'] > button,
@@ -61,14 +72,31 @@
     > a:focus,
     > a:hover {
         outline: none;
-        background-color: var(--color-lightest-blue);
-        color: var(--color-primary);
+        background-color: var(--field-option-active-background);
+        color: var(--field-option-active-color);
         arpa-icon {
-            color: var(--color-primary);
+            color: var(--field-option-active-color);
         }
 
-        .listItem__title {
-            color: var(--color-primary);
+        .listItem__title,
+        .listItem__content,
+        .fieldOption__label {
+            color: var(--field-option-active-color);
+            font-weight: var(--field-option-active-weight);
+            letter-spacing: -0.2px;
+        }
+    }
+
+    &[aria-selected='true'] > button,
+    &[aria-selected='true'] > a,
+    > a[aria-current],
+    > button[aria-current] {
+        .listItem__title,
+        .listItem__content,
+        .fieldOption__label {
+            font-weight: var(--field-option-active-weight);
+            text-decoration: underline;
+            text-decoration-thickness: 2px;
         }
     }
 }

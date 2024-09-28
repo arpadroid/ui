@@ -2,7 +2,7 @@
     --main-bg-color: brown;
     --box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.2);
     --max-page-width: 1600px;
-    --select-combo-box-shadow: rgba(99, 99, 99, 0.5) 0px 2px 8px 0px;
+    --comboBox-shadow: rgba(0, 0, 0, 0.3) 3px 3px 7px 0px;
     --theme-transition: background-color 0.4s ease-out, color 0.4s ease-out, border 0.4s ease-out, opacity 0.4s ease-out;
 }
 
