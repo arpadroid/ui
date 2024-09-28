@@ -1,28 +1,65 @@
+:root {
+    --button-border: 2px solid var(--border-color);
+    --button-height: 3rem;
+    --button-padding: 0 1rem;
+    --button-radius: 12px;
+    --button-shadow-active: 2px 2px 5px 0 rgba(0, 0, 0, 0.3);
+    --button-shadow: 1px 1px 5px 0 rgba(0, 0, 0, 0.1);
+    --button-weight: 500;
+    --button-weight-active: 700;
+    --button-gap: 0.75rem;
+    --button-color: var(--grey-500);
+    --button-active-color: var(--grey-500);
+}
+
 button[is='arpa-button']:not([variant='minimal']),
 button[is='submit-button'] {
-    display: flex;
-    text-transform: uppercase;
     align-items: center;
+    gap: var(--button-gap);
     background-color: var(--color-background);
-    border: 2px solid var(--border-color);
-    border-radius: 12px;
-    height: 52px;
-    padding: 0 12px;
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
-    transition: var(--theme-transition);
+    border-radius: var(--button-radius);
+    border: var(--button-border);
+    box-shadow: var(--button-shadow);
     cursor: pointer;
+    display: flex;
+    height: var(--button-height);
+    padding: var(--button-padding);
+    transition: var(--theme-transition);
 
+    /**
+     * Hover / Focus
+     */
     &:hover,
     &:focus {
         &:not(:disabled) {
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+            box-shadow: var(--button-shadow-active);
             .button__content {
                 text-decoration: underline;
+                text-decoration-color: var(--grey-200);
+                font-weight: var(--button-weight-active);
+                letter-spacing: 0px;
+            }
+            .icon {
+                color: var(--grey-500);
+            }
+
+            .button__content,
+            .icon {
+                color: var(--button-active-color);
             }
         }
     }
 
-    &[variant='white'] {
+    &:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
+
+    /**
+     * Variants
+     */
+
+    &[variant='primary'] {
         background-color: var(--grey-0);
         &:hover,
         &:focus {
@@ -55,12 +92,17 @@ button[is='submit-button'] {
 
 .button__content {
     flex: 1 1 auto;
-    padding: 0 8px;
     max-height: 100%;
     height: auto;
     display: block;
     white-space: nowrap;
-    font-weight: 500;
+    font-weight: var(--button-weight);
+    font-size: 1rem;
+    letter-spacing: normal;
+    color: var(--button-color);
+    text-underline-offset: 4px;
+    font-family: var(--primary-font);
+    letter-spacing: 0.2px;
 }
 
 .button--link {

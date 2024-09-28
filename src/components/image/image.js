@@ -330,8 +330,8 @@ class ArpaImage extends ArpaElement {
             handler: this.getProperty('drop-area-handler') || this
         });
         await this.dropArea?.promise;
-        this.dropArea?.listen('onDrop', this._onInput);
-        this.dropArea?.listen('onError', this.hideDropArea);
+        this.dropArea?.on('drop', this._onInput);
+        this.dropArea?.on('error', this.hideDropArea);
         this.addEventListener('dragenter', event => {
             if (event.relatedTarget && this.contains(event.relatedTarget)) {
                 return;

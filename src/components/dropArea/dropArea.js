@@ -161,13 +161,13 @@ class DropArea extends ArpaElement {
         }
         if (errors.length) {
             if (onError) {
-                this.signal('onError', errors, event);
+                this.signal('error', errors, event);
                 onError(errors, event);
             }
             return;
         }
         if (files?.length) {
-            this.signal('onDrop', event, files);
+            this.signal('drop', event, files);
             if (typeof onDrop === 'function') {
                 onDrop(files, event);
             }
