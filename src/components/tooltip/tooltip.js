@@ -40,7 +40,7 @@ class Tooltip extends ArpaElement {
         const text = this.getProperty('text');
         const template = html`
             ${this.renderButton()}
-            <span slot="tooltip-content" class="tooltip__content" role="tooltip" aria-hidden="true">
+            <span zone="tooltip-content" class="tooltip__content" role="tooltip" aria-hidden="true">
                 ${text}
             </span>
         `;
@@ -65,7 +65,7 @@ class Tooltip extends ArpaElement {
     renderButton() {
         return !this.handler
             ? html`<button
-                  slot="handler"
+                  zone="handler"
                   is="icon-button"
                   class="tooltip__button"
                   type="button"

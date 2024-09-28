@@ -240,7 +240,7 @@ class ArpaImage extends ArpaElement {
         const caption = this.getProperty('caption');
         const template = html`
             ${caption ? '<figure>' : ''} {picture}
-            ${caption ? html`<figcaption slot="caption">${caption}</figcaption>` : ''}
+            ${caption ? html`<figcaption zone="caption">${caption}</figcaption>` : ''}
             ${caption ? '</figure>' : ''}
         `;
         this.innerHTML = this.renderTemplate(template);
@@ -298,7 +298,7 @@ class ArpaImage extends ArpaElement {
     renderThumbnail(text = this.hasError() ? this.getProperty('errLoad') : this.getProperty('txtNoImage')) {
         return this.hasThumbnail()
             ? html`<arpa-tooltip class="image__thumbnail" icon="${this.getProperty('icon')}">
-                  <slot name="tooltip-content"> ${text} </slot>
+                  <arpa-zone name="tooltip-content"> ${text} </arpa-zone>
               </arpa-tooltip>`
             : '';
     }
@@ -311,7 +311,7 @@ class ArpaImage extends ArpaElement {
 
     renderDropArea() {
         return this.hasDropArea()
-            ? html`<drop-area><slot name="label">${this.getProperty('txtUploadImage')}</slot></drop-area>`
+            ? html`<drop-area><arpa-zone name="label">${this.getProperty('txtUploadImage')}</arpa-zone></drop-area>`
             : '';
     }
 

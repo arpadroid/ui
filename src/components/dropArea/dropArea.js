@@ -36,7 +36,7 @@ class DropArea extends ArpaElement {
             template: html`
                 <button class="dropArea__handler" type="button">
                     <div class="dropArea__content">
-                        <p class="dropArea__label" slot="label">{label}</p>
+                        <p class="dropArea__label" zone="label">{label}</p>
                     </div>
                     <arpa-icon class="dropArea__icon">{icon}</arpa-icon>
                     {input}
@@ -53,7 +53,7 @@ class DropArea extends ArpaElement {
 
     getTemplateVars() {
         return {
-            label: !this.hasSlot('label') && this.getProperty('label'),
+            label: !this.hasZone('label') && this.getProperty('label'),
             icon: this.getProperty('icon'),
             input: render(this.hasInput(), this._config.inputTemplate)
         };

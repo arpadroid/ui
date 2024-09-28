@@ -50,13 +50,13 @@ export const Test = {
     }
 };
 
-export const Slotted = {
-    name: 'Slotted',
+export const Zoned = {
+    name: 'Zoned Content',
     parameters: {},
     argTypes: {
         ...TooltipStory.getArgTypes(),
-        content: { control: { type: 'text' }, table: { category: 'slots' } },
-        handler: { control: { type: 'text' }, table: { category: 'slots' } }
+        content: { control: { type: 'text' }, table: { category: 'zones' } },
+        handler: { control: { type: 'text' }, table: { category: 'zones' } }
     },
     args: {
         handler: '',
@@ -65,8 +65,8 @@ export const Slotted = {
     render: args => {
         return html`
             <arpa-tooltip ${attrString(args)}>
-                <slot name="handler"><arpa-icon>info</arpa-icon>${args.handler}</slot>
-                <slot name="tooltip-content">${args.content}</slot>
+                <arpa-zone name="handler"><arpa-icon>info</arpa-icon>${args.handler}</arpa-zone>
+                <arpa-zone name="tooltip-content">${args.content}</arpa-zone>
             </arpa-tooltip>
         `;
     }

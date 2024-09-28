@@ -1,5 +1,5 @@
 import { dashedToCamel, mergeObjects, renderNode, CustomElementTool } from '@arpadroid/tools';
-import { slotMixin, handleSlots, getAttributes, attr, extractSlots } from '@arpadroid/tools';
+import { zoneMixin, handleZones, getAttributes, attr, extractZones } from '@arpadroid/tools';
 import { I18nTool, I18n } from '@arpadroid/i18n';
 const { processTemplate, arpaElementI18n } = I18nTool;
 
@@ -14,7 +14,7 @@ class ArpaElement extends HTMLElement {
     _hasInitialized = false;
     _isReady = false;
     _onRenderedCallbacks = [];
-    _slots = [];
+    _zones = [];
     /** @type {() => void} */
     _unsubscribes = [];
 
@@ -31,14 +31,14 @@ class ArpaElement extends HTMLElement {
         this._bindMethods();
         this._preInitialize();
         this.setConfig(config);
-        this._initializeSlots();
+        this._initializeZones();
         this._initializeContent();
         this._initialize();
         this.promise = this.getPromise();
     }
 
-    _initializeSlots() {
-        slotMixin(this);
+    _initializeZones() {
+        zoneMixin(this);
     }
 
     _initializeContent() {
@@ -46,7 +46,7 @@ class ArpaElement extends HTMLElement {
         this._childNodes = [...this.childNodes];
     }
 
-    _doBindings(bindings = this._bindings, internalBindings = ['_initializeSlot']) {
+    _doBindings(bindings = this._bindings, internalBindings = ['_initializeZone']) {
         if (!this.bindingsComplete) {
             [...internalBindings, ...bindings].forEach(method => {
                 if (typeof this[method] === 'function') {
@@ -105,7 +105,7 @@ class ArpaElement extends HTMLElement {
         this.templateContent = this.getTemplateContent(template);
         this.template = document.createElement('template');
         this.template.innerHTML = this.templateContent;
-        extractSlots(this.template.content, this._slots, this);
+        extractZones(this.template.content, this._zones, this);
         this.templateNodes = this.template?.content?.childNodes;
         this.promise.then(() => {
             if (typeof container === 'string') {
@@ -133,12 +133,12 @@ class ArpaElement extends HTMLElement {
     // #region ACCESSORS
     /////////////////////
 
-    hasSlot(name) {
-        return this._slots.find(slot => slot.getAttribute('name') === name);
+    hasZone(name) {
+        return this._zones.find(zone => zone.getAttribute('name') === name);
     }
 
-    getSlot(name) {
-        return this._slots.find(slot => slot.getAttribute('name') === name);
+    getZone(name) {
+        return this._zones.find(zone => zone.getAttribute('name') === name);
     }
 
     i18n(key, replacements, base = this.i18nKey) {
@@ -164,7 +164,7 @@ class ArpaElement extends HTMLElement {
     getDefaultConfig(config = {}) {
         return mergeObjects(
             {
-                removeEmptySlotNodes: true,
+                removeEmptyZoneNodes: true,
                 className: '',
                 variant: undefined,
                 classNames: []
@@ -240,8 +240,8 @@ class ArpaElement extends HTMLElement {
         return I18n.getText(`${this.i18nKey}.${key}`);
     }
 
-    getSlots() {
-        return this._slots;
+    getZones() {
+        return this._zones;
     }
 
     // #endregion
@@ -277,6 +277,7 @@ class ArpaElement extends HTMLElement {
 
     disconnectedCallback() {
         this._unsubscribes?.forEach(unsubscribe => typeof unsubscribe === 'function' && unsubscribe());
+        this._onDestroy();
     }
 
     _addClassNames() {
@@ -308,7 +309,11 @@ class ArpaElement extends HTMLElement {
         // abstract method
     }
 
-    _onSlotPlaced() {
+    _onZonePlaced() {
+        // abstract method
+    }
+
+    _onDestroy() {
         // abstract method
     }
 
@@ -321,7 +326,7 @@ class ArpaElement extends HTMLElement {
     async _render() {
         this._preRender();
         await this.render();
-        handleSlots(() => this._onRenderComplete());
+        handleZones(() => this._onRenderComplete());
     }
 
     _preRender() {
