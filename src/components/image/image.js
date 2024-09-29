@@ -3,7 +3,8 @@
  * @typedef {import('./imageInterface.js').ImageInterface} ImageInterface
  */
 
-import { attrString, classNames, attr, mergeObjects, lazyLoad as lazyLoader } from '@arpadroid/tools';
+import { attrString, classNames, attr, mergeObjects } from '@arpadroid/tools';
+import { lazyLoad as lazyLoader, clearLazyImage } from '@arpadroid/tools';
 import { editURL, mapHTML, eventContainsFiles, addCssRule } from '@arpadroid/tools';
 import ArpaElement from '../arpaElement/arpaElement.js';
 
@@ -108,7 +109,7 @@ class ArpaImage extends ArpaElement {
         this._hasLoaded = false;
         this._hasError = false;
         this.classList.remove(this.getLoadedClass());
-        this.reRender();
+        this._hasRendered && this.reRender();
     }
 
     getWidth() {
@@ -247,6 +248,12 @@ class ArpaImage extends ArpaElement {
         // this._initializeImagePreview();
     }
 
+    reRender() {
+        this._hasLoaded = false;
+        this._hasError = false;
+        super.reRender();
+    }
+
     getTemplateVars() {
         return {
             preloader: this.renderPreloader(),
@@ -311,7 +318,9 @@ class ArpaImage extends ArpaElement {
 
     renderDropArea() {
         return this.hasDropArea()
-            ? html`<drop-area><arpa-zone name="label">${this.getProperty('txtUploadImage')}</arpa-zone></drop-area>`
+            ? html`<drop-area>
+                  <arpa-zone name="label">${this.getProperty('txtUploadImage')}</arpa-zone>
+              </drop-area>`
             : '';
     }
 
@@ -388,7 +397,6 @@ class ArpaImage extends ArpaElement {
         );
         this.setAttribute('class', classes.join(' '));
     }
-        
 
     getSizeKey(width = this.getWidth()) {
         for (const [key, value] of Object.entries(this._config.sizeMap)) {
@@ -430,6 +438,18 @@ class ArpaImage extends ArpaElement {
             //     ];
             //     GalleryDialog.open(items);
             // });
+        }
+    }
+
+    _onDestroy() {
+        const lazyLoad = this.hasProperty('lazy-load');
+        this._hasRendered = false;
+        this._hasLoaded = false;
+        this._hasError = false;
+        if (lazyLoad && this.image instanceof HTMLImageElement) {
+            this.image.dataset.src = '';
+            this.image.removeAttribute('src');
+            clearLazyImage(this.image);
         }
     }
 

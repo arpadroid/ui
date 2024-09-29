@@ -343,6 +343,7 @@ class Pager extends ArpaElement {
      */
     async _handleClick(node) {
         await this.promise;
+        node.promise && await node.promise;
         const clickHandlers = node.querySelectorAll('a.pagerItem__content, button.pagerItem__content');
         clickHandlers.forEach(handler => handler.addEventListener('click', this.onLinkClick));
     }
