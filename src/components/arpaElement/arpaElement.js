@@ -277,6 +277,7 @@ class ArpaElement extends HTMLElement {
 
     disconnectedCallback() {
         this._unsubscribes?.forEach(unsubscribe => typeof unsubscribe === 'function' && unsubscribe());
+        this._unsubscribes = [];
         this._onDestroy();
     }
 
