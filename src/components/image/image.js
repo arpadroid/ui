@@ -4,7 +4,7 @@
  */
 
 import { attrString, classNames, attr, mergeObjects } from '@arpadroid/tools';
-import { lazyLoad as lazyLoader, clearLazyImage } from '@arpadroid/tools';
+import { lazyLoad as lazyLoader, clearLazyImage, hasLoadedSource } from '@arpadroid/tools';
 import { editURL, mapHTML, eventContainsFiles, addCssRule } from '@arpadroid/tools';
 import ArpaElement from '../arpaElement/arpaElement.js';
 
@@ -44,6 +44,7 @@ class ArpaImage extends ArpaElement {
             icon: 'crop_original',
             iconBroken: 'broken_image',
             lazyLoad: false,
+            hasNativeLazy: false,
             loadedClass: 'image--loaded',
             onError: undefined,
             onInput: undefined,
@@ -173,6 +174,10 @@ class ArpaImage extends ArpaElement {
         return !this.hasLoaded() || !this.getSource() || this.hasError();
     }
 
+    hasLazyLoad() {
+        return this.hasProperty('lazy-load') && !hasLoadedSource(this.getImageURL());
+    }
+
     // #endregion - Has
 
     /**
@@ -265,16 +270,19 @@ class ArpaImage extends ArpaElement {
             icon: this.getProperty('icon')
         };
     }
+    
 
     renderPicture() {
         const src = this.getImageURL();
-        const lazyLoad = this.hasProperty('lazy-load');
+        const lazyLoad = this.hasLazyLoad();
+        const hasNativeLazy = this.getProperty('has-native-lazy');
         const imageAttr = attrString({
             alt: this.getProperty('alt'),
             class: classNames({ 'image--lazy': lazyLoad }),
-            'data-src': lazyLoad ? src : '',
-            lazyLoad,
-            src: lazyLoad ? '' : src
+            'data-src': lazyLoad && !hasNativeLazy ? src : '',
+            lazyLoad: lazyLoad && !hasNativeLazy,
+            loading: hasNativeLazy && 'lazy' || undefined,
+            src: lazyLoad && !hasNativeLazy ? '' : src
         });
         return html`
             <picture>
@@ -418,8 +426,8 @@ class ArpaImage extends ArpaElement {
         this.picture = this.querySelector('picture');
         this.initializeDropArea();
         this.initializeImage();
-        const lazyLoad = this.hasProperty('lazy-load');
-        lazyLoad && lazyLoader(this.image);
+        const hasNativeLazy = this.getProperty('has-native-lazy');
+        this.hasLazyLoad() && !hasNativeLazy && lazyLoader(this.image);
     }
 
     /**
@@ -442,7 +450,7 @@ class ArpaImage extends ArpaElement {
     }
 
     _onDestroy() {
-        const lazyLoad = this.hasProperty('lazy-load');
+        const lazyLoad = this.hasLazyLoad();
         this._hasRendered = false;
         this._hasLoaded = false;
         this._hasError = false;

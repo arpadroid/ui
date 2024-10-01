@@ -1,5 +1,4 @@
-import { attr, getSafeHtmlId, mergeObjects, render } from '@arpadroid/tools';
-
+import { attr, getSafeHtmlId, mergeObjects, handleZones, zoneMixin, hasZone } from '@arpadroid/tools';
 const html = String.raw;
 class IconButton extends HTMLButtonElement {
     static get observedAttributes() {
@@ -14,6 +13,7 @@ class IconButton extends HTMLButtonElement {
 
     constructor(config) {
         super();
+        zoneMixin(this);
         this.setConfig(config);
     }
 
@@ -39,6 +39,12 @@ class IconButton extends HTMLButtonElement {
         }
     }
 
+    disconnectedCallback() {
+        this._onDestroy();
+    }
+
+    _onDestroy() {}
+
     handleVariant() {
         const variant = this.getVariant();
         if (variant === 'delete') {
@@ -54,6 +60,10 @@ class IconButton extends HTMLButtonElement {
 
     getId() {
         return this.id || this._config.id || `iconButton-${getSafeHtmlId(this.getLabel())}`;
+    }
+
+    hasTooltip() {
+        return Boolean(this.getLabel()) || hasZone(this, 'tooltip-content');
     }
 
     getClassNames() {
@@ -72,26 +82,25 @@ class IconButton extends HTMLButtonElement {
         return this.getAttribute('icon') ?? this._config.icon ?? this.innerHTML;
     }
 
-    render() {
+    async render() {
         const template = html`
             <arpa-icon>${this.getIcon()}</arpa-icon>
             ${this.renderTooltip()}
         `;
-
         this.innerHTML = template;
+        handleZones(this._zones);
     }
 
     renderTooltip() {
         const label = this.getLabel();
         const id = this.getId();
-        return render(
-            label && id,
-            html`
-                <arpa-tooltip position="${this.getTooltipPosition()}" handler="#${id}">
-                    <arpa-zone name="tooltip-content">${label}</arpa-zone>
-                </arpa-tooltip>
-            `
-        );
+        const hasTooltip = id && this.hasTooltip();
+
+        return hasTooltip
+            ? html`<arpa-tooltip position="${this.getTooltipPosition()}" handler="#${id}">
+                  <arpa-zone name="tooltip-content">${label}</arpa-zone>
+              </arpa-tooltip>`
+            : '';
     }
 
     getTooltipPosition() {

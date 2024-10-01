@@ -1,5 +1,5 @@
 import { dashedToCamel, mergeObjects, renderNode, CustomElementTool } from '@arpadroid/tools';
-import { zoneMixin, handleZones, getAttributes, attr, extractZones } from '@arpadroid/tools';
+import { zoneMixin, handleZones, getAttributes, attr, extractZones, hasZone as _hasZone } from '@arpadroid/tools';
 import { I18nTool, I18n } from '@arpadroid/i18n';
 const { processTemplate, arpaElementI18n } = I18nTool;
 
@@ -14,7 +14,6 @@ class ArpaElement extends HTMLElement {
     _hasInitialized = false;
     _isReady = false;
     _onRenderedCallbacks = [];
-    _zones = [];
     /** @type {() => void} */
     _unsubscribes = [];
 
@@ -134,11 +133,11 @@ class ArpaElement extends HTMLElement {
     /////////////////////
 
     hasZone(name) {
-        return this._zones.find(zone => zone.getAttribute('name') === name);
+        return _hasZone(this, name);
     }
 
     getZone(name) {
-        return this._zones.find(zone => zone.getAttribute('name') === name);
+        return _hasZone(this, name);
     }
 
     i18n(key, replacements, base = this.i18nKey) {
@@ -327,7 +326,8 @@ class ArpaElement extends HTMLElement {
     async _render() {
         this._preRender();
         await this.render();
-        handleZones(() => this._onRenderComplete());
+        handleZones(this._zones);
+        this._onRenderComplete();
     }
 
     _preRender() {
@@ -337,8 +337,10 @@ class ArpaElement extends HTMLElement {
     _onRenderComplete() {
         this._hasRendered = true;
         this._onRenderedCallbacks.forEach(callback => callback());
-        this.resolvePromise?.();
-        this._onComplete();
+        requestAnimationFrame(() => {
+            this.resolvePromise?.();
+            this._onComplete();
+        });
     }
 
     _onComplete() {
