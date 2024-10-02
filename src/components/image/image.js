@@ -44,7 +44,7 @@ class ArpaImage extends ArpaElement {
             icon: 'crop_original',
             iconBroken: 'broken_image',
             lazyLoad: false,
-            hasNativeLazy: false,
+            hasNativeLazy: true,
             loadedClass: 'image--loaded',
             onError: undefined,
             onInput: undefined,
@@ -275,13 +275,13 @@ class ArpaImage extends ArpaElement {
     renderPicture() {
         const src = this.getImageURL();
         const lazyLoad = this.hasLazyLoad();
-        const hasNativeLazy = this.getProperty('has-native-lazy');
+        const hasNativeLazy = this.hasProperty('has-native-lazy');
         const imageAttr = attrString({
             alt: this.getProperty('alt'),
             class: classNames({ 'image--lazy': lazyLoad }),
             'data-src': lazyLoad && !hasNativeLazy ? src : '',
             lazyLoad: lazyLoad && !hasNativeLazy,
-            loading: hasNativeLazy && 'lazy' || undefined,
+            loading: lazyLoad && hasNativeLazy && 'lazy' || undefined,
             src: lazyLoad && !hasNativeLazy ? '' : src
         });
         return html`
@@ -426,7 +426,7 @@ class ArpaImage extends ArpaElement {
         this.picture = this.querySelector('picture');
         this.initializeDropArea();
         this.initializeImage();
-        const hasNativeLazy = this.getProperty('has-native-lazy');
+        const hasNativeLazy = this.hasProperty('has-native-lazy');
         this.hasLazyLoad() && !hasNativeLazy && lazyLoader(this.image);
     }
 
