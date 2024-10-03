@@ -1,5 +1,5 @@
 import { getAttributes, dashedToCamel, mergeObjects, renderNode, CustomElementTool } from '@arpadroid/tools';
-import { handleZones, zoneMixin, extractZones, hasZone as _hasZone, attr } from '@arpadroid/tools';
+import { handleZones, zoneMixin, extractZones, hasZone as _hasZone, attr, setNodes } from '@arpadroid/tools';
 import { I18nTool, I18n } from '@arpadroid/i18n';
 const { processTemplate, arpaElementI18n } = I18nTool;
 
@@ -27,12 +27,12 @@ class ArpaElement extends HTMLElement {
     constructor(config) {
         super();
         this.i18nKey = '';
-        this._bindMethods();
-        this._preInitialize();
+        typeof this._bindMethods === 'function' && this._bindMethods();
+        typeof this._preInitialize === 'function' && this._preInitialize();
         this.setConfig(config);
         this._initializeZones();
         this._initializeContent();
-        this._initialize();
+        typeof this._initialize === 'function' && this._initialize();
         this.promise = this.getPromise();
     }
 
@@ -47,27 +47,13 @@ class ArpaElement extends HTMLElement {
 
     _doBindings(bindings = this._bindings, internalBindings = ['_initializeZone']) {
         if (!this.bindingsComplete) {
-            [...internalBindings, ...bindings].forEach(method => {
-                if (typeof this[method] === 'function') {
-                    this[method] = this[method].bind(this);
-                }
+            const allBindings = new Set([...internalBindings, ...bindings]);
+            allBindings.forEach(method => {
+                typeof this[method] === 'function' && (this[method] = this[method].bind(this));
             });
+            this.bindingsComplete = true;
         }
-        this.bindingsComplete = true;
     }
-
-    _bindMethods() {}
-
-    /**
-     * Called before any other initialization.
-     */
-    _preInitialize() {}
-
-    /**
-     * Initializes the element's internal state.
-     * @private
-     */
-    _initialize() {}
 
     getPromise() {
         return new Promise((resolve, reject) => {
@@ -105,16 +91,21 @@ class ArpaElement extends HTMLElement {
         this.template = document.createElement('template');
         this.template.innerHTML = this.templateContent;
         extractZones(this.template.content, this._zones, this);
-        this.templateNodes = this.template?.content?.childNodes;
+
+        const fragment = document.createDocumentFragment();
+        fragment.append(...this.template.content.childNodes);
+
+        // Store the template nodes
+        this.templateNodes = fragment.childNodes;
+
         this.promise.then(() => {
             if (typeof container === 'string') {
                 container = this.querySelector(container);
-            }
-            if (typeof container === 'function') {
+            } else if (typeof container === 'function') {
                 container = container();
             }
             if (container instanceof HTMLElement) {
-                container.prepend(...this.templateNodes);
+                container.prepend(fragment);
             }
         });
     }
@@ -230,8 +221,7 @@ class ArpaElement extends HTMLElement {
             this._childNodes = [...content.childNodes];
         }
         if (contentContainer instanceof HTMLElement) {
-            contentContainer.innerHTML = '';
-            contentContainer.append(...this._childNodes);
+            setNodes(contentContainer, this._childNodes);
         }
     }
 

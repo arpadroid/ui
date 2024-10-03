@@ -14,7 +14,6 @@ class Pager extends ArpaElement {
     pagerItems = {};
 
     _initialize() {
-        super._initialize();
         this.onLinkClick = this.onLinkClick.bind(this);
     }
 

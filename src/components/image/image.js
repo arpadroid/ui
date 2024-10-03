@@ -178,6 +178,10 @@ class ArpaImage extends ArpaElement {
         return this.hasProperty('lazy-load') && !hasLoadedSource(this.getImageURL());
     }
 
+    hasNativeLazy() {
+        return this.hasProperty('has-native-lazy');
+    }
+
     // #endregion - Has
 
     /**
@@ -275,7 +279,7 @@ class ArpaImage extends ArpaElement {
     renderPicture() {
         const src = this.getImageURL();
         const lazyLoad = this.hasLazyLoad();
-        const hasNativeLazy = this.hasProperty('has-native-lazy');
+        const hasNativeLazy = this.hasNativeLazy();
         const imageAttr = attrString({
             alt: this.getProperty('alt'),
             class: classNames({ 'image--lazy': lazyLoad }),
@@ -426,8 +430,7 @@ class ArpaImage extends ArpaElement {
         this.picture = this.querySelector('picture');
         this.initializeDropArea();
         this.initializeImage();
-        const hasNativeLazy = this.hasProperty('has-native-lazy');
-        this.hasLazyLoad() && !hasNativeLazy && lazyLoader(this.image);
+        this.hasLazyLoad() && !this.hasNativeLazy() && lazyLoader(this.image);
     }
 
     /**
@@ -454,11 +457,18 @@ class ArpaImage extends ArpaElement {
         this._hasRendered = false;
         this._hasLoaded = false;
         this._hasError = false;
+        const hasNativeLazy = this.hasNativeLazy();
+        this.image.removeEventListener('load', this._onLoad);
+        this.image.removeEventListener('error', this._onError);
         if (lazyLoad && this.image instanceof HTMLImageElement) {
             this.image.dataset.src = '';
-            this.image.removeAttribute('src');
-            clearLazyImage(this.image);
+            this.image.src = '';
+            !hasNativeLazy && clearLazyImage(this.image);
         }
+        this.image = null;
+        this.thumbnail = null;
+        this.picture = null;
+
     }
 
     // #endregion - LIFECYCLE

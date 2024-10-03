@@ -1,4 +1,5 @@
 import ArpaElement from '../../arpaElement/arpaElement.js';
+import { appendNodes } from '@arpadroid/tools';
 const html = String.raw;
 class CircularPreloader extends ArpaElement {
     static template = html`
@@ -15,7 +16,7 @@ class CircularPreloader extends ArpaElement {
         this.setAttribute('role', 'progressbar');
         this.setAttribute('aria-label', this.getProperty('label'));
         this.contentNode = this.querySelector('.circularPreloader__content');
-        this.contentNode?.append(...this._childNodes);
+        appendNodes(this, this._childNodes);
     }
 
     getDefaultConfig() {

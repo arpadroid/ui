@@ -1,5 +1,6 @@
 /* eslint-disable sonarjs/no-duplicate-string */
 import ArpaElement from '../arpaElement/arpaElement.js';
+import { appendNodes } from '@arpadroid/tools';
 /**
  * @typedef {import('./truncateTextInterface').TruncateTextInterface } TruncateTextInterface
  */
@@ -111,7 +112,8 @@ class TruncateText extends ArpaElement {
             this.innerHTML = '';
             this.isTruncated = false;
             this.renderButton();
-            this.append(...this._childNodes, this.button);
+            appendNodes(this, this._childNodes);
+            this.append(this.button);
         }
     }
 
