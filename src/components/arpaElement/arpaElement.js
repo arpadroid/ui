@@ -1,5 +1,5 @@
-import { dashedToCamel, mergeObjects, renderNode, CustomElementTool } from '@arpadroid/tools';
-import { zoneMixin, handleZones, getAttributes, attr, extractZones, hasZone as _hasZone } from '@arpadroid/tools';
+import { getAttributes, dashedToCamel, mergeObjects, renderNode, CustomElementTool } from '@arpadroid/tools';
+import { handleZones, zoneMixin, extractZones, hasZone as _hasZone, attr } from '@arpadroid/tools';
 import { I18nTool, I18n } from '@arpadroid/i18n';
 const { processTemplate, arpaElementI18n } = I18nTool;
 
