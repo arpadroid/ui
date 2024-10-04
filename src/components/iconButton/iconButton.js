@@ -98,7 +98,7 @@ class IconButton extends HTMLButtonElement {
 
         return hasTooltip
             ? html`<arpa-tooltip position="${this.getTooltipPosition()}" handler="#${id}">
-                  <arpa-zone name="tooltip-content">${label}</arpa-zone>
+                  <zone name="tooltip-content">${label}</zone>
               </arpa-tooltip>`
             : '';
     }

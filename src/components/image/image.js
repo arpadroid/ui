@@ -316,7 +316,7 @@ class ArpaImage extends ArpaElement {
     renderThumbnail(text = this.hasError() ? this.getProperty('errLoad') : this.getProperty('txtNoImage')) {
         return this.hasThumbnail()
             ? html`<arpa-tooltip class="image__thumbnail" icon="${this.getProperty('icon')}">
-                  <arpa-zone name="tooltip-content"> ${text} </arpa-zone>
+                  <zone name="tooltip-content"> ${text} </zone>
               </arpa-tooltip>`
             : '';
     }
@@ -330,7 +330,7 @@ class ArpaImage extends ArpaElement {
     renderDropArea() {
         return this.hasDropArea()
             ? html`<drop-area>
-                  <arpa-zone name="label">${this.getProperty('txtUploadImage')}</arpa-zone>
+                  <zone name="label">${this.getProperty('txtUploadImage')}</zone>
               </drop-area>`
             : '';
     }

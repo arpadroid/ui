@@ -65,8 +65,8 @@ export const Zoned = {
     render: args => {
         return html`
             <arpa-tooltip ${attrString(args)}>
-                <arpa-zone name="handler"><arpa-icon>info</arpa-icon>${args.handler}</arpa-zone>
-                <arpa-zone name="tooltip-content">${args.content}</arpa-zone>
+                <zone name="handler"><arpa-icon>info</arpa-icon>${args.handler}</zone>
+                <zone name="tooltip-content">${args.content}</zone>
             </arpa-tooltip>
         `;
     }
