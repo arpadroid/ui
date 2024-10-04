@@ -274,7 +274,6 @@ class ArpaImage extends ArpaElement {
             icon: this.getProperty('icon')
         };
     }
-    
 
     renderPicture() {
         const src = this.getImageURL();
@@ -285,7 +284,7 @@ class ArpaImage extends ArpaElement {
             class: classNames({ 'image--lazy': lazyLoad }),
             'data-src': lazyLoad && !hasNativeLazy ? src : '',
             lazyLoad: lazyLoad && !hasNativeLazy,
-            loading: lazyLoad && hasNativeLazy && 'lazy' || undefined,
+            loading: (lazyLoad && hasNativeLazy && 'lazy') || undefined,
             src: lazyLoad && !hasNativeLazy ? '' : src
         });
         return html`
@@ -453,22 +452,20 @@ class ArpaImage extends ArpaElement {
     }
 
     _onDestroy() {
-        const lazyLoad = this.hasLazyLoad();
         this._hasRendered = false;
         this._hasLoaded = false;
         this._hasError = false;
         const hasNativeLazy = this.hasNativeLazy();
         this.image.removeEventListener('load', this._onLoad);
         this.image.removeEventListener('error', this._onError);
-        if (lazyLoad && this.image instanceof HTMLImageElement) {
+        if (this.hasLazyLoad() && this.image instanceof HTMLImageElement) {
             this.image.dataset.src = '';
-            this.image.src = '';
             !hasNativeLazy && clearLazyImage(this.image);
         }
+        this.image.src = '';
         this.image = null;
         this.thumbnail = null;
         this.picture = null;
-
     }
 
     // #endregion - LIFECYCLE
