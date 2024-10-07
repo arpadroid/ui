@@ -91,7 +91,6 @@ class ArpaElement extends HTMLElement {
         this.template = document.createElement('template');
         this.template.innerHTML = this.templateContent;
         extractZones(this.template.content, this._zones, this);
-
         const fragment = document.createDocumentFragment();
         fragment.append(...this.template.content.childNodes);
 
@@ -314,14 +313,14 @@ class ArpaElement extends HTMLElement {
     ////////////////////
 
     async _render() {
-        this._preRender();
+        typeof this._preRender === 'function' && this._preRender();
         await this.render();
-        handleZones(this._zones);
+        this._handleZones();
         this._onRenderComplete();
     }
 
-    _preRender() {
-        // abstract method
+    _handleZones() {
+        handleZones(this._zones);
     }
 
     _onRenderComplete() {

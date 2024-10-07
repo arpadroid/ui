@@ -1,5 +1,5 @@
 :root {
-    --preloader-width: 40px;
+    --preloader-size: 40px;
     --preloader-border-width: 2px;
     --preloader-outline-width: 2px;
 }
@@ -19,10 +19,7 @@
 
 .circularPreloader__mask {
     position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    inset: 0;
     width: 100%;
     background-color: var(--overlay);
     box-sizing: border-box;
@@ -45,16 +42,20 @@
     margin: 0;
     padding: 0;
     width: 100%;
+    max-height: 100%;
+    position: absolute;
+    inset: 0;
+    max-height: 100vh;
 }
 
 .circularPreloader__spinner {
     margin: 0 auto;
     box-sizing: border-box;
     animation: spin 1.5s infinite linear;
-    width: var(--preloader-width);
-    height: var(--preloader-width);
-    min-width: var(--preloader-width);
-    min-height: var(--preloader-width);
+    width: var(--preloader-size);
+    height: var(--preloader-size);
+    min-width: var(--preloader-size);
+    min-height: var(--preloader-size);
     border: var(--preloader-outline-width) solid #d9d9d9;
     border-top: var(--preloader-border-width) solid var(--color-primary);
     border-left: var(--preloader-border-width) solid var(--color-primary);
@@ -63,13 +64,13 @@
 }
 
 .circularPreloader--mini {
-    --preloader-width: 20px;
+    --preloader-size: 20px;
     --preloader-border-width: 2px;
     --preloader-outline-width: 2px;
 }
 
 .circularPreloader--small {
-    --preloader-width: 30px;
+    --preloader-size: 30px;
     --preloader-border-width: 2px;
     --preloader-outline-width: 2px;
 }

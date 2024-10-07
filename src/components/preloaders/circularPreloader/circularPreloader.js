@@ -10,18 +10,9 @@ class CircularPreloader extends ArpaElement {
         </div>
     `;
 
-    async connectedCallback() {
-        await super.connectedCallback();
-        this.classList.add('circularPreloader');
-        this.setAttribute('role', 'progressbar');
-        this.setAttribute('aria-label', this.getProperty('label'));
-        this.contentNode = this.querySelector('.circularPreloader__content');
-        appendNodes(this, this._childNodes);
-    }
-
     getDefaultConfig() {
         return {
-            hasMask: true,
+            hasMask: false,
             variant: 'default',
             label: 'Loading...',
             text: '',
@@ -39,7 +30,16 @@ class CircularPreloader extends ArpaElement {
     }
 
     hasMask() {
-        return Boolean(this.hasAttribute('has-mask') || this._config.hasMask);
+        return this.hasProperty('has-mask');
+    }
+
+    async connectedCallback() {
+        await super.connectedCallback();
+        this.classList.add('circularPreloader');
+        this.setAttribute('role', 'progressbar');
+        this.setAttribute('aria-label', this.getProperty('label'));
+        this.contentNode = this.querySelector('.circularPreloader__content');
+        appendNodes(this, this._childNodes);
     }
 }
 
