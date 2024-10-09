@@ -13,6 +13,7 @@
     top: 100%;
     transition: var(--theme-transition);
     z-index: 100;
+    display: none;
 
     .listItem__title {
         font-size: 1rem;
@@ -52,6 +53,7 @@
         justify-content: space-between;
         padding-left: var(--input-padding);
         padding-right: var(--input-padding);
+        height: 3rem;
         text-align: left;
         width: 100%;
     }

@@ -1,5 +1,5 @@
 import { getAttributes, dashedToCamel, mergeObjects, renderNode, CustomElementTool } from '@arpadroid/tools';
-import { handleZones, zoneMixin, extractZones, hasZone as _hasZone, attr, setNodes } from '@arpadroid/tools';
+import { handleZones, zoneMixin, hasZone as _hasZone, attr, setNodes } from '@arpadroid/tools';
 import { I18nTool, I18n } from '@arpadroid/i18n';
 const { processTemplate, arpaElementI18n } = I18nTool;
 
@@ -13,7 +13,7 @@ class ArpaElement extends HTMLElement {
     _hasRendered = false;
     _hasInitialized = false;
     _isReady = false;
-    _onRenderedCallbacks = [];
+
     /** @type {() => void} */
     _unsubscribes = [];
 
@@ -26,14 +26,23 @@ class ArpaElement extends HTMLElement {
      */
     constructor(config) {
         super();
+        this._onRenderedCallbacks = [];
+        this._onRenderReadyCallbacks = [];
         this.i18nKey = '';
         typeof this._bindMethods === 'function' && this._bindMethods();
         typeof this._preInitialize === 'function' && this._preInitialize();
         this.setConfig(config);
+        this._initializeTemplate();
         this._initializeZones();
         this._initializeContent();
         typeof this._initialize === 'function' && this._initialize();
         this.promise = this.getPromise();
+    }
+
+    _initializeTemplate(templateNode = this.querySelector(':scope > template[template-id]')) {
+        if (templateNode instanceof HTMLTemplateElement) {
+            this.setTemplate(templateNode);
+        }
     }
 
     _initializeZones() {
@@ -90,23 +99,17 @@ class ArpaElement extends HTMLElement {
         this.templateContent = this.getTemplateContent(template);
         this.template = document.createElement('template');
         this.template.innerHTML = this.templateContent;
-        extractZones(this.template.content, this._zones, this);
         const fragment = document.createDocumentFragment();
         fragment.append(...this.template.content.childNodes);
-
-        // Store the template nodes
-        this.templateNodes = fragment.childNodes;
-
-        this.promise.then(() => {
-            if (typeof container === 'string') {
-                container = this.querySelector(container);
-            } else if (typeof container === 'function') {
-                container = container();
-            }
-            if (container instanceof HTMLElement) {
-                container.prepend(fragment);
-            }
-        });
+        this.templateNodes = Array.from(fragment.childNodes);
+        if (typeof container === 'string') {
+            container = this.querySelector(container);
+        } else if (typeof container === 'function') {
+            container = container();
+        }
+        if (container instanceof HTMLElement) {
+            container.prepend(fragment);
+        }
     }
 
     getTemplateContent(template = this._config.template, payload = this.getTemplateVars()) {
@@ -264,9 +267,11 @@ class ArpaElement extends HTMLElement {
     }
 
     disconnectedCallback() {
-        this._unsubscribes?.forEach(unsubscribe => typeof unsubscribe === 'function' && unsubscribe());
-        this._unsubscribes = [];
-        this._onDestroy();
+        if (!this.isConnected) {
+            this._unsubscribes?.forEach(unsubscribe => typeof unsubscribe === 'function' && unsubscribe());
+            this._unsubscribes = [];
+            this._onDestroy();
+        }
     }
 
     _addClassNames() {
@@ -298,10 +303,6 @@ class ArpaElement extends HTMLElement {
         // abstract method
     }
 
-    _onZonePlaced() {
-        // abstract method
-    }
-
     _onDestroy() {
         // abstract method
     }
@@ -315,6 +316,9 @@ class ArpaElement extends HTMLElement {
     async _render() {
         typeof this._preRender === 'function' && this._preRender();
         await this.render();
+        typeof this._initializeNodes === 'function' && this._initializeNodes();
+        this._onRenderReadyCallbacks.forEach(callback => typeof callback === 'function' && callback());
+        this._onRenderReadyCallbacks = [];
         this._handleZones();
         this._onRenderComplete();
     }
@@ -337,11 +341,11 @@ class ArpaElement extends HTMLElement {
     }
 
     onRendered(callback) {
-        if (this._hasRendered) {
-            callback();
-        } else {
-            this._onRenderedCallbacks.push(callback);
-        }
+        this._hasRendered ? callback() : this._onRenderedCallbacks.push(callback);
+    }
+
+    onRenderReady(callback) {
+        this._hasRendered ? callback() : this._onRenderReadyCallbacks.push(callback);
     }
 
     /**

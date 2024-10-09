@@ -456,13 +456,13 @@ class ArpaImage extends ArpaElement {
         this._hasLoaded = false;
         this._hasError = false;
         const hasNativeLazy = this.hasNativeLazy();
-        this.image.removeEventListener('load', this._onLoad);
-        this.image.removeEventListener('error', this._onError);
+        this.image?.removeEventListener('load', this._onLoad);
+        this.image?.removeEventListener('error', this._onError);
         if (this.hasLazyLoad() && this.image instanceof HTMLImageElement) {
             this.image.dataset.src = '';
             !hasNativeLazy && clearLazyImage(this.image);
         }
-        this.image.src = '';
+        this.image && (this.image.src = '');
         this.image = null;
         this.thumbnail = null;
         this.picture = null;

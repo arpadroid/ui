@@ -112,7 +112,8 @@ export const Test = {
             const nextLink = canvas.getByRole('link', { name: /Next page/i });
             const currentPage = pagerNode.getCurrentPage();
             expect(currentPage).toBe(2);
-            nextLink.click();
+            await new Promise(resolve => setTimeout(resolve, 100));
+            await nextLink.click();
             await waitFor(() => {
                 expect(nextLink).toHaveAttribute('data-page', '3');
                 const currentPage = getURLParam('page');
