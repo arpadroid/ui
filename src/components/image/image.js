@@ -50,7 +50,7 @@ class ArpaImage extends ArpaElement {
             onInput: undefined,
             onLoad: undefined,
             params: ['width', 'height', 'quality'],
-            quality: 80,
+            quality: 50,
             sizes: [],
             sizeMap: {
                 xx_small: 50,
@@ -104,12 +104,12 @@ class ArpaImage extends ArpaElement {
     setSize(width, height = width) {
         this._hasLoaded = false;
         this.removeSizeClass();
+        this.classList.remove(this.getLoadedClass());
         width && (this._config.width = width);
         height && (this._config.height = height);
         this.setAttribute('size', width);
         this._hasLoaded = false;
         this._hasError = false;
-        this.classList.remove(this.getLoadedClass());
         this._hasRendered && this.reRender();
     }
 
@@ -344,7 +344,6 @@ class ArpaImage extends ArpaElement {
         if (!this.dropArea) {
             return;
         }
-        await customElements.whenDefined('drop-area');
         this.dropArea.addConfig({
             hasInput: this.getProperty('has-drop-area-input'),
             handler: this.getProperty('drop-area-handler') || this
@@ -381,6 +380,9 @@ class ArpaImage extends ArpaElement {
         if (width || height) {
             width === height && this.classList.add('image--square');
             const className = `image--size-${width}x${height}`;
+            if (document.querySelector(`.${className}`)) {
+                return;
+            }
             this.classList.add(className);
             const css = `
                 max-width: ${width}px; 
@@ -427,7 +429,7 @@ class ArpaImage extends ArpaElement {
         this.image = this.querySelector('img');
         this.thumbnail = this.querySelector('.image__thumbnail');
         this.picture = this.querySelector('picture');
-        this.initializeDropArea();
+        this.hasDropArea() && this.initializeDropArea();
         this.initializeImage();
         this.hasLazyLoad() && !this.hasNativeLazy() && lazyLoader(this.image);
     }

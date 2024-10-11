@@ -1,15 +1,9 @@
 import { attr, getSafeHtmlId, mergeObjects, handleZones, zoneMixin, hasZone } from '@arpadroid/tools';
+import { CustomElementTool } from '@arpadroid/tools';
+const { getProperty, hasProperty } = CustomElementTool;
 const html = String.raw;
-class IconButton extends HTMLButtonElement {
-    static get observedAttributes() {
-        return ['label', 'icon', 'variant'];
-    }
 
-    attributeChangedCallback(name, oldValue, newValue) {
-        if (name === 'icon' && oldValue !== newValue) {
-            this.render();
-        }
-    }
+class IconButton extends HTMLButtonElement {
 
     constructor(config) {
         super();
@@ -63,7 +57,7 @@ class IconButton extends HTMLButtonElement {
     }
 
     hasTooltip() {
-        return Boolean(this.getLabel()) || hasZone(this, 'tooltip-content');
+        return hasProperty(this, 'label') || hasZone(this, 'tooltip-content');
     }
 
     getClassNames() {
@@ -71,11 +65,11 @@ class IconButton extends HTMLButtonElement {
     }
 
     getVariant() {
-        return this.getAttribute('variant') ?? this._config.variant;
+        return getProperty(this, 'variant');
     }
 
     getLabel() {
-        return this.getAttribute('label') ?? this._config.label;
+        return getProperty(this, 'label');
     }
 
     getIcon() {

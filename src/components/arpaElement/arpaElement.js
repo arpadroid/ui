@@ -14,18 +14,17 @@ class ArpaElement extends HTMLElement {
     _hasInitialized = false;
     _isReady = false;
 
-    /** @type {() => void} */
-    _unsubscribes = [];
-
-    /////////////////////////
+    ////////////////////////////
     // #region INITIALIZATION
-    /////////////////////////
+    ///////////////////////////
     /**
      * Creates a new instance of ArpaElement.
      * @param {Record<string, unknown>} config - The configuration object for the element.
      */
     constructor(config) {
         super();
+        /** @type {() => void} */
+        this._unsubscribes = [];
         this._onRenderedCallbacks = [];
         this._onRenderReadyCallbacks = [];
         this.i18nKey = '';
@@ -242,7 +241,7 @@ class ArpaElement extends HTMLElement {
     /////////////////////
 
     async onReady() {
-        return new Promise(resolve => requestAnimationFrame(resolve));
+        return Promise.resolve();
     }
 
     /**
@@ -254,7 +253,7 @@ class ArpaElement extends HTMLElement {
         this._isReady = true;
         if (!this._hasInitialized) {
             this._doBindings();
-            this._hasInitialized = await this.initializeProperties();
+            this._hasInitialized = this.initializeProperties();
             if (this._hasInitialized) {
                 this._onInitialized();
             }
@@ -330,10 +329,8 @@ class ArpaElement extends HTMLElement {
     _onRenderComplete() {
         this._hasRendered = true;
         this._onRenderedCallbacks.forEach(callback => callback());
-        requestAnimationFrame(() => {
-            this.resolvePromise?.();
-            this._onComplete();
-        });
+        this.resolvePromise?.();
+        this._onComplete();
     }
 
     _onComplete() {

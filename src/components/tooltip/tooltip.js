@@ -33,10 +33,12 @@ class Tooltip extends ArpaElement {
 
     render() {
         this.innerHTML = '';
+
         if (!this._childNodes?.length) {
             this.remove();
             return;
         }
+        this.classList.add('tooltip', `tooltip--${this.getPosition()}`);
         const text = this.getProperty('text');
         const template = html`
             ${this.renderButton()}
@@ -45,21 +47,25 @@ class Tooltip extends ArpaElement {
             </span>
         `;
         this.innerHTML = template;
-        this.classList.add('tooltip', `tooltip--${this.getPosition()}`);
+    }
+
+    _initializeNodes() {
         this.contentNode = this.querySelector('.tooltip__content');
         this.button = this.querySelector('.tooltip__button');
     }
 
-    async setContent(content) {
-        await this.promise;
-        if (!this.contentNode) {
+    async setContent(content = '') {
+        if (!this._hasRendered) {
             return;
         }
-        typeof content === 'string' && (this.contentNode.innerHTML = content);
-        if (content instanceof HTMLElement) {
+        requestAnimationFrame(() => {
             this.contentNode.innerHTML = '';
-            this.contentNode.appendChild(content);
-        }
+            typeof content === 'string' && (this.contentNode.innerHTML = content);
+            if (content instanceof HTMLElement) {
+                this.contentNode.appendChild(content);
+            }    
+        });
+        
     }
 
     renderButton() {

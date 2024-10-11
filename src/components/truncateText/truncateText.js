@@ -6,9 +6,9 @@ import { appendNodes } from '@arpadroid/tools';
  */
 const html = String.raw;
 class TruncateText extends ArpaElement {
-    /////////////////////////
+    //////////////////////////////
     // #region INITIALIZATION
-    /////////////////////////
+    /////////////////////////////
     /**
      * Returns the default component config.
      * @returns {TruncateTextInterface}
@@ -29,41 +29,44 @@ class TruncateText extends ArpaElement {
         this.fullContent = this.textContent.trim();
         this.truncateText = this.truncateText.bind(this);
         this.toggleTruncate = this.toggleTruncate.bind(this);
-        await this.load;
         this.renderButton();
         this._observeContents();
     }
 
-    // #endregion
+    ///////////////////////////////
+    // #endregion INITIALIZATION
+    //////////////////////////////
 
-    /////////////////////
+    ////////////////////////////
     // #region LIFECYCLE
-    /////////////////////
+    ////////////////////////////
 
     _observeContents() {
         const observer = new MutationObserver(() => {
             const textNode = this.querySelector('.truncateText__content');
             const content = this.textContent.trim();
-            if (!textNode && content !== this.fullContent) {
+            if (!this.isTruncated && !textNode && content !== this.fullContent) {
                 this._childNodes = [...this.childNodes];
+                this._nodes = [...this.childNodes];
                 this._content = this.innerHTML;
                 this.fullContent = this.textContent.trim();
+                this.truncateText();
             }
         });
         observer.observe(this, { childList: true });
     }
 
     _onConnected() {
-        if (this.innerHTML.trim().length) {
-            this.truncateText();
-        }
+        this.truncateText();
     }
 
-    // #endregion
+    //////////////////////////
+    // #endregion LIFECYCLE
+    //////////////////////////
 
-    ////////////////////
+    //////////////////////////
     // #region ACCESSORS
-    ////////////////////
+    /////////////////////////
 
     getMaxLength() {
         return parseFloat(this.getProperty('max-length'));
@@ -74,20 +77,54 @@ class TruncateText extends ArpaElement {
     }
 
     hasButton() {
-        return (
-            this.hasProperty('has-button') &&
-            this.getProperty('has-button') !== 'false' &&
-            this.shouldTruncate()
-        );
+        return this.hasProperty('has-button') && this.shouldTruncate();
     }
 
     getButtonLabel() {
         return this.isTruncated ? this.getProperty('read-more-label') : this.getProperty('read-less-label');
     }
 
+    toggleTruncate() {
+        this.isTruncated ? this.showFullContent() : this.truncateText();
+    }
+
+    // #endregion
+
+    ////////////////////
+    // #region RENDERING
+    ////////////////////
+
+    renderButton(isTruncated = this.isTruncated) {
+        if (this.hasButton()) {
+            if (!this.button) {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.classList.add(...this.getButtonClasses());
+                button.addEventListener('click', this.toggleTruncate);
+                this.button = button;
+            }
+            this.button.textContent = this.getButtonLabel();
+            this.button.setAttribute('aria-expanded', !isTruncated);
+            this.append(this.button);
+        } else if (this.button) {
+            this.button.remove();
+        }
+    }
+
+    getButtonClasses() {
+        let classes = this.getProperty('button-classes');
+        if (typeof classes === 'string') {
+            classes = classes.trim().split(' ');
+        }
+        if (!Array.isArray(classes)) {
+            classes = this.getDefaultConfig().buttonClasses;
+        }
+        return classes;
+    }
+
     truncateText() {
         const maxLength = this.getMaxLength();
-        if (!maxLength) {
+        if (!maxLength || !this.innerHTML.trim().length || this.showingFullContent) {
             return;
         }
         const text = this.textContent;
@@ -108,56 +145,17 @@ class TruncateText extends ArpaElement {
     }
 
     showFullContent() {
-        if (this.isTruncated) {
-            this.innerHTML = '';
-            this.isTruncated = false;
-            this.renderButton();
-            appendNodes(this, this._childNodes);
-            this.append(this.button);
-        }
+        this.showingFullContent = true;
+        this.innerHTML = '';
+
+        this.isTruncated = false;
+        appendNodes(this, [...this._childNodes, this.button]);
+        this.renderButton(false);
+        setTimeout(() => {
+            this.showingFullContent = false;
+        }, 100);
     }
 
-    toggleTruncate() {
-        if (this.isTruncated) {
-            this.showFullContent();
-        } else {
-            this.truncateText();
-        }
-    }
-
-    // #endregion
-
-    ////////////////////
-    // #region RENDERING
-    ////////////////////
-
-    renderButton() {
-        if (this.hasButton()) {
-            if (!this.button) {
-                const button = document.createElement('button');
-                button.type = 'button';
-                button.classList.add(...this.getButtonClasses());
-                button.addEventListener('click', this.toggleTruncate);
-                this.button = button;
-            }
-            this.button.textContent = this.getButtonLabel();
-            this.button.setAttribute('aria-expanded', !this.isTruncated);
-            this.append(this.button);
-        } else if (this.button) {
-            this.button.remove();
-        }
-    }
-
-    getButtonClasses() {
-        let classes = this.getProperty('button-classes');
-        if (typeof classes === 'string') {
-            classes = classes.trim().split(' ');
-        }
-        if (!Array.isArray(classes)) {
-            classes = this.getDefaultConfig().buttonClasses;
-        }
-        return classes;
-    }
     // #endregion
 }
 
