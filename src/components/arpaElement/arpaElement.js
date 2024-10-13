@@ -90,32 +90,26 @@ class ArpaElement extends HTMLElement {
     }
 
     setTemplate(template, container = this) {
-        if (!(template instanceof HTMLTemplateElement)) {
-            return;
-        }
         this._config.template = template;
         attr(this, this.getTemplateAttributes());
         this.templateContent = this.getTemplateContent(template);
         this.template = document.createElement('template');
         this.template.innerHTML = this.templateContent;
-        const fragment = document.createDocumentFragment();
-        fragment.append(...this.template.content.childNodes);
-        this.templateNodes = Array.from(fragment.childNodes);
         if (typeof container === 'string') {
             container = this.querySelector(container);
         } else if (typeof container === 'function') {
             container = container();
         }
         if (container instanceof HTMLElement) {
+            const fragment = document.createDocumentFragment();
+            fragment.append(...this.template.content.childNodes);
+            this.templateNodes = Array.from(fragment.childNodes);
             container.prepend(fragment);
         }
     }
 
     getTemplateContent(template = this._config.template, payload = this.getTemplateVars()) {
-        if (template instanceof HTMLTemplateElement) {
-            return I18nTool.processTemplate(template.innerHTML, payload);
-        }
-        return '';
+        return processTemplate(template.innerHTML, payload);
     }
 
     // #endregion
@@ -254,9 +248,7 @@ class ArpaElement extends HTMLElement {
         if (!this._hasInitialized) {
             this._doBindings();
             this._hasInitialized = this.initializeProperties();
-            if (this._hasInitialized) {
-                this._onInitialized();
-            }
+            this._hasInitialized && this._onInitialized();
         }
         if (this.isConnected) {
             !this._hasRendered && this._render();
@@ -269,7 +261,7 @@ class ArpaElement extends HTMLElement {
         if (!this.isConnected) {
             this._unsubscribes?.forEach(unsubscribe => typeof unsubscribe === 'function' && unsubscribe());
             this._unsubscribes = [];
-            this._onDestroy();
+            typeof this._onDestroy === 'function' && this._onDestroy();
         }
     }
 
@@ -302,10 +294,6 @@ class ArpaElement extends HTMLElement {
         // abstract method
     }
 
-    _onDestroy() {
-        // abstract method
-    }
-
     // #endregion
 
     ////////////////////
@@ -323,7 +311,7 @@ class ArpaElement extends HTMLElement {
     }
 
     _handleZones() {
-        handleZones(this._zones);
+        handleZones();
     }
 
     _onRenderComplete() {

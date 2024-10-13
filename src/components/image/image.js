@@ -234,9 +234,9 @@ class ArpaImage extends ArpaElement {
 
     // #endregion - ACCESSORS
 
-    ///////////////////////
-    // #region - Rendering
-    ///////////////////////
+    ////////////////////////////
+    // #region - RENDERING
+    ///////////////////////////
 
     /**
      * Renders the component.
@@ -296,8 +296,9 @@ class ArpaImage extends ArpaElement {
     }
 
     renderSources() {
-        const quality = this.getProperty('quality');
         const sizes = this.getArrayProperty('sizes');
+        if (!sizes.length) return '';
+        const quality = this.getProperty('quality');
         return mapHTML(sizes, size => {
             const src = this.getImageURL(size, quality);
             return html`<source srcset="${src} ${size}px" />`;
@@ -305,20 +306,18 @@ class ArpaImage extends ArpaElement {
     }
 
     renderPreloader() {
-        return this.hasPreloader()
-            ? html`<circular-preloader
-                  aria-label="${this.getText('lblLoadingImage')}"
-                  variant="small"
-              ></circular-preloader>`
-            : '';
+        if (!this.hasPreloader()) return '';
+        return html`<circular-preloader
+            aria-label="${this.getText('lblLoadingImage')}"
+            variant="small"
+        ></circular-preloader>`;
     }
 
     renderThumbnail(text = this.hasError() ? this.getProperty('errLoad') : this.getProperty('txtNoImage')) {
-        return this.hasThumbnail()
-            ? html`<arpa-tooltip class="image__thumbnail" icon="${this.getProperty('icon')}">
-                  <zone name="tooltip-content"> ${text} </zone>
-              </arpa-tooltip>`
-            : '';
+        if (!this.hasThumbnail()) return '';
+        return html`<arpa-tooltip class="image__thumbnail" icon="${this.getProperty('icon')}">
+            <zone name="tooltip-content"> ${text} </zone>
+        </arpa-tooltip>`;
     }
 
     // #endregion - Rendering
@@ -328,11 +327,10 @@ class ArpaImage extends ArpaElement {
     //////////////////////////
 
     renderDropArea() {
-        return this.hasDropArea()
-            ? html`<drop-area>
-                  <zone name="label">${this.getProperty('txtUploadImage')}</zone>
-              </drop-area>`
-            : '';
+        if (!this.hasDropArea()) return '';
+        return html`<drop-area>
+            <zone name="label">${this.getProperty('txtUploadImage')}</zone>
+        </drop-area>`;
     }
 
     /**
@@ -341,9 +339,7 @@ class ArpaImage extends ArpaElement {
     async initializeDropArea() {
         /** @type {DropArea} */
         this.dropArea = this.querySelector('drop-area');
-        if (!this.dropArea) {
-            return;
-        }
+        if (!this.dropArea) return;
         this.dropArea.addConfig({
             hasInput: this.getProperty('has-drop-area-input'),
             handler: this.getProperty('drop-area-handler') || this

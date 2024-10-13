@@ -8,12 +8,12 @@ const html = String.raw;
 class PagerItem extends ArpaElement {
     getDefaultConfig() {
         /** @type {Pager} */
-        this.pagerComponent = this.closest('arpa-pager');
+        this.grabPagerComponent();
         return mergeObjects(super.getDefaultConfig(), {
             className: 'pagerItem',
             isActive: false,
             hasInput: true,
-            urlParam: this.pagerComponent?.getUrlParam(),
+            urlParam: 'page',
             ariaLabel: undefined
         });
     }
@@ -25,7 +25,12 @@ class PagerItem extends ArpaElement {
         }
     }
 
+    getUrlParam() {
+        return this.pagerComponent?.getUrlParam() || this.getProperty('url-param');
+    }
+
     render(reRender = false) {
+        this.grabPagerComponent();
         super.render();
         if (this.isActive()) {
             this.classList.add('pagerItem--active');
@@ -40,6 +45,11 @@ class PagerItem extends ArpaElement {
         }
     }
 
+    grabPagerComponent() {
+        !this.pagerComponent && (this.pagerComponent = this.closest('arpa-pager'));
+        return this.pagerComponent;
+    }
+
     renderInput() {
         this.form = renderNode(
             html`<form class="pagerItem__form">
@@ -47,11 +57,11 @@ class PagerItem extends ArpaElement {
                     class="pagerItem__input"
                     aria-label="Current page"
                     type="number"
-                    name="${this._config.urlParam}"
+                    name="${this.getUrlParam()}"
                     value="${this.getPage()}"
                     placeholder="${this.getPage()}"
                     min="1"
-                    max="${this.pagerComponent.getTotalPages()}"
+                    max="${this.pagerComponent?.getTotalPages()}"
                 />
             </form>`
         );
@@ -72,7 +82,6 @@ class PagerItem extends ArpaElement {
     }
 
     renderContent() {
-        
         if (this.isActive()) {
             if (this.hasInput()) {
                 return this.renderInput();

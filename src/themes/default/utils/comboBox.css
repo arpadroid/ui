@@ -20,6 +20,10 @@
     }
 }
 
+.comboBox.comboBox {
+    overflow: auto;
+}
+
 .comboBox--loading {
     min-height: 200px;
     display: flex !important;

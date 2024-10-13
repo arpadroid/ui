@@ -1,10 +1,9 @@
-import { attr, getSafeHtmlId, mergeObjects, handleZones, zoneMixin, hasZone } from '@arpadroid/tools';
-import { CustomElementTool } from '@arpadroid/tools';
+import { attr, attrString, getSafeHtmlId, mergeObjects, handleZones } from '@arpadroid/tools';
+import { zoneMixin, hasZone, CustomElementTool } from '@arpadroid/tools';
 const { getProperty, hasProperty } = CustomElementTool;
 const html = String.raw;
 
 class IconButton extends HTMLButtonElement {
-
     constructor(config) {
         super();
         zoneMixin(this);
@@ -21,7 +20,6 @@ class IconButton extends HTMLButtonElement {
 
     connectedCallback() {
         attr(this, {
-            id: this.getId(),
             'aria-label': this.getLabel(),
             type: 'button'
         });
@@ -29,15 +27,10 @@ class IconButton extends HTMLButtonElement {
         this.classList.add(...this.getClassNames());
         this.render();
         if (typeof this._config.onClick === 'function') {
+            this.removeEventListener('click', this._config.onClick);
             this.addEventListener('click', this._config.onClick);
         }
     }
-
-    disconnectedCallback() {
-        this._onDestroy();
-    }
-
-    _onDestroy() {}
 
     handleVariant() {
         const variant = this.getVariant();
@@ -53,7 +46,10 @@ class IconButton extends HTMLButtonElement {
     }
 
     getId() {
-        return this.id || this._config.id || `iconButton-${getSafeHtmlId(this.getLabel())}`;
+        if (this.id) return this.id;
+        this._config.id && (this.id = this._config.id);
+        !this.id && (this.id = `iconButton-${getSafeHtmlId(this.getLabel())}`);
+        return this.id;
     }
 
     hasTooltip() {
@@ -77,24 +73,21 @@ class IconButton extends HTMLButtonElement {
     }
 
     async render() {
+        const icon = this.getIcon();
         const template = html`
-            <arpa-icon>${this.getIcon()}</arpa-icon>
-            ${this.renderTooltip()}
+            ${icon ? html`<arpa-icon>${this.getIcon()}</arpa-icon>` : ''} ${this.renderTooltip()}
         `;
         this.innerHTML = template;
-        handleZones(this._zones);
+        handleZones();
     }
 
     renderTooltip() {
-        const label = this.getLabel();
+        if (!this.hasTooltip()) return '';
         const id = this.getId();
-        const hasTooltip = id && this.hasTooltip();
-
-        return hasTooltip
-            ? html`<arpa-tooltip position="${this.getTooltipPosition()}" handler="#${id}">
-                  <zone name="tooltip-content">${label}</zone>
-              </arpa-tooltip>`
-            : '';
+        const attr = attrString({ position: this.getTooltipPosition(), handler: id && `#${id}` });
+        return html`<arpa-tooltip ${attr}>
+            <zone name="tooltip-content">${this.getLabel()}</zone>
+        </arpa-tooltip>`;
     }
 
     getTooltipPosition() {
