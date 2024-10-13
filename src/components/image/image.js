@@ -373,13 +373,14 @@ class ArpaImage extends ArpaElement {
         const height = this.getHeight() || this.getSize();
         const width = this.getWidth();
         this.removeSizeClasses();
+        this.addSizeClass();
         if (width || height) {
             width === height && this.classList.add('image--square');
             const className = `image--size-${width}x${height}`;
+            this.classList.add(className);
             if (document.querySelector(`.${className}`)) {
                 return;
             }
-            this.classList.add(className);
             const css = `
                 max-width: ${width}px; 
                 width: ${width}px;
@@ -388,7 +389,6 @@ class ArpaImage extends ArpaElement {
             addCssRule(`.${className}`, css);
             addCssRule(`.${className} picture`, `aspect-ratio: ${width} / ${height};`);
         }
-        this.addSizeClass();
     }
 
     addSizeClass(width = this.getWidth()) {
