@@ -16,7 +16,7 @@ arpa-image {
     height: var(--image-height);
     width: var(--image-width);
     max-height: 100%;
-
+    
     figure {
         display: flex;
         flex-direction: column;
@@ -48,6 +48,7 @@ arpa-image {
         transition: opacity 0.5s ease;
         visibility: visible;
         opacity: 0;
+        will-change: transform, opacity;
     }
 
     arpa-tooltip {
