@@ -44,7 +44,7 @@ class ArpaImage extends ArpaElement {
             icon: 'crop_original',
             iconBroken: 'broken_image',
             lazyLoad: false,
-            hasNativeLazy: true,
+            hasNativeLazy: false,
             loadedClass: 'image--loaded',
             onError: undefined,
             onInput: undefined,
@@ -102,6 +102,9 @@ class ArpaImage extends ArpaElement {
     }
 
     setSize(width, height = width) {
+        if (width === this.getWidth() && height === (this.getHeight() || width)) {
+            return;
+        }
         this._hasLoaded = false;
         this.removeSizeClass();
         this.classList.remove(this.getLoadedClass());

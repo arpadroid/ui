@@ -126,8 +126,8 @@ class ArpaElement extends HTMLElement {
         return _hasZone(this, name);
     }
 
-    i18n(key, replacements, base = this.i18nKey) {
-        return arpaElementI18n(this, key, replacements, base);
+    i18n(key, replacements, attributes, base = this.i18nKey) {
+        return arpaElementI18n(this, key, replacements, attributes, base);
     }
 
     i18nText(key, replacements, base = this.i18nKey) {
