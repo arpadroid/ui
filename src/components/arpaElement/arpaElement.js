@@ -1,5 +1,5 @@
 import { getAttributes, dashedToCamel, mergeObjects, renderNode, CustomElementTool } from '@arpadroid/tools';
-import { handleZones, zoneMixin, hasZone as _hasZone, attr, setNodes } from '@arpadroid/tools';
+import { handleZones, zoneMixin, hasZone as _hasZone, attr, setNodes, bind } from '@arpadroid/tools';
 import { I18nTool, I18n } from '@arpadroid/i18n';
 const { processTemplate, arpaElementI18n } = I18nTool;
 
@@ -28,7 +28,6 @@ class ArpaElement extends HTMLElement {
         this._onRenderedCallbacks = [];
         this._onRenderReadyCallbacks = [];
         this.i18nKey = '';
-        typeof this._bindMethods === 'function' && this._bindMethods();
         typeof this._preInitialize === 'function' && this._preInitialize();
         this.setConfig(config);
         this._initializeTemplate();
@@ -51,16 +50,6 @@ class ArpaElement extends HTMLElement {
     _initializeContent() {
         this._content = this.innerHTML;
         this._childNodes = [...this.childNodes];
-    }
-
-    _doBindings(bindings = this._bindings, internalBindings = ['_initializeZone']) {
-        if (!this.bindingsComplete) {
-            const allBindings = new Set([...internalBindings, ...bindings]);
-            allBindings.forEach(method => {
-                typeof this[method] === 'function' && (this[method] = this[method].bind(this));
-            });
-            this.bindingsComplete = true;
-        }
     }
 
     getPromise() {
@@ -117,6 +106,10 @@ class ArpaElement extends HTMLElement {
     /////////////////////
     // #region ACCESSORS
     /////////////////////
+
+    bind(...args) {
+        bind(this, ...args);
+    }
 
     hasZone(name) {
         return _hasZone(this, name);
@@ -246,7 +239,6 @@ class ArpaElement extends HTMLElement {
         this._addClassNames();
         this._isReady = true;
         if (!this._hasInitialized) {
-            this._doBindings();
             this._hasInitialized = this.initializeProperties();
             this._hasInitialized && this._onInitialized();
         }
