@@ -380,10 +380,8 @@ class ArpaImage extends ArpaElement {
         if (width || height) {
             width === height && this.classList.add('image--square');
             const className = `image--size-${width}x${height}`;
+            if (this.classList.contains(className)) return;
             this.classList.add(className);
-            if (document.querySelector(`.${className}`)) {
-                return;
-            }
             const css = `
                 max-width: ${width}px; 
                 width: ${width}px;

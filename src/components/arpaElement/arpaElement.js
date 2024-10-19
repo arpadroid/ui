@@ -1,9 +1,9 @@
 import { getAttributes, dashedToCamel, mergeObjects, renderNode, CustomElementTool } from '@arpadroid/tools';
-import { handleZones, zoneMixin, hasZone as _hasZone, attr, setNodes, bind } from '@arpadroid/tools';
+import { handleZones, zoneMixin, hasZone, attr, setNodes, bind } from '@arpadroid/tools';
 import { I18nTool, I18n } from '@arpadroid/i18n';
 const { processTemplate, arpaElementI18n } = I18nTool;
 
-const { getProperty, hasProperty, getArrayProperty } = CustomElementTool;
+const { getProperty, hasProperty, getArrayProperty, hasContent } = CustomElementTool;
 
 /**
  * Base class for custom elements.
@@ -112,11 +112,15 @@ class ArpaElement extends HTMLElement {
     }
 
     hasZone(name) {
-        return _hasZone(this, name);
+        return hasZone(this, name);
+    }
+
+    hasContent(property) {
+        return hasContent(this, property);
     }
 
     getZone(name) {
-        return _hasZone(this, name);
+        return hasZone(this, name);
     }
 
     i18n(key, replacements, attributes, base = this.i18nKey) {

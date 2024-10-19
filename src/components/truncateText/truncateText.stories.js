@@ -6,7 +6,7 @@ const TruncateTextStory = {
     tags: [],
     getArgs: () => ({
         maxLength: 40,
-        text: 'Sample text that will be truncated based on the maxLength property.'
+        text: 'In the vast expanse of the cosmos, stars are born from clouds of dust, only to collapse and scatter that dust again when they die. Every atom in your body was forged in the heart of a dying star, millions of years before the Earth existed. Yet here you are, a collection of star-stuff, capable of looking up at the night sky and wondering about your origins. The universe is as much within you as it is outside of you.'
     }),
     getArgTypes: (category = 'TruncateText Props') => ({
         maxLength: { control: { type: 'number' }, table: { category } },

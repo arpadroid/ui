@@ -1,4 +1,5 @@
 import { I18nTool } from '@arpadroid/i18n';
+import { appendNodes } from '@arpadroid/tools';
 
 const html = String.raw;
 class Button extends HTMLButtonElement {
@@ -25,10 +26,11 @@ class Button extends HTMLButtonElement {
 
     render() {
         this.innerHTML = I18nTool.processTemplate(this.template, {
-            content: this._content || this.getAttribute('content'),
             icon: this.getAttribute('icon'),
             iconRight: this.getAttribute('icon-right')
         });
+        this.contentNode = this.querySelector('.button__content');
+        appendNodes(this.contentNode, this._childNodes);
     }
 }
 customElements.define('arpa-button', Button, { extends: 'button' });

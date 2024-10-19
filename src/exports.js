@@ -35,3 +35,7 @@ export { default as DropArea } from './components/dropArea/dropArea.js';
  */
 export { default as Pager } from './components/pager/pager.js';
 export { default as PagerItem } from './components/pager/components/pagerItem/pagerItem.js';
+
+export { default as Dialog } from './components/dialog/dialog.js';
+export { default as Dialogs } from './components/dialog/dialogs.js';
+export { default as DeleteDialog } from './components/dialog/variants/deleteDialog/deleteDialog.js';
