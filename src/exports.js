@@ -38,4 +38,5 @@ export { default as PagerItem } from './components/pager/components/pagerItem/pa
 
 export { default as Dialog } from './components/dialog/dialog.js';
 export { default as Dialogs } from './components/dialog/dialogs.js';
+export { default as ConfirmDialog } from './components/dialog/variants/confirmDialog/confirmDialog.js';
 export { default as DeleteDialog } from './components/dialog/variants/deleteDialog/deleteDialog.js';

@@ -139,6 +139,7 @@ class InputCombo {
         InputCombo._initializeComponent();
         this.input = input;
         this.combo = combo;
+        this.combo.classList.add('inputCombo');
         this.setConfig(config);
         this._initialize();
     }

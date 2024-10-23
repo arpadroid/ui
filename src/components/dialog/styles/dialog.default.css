@@ -11,6 +11,7 @@
     }
 }
 
+confirm-dialog,
 arpa-dialog {
     animation: fadeIn 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
     align-items: center;
@@ -40,6 +41,7 @@ arpa-dialog {
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
+    gap: .5rem;
     .button {
         margin-left: 16px;
     }
@@ -71,11 +73,18 @@ arpa-dialog {
     z-index: 10;
 }
 
-.dialog__title {
+.dialog__headerContent {
     display: flex;
     align-items: center;
     margin: 0;
     flex: 1 1 auto;
+    gap: 1rem;
+}
+
+.dialog__title {
+    display: flex;
+    align-items: center;
+    margin: 0;
     font-size: 20px;
 
     .icon {
@@ -101,6 +110,7 @@ arpa-dialog {
     padding: var(--dialog-padding);
     line-height: 26px;
     position: relative;
+    padding-top: 0;
 }
 
 .dialog__content {
@@ -114,7 +124,7 @@ arpa-dialog {
  */
 
 .dialog__footer {
-    padding: var(--dialog-padding);
+    padding: 0 1.5rem 1.5rem;
 }
 
 /**

@@ -29,6 +29,7 @@ class Dialog extends ArpaElement {
     }
 
     _preInitialize() {
+        this.originalParent = this.parentNode;
         this.bind('close', 'open');
         ObserverTool.mixin(this);
     }
@@ -61,11 +62,25 @@ class Dialog extends ArpaElement {
         return 'arpa-dialog';
     }
 
-    _initializeContent() {
-        const button = this.closest('button');
-        button?.addEventListener('click', this.open);
+    _onConnected() {
+        const button = this.getButton();
+        if (button) {
+            button.removeEventListener('click', this.open);
+            button.addEventListener('click', this.open);
+        }
+    }
+
+    getButton() {
+        return (
+            this.closest('button') ||
+            this.originalParent?.closest('button') ||
+            this.originalParent?.querySelector('button')
+        );
+    }
+
+    _handleZones() {
+        super._handleZones();
         this._initializeDialog();
-        super._initializeContent();
     }
 
     //////////////////////////////
@@ -87,11 +102,13 @@ class Dialog extends ArpaElement {
     open() {
         document.body.style.overflow = 'hidden';
         this.setAttribute('open', '');
+        this.signal('open');
     }
 
     close() {
         document.body.style.overflow = '';
         this.removeAttribute('open');
+        this.signal('close');
     }
 
     isOpen() {
@@ -142,6 +159,7 @@ class Dialog extends ArpaElement {
         this.innerHTML = this.renderTemplate(
             html`<div class="dialog__wrapper">{header}{content}{footer}</div>`
         );
+        return true;
     }
 
     renderHeader() {
@@ -149,20 +167,24 @@ class Dialog extends ArpaElement {
         const { title, icon } = this.getProperties('title', 'icon');
         return html`
             <header class="dialog__header">
-                ${(this.hasTitle() &&
-                    html`<h2 class="dialog__title" zone="title">
-                        ${icon ? html`<arpa-icon class="dialog__icon">${icon}</arpa-icon>` : ''}
-                        <span class="dialog__titleText" zone="title-text">${title}</span>
-                    </h2>`) ||
-                ''}
-                ${(this.canClose() &&
-                    html`<button
-                        variant="minimal"
-                        is="icon-button"
-                        class="dialog__close"
-                        icon="close"
-                    ></button>`) ||
-                ''}
+                <div class="dialog__headerContent" zone="header">
+                    ${(this.hasTitle() &&
+                        html`<h2 class="dialog__title" zone="title">
+                            ${icon ? html`<arpa-icon class="dialog__icon">${icon}</arpa-icon>` : ''}
+                            <span class="dialog__titleText" zone="title-text">${title || ''}</span>
+                        </h2>`) ||
+                    ''}
+                </div>
+                <div class="dialog__headerActions" zone="header-actions">
+                    ${(this.canClose() &&
+                        html`<button
+                            variant="minimal"
+                            is="icon-button"
+                            class="dialog__close"
+                            icon="close"
+                        ></button>`) ||
+                    ''}
+                </div>
             </header>
         `;
     }
@@ -177,13 +199,17 @@ class Dialog extends ArpaElement {
                 ${(this.hasPreloader() &&
                     html`<circular-preloader class="dialog__preloader"></circular-preloader>`) ||
                 ''}
-                <div class="dialog__content" zone="children">${content}</div>
+                <div class="dialog__content" zone="content">${content}</div>
             </div>
         `;
     }
 
-    renderFooter() {
-        return (this.hasFooter() && html`<footer class="dialog__footer" zone="footer"></footer>`) || '';
+    renderFooter(content = this._config?.footer || '') {
+        return (
+            (this.hasFooter() &&
+                html`<footer class="dialog__footer" zone="footer">${content || ''}</footer>`) ||
+            ''
+        );
     }
 
     _initializeNodes() {

@@ -12,7 +12,8 @@ class Dialogs extends ArpaElement {
 
     getDefaultConfig() {
         return super.getDefaultConfig({
-            id: 'dialogs'
+            id: 'dialogs',
+            zoneSelector: ':scope > zone'
         });
     }
 
