@@ -29,7 +29,7 @@ button[is='submit-button'] {
     padding: var(--button-padding);
     transition: var(--theme-transition);
 
-    &:has(.icon) {
+    &:has(.button__lhsIcon) {
         padding-left: 0.5rem;
     }
 

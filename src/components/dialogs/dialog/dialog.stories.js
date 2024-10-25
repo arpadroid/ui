@@ -48,7 +48,8 @@ export const Test = {
         controls: { disable: true }
     },
     args: {
-        id: 'dialog-test'
+        id: 'dialog-test',
+        zoneFooter: 'Footer content'
     },
     play: async ({ canvasElement, step, args }) => {
         const { dialogNode, dialogsNode } = await playSetup(canvasElement);
@@ -62,7 +63,7 @@ export const Test = {
 
             expect(dialog.getByText('Dialog title')).toBeInTheDocument();
             expect(dialog.getByText(dialogText)).toBeInTheDocument();
-            expect(dialog.getByText('Dialog footer content')).toBeInTheDocument();
+            expect(dialog.getByText('Footer content')).toBeInTheDocument();
         });
 
         await step('Closes the dialog', async () => {

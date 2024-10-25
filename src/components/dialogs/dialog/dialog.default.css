@@ -38,6 +38,10 @@
         flex-direction: column;
         position: fixed;
     }
+
+    &:has(.dialog__icon) .dialog__content {
+        padding: 0 0.5rem;
+    }
 }
 
 .dialog__controls {
@@ -134,7 +138,7 @@
  */
 
 .dialog__footer {
-    padding: 0.75rem;
+    padding: 0 1.5rem 0.75rem;
     display: flex;
     align-items: center;
     gap: 1rem;

@@ -1,4 +1,4 @@
-import { waitFor, expect, within, fn } from '@storybook/test';
+import { expect, within } from '@storybook/test';
 import { renderDialog } from '../dialog/dialogStoryUtil';
 import ConfirmDialogStory from '../confirmDialog/confirmDialog.stories';
 
@@ -19,7 +19,7 @@ const DeleteDialogStory = {
 };
 
 export const Default = {
-    name: 'Render',
+    name: 'Render'
 };
 
 export const Test = {
@@ -46,7 +46,7 @@ export const Test = {
             expect(dialogNode).toBeInTheDocument();
             expect(dialogsNode).toContainElement(dialogNode);
             console.log('dialogText', dialogText);
-            expect(dialog.getByText('Delete')).toBeInTheDocument();
+            expect(dialog.getByRole('heading', { name: /Delete/i })).toBeInTheDocument();
             expect(dialog.getByText(dialogText)).toBeInTheDocument();
             expect(dialog.getByText('Are you sure you want to delete this item?')).toBeInTheDocument();
         });

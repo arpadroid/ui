@@ -38,7 +38,7 @@ export const Default = {
         const { truncateTextNode } = setup;
         await step('Renders the truncate text component.', async () => {
             await waitFor(() => expect(truncateTextNode).not.toBeNull());
-            expect(truncateTextNode.textContent).toContain('Sample text');
+            expect(truncateTextNode.textContent).toContain('In the vast expanse of the cosmos, stars');
         });
     }
 };
