@@ -21,7 +21,6 @@ const ConfirmDialogStory = {
     args: {
         ...DialogStory.args,
         id: 'confirm',
-        variant: 'alert',
         title: 'Confirm Action',
         zoneContent: dialogText,
         open: true,
