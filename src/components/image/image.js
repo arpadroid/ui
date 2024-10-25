@@ -451,6 +451,7 @@ class ArpaImage extends ArpaElement {
     }
 
     _onDestroy() {
+        super._onDestroy();
         this._hasRendered = false;
         this._hasLoaded = false;
         this._hasError = false;

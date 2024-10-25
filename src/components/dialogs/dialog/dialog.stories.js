@@ -1,54 +1,40 @@
 import { attrString } from '@arpadroid/tools';
 import { action } from '@storybook/addon-actions';
 import { waitFor, expect, within, fn } from '@storybook/test';
+import { playSetup, renderDialog, dialogText } from './dialogStoryUtil.js';
 const html = String.raw;
 
-// eslint-disable-next-line quotes
-const dialogText = `In the depths of the ocean, scientists discovered an ancient ecosystem thriving around hydrothermal vents. These towering underwater chimneys spew hot, mineral-rich water, supporting unique life forms—giant tube worms, ghostly shrimp, and bacteria that convert chemicals into energy. This alien-like world, hidden beneath miles of water, may hold secrets to understanding life beyond Earth.`;
-
-const dialog = args => html`
-    <arpa-dialogs>
-        <arpa-dialog ${attrString(args)}>
-            <zone name="title"> Dialog title </zone>
-            <zone name="content"> ${dialogText} </zone>
-            <zone name="footer">Dialog footer content</zone>
-        </arpa-dialog>
-    </arpa-dialogs>
-`;
-
-const playSetup = async canvasElement => {
-    const canvas = within(canvasElement);
-    await customElements.whenDefined('arpa-dialog');
-    await customElements.whenDefined('arpa-dialogs');
-    const dialogsNode = document.querySelector('arpa-dialogs');
-    const dialogNode = document.querySelector('arpa-dialog');
-    const onOpen = fn(() => action('open'));
-    const onClose = fn(() => action('close'));
-    dialogNode.on('open', onOpen);
-    dialogNode.on('close', onClose);
-    return { canvas, dialogNode, dialogsNode, onOpen, onClose };
-};
+const category = 'Props';
 
 const DialogStory = {
-    title: 'Components/Dialog/Dialog',
+    title: 'Dialogs/Dialog',
     tags: [],
     args: {
         id: 'dialog',
-        icon: 'dialogs',
-        variant: 'primary',
-        open: true
+        title: 'Dialog title',
+        open: true,
+        onOpen: fn(() => action('open')),
+        onClose: fn(() => action('close'))
     },
-    getArgTypes: (category = 'Dialog Props') => ({
+    argTypes: {
+        id: { control: { type: 'text' }, table: { category } },
         title: { control: { type: 'text' }, table: { category } },
         icon: { control: { type: 'text' }, table: { category } },
+        open: { control: { type: 'boolean' }, table: { category } },
+        canClose: { control: { type: 'boolean' }, table: { category } },
+        zoneTitle: { name: 'title', control: { type: 'text' }, table: { category: 'zones' } },
+        zoneContent: { name: 'content', control: { type: 'text' }, table: { category: 'zones' } },
+        zoneFooter: { name: 'footer', control: { type: 'text' }, table: { category: 'zones' } },
+        onOpen: { table: { category: 'Signals' } },
+        onClose: { table: { category: 'Signals' } },
         variant: {
             description: 'The field variant.',
             options: ['primary', 'secondary', 'minimal', 'delete', 'warning'],
             control: { type: 'select' },
             table: { category }
         }
-    }),
-    render: args => dialog(args)
+    },
+    render: args => renderDialog(args)
 };
 
 export const Default = {
@@ -64,9 +50,11 @@ export const Test = {
     args: {
         id: 'dialog-test'
     },
-    play: async ({ canvasElement, step }) => {
-        const { dialogNode, dialogsNode, onOpen, onClose } = await playSetup(canvasElement);
+    play: async ({ canvasElement, step, args }) => {
+        const { dialogNode, dialogsNode } = await playSetup(canvasElement);
         const dialog = within(dialogNode);
+        dialogNode.on('open', args.onOpen);
+        dialogNode.on('close', args.onClose);
         await step('Renders the dialog', async () => {
             expect(dialogsNode).toBeInTheDocument();
             expect(dialogNode).toBeInTheDocument();
@@ -83,13 +71,13 @@ export const Test = {
             button.click();
             expect(dialogNode).not.toHaveAttribute('open');
             expect(dialogNode).not.toBeVisible();
-            expect(onClose).toHaveBeenCalled();
+            expect(args.onClose).toHaveBeenCalled();
         });
 
         await step('Reopens the dialog', async () => {
             dialogNode.open();
             expect(dialogNode).toHaveAttribute('open');
-            expect(onOpen).toHaveBeenCalled();
+            expect(args.onOpen).toHaveBeenCalled();
         });
     }
 };

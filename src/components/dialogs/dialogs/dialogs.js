@@ -1,4 +1,4 @@
-import ArpaElement from '../arpaElement/arpaElement.js';
+import ArpaElement from '../../arpaElement/arpaElement.js';
 import { isObject, renderNode, attrString } from '@arpadroid/tools';
 
 const html = String.raw;
@@ -12,8 +12,7 @@ class Dialogs extends ArpaElement {
 
     getDefaultConfig() {
         return super.getDefaultConfig({
-            id: 'dialogs',
-            zoneSelector: ':scope > zone'
+            id: 'dialogs'
         });
     }
 

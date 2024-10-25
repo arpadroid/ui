@@ -46,6 +46,7 @@
      * Oranges 
      */
     --orange: #ff8800;
+    --orange-dark: #9b5300;
     --orange-tangerine: #ff6600;
     --orange-pumpkin: #ff8800;
     --orange-carrot: #ff9900;
@@ -61,6 +62,7 @@
     --orange-saffron: #ffa500;
     --orange-torch: #ff8c00;
     --orange-flame: #ff4500;
+    --orange-flame-dark: #d03700;
     --orange-light: #fff3e5;
 
     /** 

@@ -2,7 +2,7 @@
  * @typedef {import('./dialogInterface.js').DialogInterface} DialogInterface
  */
 
-import ArpaElement from '../arpaElement/arpaElement.js';
+import ArpaElement from '../../arpaElement/arpaElement.js';
 import { ObserverTool, renderNode, attrString } from '@arpadroid/tools';
 
 const html = String.raw;
@@ -79,8 +79,8 @@ class Dialog extends ArpaElement {
     }
 
     _handleZones() {
-        super._handleZones();
         this._initializeDialog();
+        super._handleZones();
     }
 
     //////////////////////////////
@@ -206,7 +206,7 @@ class Dialog extends ArpaElement {
 
     renderFooter(content = this._config?.footer || '') {
         return (
-            (this.hasFooter() &&
+            ((this.hasFooter() || content) &&
                 html`<footer class="dialog__footer" zone="footer">${content || ''}</footer>`) ||
             ''
         );

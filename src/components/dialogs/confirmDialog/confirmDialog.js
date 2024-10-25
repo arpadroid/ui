@@ -1,4 +1,4 @@
-import Dialog from '../../dialog.js';
+import Dialog from '../dialog/dialog.js';
 
 const html = String.raw;
 class ConfirmDialog extends Dialog {
@@ -11,25 +11,16 @@ class ConfirmDialog extends Dialog {
         this.i18nKey = 'components.confirmDialog';
         return {
             id: 'confirm-dialog',
-            title: 'Confirm Action',
-            variant: 'confirm',
             icon: 'warning',
             canClose: false,
-
-            'i18n-lblConfirm': 'suck me',
-            payload: null,
-            // content: html`<p>Are you sure you want to proceed?</p>`,
+            payload: undefined,
+            confirmIcon: 'check_circle',
+            cancelIcon: 'cancel',
             attributes: {
-                role: 'alertdialog'
-            },
-            footer: html`<div class="dialog__controls">
-                <button class="confirmDialog__cancelBtn" is="arpa-button" icon="cancel">
-                    ${this.i18n('lblCancel')}
-                </button>
-                <button class="confirmDialog__confirmBtn" is="arpa-button" icon="check_circle">
-                    ${this.i18n('lblConfirm')}
-                </button>
-            </div>`
+                variant: 'confirm',
+                role: 'alertdialog',
+                size: 'small'
+            }
         };
     }
 
@@ -37,6 +28,7 @@ class ConfirmDialog extends Dialog {
         super._initializeNodes();
         this.confirmBtn = this.querySelector('.confirmDialog__confirmBtn');
         this.cancelBtn = this.querySelector('.confirmDialog__cancelBtn');
+        this.cancelBtn?.focus();
         this.confirmBtn.addEventListener('click', this.confirm);
         this.cancelBtn.addEventListener('click', this.cancel);
     }
@@ -56,7 +48,25 @@ class ConfirmDialog extends Dialog {
         this.close();
     }
 
+    renderFooter(
+        confirmIcon = this.getProperty('confirm-icon'),
+        lblConfirm = this.i18n('lblConfirm'),
+        cancelIcon = this.getProperty('cancel-icon'),
+        lblCancel = this.i18n('lblCancel')
+    ) {
+        const content = html`<div class="dialog__controls">
+            <button class="confirmDialog__cancelBtn" is="arpa-button" icon="${cancelIcon}">
+                ${lblCancel}
+            </button>
+            <button class="confirmDialog__confirmBtn" is="arpa-button" icon="${confirmIcon}">
+                ${lblConfirm}
+            </button>
+        </div>`;
+        return super.renderFooter(content);
+    }
+
     _onDestroy() {
+        super._onDestroy();
         this.confirmBtn.removeEventListener('click', this.confirm);
         this.cancelBtn.removeEventListener('click', this.cancel);
     }

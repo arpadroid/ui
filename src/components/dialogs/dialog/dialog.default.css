@@ -1,5 +1,9 @@
 :root {
     --dialog-padding: 1.5rem 1.5rem;
+    --dialog-outline: 2px solid white;
+    --dialog-text-color: var(--grey-800);
+    --dialog-outline-color: transparent;
+    --dialog-icon-color: var(--dialog-text-color);
 }
 
 @keyframes fadeIn {
@@ -11,8 +15,7 @@
     }
 }
 
-confirm-dialog,
-arpa-dialog {
+.dialog {
     animation: fadeIn 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
     align-items: center;
     background-color: rgba(0, 0, 0, 0.8);
@@ -41,15 +44,18 @@ arpa-dialog {
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
-    gap: .5rem;
-    .button {
-        margin-left: 16px;
+    gap: 0.5rem;
+    margin-left: auto;
+    button {
+        --button-underline-color: var(--dialog-outline-color);
+        --button-active-outline: 2px solid var(--dialog-outline-color);
+        --button-active-color: var(--dialog-text-color);
     }
 }
 
-.dialog__wrapper.dialog__wrapper {
+.dialog__wrapper {
     background-color: var(--color-background);
-    border-radius: 14px;
+    border-radius: 1rem;
     box-shadow: rgba(0, 0, 0, 0.15) 0px 15px 25px, rgba(0, 0, 0, 0.05) 0px 5px 10px;
     display: flex;
     flex-direction: column;
@@ -60,6 +66,8 @@ arpa-dialog {
     padding: 0;
     transition: opacity 1s ease-in;
     width: 100%;
+    outline: 3px solid white;
+    border: 3px solid var(--dialog-outline-color);
 }
 
 /** 
@@ -90,6 +98,7 @@ arpa-dialog {
     .icon {
         margin-right: 12px;
         max-width: 26px;
+        color: var(--dialog-icon-color);
     }
 }
 
@@ -117,6 +126,7 @@ arpa-dialog {
     flex: 1 0 auto;
     display: flex;
     flex-direction: column;
+    /* padding: 0 0.5rem; */
 }
 
 /**
@@ -124,41 +134,63 @@ arpa-dialog {
  */
 
 .dialog__footer {
-    padding: 0 1.5rem 1.5rem;
+    padding: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+/**
+ * Text Color
+ */
+.dialog__content,
+.dialog__titleText,
+.dialog__icon {
+    color: var(--dialog-text-color);
 }
 
 /**
  * Variants
  */
 
-arpa-dialog.dialog--delete {
-    .dialog__header {
-        border-radius: 12px 12px 0 0;
-        background-color: var(--color-dark-red);
-        color: var(--color-background);
-        padding: 16px 24px;
-    }
+/**
+ * Small
+ */
 
+.dialog[size='small'] {
+    --dialog-padding: 1rem;
     .dialog__wrapper {
-        max-width: 660px;
+        max-width: 560px;
     }
-}
-
-.dialog--loading {
     .dialog__body {
-        min-height: 200px;
+        padding-bottom: 0.5rem;
+    }
+
+    .dialog__footer {
+        padding: 0.5rem;
     }
 }
 
-.dialog--small.dialog--small .dialog__wrapper {
-    max-width: 660px;
+/**
+ * Delete
+ */
+
+.dialog[variant='delete'] {
+    --dialog-text-color: var(--red-dark);
+    --dialog-outline-color: var(--red-dark);
+    --dialog-icon-color: var(--red-dark);
+    --button-active-icon-color: var(--red-dark);
+    .dialog__content {
+        font-weight: 600;
+    }
 }
 
-.dialog--loading .dialogHeader,
-.dialog--loading .dialogBody__contentWrapper {
-    opacity: 0;
-}
+.dialog[variant='confirm'] {
+    --dialog-outline-color: var(--orange);
+    --dialog-icon-color: var(--orange);
+    --button-active-icon-color: var(--orange);
 
-.dialog--loaded.dialog--loaded .dialog__wrapper {
-    opacity: 1 !important;
+    .dialog__content {
+        font-weight: 600;
+    }
 }
