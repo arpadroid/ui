@@ -62,7 +62,9 @@ export const Test = {
             expect(dialogsNode).toContainElement(dialogNode);
 
             expect(dialog.getByText('Dialog title')).toBeInTheDocument();
-            expect(dialog.getByText(dialogText)).toBeInTheDocument();
+            await waitFor(() => {
+                expect(dialog.getByText(dialogText)).toBeInTheDocument();
+            });
             expect(dialog.getByText('Footer content')).toBeInTheDocument();
         });
 

@@ -7,7 +7,7 @@ class DeleteDialog extends ConfirmDialog {
 
     getDefaultConfig() {
         const defaultConfig = super.getDefaultConfig();
-        this.i18nKey = 'components.deleteDialog';
+        this.i18nKey = 'ui.deleteDialog';
         return mergeObjects(defaultConfig, {
             id: 'delete-dialog',
             title: 'Delete',

@@ -1,0 +1,8 @@
+{
+    "deleteDialog": {
+        "lblTitle": "Delete",
+        "lblMessage": "Are you sure you want to delete this item?",
+        "lblConfirm": "Delete",
+        "lblCancel": "Cancel"
+    }
+}

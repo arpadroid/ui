@@ -1,0 +1,8 @@
+{
+    "image": {
+        "txtNoImage": "No image(s)",
+        "lblLoadingImage": "Loading image...",
+        "errLoad": "Error loading image.",
+        "txtUploadImage": "Upload Image"
+    }
+}

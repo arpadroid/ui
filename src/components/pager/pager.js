@@ -22,7 +22,7 @@ class Pager extends ArpaElement {
      * @returns {PagerType}
      */
     getDefaultConfig() {
-        this.i18nKey = 'components.pager';
+        this.i18nKey = 'ui.pager';
         return {
             className: 'pager',
             currentPage: 1,

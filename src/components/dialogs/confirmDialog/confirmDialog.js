@@ -8,7 +8,7 @@ class ConfirmDialog extends Dialog {
 
     getDefaultConfig() {
         this.bind('confirm', 'cancel');
-        this.i18nKey = 'components.confirmDialog';
+        this.i18nKey = 'ui.confirmDialog';
         return {
             id: 'confirm-dialog',
             icon: 'warning',

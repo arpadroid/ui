@@ -26,7 +26,7 @@ class DropArea extends ArpaElement {
      * @returns {DropAreaInterface}
      */
     getDefaultConfig() {
-        this.i18nKey = 'components.dropArea';
+        this.i18nKey = 'ui.dropArea';
         return mergeObjects(super.getDefaultConfig(), {
             label: this.i18n('txtDropFiles'),
             icon: 'file_upload',

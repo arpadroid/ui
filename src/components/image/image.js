@@ -29,7 +29,7 @@ class ArpaImage extends ArpaElement {
      * @returns {ImageInterface} - The default configuration options.
      */
     getDefaultConfig() {
-        this.i18nKey = 'components.image';
+        this.i18nKey = 'ui.image';
         return mergeObjects(super.getDefaultConfig(), {
             alt: '',
             caption: '',
