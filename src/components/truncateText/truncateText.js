@@ -18,8 +18,8 @@ class TruncateText extends ArpaElement {
             maxLength: 50,
             threshold: 20,
             ellipsis: html`<span class="truncateText__ellipsis">...</span> `,
-            readMoreLabel: 'Read more',
-            readLessLabel: 'Read less',
+            readMoreLabel: 'Read more.',
+            readLessLabel: 'Read less.',
             buttonClasses: ['truncateText__readMoreButton', 'button--link'],
             hasButton: false
         };
@@ -127,13 +127,13 @@ class TruncateText extends ArpaElement {
         if (!maxLength || !this.innerHTML.trim().length || this.showingFullContent) {
             return;
         }
-        const text = this.textContent;
+        const text = this.textContent.trim();
         const ellipsis = this.getProperty('ellipsis');
         if (this.shouldTruncate()) {
             this.isTruncated = true;
             this.innerHTML = html`
-                <span class="truncateText__content"> ${text.slice(0, maxLength)} </span>
-                <span class="truncateText__ellipsis"> ${ellipsis} </span>
+                <span class="truncateText__content">${text.slice(0, maxLength)}</span>
+                <span class="truncateText__ellipsis">${ellipsis}</span>
             `;
             this.textNode = this.querySelector('.truncateText__content');
             this.renderButton();

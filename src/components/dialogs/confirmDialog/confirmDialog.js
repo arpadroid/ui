@@ -67,8 +67,8 @@ class ConfirmDialog extends Dialog {
 
     _onDestroy() {
         super._onDestroy();
-        this.confirmBtn.removeEventListener('click', this.confirm);
-        this.cancelBtn.removeEventListener('click', this.cancel);
+        this.confirmBtn?.removeEventListener('click', this.confirm);
+        this.cancelBtn?.removeEventListener('click', this.cancel);
     }
 }
 

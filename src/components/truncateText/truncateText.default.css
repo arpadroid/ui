@@ -1,4 +1,10 @@
-.truncateText__readMoreButton {
+.truncateText__readMoreButton.truncateText__readMoreButton {
     display: block;
-    margin-top: 12px;
+    color: var(--grey-600);
+    font-weight: 600;
+    font-size: .9rem;
+    margin-top: .5rem;
+    &:hover {
+        color: var(--color-primary);
+    }
 }

@@ -12,7 +12,8 @@ class Dialogs extends ArpaElement {
 
     getDefaultConfig() {
         return super.getDefaultConfig({
-            id: 'dialogs'
+            id: 'dialogs',
+            dialogTypes: ['arpa-dialog', 'confirm-dialog', 'delete-dialog']
         });
     }
 
@@ -26,7 +27,7 @@ class Dialogs extends ArpaElement {
     }
 
     getDialogs() {
-        return Array.from(this.querySelectorAll('arpa-dialog'));
+        return Array.from(this.querySelectorAll(this._config.dialogTypes.join(',')));
     }
 
     addDialog(dialog) {
