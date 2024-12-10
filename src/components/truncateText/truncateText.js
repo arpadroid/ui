@@ -17,9 +17,9 @@ class TruncateText extends ArpaElement {
         return {
             maxLength: 50,
             threshold: 20,
-            ellipsis: html`<span class="truncateText__ellipsis">...</span> `,
-            readMoreLabel: 'Read more.',
-            readLessLabel: 'Read less.',
+            ellipsis: '...',
+            readMoreLabel: 'read more',
+            readLessLabel: 'read less',
             buttonClasses: ['truncateText__readMoreButton', 'button--link'],
             hasButton: false
         };
@@ -131,10 +131,9 @@ class TruncateText extends ArpaElement {
         const ellipsis = this.getProperty('ellipsis');
         if (this.shouldTruncate()) {
             this.isTruncated = true;
-            this.innerHTML = html`
-                <span class="truncateText__content">${text.slice(0, maxLength)}</span>
-                <span class="truncateText__ellipsis">${ellipsis}</span>
-            `;
+            const ellipsisHTML = html`<span class="truncateText__ellipsis">${ellipsis}</span>`;
+            const content = text.slice(0, maxLength);
+            this.innerHTML = html`<span class="truncateText__content">${content}${ellipsisHTML}</span>`;
             this.textNode = this.querySelector('.truncateText__content');
             this.renderButton();
         }
@@ -146,11 +145,13 @@ class TruncateText extends ArpaElement {
 
     showFullContent() {
         this.showingFullContent = true;
-        this.innerHTML = '';
+        this.innerHTML = html`<span class="truncateText__content"></div>`;
+        this.textNode = this.querySelector('.truncateText__content');
 
         this.isTruncated = false;
-        appendNodes(this, [...this._childNodes, this.button]);
+        appendNodes(this.textNode, this._childNodes);
         this.renderButton(false);
+        this.appendChild(this.button);
         setTimeout(() => {
             this.showingFullContent = false;
         }, 100);

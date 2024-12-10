@@ -342,7 +342,7 @@ class Pager extends ArpaElement {
      */
     async _handleClick(node) {
         await this.promise;
-        node.promise && await node.promise;
+        node.promise && (await node.promise);
         const clickHandlers = node.querySelectorAll('a.pagerItem__content, button.pagerItem__content');
         clickHandlers.forEach(handler => handler.addEventListener('click', this.onLinkClick));
     }
@@ -354,7 +354,8 @@ class Pager extends ArpaElement {
     onLinkClick(event) {
         const { onClick } = this._config;
         const pagerItem = event.target.closest('pager-item');
-        onClick({ page: Number(pagerItem.getAttribute('page')), node: pagerItem, event });
+        typeof onClick === 'function' &&
+            onClick({ page: Number(pagerItem.getAttribute('page')), node: pagerItem, event });
         requestAnimationFrame(() => pagerItem.querySelector('a, button')?.focus());
     }
 

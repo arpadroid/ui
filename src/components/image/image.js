@@ -383,11 +383,11 @@ class ArpaImage extends ArpaElement {
             if (this.classList.contains(className)) return;
             this.classList.add(className);
             const css = `
-                max-width: ${width}px; 
+                max-width: 100%; 
                 width: ${width}px;
                 height: auto;
             `;
-            addCssRule(`.${className}`, css);
+            addCssRule(`.${className}.${className}`, css);
             addCssRule(`.${className} picture`, `aspect-ratio: ${width} / ${height};`);
         }
     }

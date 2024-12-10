@@ -3,8 +3,11 @@
     color: var(--grey-600);
     font-weight: 600;
     font-size: .9rem;
-    margin-top: .5rem;
     &:hover {
         color: var(--color-primary);
     }
+}
+
+.truncateText__content {
+    margin-right: .5rem;
 }
