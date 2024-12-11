@@ -35,12 +35,11 @@ a.iconButton,
         position: absolute;
         inset: 0;
     }
-    
+
     .listItem__main.listItem__main {
         flex: none;
         gap: 0;
     }
-
 }
 
 button.iconButton[variant='minimal'] {
@@ -129,15 +128,25 @@ button.iconButton:disabled {
     cursor: auto;
 }
 
-button.iconButton:disabled .tooltip {
-    background-color: var(--grey-10);
-    border: 2px dashed var(--grey-100);
-    color: var(--grey-600);
+button.iconButton:disabled {
+    cursor: not-allowed;
+    .icon {
+        opacity: 0.5;
+    }
+    &:hover {
+        .icon {
+            color: var(--grey-400);
+        }
+    }
+    .tooltip {
+        display: none;
+        opacity: 0.5;
+    }
 }
 
 button.iconButton:disabled:hover {
     background-color: transparent;
-    border: 2px solid var(--grey-50);
+    border: none;
 }
 
 button.iconButton:disabled .iconButton__content {
