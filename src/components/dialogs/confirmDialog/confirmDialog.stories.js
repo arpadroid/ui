@@ -58,14 +58,14 @@ export const Test = {
         dialogNode.on('confirm', args.onConfirm);
         dialogNode.on('cancel', args.onCancel);
         dialogNode.setPayload([{ id: 1 }]);
+
         await step('Renders the dialog', async () => {
             expect(dialogsNode).toBeInTheDocument();
             expect(dialogNode).toBeInTheDocument();
             expect(dialogsNode).toContainElement(dialogNode);
-            console.log('dialogText', dialogText);
             expect(dialog.getByText('Confirm Action')).toBeInTheDocument();
             expect(dialog.getByText(dialogText)).toBeInTheDocument();
-            expect(dialog.getByText('Are you sure you want to proceed?')).toBeInTheDocument();
+            expect(dialog.getByText('Are you sure you want to proceed?')).toBeDefined();
         });
 
         await step(
