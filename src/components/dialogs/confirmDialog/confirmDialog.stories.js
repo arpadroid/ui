@@ -65,7 +65,7 @@ export const Test = {
             expect(dialogsNode).toContainElement(dialogNode);
             expect(dialog.getByText('Confirm Action')).toBeInTheDocument();
             expect(dialog.getByText(dialogText)).toBeInTheDocument();
-            expect(dialog.getByText('Are you sure you want to proceed?')).toBeDefined();
+            await waitFor(() => expect(dialog.getByText('Are you sure you want to proceed?')).toBeDefined());
         });
 
         await step(
