@@ -4,7 +4,7 @@
     --image-thumbnail-font-size: 2rem;
     --image-height: auto;
     --image-width: 100%;
-    --image-border-radius: .5rem;
+    --image-border-radius: 0.5rem;
 }
 
 arpa-image {
@@ -16,7 +16,7 @@ arpa-image {
     height: var(--image-height);
     width: var(--image-width);
     max-height: 100%;
-    
+
     figure {
         display: flex;
         flex-direction: column;
@@ -166,6 +166,10 @@ arpa-image {
         outline: none;
         z-index: 1;
     }
+}
+
+.image--size-adaptive {
+    --listItem-imgSize: 100%;
 }
 
 /**

@@ -81,6 +81,11 @@ class IconButton extends HTMLButtonElement {
         handleZones();
     }
 
+    setIcon(icon) {
+        const iconNode = this.querySelector('arpa-icon');
+        iconNode && (iconNode.innerHTML = icon);
+    }
+
     renderTooltip() {
         if (!this.hasTooltip()) return '';
         const id = this.getId();

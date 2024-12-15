@@ -1,3 +1,10 @@
+:root {
+    --tooltip-triangle-width: 8px;
+    --tooltip-border-color: var(--grey-200);
+    --tooltip-bg-color: var(--grey-50);
+    --tooltip-triangle-width-sm: 8px;
+}
+
 .tooltip {
     display: flex;
     position: relative;
@@ -23,12 +30,14 @@
 
 .tooltip__content,
 [role='tooltip'] {
-    background-color: var(--primary-hilight);
+    /* background-color: var(--primary-hilight); */
     border-radius: 5px;
-    border: 1.5px solid var(--color-primary);
+    /* border: 1.5px solid var(--color-primary); */
+    border: 2px solid var(--tooltip-border-color);
     box-shadow: 1px 1px 4px 0 rgba(0, 0, 0, 0.1);
-    color: var(--grey-800);
-    font-weight: 500;
+    background-color: var(--tooltip-bg-color);
+    color: var(--grey-600);
+    font-weight: 700;
     display: none;
     font-size: 12px;
     line-height: 16px;
@@ -39,6 +48,16 @@
     transition: var(--theme-transition);
     width: max-content;
     z-index: 1;
+
+    &::before,
+    &::after {
+        content: '';
+        position: absolute;
+        border-color: var(--tooltip-border-color) transparent transparent transparent;
+        width: 0;
+        height: 0;
+        border-style: solid;
+    }
 }
 
 /* Tooltip Positions */
@@ -52,15 +71,32 @@
     align-items: center;
     display: flex;
     .tooltip__content {
-        margin-right: 8px;
+        margin-right: 12px;
         right: 100%;
         left: auto;
+
+        &::before,
+        &::after {
+            border-color: transparent transparent transparent var(--tooltip-border-color);
+            border-width: var(--tooltip-triangle-width-sm) 0 var(--tooltip-triangle-width-sm)
+                var(--tooltip-triangle-width-sm);
+            top: 50%;
+            transform: translateY(-50%);
+            right: -8px;
+        }
+
+        &::after {
+            border-color: transparent transparent transparent var(--tooltip-bg-color);
+            border-width: var(--tooltip-triangle-width-sm) 0 var(--tooltip-triangle-width-sm)
+                var(--tooltip-triangle-width-sm);
+            right: -5px;
+        }
     }
 }
 
 /* TOP LEFT */
 
-.tooltip--top-left {
+.tooltip--top-left.tooltip--top-left {
     align-items: center;
     display: flex;
     .tooltip__content {
@@ -75,11 +111,25 @@
 .tooltip.tooltip--top .tooltip__content {
     bottom: 100%;
     top: auto;
-    margin-bottom: 0px;
+    margin-bottom: 0.5rem;
     left: auto;
     right: 0;
     left: 50%;
     transform: translateX(-50%);
+
+    &::before,
+    &::after {
+        border-width: var(--tooltip-triangle-width) var(--tooltip-triangle-width) 0
+            var(--tooltip-triangle-width);
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    &::after {
+        border-color: var(--tooltip-bg-color) transparent transparent transparent;
+        margin-top: -3px;
+    }
 }
 
 /* RIGHT */

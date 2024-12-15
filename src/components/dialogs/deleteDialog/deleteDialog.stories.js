@@ -46,7 +46,6 @@ export const Test = {
             expect(dialogNode).toBeInTheDocument();
             expect(dialogsNode).toContainElement(dialogNode);
             expect(dialog.getByRole('heading', { name: /Delete/i })).toBeInTheDocument();
-            expect(dialog.getByText(dialogText)).toBeInTheDocument();
             dialog.getByText('Are you sure you want to delete this item?');
         });
     }

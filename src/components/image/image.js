@@ -60,7 +60,8 @@ class ArpaImage extends ArpaElement {
                 big: 600,
                 large: 900,
                 x_large: 1200,
-                xx_large: 2500
+                xx_large: 2500,
+                adaptive: '100%'
             },
             // i18n
             errLoad: this.i18n('errLoad'),
@@ -373,11 +374,14 @@ class ArpaImage extends ArpaElement {
     ////////////////////
 
     initializeStyles() {
+        const size = this.getProperty('size');
         const height = this.getHeight() || this.getSize();
         const width = this.getWidth();
         this.removeSizeClasses();
         this.addSizeClass();
-        if (width || height) {
+        if (size === 'adaptive') {
+            this.classList.add('image--size-adaptive');
+        } else if (width || height) {
             width === height && this.classList.add('image--square');
             const className = `image--size-${width}x${height}`;
             if (this.classList.contains(className)) return;
