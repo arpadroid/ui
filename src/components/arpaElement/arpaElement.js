@@ -318,9 +318,7 @@ class ArpaElement extends HTMLElement {
     }
 
     canRender() {
-        const rv = canRender(this);
-        !rv && console.warn('cannot render', this);;
-        return rv;
+        return canRender(this);
     }
 
     _handleZones() {
