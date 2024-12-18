@@ -1,5 +1,5 @@
 import { attr, attrString, getSafeHtmlId, mergeObjects, handleZones } from '@arpadroid/tools';
-import { zoneMixin, hasZone, CustomElementTool } from '@arpadroid/tools';
+import { zoneMixin, CustomElementTool } from '@arpadroid/tools';
 const { getProperty, hasProperty } = CustomElementTool;
 const html = String.raw;
 
@@ -53,7 +53,7 @@ class IconButton extends HTMLButtonElement {
     }
 
     hasTooltip() {
-        return hasProperty(this, 'label') || hasZone(this, 'tooltip-content');
+        return hasProperty(this, 'label');
     }
 
     getClassNames() {
@@ -78,12 +78,17 @@ class IconButton extends HTMLButtonElement {
             ${icon ? html`<arpa-icon>${this.getIcon()}</arpa-icon>` : ''} ${this.renderTooltip()}
         `;
         this.innerHTML = template;
+        this.tooltip = this.querySelector('arpa-tooltip');
         handleZones();
     }
 
     setIcon(icon) {
         const iconNode = this.querySelector('arpa-icon');
         iconNode && (iconNode.innerHTML = icon);
+    }
+
+    setLabel(label) {
+        this.tooltip?.setContent(label);
     }
 
     renderTooltip() {

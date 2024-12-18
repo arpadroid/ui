@@ -24,7 +24,7 @@ class Tooltip extends ArpaElement {
 
     getHandler() {
         const handler = this.getProperty('handler');
-        return handler && resolveNode(handler, this);
+        return (handler && resolveNode(handler, this)) || this.closest('button, a');
     }
 
     getPosition() {
@@ -33,7 +33,6 @@ class Tooltip extends ArpaElement {
 
     render() {
         this.innerHTML = '';
-
         if (!this._childNodes?.length) {
             this.remove();
             return;

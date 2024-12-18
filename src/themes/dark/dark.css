@@ -1,0 +1,85 @@
+:root {
+    --grey-1000: #ffffff;
+    --grey-950: #f2f2f2;
+    --grey-900: #e6e6e6;
+    --grey-850: #d9d9d9;
+    --grey-800: #cccccc;
+    --grey-750: #bfbfbf;
+    --grey-700: #b3b3b3;
+    --grey-650: #a6a6a6;
+    --grey-600: #999999;
+    --grey-550: #8c8c8c;
+    --grey-500: #808080;
+    --grey-450: #737373;
+    --grey-400: #666666;
+    --grey-350: #595959;
+    --grey-300: #4d4d4d;
+    --grey-250: #404040;
+    --grey-200: #333333;
+    --grey-150: #262626;
+    --grey-100: #1a1a1a;
+    --grey-50: #0d0d0d;
+    --grey-40: #0a0a0a;
+    --grey-30: #070707;
+    --grey-20: #050505;
+    --grey-10: #030303;
+    --grey-0: #000000;
+
+    /** 
+     * General
+     */
+
+    --border-color: var(--grey-250);
+    --border-dark-color: var(--grey-150);
+    --border-light-color: var(--grey-100);
+
+    --color-background: var(--grey-100);
+    --color-primary: #2a8cef;
+    --color-error-bg: var(--grey-150);
+    --color-card-hilight: var(--primary-hilight);
+    --color-tertiary: var(--color-blue-neon-light);
+
+    --overlay: rgba(26, 26, 26, 0.9);
+    --overlay-light: rgba(28, 28, 28, 0.5);
+
+    --primary-hilight: var(--grey-150);
+    --primary-highlight-outline: var(--color-primary);
+
+    --selected-hilight: #004387;
+    --current-hilight: #092037;
+
+    --group-box-shadow: rgba(94, 94, 94, 0.25) 0px 1px 6px 1px, rgba(53, 53, 53, 0.3) 0px 1px 2px 0px;
+    --select-combo-box-shadow: rgba(89, 89, 89, 0.5) 0px 2px 8px 0px;
+
+    --search-hilight: #8883e2;
+    --search-hilight: var(--color-tertiary);
+    --search-hilight: var(--color-yellow);
+
+    /* --color-error-text: var(--color-red); */
+    --color-error-outline: var(--color-light-red);
+    --color-icon-active: var(--grey-650);
+    --image-bg-color: var(--grey-30);
+    --scrollbar-color: var(--grey-300);
+    --scrollbar-background: var(--grey-200);
+    /* --color-icon-active: var(--color-orange); */
+    --striped-area: repeating-linear-gradient(
+        45deg,
+        var(--grey-150),
+        var(--grey-150) 10px,
+        var(--color-background) 10px,
+        var(--color-background) 20px
+    );
+    --striped-area-outline: 2px solid var(--grey-150);
+    --striped-area-border: 2px solid var(--color-background);
+
+    /** Messages **/
+    --bg-info: var(--grey-150);
+    --outline-info: var(--color-blue);
+    --bg-success: var(--grey-150);
+    --outline-success: var(--color-green);
+    --bg-warning: var(--grey-150);
+    --outline-warning: var(--color-orange);
+    --bg-error: var(--grey-150);
+    --bg-item-selected: #242933;
+    --outline-error: var(--color-red);
+}

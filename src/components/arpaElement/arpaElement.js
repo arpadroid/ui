@@ -3,7 +3,7 @@ import { handleZones, zoneMixin, hasZone, getZone, attr, setNodes, bind } from '
 import { I18nTool, I18n } from '@arpadroid/i18n';
 const { processTemplate, arpaElementI18n } = I18nTool;
 
-const { getProperty, hasProperty, getArrayProperty, hasContent, onDestroy } = CustomElementTool;
+const { getProperty, hasProperty, getArrayProperty, hasContent, onDestroy, canRender } = CustomElementTool;
 
 /**
  * Base class for custom elements.
@@ -305,6 +305,7 @@ class ArpaElement extends HTMLElement {
     ////////////////////
 
     async _render() {
+        if (!this.canRender()) return;
         typeof this._preRender === 'function' && this._preRender();
         const { attributes } = this._config;
         attributes && attr(this, attributes);
@@ -314,6 +315,12 @@ class ArpaElement extends HTMLElement {
         this._onRenderReadyCallbacks = [];
         this._handleZones();
         this._onRenderComplete();
+    }
+
+    canRender() {
+        const rv = canRender(this);
+        !rv && console.warn('cannot render', this);;
+        return rv;
     }
 
     _handleZones() {

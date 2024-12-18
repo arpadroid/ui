@@ -40,15 +40,18 @@ class ArpaImage extends ArpaElement {
             hasPreloader: true,
             hasPreview: false,
             hasDropArea: false,
+            hasThumbnail: true,
             highResSrc: '',
             icon: 'crop_original',
             iconBroken: 'broken_image',
             lazyLoad: false,
+            lazyLoaderBatchSize: 5,
             hasNativeLazy: false,
             loadedClass: 'image--loaded',
             onError: undefined,
             onInput: undefined,
             onLoad: undefined,
+            preventUpscale: false,
             params: ['width', 'height', 'quality'],
             quality: 50,
             sizes: [],
@@ -175,7 +178,9 @@ class ArpaImage extends ArpaElement {
     }
 
     hasThumbnail() {
-        return !this.hasLoaded() || !this.getSource() || this.hasError();
+        return (
+            this.hasProperty('has-thumbnail') && (!this.hasLoaded() || !this.getSource() || this.hasError())
+        );
     }
 
     hasLazyLoad() {
@@ -186,8 +191,6 @@ class ArpaImage extends ArpaElement {
         return this.hasProperty('has-native-lazy');
     }
 
-    // #endregion - Has
-
     /**
      * Determines whether the component has a high-resolution preview image.
      * @returns {boolean} - True if the component has a high-resolution preview image; otherwise, false.
@@ -195,6 +198,8 @@ class ArpaImage extends ArpaElement {
     hasPreview() {
         return this._config?.highResSrc;
     }
+
+    // #endregion - Has
 
     /**
      * Busts the cache for the image.
@@ -386,11 +391,20 @@ class ArpaImage extends ArpaElement {
             const className = `image--size-${width}x${height}`;
             if (this.classList.contains(className)) return;
             this.classList.add(className);
-            const css = `
-                max-width: 100%; 
+            let css = '';
+            if (width === 'auto' && height) {
+                css += 'max-width: 100%;';
+                css += 'width: auto;';
+                css += `height: ${height}px;`;
+            } else if (height === 'auto' && width) {
+                css += 'max-height: 100%;';
+                css += `width: ${width}px;`;
+                css += 'height: auto;';
+            } else {
+                css = `max-width: 100%; 
                 width: ${width}px;
-                height: auto;
-            `;
+                height: auto;`;
+            }
             addCssRule(`.${className}.${className}`, css);
             addCssRule(`.${className} picture`, `aspect-ratio: ${width} / ${height};`);
         }
@@ -432,7 +446,8 @@ class ArpaImage extends ArpaElement {
         this.picture = this.querySelector('picture');
         this.hasDropArea() && this.initializeDropArea();
         this.initializeImage();
-        this.hasLazyLoad() && !this.hasNativeLazy() && lazyLoader(this.image);
+        const batchSize = this.getProperty('lazy-loader-batch-size');
+        this.hasLazyLoad() && !this.hasNativeLazy() && lazyLoader(this.image, batchSize);
     }
 
     /**
@@ -509,6 +524,10 @@ class ArpaImage extends ArpaElement {
         this._hasLoaded = true;
         this.stopPreloading();
         this.classList.remove(this.getLoadingClass());
+        if (this.hasProperty('prevent-upscale') && this.image?.naturalWidth > 0) {
+            this.picture.style.maxWidth = this.naturalWidth + 'px';
+            this.picture.style.maxHeight = this.image.naturalHeight + 'px';
+        }
     }
 
     /**
@@ -522,8 +541,8 @@ class ArpaImage extends ArpaElement {
         typeof onError === 'function' && onError(event, this);
         this.stopPreloading(this.getErrorClass());
         this.classList.remove(this.getLoadingClass());
-        this.thumbnail.setContent(this.getProperty('errLoad'));
-        this.thumbnail.querySelector('arpa-icon')?.setIcon(this.getProperty('iconBroken'));
+        this.thumbnail?.setContent(this.getProperty('errLoad'));
+        this.thumbnail?.querySelector('arpa-icon')?.setIcon(this.getProperty('iconBroken'));
     }
 
     /**
