@@ -3,6 +3,7 @@
     --icon-button-hilight-bg: var(--selected-hilight);
     --icon-button-hilight-border: 2px solid var(--color-primary);
     --icon-button-border-radius: 50%;
+    --icon-button-active-bg: var(--input-bg-color);
 }
 
 .iconButton,
@@ -24,8 +25,8 @@ a.iconButton,
     transition: var(--theme-transition);
     &:hover,
     &:focus {
-        background-color: var(--grey-50);
-        border: 2px solid var(--grey-100);
+        background-color: var(--icon-button-active-bg);
+        border: 2px solid var(--border-color);
         outline: none;
         arpa-icon {
             color: var(--color-primary);

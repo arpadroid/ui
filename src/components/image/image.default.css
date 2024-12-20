@@ -1,5 +1,5 @@
 :root {
-    --image-thumbnail-bg: #e7f1fd;
+    --image-thumbnail-bg: var(--image-bg-color);
     --image-thumbnail-color: #3271bf;
     --image-thumbnail-font-size: 2rem;
     --image-height: auto;
@@ -17,6 +17,7 @@ arpa-image {
     width: var(--image-width);
     max-height: 100%;
     background-color: var(--image-bg-color);
+    transition: var(--theme-transition);
 
     figure {
         display: flex;
@@ -46,7 +47,7 @@ arpa-image {
         height: 100%;
         max-height: 100%;
         object-fit: cover;
-        transition: opacity 0.5s ease, background-color 0.5s ease;
+        transition: var(--theme-transition);
         visibility: visible;
         opacity: 0;
         will-change: transform, opacity;
@@ -91,6 +92,7 @@ arpa-image {
             color: var(--image-thumbnail-color);
             transition: opacity 0.5s ease;
             justify-content: center;
+            transition: var(--theme-transition);
         }
     }
 
@@ -129,7 +131,7 @@ arpa-image {
         .image__thumbnail {
             z-index: 0;
             arpa-icon {
-                background-color: var(--grey-50);
+                background-color: var(--image-bg-color);
             }
         }
     }
