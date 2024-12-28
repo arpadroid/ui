@@ -1,11 +1,9 @@
 import { attrString } from '@arpadroid/tools';
-import { waitFor, expect, within, fn } from '@storybook/test';
-import { action } from '@storybook/addon-actions';
-const onClick = fn(() => action('onClick'));
+import { waitFor, expect, within } from '@storybook/test';
 
 const html = String.raw;
 const ButtonStory = {
-    title: 'Components/Button',
+    title: 'Buttons/Button',
     tags: [],
     playSetup: async canvasElement => {
         const canvas = within(canvasElement);

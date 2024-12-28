@@ -13,6 +13,7 @@ export { default as Image } from './components/image/image.js';
  */
 export { default as Button } from './components/button/button.js';
 export { default as IconButton } from './components/iconButton/iconButton.js';
+export { default as DarkModeButton } from './components/darkModeButton/darkModeButton.js';
 
 /**
  * Utils.

@@ -2,7 +2,7 @@ import { attrString } from '@arpadroid/tools';
 import { waitFor, expect, within } from '@storybook/test';
 const html = String.raw;
 const CircularPreloaderStory = {
-    title: 'Components/Circular Preloader',
+    title: 'Preloaders/Circular Preloader',
     tags: [],
     getArgs: () => ({
         text: '',

@@ -74,10 +74,8 @@ class IconButton extends HTMLButtonElement {
 
     async render() {
         const icon = this.getIcon();
-        const template = html`
-            ${icon ? html`<arpa-icon>${this.getIcon()}</arpa-icon>` : ''} ${this.renderTooltip()}
-        `;
-        this.innerHTML = template;
+        const iconHTML = icon ? html`<arpa-icon>${icon}</arpa-icon>` : '';
+        this.innerHTML = html`${iconHTML}${this.renderTooltip()}`;
         this.tooltip = this.querySelector('arpa-tooltip');
         handleZones();
     }

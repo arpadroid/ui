@@ -364,10 +364,14 @@ class ArpaElement extends HTMLElement {
      * @param {Record<string, unknown>} [vars] - The variables to use in the template.
      * @returns {string | undefined} The rendered template.
      */
-    renderTemplate(template = this._config.template, vars = this.getTemplateVars()) {
+    renderTemplate(template = this._getTemplate(), vars = this.getTemplateVars()) {
         if (template) {
             return processTemplate(template, vars);
         }
+    }
+
+    _getTemplate() {
+        return typeof this.getTemplate === 'function' ? this.getTemplate() : this._config?.template;
     }
 
     /**

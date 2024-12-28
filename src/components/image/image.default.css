@@ -152,7 +152,7 @@ arpa-image {
         }
     }
 
-    drop-area {
+    .dropArea {
         background: var(--overlay) !important;
         display: flex;
         flex-direction: column;
