@@ -1,5 +1,5 @@
 import { attr, attrString, getSafeHtmlId, mergeObjects, handleZones } from '@arpadroid/tools';
-import { zoneMixin, CustomElementTool } from '@arpadroid/tools';
+import { zoneMixin, CustomElementTool, hasZone } from '@arpadroid/tools';
 const { getProperty, hasProperty } = CustomElementTool;
 const html = String.raw;
 
@@ -53,7 +53,7 @@ class IconButton extends HTMLButtonElement {
     }
 
     hasTooltip() {
-        return hasProperty(this, 'label');
+        return hasProperty(this, 'label') || hasZone(this, 'tooltip-content');
     }
 
     getClassNames() {
