@@ -1,7 +1,7 @@
 import { attrString } from '@arpadroid/tools';
 import { action } from '@storybook/addon-actions';
 import { waitFor, expect, within, fn } from '@storybook/test';
-import { playSetup, renderDialog, dialogText } from './dialogStoryUtil.js';
+import { playSetup, renderDialog } from './dialogStoryUtil.js';
 const html = String.raw;
 
 const category = 'Props';
@@ -69,7 +69,7 @@ export const Test = {
         });
 
         await step('Closes the dialog', async () => {
-            const button = dialog.getByRole('button', { name: 'close' });
+            const button = dialog.getByRole('button', { label: 'close' });
             expect(button).toBeInTheDocument();
             button.click();
             expect(dialogNode).not.toHaveAttribute('open');
