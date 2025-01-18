@@ -120,7 +120,10 @@ export const ButtonDialogTest = {
             const button = canvas.getByRole('button', { name: /Open Dialog/i });
             expect(dialogNode).not.toHaveAttribute('open');
             button.click();
-            await waitFor(() => expect(dialogNode).toHaveAttribute('open'));
+            await waitFor(() => {
+                expect(dialogNode).toHaveAttribute('open');
+                expect(dialogNode).toBeVisible();
+            });
         });
     }
 };

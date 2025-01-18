@@ -6,4 +6,7 @@ arpa-dialogs {
     justify-content: center;
     visibility: hidden;
     z-index: 100;
+    &:has(.dialog[open]) {
+        visibility: visible;
+    }
 }

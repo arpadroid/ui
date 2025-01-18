@@ -57,14 +57,13 @@ class Tooltip extends ArpaElement {
         if (!this._hasRendered) {
             return;
         }
-        requestAnimationFrame(() => {
+        setTimeout(() => {
             this.contentNode.innerHTML = '';
             typeof content === 'string' && (this.contentNode.innerHTML = content);
             if (content instanceof HTMLElement) {
                 this.contentNode.appendChild(content);
-            }    
-        });
-        
+            }
+        }, 0);
     }
 
     renderButton() {

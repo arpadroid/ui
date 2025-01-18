@@ -159,7 +159,7 @@ class InputCombo {
     _initialize() {
         this._initializeProperties();
         this._initializeCombo();
-        this._initializeInput();
+        this.initializeInput();
     }
 
     /**
@@ -230,11 +230,16 @@ class InputCombo {
      * Initializes the input element of the InputCombo component.
      * @protected
      */
-    _initializeInput() {
+    initializeInput() {
+        this.input.removeEventListener('keyup', this._onInputKeyUp);
         this.input.addEventListener('keyup', this._onInputKeyUp);
+        this.input.removeEventListener('focus', this._onFocus);
         this.input.addEventListener('focus', this._onFocus);
+        this.input.removeEventListener('blur', this._onBlur);
         this.input.addEventListener('blur', this._onBlur);
+        this.input.removeEventListener('click', this._onClick);
         this.input.addEventListener('click', this._onClick);
+        this.input.removeEventListener('mousedown', this._onMouseDown);
         this.input.addEventListener('mousedown', this._onMouseDown);
     }
 
@@ -352,9 +357,7 @@ class InputCombo {
             InputCombo.activeInstance = this;
             this.place();
             const selected = this.combo.querySelector('*[aria-selected="true"]');
-            if (selected) {
-                selected?.scrollIntoView();
-            }
+            selected && selected?.scrollIntoView({ block: 'nearest' });
         });
         this.combo.classList.add('inputCombo--active');
         this.input.classList.add('inputCombo__input--active');
