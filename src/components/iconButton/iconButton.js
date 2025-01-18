@@ -65,7 +65,7 @@ class IconButton extends HTMLButtonElement {
     }
 
     getLabel() {
-        return getProperty(this, 'label') || getProperty(this, 'aria-label') || undefined;
+        return getProperty(this, 'label') || getProperty(this, 'aria-label') || '';
     }
 
     getIcon() {

@@ -1,6 +1,7 @@
 * {
     box-sizing: border-box;
     transition-behavior: allow-discrete;
+    font-synthesis: none;
 }
 
 body,
@@ -16,4 +17,6 @@ html {
 
 body {
     overflow-y: scroll;
+    -webkit-font-smoothing: antialiased;
+    font-smooth: always;
 }
