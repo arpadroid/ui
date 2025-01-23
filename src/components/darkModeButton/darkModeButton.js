@@ -11,7 +11,7 @@ class DarkModeButton extends IconButton {
             labelLight: 'Light mode'
         };
     }
-    
+
     connectedCallback() {
         super.connectedCallback();
         this.removeEventListener('click', this._onClick);
@@ -23,6 +23,7 @@ class DarkModeButton extends IconButton {
      */
     _onClick() {
         const styleNode = document.getElementById('dark-styles');
+        if (!(styleNode instanceof HTMLStyleElement)) return;
         if (styleNode.disabled) {
             styleNode.removeAttribute('disabled');
             this.setIcon(this.getIconLight());

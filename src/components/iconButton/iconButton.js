@@ -1,9 +1,19 @@
+/**
+ * @typedef {import('../tooltip/tooltip').default} Tooltip
+ * @typedef {import('./iconButton.types').IconButtonConfigType} IconButtonConfigType
+ */
+// @ts-ignore
 import { attr, attrString, getSafeHtmlId, mergeObjects, handleZones } from '@arpadroid/tools';
+// @ts-ignore
 import { zoneMixin, CustomElementTool, hasZone } from '@arpadroid/tools';
 const { getProperty, hasProperty } = CustomElementTool;
 const html = String.raw;
 
 class IconButton extends HTMLButtonElement {
+    /**
+     * Creates an instance of IconButton.
+     * @param {IconButtonConfigType} config - Configuration object.
+     */
     constructor(config) {
         super();
         zoneMixin(this);
@@ -76,15 +86,24 @@ class IconButton extends HTMLButtonElement {
         const icon = this.getIcon();
         const iconHTML = icon ? html`<arpa-icon>${icon}</arpa-icon>` : '';
         this.innerHTML = html`${iconHTML}${this.renderTooltip()}`;
+        /** @type {Tooltip | null} */
         this.tooltip = this.querySelector('arpa-tooltip');
         handleZones();
     }
 
+    /**
+     * Sets the icon to display.
+     * @param {string} icon - The string defining the icon to display.
+     */
     setIcon(icon) {
         const iconNode = this.querySelector('arpa-icon');
         iconNode && (iconNode.innerHTML = icon);
     }
 
+    /**
+     * Sets the label to display in the tooltip.
+     * @param {string} label
+     */
     setLabel(label) {
         this.tooltip?.setContent(label);
     }

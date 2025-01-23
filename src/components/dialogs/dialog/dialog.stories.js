@@ -1,7 +1,7 @@
 import { attrString } from '@arpadroid/tools';
 import { action } from '@storybook/addon-actions';
 import { waitFor, expect, within, fn } from '@storybook/test';
-import { playSetup, renderDialog } from './dialogStoryUtil.js';
+import { playSetup, renderDialog } from './dialogStoryUtil';
 const html = String.raw;
 
 const category = 'Props';
@@ -54,8 +54,8 @@ export const Test = {
     play: async ({ canvasElement, step, args }) => {
         const { dialogNode, dialogsNode } = await playSetup(canvasElement);
         const dialog = within(dialogNode);
-        dialogNode.on('open', args.onOpen);
-        dialogNode.on('close', args.onClose);
+        dialogNode?.on('open', args.onOpen);
+        dialogNode?.on('close', args.onClose);
         await step('Renders the dialog', async () => {
             expect(dialogsNode).toBeInTheDocument();
             expect(dialogNode).toBeInTheDocument();
@@ -72,14 +72,15 @@ export const Test = {
             const button = dialog.getByRole('button', { label: 'close' });
             expect(button).toBeInTheDocument();
             button.click();
-            expect(dialogNode).not.toHaveAttribute('open');
+            await waitFor(() => expect(dialogNode).not.toHaveAttribute('open'));
+            
             expect(dialogNode).not.toBeVisible();
             expect(args.onClose).toHaveBeenCalled();
         });
 
         await step('Reopens the dialog', async () => {
             dialogNode.open();
-            expect(dialogNode).toHaveAttribute('open');
+            await waitFor(() => expect(dialogNode).toHaveAttribute('open'));
             expect(args.onOpen).toHaveBeenCalled();
         });
     }

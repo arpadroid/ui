@@ -1,8 +1,9 @@
 /* eslint-disable sonarjs/no-duplicate-string */
 import ArpaElement from '../arpaElement/arpaElement.js';
+// @ts-ignore
 import { appendNodes } from '@arpadroid/tools';
 /**
- * @typedef {import('./truncateTextInterface').TruncateTextInterface } TruncateTextInterface
+ * @typedef {import('./truncateText.types').TruncateTextConfigType } TruncateTextConfigType
  */
 const html = String.raw;
 class TruncateText extends ArpaElement {
@@ -11,7 +12,7 @@ class TruncateText extends ArpaElement {
     /////////////////////////////
     /**
      * Returns the default component config.
-     * @returns {TruncateTextInterface}
+     * @returns {TruncateTextConfigType}
      */
     getDefaultConfig() {
         return {
@@ -26,7 +27,7 @@ class TruncateText extends ArpaElement {
     }
 
     async _initialize() {
-        this.fullContent = this.textContent.trim();
+        this.fullContent = this.textContent?.trim() || '';
         this.truncateText = this.truncateText.bind(this);
         this.toggleTruncate = this.toggleTruncate.bind(this);
         this.renderButton();
@@ -44,12 +45,12 @@ class TruncateText extends ArpaElement {
     _observeContents() {
         const observer = new MutationObserver(() => {
             const textNode = this.querySelector('.truncateText__content');
-            const content = this.textContent.trim();
+            const content = this.textContent?.trim() || '';
             if (!this.isTruncated && !textNode && content !== this.fullContent) {
                 this._childNodes = [...this.childNodes];
                 this._nodes = [...this.childNodes];
                 this._content = this.innerHTML;
-                this.fullContent = this.textContent.trim();
+                this.fullContent = this.textContent?.trim() || '';
                 this.truncateText();
             }
         });
@@ -94,17 +95,23 @@ class TruncateText extends ArpaElement {
     // #region RENDERING
     ////////////////////
 
-    renderButton(isTruncated = this.isTruncated) {
+    /**
+     * Renders the button to toggle the truncation.
+     * @param {boolean} isTruncated
+     * @returns {void}
+     */
+    renderButton(isTruncated = (this.isTruncated = false)) {
         if (this.hasButton()) {
             if (!this.button) {
                 const button = document.createElement('button');
                 button.type = 'button';
-                button.classList.add(...this.getButtonClasses());
+                button.classList.add(...(this.getButtonClasses() || []));
                 button.addEventListener('click', this.toggleTruncate);
+                /** @type {HTMLButtonElement} */
                 this.button = button;
             }
             this.button.textContent = this.getButtonLabel();
-            this.button.setAttribute('aria-expanded', !isTruncated);
+            this.button.setAttribute('aria-expanded', String(!isTruncated));
             this.append(this.button);
         } else if (this.button) {
             this.button.remove();
@@ -112,6 +119,7 @@ class TruncateText extends ArpaElement {
     }
 
     getButtonClasses() {
+        /** @type {string | string[] | undefined} */
         let classes = this.getProperty('button-classes');
         if (typeof classes === 'string') {
             classes = classes.trim().split(' ');
@@ -127,7 +135,7 @@ class TruncateText extends ArpaElement {
         if (!maxLength || !this.innerHTML.trim().length || this.showingFullContent) {
             return;
         }
-        const text = this.textContent.trim();
+        const text = this.textContent?.trim() || '';
         const ellipsis = this.getProperty('ellipsis');
         if (this.shouldTruncate()) {
             this.isTruncated = true;
@@ -140,7 +148,7 @@ class TruncateText extends ArpaElement {
     }
 
     shouldTruncate() {
-        return this.fullContent.length > this.getMaxLength() + this.getThreshold();
+        return this.fullContent && this.fullContent.length > this.getMaxLength() + this.getThreshold();
     }
 
     showFullContent() {
@@ -151,7 +159,7 @@ class TruncateText extends ArpaElement {
         this.isTruncated = false;
         appendNodes(this.textNode, this._childNodes);
         this.renderButton(false);
-        this.appendChild(this.button);
+        this.button && this.appendChild(this.button);
         setTimeout(() => {
             this.showingFullContent = false;
         }, 100);

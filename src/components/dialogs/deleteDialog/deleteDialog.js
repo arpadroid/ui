@@ -1,4 +1,5 @@
 import ConfirmDialog from '../confirmDialog/confirmDialog.js';
+// @ts-ignore
 import { mergeObjects } from '@arpadroid/tools';
 class DeleteDialog extends ConfirmDialog {
     ////////////////////////////

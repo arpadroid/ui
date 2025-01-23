@@ -9,7 +9,10 @@ class Icon extends HTMLElement {
             this.remove();
         }
     }
-
+    /**
+     * Sets the icon to display.
+     * @param {string} icon - The string defining the icon to display.
+     */
     setIcon(icon) {
         this.innerHTML = icon;
     }

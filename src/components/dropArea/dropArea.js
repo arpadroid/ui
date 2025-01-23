@@ -1,17 +1,27 @@
 /**
- * @typedef {import('./dropAreaInterface.js').DropAreaInterface} DropAreaInterface
+ * @typedef {import('./dropArea.types').DropAreaConfigType} DropAreaConfigType
+ * @typedef {import('@arpadroid/tools').ObserverType} ObserverType
  */
 
+// @ts-ignore
 import { eventContainsFiles, mergeObjects, render, ObserverTool } from '@arpadroid/tools';
 import ArpaElement from '../arpaElement/arpaElement.js';
 
 const html = String.raw;
+/**
+ * @class DropArea
+ * @mixes ObserverType
+ */
 class DropArea extends ArpaElement {
     /////////////////////////
     // #region INITIALIZATION
     /////////////////////////
 
-    constructor(config) {
+    /**
+     * Creates an instance of DropArea.
+     * @param {DropAreaConfigType} config - The configuration object.
+     */
+    constructor(config = {}) {
         super(config);
         ObserverTool.mixin(this);
         this._onDrop = this.onDrop.bind(this);
@@ -23,7 +33,7 @@ class DropArea extends ArpaElement {
 
     /**
      * Returns default configuration for DropArea.
-     * @returns {DropAreaInterface}
+     * @returns {DropAreaConfigType}
      */
     getDefaultConfig() {
         this.i18nKey = 'ui.dropArea';
@@ -69,15 +79,19 @@ class DropArea extends ArpaElement {
         return this.hasProperty('has-input');
     }
 
+    /**
+     * Returns the input element.
+     * @returns {HTMLElement | null}
+     */
     getInput() {
         const inputId = this.getProperty('input-id');
         if (typeof inputId === 'string') {
             const input = document.getElementById(inputId);
-            if (input) {
-                return input;
-            }
+            if (input) return input;
         }
-        return this.getProperty('input') || this.querySelector('input[type="file"]');
+        const input = /** @type {unknown} */ (this.getProperty('input'));
+        if (input instanceof HTMLInputElement) return input;
+        return this.querySelector('input[type="file"]');
     }
 
     // #endregion
@@ -101,6 +115,7 @@ class DropArea extends ArpaElement {
     }
 
     _initializeHandler() {
+        /** @type {HTMLElement | null} */
         this.handlerNode = this.querySelector('.dropArea__handler');
         const node = this.handlerNode;
         if (node) {
@@ -129,31 +144,47 @@ class DropArea extends ArpaElement {
     /////////////////
 
     _onHandlerEnter() {
-        this.handlerNode.classList.add('dropArea__handler--active');
+        this.handlerNode?.classList.add('dropArea__handler--active');
     }
 
     _onHandlerLeave() {
-        this.handlerNode.classList.remove('dropArea__handler--active');
+        this.handlerNode?.classList.remove('dropArea__handler--active');
     }
 
     _onHandlerClick() {
         this.input?.click();
     }
 
+    /**
+     * Prevents the default behavior of an event.
+     * @param {Event} event
+     */
     _preventDefaultBehavior(event) {
         event.preventDefault();
         event.stopPropagation();
     }
 
+    /**
+     * Handles the drop event.
+     * @param {DragEvent} event
+     */
     onDrop(event) {
         event.preventDefault();
         event.stopPropagation();
         const dt = event.dataTransfer;
-        const files = Array.from(dt.files);
-        this.onFileAdded(files, event);
+        if (dt) {
+            const files = Array.from(dt.files);
+            this.onFileAdded(files, event);
+        }
     }
 
+    /**
+     * Handles the addition of files.
+     * @param {File[]} files - The list of files.
+     * @param {DragEvent} event - The drag event.
+     */
     onFileAdded(files, event) {
+        /** @type {string[]} */
         const errors = [];
         const { onDrop, onError } = this._config;
         if ((event.dataTransfer && !eventContainsFiles(event)) || !files.length) {
@@ -161,12 +192,14 @@ class DropArea extends ArpaElement {
         }
         if (errors.length) {
             if (onError) {
+                // @ts-ignore
                 this.signal('error', errors, event);
                 onError(errors, event);
             }
             return;
         }
         if (files?.length) {
+            // @ts-ignore
             this.signal('drop', event, files);
             if (typeof onDrop === 'function') {
                 onDrop(files, event);

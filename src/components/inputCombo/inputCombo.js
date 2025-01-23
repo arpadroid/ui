@@ -1,10 +1,11 @@
 /**
- * @typedef {import('./inputComboInterface.js').InputComboInterface} InputComboInterface
+ * @typedef {import('./inputCombo.types').InputComboConfigType} InputComboConfigType
  */
 
+// @ts-ignore
 import { isIOsSafari, mergeObjects, placeNode } from '@arpadroid/tools';
 
-/** @type {HTMLElement} */
+/** @type {EventTarget | null | undefined} */
 let lastClicked = undefined;
 
 /**
@@ -27,9 +28,9 @@ class InputCombo {
 
     /**
      * The active instance of the InputCombo class.
-     * @type {InputCombo}
+     * @type {InputCombo | undefined}
      */
-    activeInstance = null;
+    static activeInstance;
 
     /**
      * An array of all instances of the InputCombo class.
@@ -47,8 +48,7 @@ class InputCombo {
 
     /**
      * The default configuration for the InputCombo component.
-     * @type {InputComboInterface}
-     * @private
+     * @type {InputComboConfigType}
      */
     _defaultConfig = {
         closeOnBlur: true,
@@ -87,7 +87,7 @@ class InputCombo {
 
     /**
      * Handles the document click event.
-     * @param {MouseEvent} event
+     * @param {Event} event
      * @static
      */
     static _onDocumentClick(event) {
@@ -96,9 +96,12 @@ class InputCombo {
             const { closeOnClick, closeOnBlur } = instance._config;
             const { combo, input } = instance;
             if (closeOnBlur && instance.isActive()) {
-                const isCombo = combo.contains(event.target) || combo === event.target;
-                const isInput = input.contains(event.target) || input === event.target;
+                const target = event.target;
+                if (!(target instanceof Node)) return;
+                const isCombo = combo.contains(target) || combo === event.target;
+                const isInput = input.contains(target) || input === event.target;
                 const activeNode = event.target;
+                if (!(activeNode instanceof HTMLElement)) return;
                 const isContained = combo.contains(activeNode) || input.contains(activeNode);
                 if (!isContained && ((!isCombo && !isInput) || (isCombo && closeOnClick))) {
                     requestAnimationFrame(() => instance.close());
@@ -110,7 +113,6 @@ class InputCombo {
     /**
      * Handles the document keydown event.
      * @param {KeyboardEvent} event - The keydown event.
-     * @static
      */
     static _onDocumentKeyDown(event) {
         if (InputCombo.activeInstance) {
@@ -120,8 +122,7 @@ class InputCombo {
 
     /**
      * Returns the active instance of the InputCombo component.
-     * @returns {InputCombo}
-     * @static
+     * @returns {InputCombo | undefined}
      */
     static getActiveInstance() {
         return InputCombo.instances.find(instance => instance.isActive());
@@ -130,14 +131,16 @@ class InputCombo {
     /**
      * Creates a new instance of the InputCombo component.
      * @param {HTMLInputElement | HTMLButtonElement} input - The input element.
-     * @param {HTMLElement} combo - The combo element.
+     * @param {HTMLElement & { InputCombo: InputCombo}} combo - The combo element.
      * @param {Record<string, unknown>} config - The configuration for the InputCombo component.
      */
     constructor(input, combo, config) {
         combo.InputCombo = this;
         InputCombo.instances.push(this);
         InputCombo._initializeComponent();
+        /** @type {HTMLInputElement | HTMLButtonElement} */
         this.input = input;
+        /** @type {HTMLElement} */
         this.combo = combo;
         this.combo.classList.add('inputCombo');
         this.setConfig(config);
@@ -192,7 +195,7 @@ class InputCombo {
      * @private
      */
     _onComboKeyUp(event) {
-        if (event.keyCode === 27) {
+        if (event instanceof KeyboardEvent && event.keyCode === 27) {
             // ESC
             this.close();
         }
@@ -245,10 +248,9 @@ class InputCombo {
 
     /**
      * Handles the click event on the input element.
-     * @param {MouseEvent} event
      * @protected
      */
-    _onClick(event) {
+    _onClick() {
         const isSafari = isIOsSafari();
         if (this.isMouseFocus && (!isSafari || !(this.input instanceof HTMLButtonElement))) {
             return;
@@ -258,7 +260,7 @@ class InputCombo {
             this.close();
             return;
         }
-        this.open(event);
+        this.open();
     }
 
     /**
@@ -275,15 +277,16 @@ class InputCombo {
 
     /**
      * Handles the keyup event on the input element.
-     * @param {KeyboardEvent} event - The keyup event.
-     * @protected
+     * @param {Event} event - The keyup event.
      */
     _onInputKeyUp(event) {
-        if (event.keyCode === 27) {
-            this.close();
-        } else if (event.keyCode === 40) {
-            this.open();
-            this.focusFirstOption();
+        if (event instanceof KeyboardEvent) {
+            if (event.keyCode === 27) {
+                this.close();
+            } else if (event.keyCode === 40) {
+                this.open();
+                this.focusFirstOption();
+            }
         }
     }
 
@@ -297,12 +300,12 @@ class InputCombo {
 
     /**
      * Handles the blur event on the input element.
-     * @param {FocusEvent} event
+     * @param {Event} event
      */
     async _onBlur(event) {
         const { closeOnBlur } = this._config;
         await new Promise(resolve => setTimeout(resolve, 200));
-        
+
         const isCombo = this.combo === document.activeElement;
         if (closeOnBlur && !isCombo && !this.isContained() && !this.isTargetContained(event)) {
             this.close();
@@ -314,11 +317,17 @@ class InputCombo {
         return this.combo.contains(activeNode) || this.input.contains(activeNode);
     }
 
+    /**
+     * Checks if the related target of the event is contained within the InputCombo component.
+     * @param {Event & {relatedTarget?: Node | null}} event - The focus event.
+     * @returns {boolean} True if the related target of the event is contained within the InputCombo component, false otherwise.
+     */
     isTargetContained(event) {
-        return (
-            this.combo.contains(event.relatedTarget) ||
-            this.combo.contains(lastClicked) ||
-            this.input.contains(event.relatedTarget)
+        const isContained = lastClicked instanceof HTMLElement && this.combo.contains(lastClicked);
+        return Boolean(
+            (event?.relatedTarget && this.combo.contains(event?.relatedTarget)) ||
+                isContained ||
+                (event?.relatedTarget && this.input.contains(event?.relatedTarget))
         );
     }
 
@@ -381,16 +390,17 @@ class InputCombo {
      * Focuses the first option within the combo.
      */
     focusFirstOption() {
-        this.focusOption(this._getFirstAvailableOption());
+        const option = this._getFirstAvailableOption();
+        option instanceof HTMLElement && this.focusOption(option);
     }
 
     /**
      * Focuses a specific option within the combo.
-     * @param {HTMLElement} node - The option element to focus.
+     * @param {Element | null} node - The option element to focus.
      */
     focusOption(node) {
         const item = node?.querySelector(this._optionFocusSelector) ?? node;
-        item?.focus();
+        item instanceof HTMLElement && item?.focus();
     }
 
     /**
@@ -398,19 +408,20 @@ class InputCombo {
      */
     focusNextOption() {
         const nextOption = this._getNextAvailableOption() ?? this._getFirstAvailableOption();
-        this.focusOption(nextOption);
+        nextOption instanceof HTMLElement && this.focusOption(nextOption);
     }
 
     /**
      * Focuses the previous option within the combo.
      */
     focusPreviousOption() {
-        this.focusOption(this._getPreviousAvailableOption() ?? this._getLastAvailableOption());
+        const option = this._getPreviousAvailableOption() ?? this._getLastAvailableOption();
+        option instanceof HTMLElement && this.focusOption(option);
     }
 
     /**
      * Returns the currently focused element within the combo.
-     * @returns {HTMLElement | undefined} The currently focused element.
+     * @returns {Element | null | undefined} The currently focused element.
      * @protected
      */
     _getFocused() {
@@ -421,7 +432,7 @@ class InputCombo {
 
     /**
      * Returns the container element of the currently focused option.
-     * @param {HTMLElement} node - The currently focused element.
+     * @param {Element | null | undefined} node - The currently focused element.
      * @returns {HTMLElement} The container element of the currently focused option.
      * @protected
      */
@@ -431,8 +442,7 @@ class InputCombo {
 
     /**
      * Returns the currently focused option.
-     * @returns {HTMLElement} The currently focused option.
-     * @protected
+     * @returns {Node | null | undefined} The currently focused option.
      */
     _getFocusedItem() {
         return this._getFocusedOptionContainer(this._getFocused());
@@ -440,13 +450,13 @@ class InputCombo {
 
     /**
      * Returns the first available option within the combo.
-     * @returns {HTMLElement}
-     * @protected
+     * @returns {Node | null | undefined}
      */
     _getFirstAvailableOption() {
         const firstOption = this.combo.querySelector(this._optionFocusSelector);
+        /** @type {Node | null} */
         let firstNode = firstOption;
-        while (firstNode?.style?.display === 'none') {
+        while (firstNode instanceof HTMLElement && firstNode?.style?.display === 'none') {
             firstNode = firstNode.nextSibling;
         }
         return firstNode;
@@ -454,13 +464,14 @@ class InputCombo {
 
     /**
      * Returns the next available option after the currently focused option.
-     * @returns {HTMLElement}
-     * @protected
+     * @returns {Node | null | undefined}
      */
     _getNextAvailableOption() {
         let node = this._getFocusedItem()?.nextSibling;
-        while (node?.style?.display === 'none') {
-            node = node.nextSibling;
+        if (node instanceof HTMLElement) {
+            while (node instanceof HTMLElement && node.style.display === 'none') {
+                node = node.nextSibling;
+            }
         }
         return node;
     }
@@ -468,11 +479,11 @@ class InputCombo {
     /**
      * Returns the previous available option before the currently focused option.
      * @param {boolean} loop - Indicates whether to loop to the last available option if the first option is reached.
-     * @returns {HTMLElement}
+     * @returns {Node | null | false }
      */
     _getPreviousAvailableOption(loop = true) {
         let node = this._getFocusedItem()?.previousSibling;
-        while (node?.style?.display === 'none') {
+        while (node instanceof HTMLElement && node?.style?.display === 'none') {
             node = node.previousSibling;
         }
         return node || (loop && this._getLastAvailableOption());
@@ -484,7 +495,7 @@ class InputCombo {
 
     /**
      * Returns the last available option within the combo.
-     * @returns {HTMLElement}
+     * @returns {Node | null}
      */
     _getLastAvailableOption() {
         const items = this.getItems();

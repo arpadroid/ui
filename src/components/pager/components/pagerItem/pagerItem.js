@@ -1,13 +1,19 @@
 /**
  * @typedef {import('../../pager').default} Pager
+ * @typedef {import('./pagerItem.types').PagerItemConfigType} PagerItemConfigType
  */
+// @ts-ignore
 import { mergeObjects, editURL, renderNode, sanitizeURL, attrString } from '@arpadroid/tools';
 import ArpaElement from '../../../arpaElement/arpaElement';
 
 const html = String.raw;
 class PagerItem extends ArpaElement {
+    /**
+     * Returns the default configuration.
+     * @returns {PagerItemConfigType}
+     */
     getDefaultConfig() {
-        /** @type {Pager} */
+        this.bind('_onSubmitInput', '_onClick');
         this.grabPagerComponent();
         return mergeObjects(super.getDefaultConfig(), {
             className: 'pagerItem',
@@ -20,11 +26,15 @@ class PagerItem extends ArpaElement {
 
     _initializeProperties() {
         super._initializeProperties();
-        if (!this._config.content && this._config.page) {
-            this._config.content = this._config.page;
-        }
+        // if (!this._config.content && this._config.page) {
+        //     this._config.content = this._config.page;
+        // }
     }
 
+    /**
+     * Gets the URL parameter name.
+     * @returns {string}
+     */
     getUrlParam() {
         return this.pagerComponent?.getUrlParam() || this.getProperty('url-param');
     }
@@ -40,13 +50,20 @@ class PagerItem extends ArpaElement {
             this.contentNode = this.renderContent();
             this.appendChild(this.contentNode);
             if (!this.isActive()) {
-                this.contentNode.append(...this._childNodes);
+                this.contentNode.append(...(this._childNodes || []));
             }
         }
     }
 
+    /**
+     * Grabs the pager component.
+     * @returns {Pager | null}
+     */
     grabPagerComponent() {
-        !this.pagerComponent && (this.pagerComponent = this.closest('arpa-pager'));
+        if (!this.pagerComponent) {
+            /** @type {Pager | null} */
+            this.pagerComponent = this.closest('arpa-pager');
+        }
         return this.pagerComponent;
     }
 
@@ -67,18 +84,24 @@ class PagerItem extends ArpaElement {
         );
 
         this.input = this.form.querySelector('input');
-        this.form.addEventListener('submit', event => {
-            event.preventDefault();
-            const page = this.input.value;
-            if (typeof this._config.onClick === 'function') {
-                this._config.onClick(page);
-            }
-            const pagerOnClick = this.pagerComponent?._config?.onClick;
-            if (typeof pagerOnClick === 'function') {
-                pagerOnClick({ page, event, node: this });
-            }
-        });
+        this.form.addEventListener('submit', this._onSubmitInput);
         return this.form;
+    }
+
+    /**
+     * Handles the submit event.
+     * @param {Event} event - The event object.
+     */
+    _onSubmitInput(event) {
+        event.preventDefault();
+        const page = this.input.value;
+        if (typeof this._config.onClick === 'function') {
+            this._config.onClick(page);
+        }
+        const pagerOnClick = this.pagerComponent?._config?.onClick;
+        if (typeof pagerOnClick === 'function') {
+            pagerOnClick({ page, event, node: this });
+        }
     }
 
     renderContent() {
@@ -99,7 +122,7 @@ class PagerItem extends ArpaElement {
                 ariaLabel
             };
             const linkNode = renderNode(html`<a ${attrString(attr)}></a>`);
-            linkNode.addEventListener('click', this._onClick.bind(this));
+            linkNode.addEventListener('click', this._onClick);
             return linkNode;
         }
         return renderNode(html`<span class="pagerItem__content"></span>`);
@@ -108,7 +131,7 @@ class PagerItem extends ArpaElement {
     getLink() {
         const urlParam = this.pagerComponent?.getUrlParam();
         return editURL(sanitizeURL(window.location.href), {
-            [urlParam]: this.getPage()
+            [urlParam || 'page']: this.getPage()
         });
     }
 
@@ -116,9 +139,15 @@ class PagerItem extends ArpaElement {
         return Number(this.getProperty('page'));
     }
 
+    /**
+     * Handles the click event.
+     * @param {MouseEvent} event - The event object.
+     */
     _onClick(event) {
         event.preventDefault();
-        const page = event.target.getAttribute('data-page');
+        /** @type {EventTarget | null} */
+        const target = event?.target;
+        const page = target instanceof HTMLElement && target?.getAttribute('data-page');
         if (typeof this._config.onClick === 'function') {
             this._config.onClick(page);
         }

@@ -1,15 +1,24 @@
+/**
+ * @typedef {import('@arpadroid/tools').ZoneType} ZoneType
+ * @typedef {import('./arpaElement.types').ArpaElementConfigType} ArpaElementConfigType
+ */
+// @ts-ignore
 import { getAttributes, dashedToCamel, mergeObjects, renderNode, CustomElementTool } from '@arpadroid/tools';
+// @ts-ignore
 import { handleZones, zoneMixin, hasZone, getZone, attr, setNodes, bind } from '@arpadroid/tools';
+// @ts-ignore
 import { I18nTool, I18n } from '@arpadroid/i18n';
 const { processTemplate, arpaElementI18n } = I18nTool;
 
 const { getProperty, hasProperty, getArrayProperty, hasContent, onDestroy, canRender } = CustomElementTool;
 
-/**
- * Base class for custom elements.
- */
 class ArpaElement extends HTMLElement {
+    /** @type {(() => unknown)[]} */
     _bindings = [];
+    /** @type {Set<string> | undefined} */
+    zonesByName = undefined;
+    /** @type {number | undefined} */
+    _lastRendered = undefined;
     _hasRendered = false;
     _hasInitialized = false;
     _isReady = false;
@@ -19,24 +28,39 @@ class ArpaElement extends HTMLElement {
     ///////////////////////////
     /**
      * Creates a new instance of ArpaElement.
-     * @param {Record<string, unknown>} config - The configuration object for the element.
+     * @param {ArpaElementConfigType} config - The configuration object for the element.
      */
     constructor(config) {
         super();
-        /** @type {() => void} */
+        /** @type {(() => unknown)[]} */
         this._unsubscribes = [];
+        /** @type {(() => unknown)[]} */
         this._onRenderedCallbacks = [];
+        /** @type {(() => unknown)[]} */
         this._onRenderReadyCallbacks = [];
+        /** @type {(() => unknown)[]} */
         this._preRenderCallbacks = [];
         this._zones = new Set();
         this.i18nKey = '';
-        typeof this._preInitialize === 'function' && this._preInitialize();
+        this._preInitialize();
         this.setConfig(config);
         this._initializeTemplate();
         this._initializeZones();
         this._initializeContent();
-        typeof this._initialize === 'function' && this._initialize();
+        this._initialize();
         this.promise = this.getPromise();
+    }
+
+    _preInitialize() {
+        // abstract method
+    }
+
+    _initialize() {
+        // abstract method
+    }
+
+    _initializeProperties() {
+        // abstract method
     }
 
     _initializeTemplate(templateNode = this.querySelector(':scope > template[template-id]')) {
@@ -45,6 +69,10 @@ class ArpaElement extends HTMLElement {
         }
     }
 
+    /**
+     * Initializes the zones for the element.
+     * @param {HTMLElement} [container] - The container for the zones.
+     */
     _initializeZones(container) {
         zoneMixin(this, container);
     }
@@ -70,16 +98,26 @@ class ArpaElement extends HTMLElement {
     /////////////////////
     // #region TEMPLATE
     ////////////////////
+
     getTemplateAttributes(template = this._config.template) {
         const attr = (template && getAttributes(template)) || {};
         delete attr['template-id'];
-        const payload = this.getPayload();
+        const payload = this.getTemplateVars();
         for (const key of Object.keys(attr)) {
-            attr[key] = I18nTool.processTemplate(attr[key], payload);
+            attr[key] = processTemplate(attr[key], payload);
         }
         return attr;
     }
 
+    getPayload() {
+        return this.getTemplateVars();
+    }
+
+    /**
+     * Sets the template for the element.
+     * @param {HTMLTemplateElement} template
+     * @param {Element | string | (() => Element) | null} [container] - The container for the template.
+     */
     setTemplate(template, container = this) {
         this._config.template = template;
         attr(this, this.getTemplateAttributes());
@@ -109,33 +147,67 @@ class ArpaElement extends HTMLElement {
     // #region ACCESSORS
     /////////////////////
 
+    /**
+     * Binds methods to the element. Each parameter is a string representing the name of the method to bind.
+     * @param {string[]} args - The arguments to bind.
+     */
     bind(...args) {
         bind(this, ...args);
     }
 
+    /**
+     * Determines if the element has a zone with the specified name.
+     * @param {string} name
+     * @returns {boolean} True if the element has a zone with the specified name; otherwise, false.
+     */
     hasZone(name) {
         return hasZone(this, name);
     }
 
+    /**
+     * Determines if the element has content for the specified property.
+     * @param {string} property - The name of the property.
+     * @returns {boolean} True if the element has content for the specified property; otherwise, false.
+     */
     hasContent(property) {
         return hasContent(this, property);
     }
 
+    /**
+     * Gets the zone with the specified name.
+     * @param {string} name
+     * @returns {HTMLElement}
+     */
     getZone(name) {
         return getZone(this, name);
     }
 
+    /**
+     * Returns a i18n component for the specified key.
+     * @param {string} key - The key for the i18n component.
+     * @param {Record<string, unknown>} [replacements]
+     * @param {Record<string, unknown>} [attributes]
+     * @param {string} [base] - The base key for the i18n component.
+     * @returns {string} The i18n component.
+     */
     i18n(key, replacements, attributes, base = this.i18nKey) {
         return arpaElementI18n(this, key, replacements, attributes, base);
     }
 
+    /**
+     * Returns the i18n text for the specified key.
+     * @param {string} key
+     * @param {Record<string, unknown>} [replacements]
+     * @param {string} [base]
+     * @returns {string}
+     */
     i18nText(key, replacements, base = this.i18nKey) {
         return I18n.getText(`${base}.${key}`, replacements);
     }
 
     /**
      * Sets the configuration for the element.
-     * @param {Record<string, unknown>} [config]
+     * @param {ArpaElementConfigType} [config]
      */
     setConfig(config = {}) {
         this._config = mergeObjects(this.getDefaultConfig(), config);
@@ -145,6 +217,11 @@ class ArpaElement extends HTMLElement {
         this._config = mergeObjects(this._config, config);
     }
 
+    /**
+     * Sets the configuration for the element.
+     * @param {ArpaElementConfigType} [config]
+     * @returns {ArpaElementConfigType}
+     */
     getDefaultConfig(config = {}) {
         return mergeObjects(
             {
@@ -178,26 +255,57 @@ class ArpaElement extends HTMLElement {
         return getProperty(this, name);
     }
 
+    /**
+     * Gets the value of a property from the element's configuration or attributes as an array.
+     * @param {string} name
+     * @returns {string[]} The value of the property.
+     */
     getArrayProperty(name) {
         return getArrayProperty(this, name);
     }
 
+    /**
+     * Gets the values of the specified properties from the element's configuration or attributes.
+     * @param {...string} names - The names of the properties.
+     * @returns {Record<string, unknown>} The values of the properties.
+     */
     getProperties(...names) {
-        return names.reduce((acc, name) => {
+        /**
+         * Reduces the names to an object of property values.
+         * @param {Record<string, unknown>} acc
+         * @param {string} name
+         * @returns {Record<string, unknown>} The object of property values.
+         */
+        const reduce = (acc, name) => {
             acc[name] = this.getProperty(name);
             return acc;
-        }, {});
+        };
+        return names.reduce(reduce, {});
     }
 
+    /**
+     * Determines if the element has a property with the specified name.
+     * @param {string} name
+     * @returns {boolean} True if the element has a property with the specified name; otherwise, false.
+     */
     hasProperty(name) {
         return hasProperty(this, name);
     }
 
+    /**
+     * Deletes the property with the specified name.
+     * @param {string} name
+     * @returns {void}
+     */
     deleteProperty(name) {
         delete this._config[dashedToCamel(name)];
         this.removeAttribute(name);
     }
 
+    /**
+     * Deletes the properties with the specified names.
+     * @param {...string} names - The names of the properties to delete.
+     */
     deleteProperties(...names) {
         names.forEach(name => this.deleteProperty(name));
     }
@@ -206,6 +314,11 @@ class ArpaElement extends HTMLElement {
         return this.tagName.toLowerCase();
     }
 
+    /**
+     * Sets the content of the element.
+     * @param {string | HTMLElement} content - The content to set.
+     * @param {HTMLElement} [contentContainer] - The container for the content.
+     */
     setContent(content, contentContainer = this) {
         if (typeof content === 'string') {
             this._content = content;
@@ -219,6 +332,11 @@ class ArpaElement extends HTMLElement {
         }
     }
 
+    /**
+     * Gets the i18n text for the specified key.
+     * @param {string} key
+     * @returns {string} The i18n text.
+     */
     getText(key) {
         return I18n.getText(`${this.i18nKey}.${key}`);
     }
@@ -274,6 +392,12 @@ class ArpaElement extends HTMLElement {
         classes.length && this.classList.add(...classes);
     }
 
+    /**
+     * Called when an attribute of the element changes.
+     * @param {string} att - The name of the attribute that changed.
+     * @param {string} oldValue - The previous value of the attribute.
+     * @param {string} newValue - The new value of the attribute.
+     */
     attributeChangedCallback(att, oldValue, newValue) {
         this.update();
         this._onAttributeChanged(att, oldValue, newValue);
@@ -289,6 +413,12 @@ class ArpaElement extends HTMLElement {
     _onConnected() {
         // abstract method
     }
+    /**
+     * Called when an attribute of the element changes.
+     * @param {string} att - The name of the attribute that changed.
+     * @param {string} oldValue - The previous value of the attribute.
+     * @param {string} newValue
+     */
     // eslint-disable-next-line no-unused-vars
     _onAttributeChanged(att, oldValue, newValue) {
         // abstract method
@@ -306,7 +436,7 @@ class ArpaElement extends HTMLElement {
 
     async _render() {
         if (!this.canRender()) return;
-        typeof this._preRender === 'function' && this._preRender();
+        this._preRender();
         const { attributes } = this._config;
         attributes && attr(this, attributes);
         await this.render();
@@ -315,6 +445,14 @@ class ArpaElement extends HTMLElement {
         this._onRenderReadyCallbacks = [];
         this._handleZones();
         this._onRenderComplete();
+    }
+
+    _preRender() {
+        // abstract method
+    }
+
+    _initializeNodes() {
+        // abstract method
     }
 
     canRender() {
@@ -328,7 +466,7 @@ class ArpaElement extends HTMLElement {
     _onRenderComplete() {
         this._hasRendered = true;
         this._onRenderedCallbacks.forEach(callback => callback());
-        this.resolvePromise?.();
+        this.resolvePromise?.(true);
         this._onComplete();
     }
 
@@ -336,14 +474,26 @@ class ArpaElement extends HTMLElement {
         // abstract method
     }
 
+    /**
+     * Called when the element has finished rendering.
+     * @param {() => unknown} callback
+     */
     onRendered(callback) {
         this._hasRendered ? callback() : this._onRenderedCallbacks.push(callback);
     }
 
+    /**
+     * Called when the element is ready to render.
+     * @param {() => unknown} callback
+     */
     onRenderReady(callback) {
         this._hasRendered ? callback() : this._onRenderReadyCallbacks.push(callback);
     }
 
+    /**
+     * Called before the element is rendered.
+     * @param {() => unknown} callback
+     */
     onPreRender(callback) {
         this._hasRendered ? callback() : this._preRenderCallbacks.push(callback);
     }
@@ -371,7 +521,8 @@ class ArpaElement extends HTMLElement {
     }
 
     _getTemplate() {
-        return typeof this.getTemplate === 'function' ? this.getTemplate() : this._config?.template;
+        const { getTemplate } = this._config;
+        return typeof getTemplate === 'function' ? getTemplate() : this._config?.template;
     }
 
     /**

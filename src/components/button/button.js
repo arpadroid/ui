@@ -1,3 +1,4 @@
+// @ts-ignore
 import { appendNodes, processTemplate } from '@arpadroid/tools';
 
 const html = String.raw;

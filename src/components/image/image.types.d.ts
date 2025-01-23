@@ -1,3 +1,4 @@
+import { ArpaElementConfigType } from '../arpaElement/arpaElement.types';
 import ImageComponent from './image.js';
 
 export interface ImageSourceInterface {
@@ -14,7 +15,7 @@ export interface ImageSourcesInterface {
     xlarge?: string;
 }
 
-export interface ImageInterface {
+export type ImageConfigType = ArpaElementConfigType & {
     sources?: ImageSourcesInterface;
     src?: string;
     alt?: string;
@@ -27,4 +28,4 @@ export interface ImageInterface {
     onLoad?: (event: Event, image: ImageComponent) => void;
     onError?: (event: Event, image: ImageComponent) => void;
     onInput: (files: File[], event: Event, image: ImageComponent) => void;
-}
+};

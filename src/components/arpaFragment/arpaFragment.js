@@ -1,3 +1,4 @@
+// @ts-ignore
 import { getAttributes, attrString } from '@arpadroid/tools';
 
 class ArpaFragment extends HTMLElement {
@@ -12,9 +13,9 @@ class ArpaFragment extends HTMLElement {
 
     connectedCallback() {
         while (this.firstChild) {
-            this.parentNode.insertBefore(this.firstChild, this);
+            this.parentNode?.insertBefore(this.firstChild, this);
         }
-        this.parentNode.removeChild(this);
+        this.parentNode?.removeChild(this);
     }
 }
 

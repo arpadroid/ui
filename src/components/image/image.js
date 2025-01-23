@@ -1,10 +1,15 @@
 /**
  * @typedef {import('../dropArea/dropArea.js').default } DropArea
- * @typedef {import('./imageInterface.js').ImageInterface} ImageInterface
+ * @typedef {import('../image/image.types').ImageConfigType} ImageConfigType
+ * @typedef {import('../dialogs/dialog/dialog.js').default} Dialog
+ * @typedef {import('../tooltip/tooltip.js').default} Tooltip
+ * @typedef {import('../icon/icon.js').default} Icon
  */
-
+// @ts-ignore
 import { attrString, classNames, attr, mergeObjects } from '@arpadroid/tools';
+// @ts-ignore
 import { lazyLoad as lazyLoader, clearLazyImage, hasLoadedSource } from '@arpadroid/tools';
+// @ts-ignore
 import { editURL, mapHTML, eventContainsFiles, addCssRule } from '@arpadroid/tools';
 import ArpaElement from '../arpaElement/arpaElement.js';
 
@@ -18,15 +23,16 @@ class ArpaImage extends ArpaElement {
 
     constructor(config = {}) {
         super(config);
-        this._onLoad = this._onLoad.bind(this);
-        this._onError = this._onError.bind(this);
-        this._onInput = this._onInput.bind(this);
+        this.bind('_onLoad', '_onError', '_onInput', '_onDragEnter');
+        /** @type {HTMLElement | undefined} */
+        this.dropAreaNode = undefined;
+        /** @type {string | null} */
         this.src = this.getProperty('src');
     }
 
     /**
      * Gets the default configuration options for the component.
-     * @returns {ImageInterface} - The default configuration options.
+     * @returns {ImageConfigType} - The default configuration options.
      */
     getDefaultConfig() {
         this.i18nKey = 'ui.image';
@@ -101,10 +107,19 @@ class ArpaImage extends ArpaElement {
         return sizeMap[size] ?? sizes[0];
     }
 
+    /**
+     * Gets the size of the Image.
+     * @returns {number}
+     */
     getSize() {
         return Number(this.getProperty('size') || this.getDefaultSize());
     }
 
+    /**
+     * Sets the size of the Image.
+     * @param {number} width
+     * @param {number} height
+     */
     setSize(width, height = width) {
         if (width === this.getWidth() && height === (this.getHeight() || width)) {
             return;
@@ -114,7 +129,7 @@ class ArpaImage extends ArpaElement {
         this.classList.remove(this.getLoadedClass());
         width && (this._config.width = width);
         height && (this._config.height = height);
-        this.setAttribute('size', width);
+        this.setAttribute('size', String(width));
         this._hasLoaded = false;
         this._hasError = false;
         this._hasRendered && this.reRender();
@@ -130,8 +145,12 @@ class ArpaImage extends ArpaElement {
 
     // #endregion - Size
 
+    /**
+     * Loads a source image.
+     * @param {string} src - The source of the image to load.
+     */
     loadImage(src) {
-        this.image.src = src;
+        this.image && (this.image.src = src);
         this._hasLoaded = false;
         this._hasError = false;
         this.initializeImage();
@@ -145,13 +164,23 @@ class ArpaImage extends ArpaElement {
         return this.getProperty('quality');
     }
 
+    /**
+     * Gets the URL for the image with the specified width, height, and quality.
+     * @param {number | string} width
+     * @param {number | string} height
+     * @param {number | string} quality
+     * @returns {string} - The URL for the image.
+     */
     getImageURL(width = this.getWidth(), height = this.getHeight(), quality = this.getQuality()) {
         let src = this.getSource();
         if (!height) {
             src = src?.replace(/&height=\[height\]/, '');
         }
         return (
-            src?.replace('[width]', width)?.replace('[height]', height)?.replace('[quality]', quality) || ''
+            src
+                ?.replace('[width]', String(width))
+                ?.replace('[height]', String(height))
+                ?.replace('[quality]', String(quality)) || ''
         );
     }
 
@@ -205,7 +234,7 @@ class ArpaImage extends ArpaElement {
      * Busts the cache for the image.
      */
     bustCache() {
-        this.image.src = editURL(this.image.src, { bustCache: new Date().getTime() });
+        this.image && (this.image.src = editURL(this.image.src, { bustCache: new Date().getTime() }));
     }
 
     /**
@@ -230,15 +259,15 @@ class ArpaImage extends ArpaElement {
      * Shows the drop area for the component.
      */
     showDropArea() {
-        this.dropAreaNode.style.display = '';
-        requestAnimationFrame(() => (this.dropAreaNode.style.opacity = 1));
+        this.dropAreaNode && (this.dropAreaNode.style.display = '');
+        requestAnimationFrame(() => this.dropAreaNode && (this.dropAreaNode.style.opacity = '1'));
     }
 
     /**
      * Hides the drop area for the component.
      */
     hideDropArea() {
-        requestAnimationFrame(() => (this.dropArea.style.opacity = 0));
+        requestAnimationFrame(() => this.dropArea && (this.dropArea.style.opacity = '0'));
     }
 
     // #endregion - ACCESSORS
@@ -262,7 +291,7 @@ class ArpaImage extends ArpaElement {
             ${caption ? html`<figcaption zone="caption">${caption}</figcaption>` : ''}
             ${caption ? '</figure>' : ''}
         `;
-        this.innerHTML = this.renderTemplate(template);
+        this.innerHTML = this.renderTemplate(template) || '';
         // this._initializeImagePreview();
     }
 
@@ -308,10 +337,17 @@ class ArpaImage extends ArpaElement {
         const sizes = this.getArrayProperty('sizes');
         if (!sizes.length) return '';
         const quality = this.getProperty('quality');
-        return mapHTML(sizes, size => {
+        /**
+         * Renders a source element for the image.
+         * @param {number[]} sizes
+         * @param {number} size
+         * @returns {string}
+         */
+        const render = (sizes, size) => {
             const src = this.getImageURL(size, quality);
             return html`<source srcset="${src} ${size}px" />`;
-        });
+        };
+        return mapHTML(render);
     }
 
     renderPreloader() {
@@ -346,7 +382,7 @@ class ArpaImage extends ArpaElement {
      * Initializes the drop area for the component.
      */
     async initializeDropArea() {
-        /** @type {DropArea} */
+        /** @type {DropArea | null} */
         this.dropArea = this.querySelector('drop-area');
         if (!this.dropArea) return;
         this.dropArea.addConfig({
@@ -354,22 +390,31 @@ class ArpaImage extends ArpaElement {
             handler: this.getProperty('drop-area-handler') || this
         });
         await this.dropArea?.promise;
+        // @ts-ignore
         this.dropArea?.on('drop', this._onInput);
+        // @ts-ignore
         this.dropArea?.on('error', this.hideDropArea);
-        this.addEventListener('dragenter', event => {
-            if (event.relatedTarget && this.contains(event.relatedTarget)) {
-                return;
-            }
-            if (eventContainsFiles(event)) {
-                this.dropArea.style.opacity = 1;
-            }
-        });
+        this.addEventListener('dragenter', this._onDragEnter);
         this.addEventListener('dragleave', event => {
-            if (event.relatedTarget && this.contains(event.relatedTarget)) {
+            if (event.relatedTarget instanceof HTMLElement && this.contains(event.relatedTarget)) {
                 return;
             }
-            this.dropArea.style.opacity = 0;
+            this.dropArea && (this.dropArea.style.opacity = '0');
         });
+    }
+
+    /**
+     * Called when an item is dragged over the component.
+     * @param {DragEvent} event
+     * @returns {void}
+     */
+    _onDragEnter(event) {
+        if (event.relatedTarget instanceof HTMLElement && this.contains(event.relatedTarget)) {
+            return;
+        }
+        if (eventContainsFiles(event)) {
+            this.dropArea && (this.dropArea.style.opacity = '1');
+        }
     }
 
     // #endregion - Drop Area
@@ -441,8 +486,11 @@ class ArpaImage extends ArpaElement {
     ///////////////////////
 
     async _onConnected() {
+        /** @type {HTMLImageElement | null} */
         this.image = this.querySelector('img');
+        /** @type {Tooltip | null} */
         this.thumbnail = this.querySelector('.image__thumbnail');
+        /** @type {HTMLPictureElement | null} */
         this.picture = this.querySelector('picture');
         this.hasDropArea() && this.initializeDropArea();
         this.initializeImage();
@@ -456,7 +504,7 @@ class ArpaImage extends ArpaElement {
      */
     _initializeImagePreview(handler) {
         if (this.hasPreview()) {
-            handler.type = 'button';
+            handler.setAttribute('type', 'button');
             // handler.addEventListener('click', () => {
             //     const items = [
             //         {
@@ -495,8 +543,8 @@ class ArpaImage extends ArpaElement {
 
     /**
      * Loads the image.
-     * @param {HTMLImageElement} image - The source of the image to load.
-     * @param {ImageInterface} config - The configuration options for the image.
+     * @param {HTMLImageElement | null | undefined} image - The source of the image to load.
+     * @param {ImageConfigType} config - The configuration options for the image.
      * @returns {HTMLImageElement | undefined} - The image element.
      */
     initializeImage(image = this.image, config = this._config) {
@@ -516,7 +564,7 @@ class ArpaImage extends ArpaElement {
 
     /**
      * Called when the image has finished loading.
-     * @param {Event} event
+     * @param {Event} [event]
      */
     _onLoad(event) {
         const { onLoad } = this._config;
@@ -524,8 +572,13 @@ class ArpaImage extends ArpaElement {
         this._hasLoaded = true;
         this.stopPreloading();
         this.classList.remove(this.getLoadingClass());
-        if (this.hasProperty('prevent-upscale') && this.image?.naturalWidth > 0) {
-            this.picture.style.maxWidth = this.naturalWidth + 'px';
+        if (
+            this.picture &&
+            this.image &&
+            this.hasProperty('prevent-upscale') &&
+            this.image?.naturalWidth > 0
+        ) {
+            this.picture.style.maxWidth = this.image.naturalWidth + 'px';
             this.picture.style.maxHeight = this.image.naturalHeight + 'px';
         }
     }
@@ -542,7 +595,9 @@ class ArpaImage extends ArpaElement {
         this.stopPreloading(this.getErrorClass());
         this.classList.remove(this.getLoadingClass());
         this.thumbnail?.setContent(this.getProperty('errLoad'));
-        this.thumbnail?.querySelector('arpa-icon')?.setIcon(this.getProperty('iconBroken'));
+        /** @type {Icon | null | undefined} */
+        const icon = this.thumbnail?.querySelector('arpa-icon');
+        icon?.setIcon(this.getProperty('iconBroken'));
     }
 
     /**
@@ -565,7 +620,7 @@ class ArpaImage extends ArpaElement {
     /**
      * Called when the image has been uploaded.
      * @param {Response} response - The response from the server.
-     * @returns {Promise} - A promise that resolves when the component has been updated.
+     * @returns {Promise<Response>} - A promise that resolves when the component has been updated.
      */
     onImageUploaded(response) {
         this.render();
@@ -575,7 +630,7 @@ class ArpaImage extends ArpaElement {
     /**
      * Called when an error occurs while uploading the image.
      * @param {Response} response - The response from the server.
-     * @returns {Promise} - A promise that rejects with the response.
+     * @returns {Promise<Response>} - A promise that rejects with the response.
      */
     onImageUploadError(response) {
         // const message = response?.value?.message ?? 'Unable to upload image.';
@@ -600,11 +655,16 @@ class ArpaImage extends ArpaElement {
 
     /**
      * Uploads an image.
-     * @param {() => Promise} post - The function to call to upload the image.
-     * @returns {Promise} - A promise that resolves when the image has been uploaded.
+     * @param {() => Promise<Response>} post - The function to call to upload the image.
+     * @returns {Promise<Response>} - A promise that resolves when the image has been uploaded.
      */
     uploadImage(post) {
         return new Promise((resolve, reject) => {
+            /**
+             * Posts the image to the server.
+             * @param {Dialog} [dialog] - The dialog to close.
+             * @returns {Promise<Response>} - A promise that resolves when the image has been uploaded.
+             */
             const postImage = async dialog => {
                 dialog?.close();
                 return post()
@@ -619,7 +679,7 @@ class ArpaImage extends ArpaElement {
                     });
             };
             if (this.src) {
-                this.uploadConfirmModal(postImage);
+                // this.uploadConfirmModal(postImage);
                 return;
             }
             postImage();

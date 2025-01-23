@@ -1,4 +1,8 @@
+/**
+ * @typedef {import('../dialog/dialog.js').default} Dialog
+ */
 import ArpaElement from '../../arpaElement/arpaElement.js';
+// @ts-ignore
 import { isObject, renderNode, attrString } from '@arpadroid/tools';
 
 const html = String.raw;
@@ -22,6 +26,10 @@ class Dialogs extends ArpaElement {
         document.addEventListener('keyup', this._onKeyUp);
     }
 
+    /**
+     * Handles key up events.
+     * @param {KeyboardEvent} event - The keyboard event.
+     */
     _onKeyUp(event) {
         if (event.key === 'Escape') this.closeCurrentDialog();
     }
@@ -30,6 +38,10 @@ class Dialogs extends ArpaElement {
         return Array.from(this.querySelectorAll(this._config.dialogTypes.join(',')));
     }
 
+    /**
+     * Adds a dialog to the dialogs component.
+     * @param {HTMLElement} dialog - The dialog to add.
+     */
     addDialog(dialog) {
         if (isObject(dialog)) {
             dialog = renderNode(html`<arpa-dialog ${attrString(dialog)}></arpa-dialog>`);
@@ -48,7 +60,12 @@ class Dialogs extends ArpaElement {
         dialog?.close();
     }
 
+    /**
+     * Closes a dialog by id.
+     * @param {string} id
+     */
     closeDialog(id) {
+        /** @type {Dialog | null} */
         const dialog = this.querySelector(`#${id}`);
         dialog?.close();
     }

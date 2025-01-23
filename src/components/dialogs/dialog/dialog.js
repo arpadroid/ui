@@ -1,8 +1,9 @@
 /**
- * @typedef {import('./dialogInterface.js').DialogInterface} DialogInterface
+ * @typedef {import('./dialog.types').DialogConfigType} DialogConfigType
  */
 
 import ArpaElement from '../../arpaElement/arpaElement.js';
+// @ts-ignore
 import { ObserverTool, renderNode, attrString } from '@arpadroid/tools';
 
 const html = String.raw;
@@ -13,12 +14,12 @@ class Dialog extends ArpaElement {
 
     /**
      * Returns default config.
-     * @returns {DialogInterface}
+     * @returns {DialogConfigType}
      */
     getDefaultConfig() {
+        this.bind('open', 'close');
         return super.getDefaultConfig({
-            tagName: 'section',
-            isOpen: false,
+            open: false,
             persist: false,
             variant: 'default',
             canClose: true,
@@ -27,10 +28,19 @@ class Dialog extends ArpaElement {
             }
         });
     }
+    /**
+     * Sends a signal to subscribers.
+     * @type {import('@arpadroid/tools').SignalType}
+     */
+    signal(signaNme, ...args) {
+        console.error('This method should be overridden in the child class', {
+            signaNme,
+            args
+        });
+    }
 
     _preInitialize() {
-        this.originalParent = this.parentNode;
-        this.bind('close', 'open');
+        this.originalParent = this.parentNode instanceof HTMLElement ? this.parentNode : null;
         ObserverTool.mixin(this);
     }
 
@@ -156,9 +166,11 @@ class Dialog extends ArpaElement {
         const { variant } = this.getProperties('variant');
         this.classList.add('dialog');
         variant && this.classList.add(`dialog--${variant}`);
-        this.innerHTML = this.renderTemplate(
-            html`<div class="dialog__wrapper">{header}{content}{footer}</div>`
-        );
+        this.innerHTML =
+            this.renderTemplate(
+                html`<div class="dialog__wrapper">{header}{content}{footer}</div>`,
+                this.getTemplateVars()
+            ) || '';
         return true;
     }
 

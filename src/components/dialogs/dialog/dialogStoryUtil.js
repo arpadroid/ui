@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* eslint-disable sonarjs/no-duplicate-string */
 import { within } from '@storybook/test';
 import { attrString } from '@arpadroid/tools';

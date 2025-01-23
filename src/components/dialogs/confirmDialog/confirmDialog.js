@@ -7,7 +7,7 @@ class ConfirmDialog extends Dialog {
     ////////////////////////////
 
     getDefaultConfig() {
-        this.bind('confirm', 'cancel');
+        this.bind('confirm', 'cancel', 'open', 'close');
         this.i18nKey = 'ui.confirmDialog';
         return {
             id: 'confirm-dialog',
@@ -27,23 +27,32 @@ class ConfirmDialog extends Dialog {
     _initializeNodes() {
         super._initializeNodes();
         this.confirmBtn = this.querySelector('.confirmDialog__confirmBtn');
+        this.confirmBtn?.addEventListener('click', this.confirm);
+        
         this.cancelBtn = this.querySelector('.confirmDialog__cancelBtn');
-        this.cancelBtn?.focus();
-        this.confirmBtn.addEventListener('click', this.confirm);
-        this.cancelBtn.addEventListener('click', this.cancel);
+        if (this.cancelBtn instanceof HTMLButtonElement) {
+            this.cancelBtn?.focus();
+            this.cancelBtn.addEventListener('click', this.cancel);
+        }
     }
 
+    /**
+     * Sets the payload for the dialog.
+     * @param {any} payload - The payload to set.
+     */
     setPayload(payload) {
         this._config.payload = payload;
     }
 
     cancel() {
         this.close();
+        // @ts-ignore
         this.signal('cancel', this._config.payload);
     }
 
     confirm() {
         const { payload } = this._config;
+        // @ts-ignore
         this.signal('confirm', payload);
         this.close();
     }

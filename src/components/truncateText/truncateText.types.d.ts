@@ -1,4 +1,5 @@
-export interface TruncateTextInterface {
+import { ArpaElementConfigType } from '../arpaElement/arpaElement';
+export type TruncateTextConfigType = ArpaElementConfigType & {
     maxLength?: number;
     threshold?: number;
     ellipsis?: string;
@@ -6,4 +7,5 @@ export interface TruncateTextInterface {
     readLessLabel?: string;
     buttonClasses?: string[];
     hasReadMoreButton?: boolean;
-}
+    hasButton?: boolean;
+};

@@ -1,3 +1,4 @@
+// @ts-ignore
 import { resolveNode } from '@arpadroid/tools';
 import ArpaElement from '../arpaElement/arpaElement.js';
 
@@ -10,6 +11,7 @@ class Tooltip extends ArpaElement {
     initializeProperties() {
         super.initializeProperties();
         this.handler = this.getHandler();
+        return true;
     }
 
     getDefaultConfig() {
@@ -53,11 +55,17 @@ class Tooltip extends ArpaElement {
         this.button = this.querySelector('.tooltip__button');
     }
 
+    /**
+     * Sets the tooltip content.
+     * @param {string | HTMLElement} content - The content to set.
+     * @returns {Promise<void>}
+     */
     async setContent(content = '') {
         if (!this._hasRendered) {
             return;
         }
         setTimeout(() => {
+            if (!this.contentNode) return;
             this.contentNode.innerHTML = '';
             typeof content === 'string' && (this.contentNode.innerHTML = content);
             if (content instanceof HTMLElement) {
