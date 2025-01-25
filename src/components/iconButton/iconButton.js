@@ -2,11 +2,8 @@
  * @typedef {import('../tooltip/tooltip').default} Tooltip
  * @typedef {import('./iconButton.types').IconButtonConfigType} IconButtonConfigType
  */
-// @ts-ignore
 import { attr, attrString, getSafeHtmlId, mergeObjects, handleZones } from '@arpadroid/tools';
-// @ts-ignore
-import { zoneMixin, CustomElementTool, hasZone } from '@arpadroid/tools';
-const { getProperty, hasProperty } = CustomElementTool;
+import { zoneMixin, getProperty, hasProperty, hasZone } from '@arpadroid/tools';
 const html = String.raw;
 
 class IconButton extends HTMLButtonElement {

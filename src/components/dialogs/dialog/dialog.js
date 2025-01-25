@@ -3,8 +3,7 @@
  */
 
 import ArpaElement from '../../arpaElement/arpaElement.js';
-// @ts-ignore
-import { ObserverTool, renderNode, attrString } from '@arpadroid/tools';
+import { observerMixin, renderNode, attrString, dummySignal } from '@arpadroid/tools';
 
 const html = String.raw;
 class Dialog extends ArpaElement {
@@ -28,20 +27,11 @@ class Dialog extends ArpaElement {
             }
         });
     }
-    /**
-     * Sends a signal to subscribers.
-     * @type {import('@arpadroid/tools').SignalType}
-     */
-    signal(signaNme, ...args) {
-        console.error('This method should be overridden in the child class', {
-            signaNme,
-            args
-        });
-    }
 
     _preInitialize() {
         this.originalParent = this.parentNode instanceof HTMLElement ? this.parentNode : null;
-        ObserverTool.mixin(this);
+        this.signal = this.signal || dummySignal;
+        observerMixin(this);
     }
 
     /**

@@ -1,4 +1,3 @@
-// @ts-ignore
 import { getAttributes, attrString } from '@arpadroid/tools';
 
 class ArpaFragment extends HTMLElement {

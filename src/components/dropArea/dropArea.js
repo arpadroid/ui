@@ -3,7 +3,7 @@
  * @typedef {import('@arpadroid/tools').ObserverType} ObserverType
  */
 
-import { eventContainsFiles, mergeObjects, render, ObserverTool } from '@arpadroid/tools';
+import { eventContainsFiles, mergeObjects, render, observerMixin, dummySignal } from '@arpadroid/tools';
 import ArpaElement from '../arpaElement/arpaElement.js';
 
 const html = String.raw;
@@ -19,7 +19,9 @@ class DropArea extends ArpaElement {
      */
     constructor(config = {}) {
         super(config);
-        ObserverTool.mixin(this);
+        this.signal = dummySignal;
+        observerMixin(this);
+
         this._onDrop = this.onDrop.bind(this);
         this._preventDefaultBehavior = this._preventDefaultBehavior.bind(this);
         this._onHandlerClick = this._onHandlerClick.bind(this);
