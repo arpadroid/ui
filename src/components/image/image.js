@@ -388,9 +388,7 @@ class ArpaImage extends ArpaElement {
             handler: this.getProperty('drop-area-handler') || this
         });
         await this.dropArea?.promise;
-        // @ts-ignore
         this.dropArea?.on('drop', this._onInput);
-        // @ts-ignore
         this.dropArea?.on('error', this.hideDropArea);
         this.addEventListener('dragenter', this._onDragEnter);
         this.addEventListener('dragleave', event => {

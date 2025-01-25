@@ -1,4 +1,3 @@
-// @ts-ignore
 import { resolveNode } from '@arpadroid/tools';
 import ArpaElement from '../arpaElement/arpaElement.js';
 

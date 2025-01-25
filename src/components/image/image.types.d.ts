@@ -1,13 +1,13 @@
 import { ArpaElementConfigType } from '../arpaElement/arpaElement.types';
 import ImageComponent from './image.js';
 
-export interface ImageSourceInterface {
+export interface ImageSourceType {
     src: string;
     width?: number;
     height?: number;
 }
 
-export interface ImageSourcesInterface {
+export interface ImageSourcesType {
     default?: string;
     small?: string;
     medium?: string;
@@ -16,7 +16,7 @@ export interface ImageSourcesInterface {
 }
 
 export type ImageConfigType = ArpaElementConfigType & {
-    sources?: ImageSourcesInterface;
+    sources?: ImageSourcesType;
     src?: string;
     alt?: string;
     width?: number;
