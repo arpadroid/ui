@@ -14,7 +14,7 @@ class Dialog extends ArpaElement {
 
     /**
      * Returns default config.
-     * @returns {DialogConfigType}
+     * @returns {DialogConfigType | Record<string, unknown>}
      */
     getDefaultConfig() {
         this.bind('open', 'close');

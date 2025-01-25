@@ -3,15 +3,11 @@
  * @typedef {import('@arpadroid/tools').ObserverType} ObserverType
  */
 
-// @ts-ignore
 import { eventContainsFiles, mergeObjects, render, ObserverTool } from '@arpadroid/tools';
 import ArpaElement from '../arpaElement/arpaElement.js';
 
 const html = String.raw;
-/**
- * @class DropArea
- * @mixes ObserverType
- */
+
 class DropArea extends ArpaElement {
     /////////////////////////
     // #region INITIALIZATION

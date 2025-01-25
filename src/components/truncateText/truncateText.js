@@ -1,6 +1,4 @@
-/* eslint-disable sonarjs/no-duplicate-string */
 import ArpaElement from '../arpaElement/arpaElement.js';
-// @ts-ignore
 import { appendNodes } from '@arpadroid/tools';
 /**
  * @typedef {import('./truncateText.types').TruncateTextConfigType } TruncateTextConfigType
@@ -69,6 +67,10 @@ class TruncateText extends ArpaElement {
     // #region ACCESSORS
     /////////////////////////
 
+    /**
+     * Gets the maximum length of the text.
+     * @returns {number}
+     */
     getMaxLength() {
         return parseFloat(this.getProperty('max-length'));
     }

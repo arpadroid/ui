@@ -8,4 +8,5 @@ export type TruncateTextConfigType = ArpaElementConfigType & {
     buttonClasses?: string[];
     hasReadMoreButton?: boolean;
     hasButton?: boolean;
+    contentClass?: string;
 };

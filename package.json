@@ -4,7 +4,7 @@
     "description": "A UI library of web components",
     "exports": "./dist/arpadroid-ui.js",
     "module": "./dist/arpadroid-ui.js",
-    "types": "./dist/types.d.ts",
+    "types": "./dist/@types/types.compiled.d.ts",
     "type": "module",
     "scripts": {
         "build": "node ./node_modules/@arpadroid/arpadroid/scripts/build-project.mjs --project=ui --minify",

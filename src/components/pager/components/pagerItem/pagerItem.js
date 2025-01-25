@@ -2,7 +2,6 @@
  * @typedef {import('../../pager').default} Pager
  * @typedef {import('./pagerItem.types').PagerItemConfigType} PagerItemConfigType
  */
-// @ts-ignore
 import { mergeObjects, editURL, renderNode, sanitizeURL, attrString } from '@arpadroid/tools';
 import ArpaElement from '../../../arpaElement/arpaElement';
 
@@ -141,7 +140,7 @@ class PagerItem extends ArpaElement {
 
     /**
      * Handles the click event.
-     * @param {MouseEvent} event - The event object.
+     * @param {Event} event - The event object.
      */
     _onClick(event) {
         event.preventDefault();

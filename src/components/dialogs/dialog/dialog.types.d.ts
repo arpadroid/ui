@@ -1,6 +1,6 @@
 import { ArpaElementConfigType } from "../../arpaElement/arpaElement";
 
-export type DialogConfigType = ArpaElementConfigType | {
+export type DialogConfigType = ArpaElementConfigType & {
     open?: boolean;
     persist?: boolean;
     canClose?: boolean;

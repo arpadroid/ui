@@ -1,5 +1,4 @@
 import ArpaElement from '../../arpaElement/arpaElement.js';
-// @ts-ignore
 import { appendNodes } from '@arpadroid/tools';
 const html = String.raw;
 class CircularPreloader extends ArpaElement {

@@ -28,4 +28,4 @@ export type ImageConfigType = ArpaElementConfigType & {
     onLoad?: (event: Event, image: ImageComponent) => void;
     onError?: (event: Event, image: ImageComponent) => void;
     onInput: (files: File[], event: Event, image: ImageComponent) => void;
-};
+} | Record<string, unknown>;

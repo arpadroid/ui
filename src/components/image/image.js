@@ -5,11 +5,8 @@
  * @typedef {import('../tooltip/tooltip.js').default} Tooltip
  * @typedef {import('../icon/icon.js').default} Icon
  */
-// @ts-ignore
 import { attrString, classNames, attr, mergeObjects } from '@arpadroid/tools';
-// @ts-ignore
 import { lazyLoad as lazyLoader, clearLazyImage, hasLoadedSource } from '@arpadroid/tools';
-// @ts-ignore
 import { editURL, mapHTML, eventContainsFiles, addCssRule } from '@arpadroid/tools';
 import ArpaElement from '../arpaElement/arpaElement.js';
 

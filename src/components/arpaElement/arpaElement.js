@@ -1,18 +1,19 @@
 /**
  * @typedef {import('@arpadroid/tools').ZoneType} ZoneType
  * @typedef {import('./arpaElement.types').ArpaElementConfigType} ArpaElementConfigType
+ * @typedef {import('@arpadroid/tools').ElementType} ElementType
  */
-// @ts-ignore
 import { getAttributes, dashedToCamel, mergeObjects, renderNode, CustomElementTool } from '@arpadroid/tools';
-// @ts-ignore
 import { handleZones, zoneMixin, hasZone, getZone, attr, setNodes, bind } from '@arpadroid/tools';
-// @ts-ignore
 import { I18nTool, I18n } from '@arpadroid/i18n';
 const { processTemplate, arpaElementI18n } = I18nTool;
 
 const { getProperty, hasProperty, getArrayProperty, hasContent, onDestroy, canRender } = CustomElementTool;
 
 class ArpaElement extends HTMLElement {
+    /**
+     * @mixes ElementType
+     */
     /** @type {(() => unknown)[]} */
     _bindings = [];
     /** @type {Set<string> | undefined} */
@@ -71,7 +72,7 @@ class ArpaElement extends HTMLElement {
 
     /**
      * Initializes the zones for the element.
-     * @param {HTMLElement} [container] - The container for the zones.
+     * @param {ElementType} [container] - The container for the zones.
      */
     _initializeZones(container) {
         zoneMixin(this, container);
@@ -176,7 +177,7 @@ class ArpaElement extends HTMLElement {
     /**
      * Gets the zone with the specified name.
      * @param {string} name
-     * @returns {HTMLElement}
+     * @returns {ZoneType | null} The zone with the specified name.
      */
     getZone(name) {
         return getZone(this, name);
@@ -185,8 +186,8 @@ class ArpaElement extends HTMLElement {
     /**
      * Returns a i18n component for the specified key.
      * @param {string} key - The key for the i18n component.
-     * @param {Record<string, unknown>} [replacements]
-     * @param {Record<string, unknown>} [attributes]
+     * @param {Record<string, string>} [replacements]
+     * @param {Record<string, string>} [attributes]
      * @param {string} [base] - The base key for the i18n component.
      * @returns {string} The i18n component.
      */
@@ -197,7 +198,7 @@ class ArpaElement extends HTMLElement {
     /**
      * Returns the i18n text for the specified key.
      * @param {string} key
-     * @param {Record<string, unknown>} [replacements]
+     * @param {Record<string, string>} [replacements]
      * @param {string} [base]
      * @returns {string}
      */
@@ -258,7 +259,7 @@ class ArpaElement extends HTMLElement {
     /**
      * Gets the value of a property from the element's configuration or attributes as an array.
      * @param {string} name
-     * @returns {string[]} The value of the property.
+     * @returns {(unknown)[]} The value of the property.
      */
     getArrayProperty(name) {
         return getArrayProperty(this, name);
@@ -266,7 +267,7 @@ class ArpaElement extends HTMLElement {
 
     /**
      * Gets the values of the specified properties from the element's configuration or attributes.
-     * @param {...string} names - The names of the properties.
+     * @param {...string} names
      * @returns {Record<string, unknown>} The values of the properties.
      */
     getProperties(...names) {
@@ -395,8 +396,8 @@ class ArpaElement extends HTMLElement {
     /**
      * Called when an attribute of the element changes.
      * @param {string} att - The name of the attribute that changed.
-     * @param {string} oldValue - The previous value of the attribute.
-     * @param {string} newValue - The new value of the attribute.
+     * @param {string} oldValue
+     * @param {string} newValue
      */
     attributeChangedCallback(att, oldValue, newValue) {
         this.update();
@@ -512,7 +513,7 @@ class ArpaElement extends HTMLElement {
      * Renders the template for the element.
      * @param {string} [template] - The template to render.
      * @param {Record<string, unknown>} [vars] - The variables to use in the template.
-     * @returns {string | undefined} The rendered template.
+     * @returns {string} The rendered template.
      */
     renderTemplate(template = this._getTemplate(), vars = this.getTemplateVars()) {
         if (template) {

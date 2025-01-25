@@ -1,8 +1,8 @@
 /**
  * @typedef {import('../dialog/dialog.js').default} Dialog
+ * @typedef {import('../dialog/dialog.types.js').DialogConfigType} DialogConfigType
  */
 import ArpaElement from '../../arpaElement/arpaElement.js';
-// @ts-ignore
 import { isObject, renderNode, attrString } from '@arpadroid/tools';
 
 const html = String.raw;
@@ -11,7 +11,7 @@ class Dialogs extends ArpaElement {
         const dialogs = typeof id === 'string' && document.getElementById(id);
         if (dialogs) return dialogs;
         const dialogsComponent = renderNode(html`<arpa-dialogs id="${id}"></arpa-dialogs>`);
-        document.body.appendChild(dialogsComponent);
+        dialogsComponent && document.body.appendChild(dialogsComponent);
     }
 
     getDefaultConfig() {
@@ -40,13 +40,17 @@ class Dialogs extends ArpaElement {
 
     /**
      * Adds a dialog to the dialogs component.
-     * @param {HTMLElement} dialog - The dialog to add.
+     * @param {DialogConfigType} dialog - The dialog to add.
      */
     addDialog(dialog) {
-        if (isObject(dialog)) {
-            dialog = renderNode(html`<arpa-dialog ${attrString(dialog)}></arpa-dialog>`);
+        if (dialog instanceof HTMLElement) {
+            this.appendChild(dialog);
+            return;
         }
-        dialog instanceof HTMLElement && this.appendChild(dialog);
+        if (isObject(dialog)) {
+            const node = renderNode(html`<arpa-dialog ${attrString(dialog)}></arpa-dialog>`);
+            node instanceof HTMLElement && this.appendChild(node);
+        }
     }
 
     getCurrentDialog() {

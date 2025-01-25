@@ -35,7 +35,6 @@ class InputCombo {
     /**
      * An array of all instances of the InputCombo class.
      * @type {InputCombo[]}
-     * @static
      */
     static instances = [];
 
@@ -79,7 +78,6 @@ class InputCombo {
 
     /**
      * Handles the scroll event.
-     * @static
      */
     static _onScroll() {
         InputCombo.instances.forEach(instance => instance.isActive() && instance.place());
@@ -132,7 +130,7 @@ class InputCombo {
      * Creates a new instance of the InputCombo component.
      * @param {HTMLInputElement | HTMLButtonElement} input - The input element.
      * @param {HTMLElement & { InputCombo: InputCombo}} combo - The combo element.
-     * @param {Record<string, unknown>} config - The configuration for the InputCombo component.
+     * @param {InputComboConfigType} config - The configuration for the InputCombo component.
      */
     constructor(input, combo, config) {
         combo.InputCombo = this;
@@ -149,9 +147,10 @@ class InputCombo {
 
     /**
      * Sets the configuration for the InputCombo component.
-     * @param {Record<string, unknown>} config - The configuration object.
+     * @param {InputComboConfigType} config - The configuration object.
      */
     setConfig(config) {
+        /** @type {InputComboConfigType} */
         this._config = mergeObjects(this._defaultConfig, config);
     }
 
@@ -303,7 +302,7 @@ class InputCombo {
      * @param {Event} event
      */
     async _onBlur(event) {
-        const { closeOnBlur } = this._config;
+        const { closeOnBlur } = this._config || {};
         await new Promise(resolve => setTimeout(resolve, 200));
 
         const isCombo = this.combo === document.activeElement;
@@ -319,7 +318,7 @@ class InputCombo {
 
     /**
      * Checks if the related target of the event is contained within the InputCombo component.
-     * @param {Event & {relatedTarget?: Node | null}} event - The focus event.
+     * @param {Event & {relatedTarget?: HTMLElement | null}} event - The focus event.
      * @returns {boolean} True if the related target of the event is contained within the InputCombo component, false otherwise.
      */
     isTargetContained(event) {
@@ -345,7 +344,7 @@ class InputCombo {
     close() {
         this.combo.classList.remove('inputCombo--active');
         this.input.classList.remove('inputCombo__input--active');
-        if (!this._isActive && typeof this._config.onClose === 'function') {
+        if (!this._isActive && typeof this._config?.onClose === 'function') {
             this._config.onClose();
         }
         if (this.combo.parentNode === document.body) {
@@ -359,7 +358,7 @@ class InputCombo {
      * Opens the InputCombo component.
      */
     open() {
-        const { onOpen } = this._config;
+        const { onOpen } = this._config || {};
         this.combo.style.display = 'block';
         requestAnimationFrame(() => {
             this._isActive = true;
@@ -379,7 +378,7 @@ class InputCombo {
      * Places the InputCombo component in the correct position.
      */
     place() {
-        const { position } = this._config;
+        const { position } = this._config || {};
         if (!position || !this._isActive) {
             return;
         }
@@ -432,7 +431,7 @@ class InputCombo {
 
     /**
      * Returns the container element of the currently focused option.
-     * @param {Element | null | undefined} node - The currently focused element.
+     * @param {HTMLElement} node - The currently focused element.
      * @returns {HTMLElement} The container element of the currently focused option.
      * @protected
      */

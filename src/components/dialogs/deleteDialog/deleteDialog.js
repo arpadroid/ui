@@ -1,11 +1,13 @@
 import ConfirmDialog from '../confirmDialog/confirmDialog.js';
-// @ts-ignore
 import { mergeObjects } from '@arpadroid/tools';
 class DeleteDialog extends ConfirmDialog {
     ////////////////////////////
     // #region Initialization
     ////////////////////////////
-
+    /**
+     * Returns the default component config.
+     * @returns {import('./deleteDialog.types.js').DeleteDialogConfigType}
+     */
     getDefaultConfig() {
         const defaultConfig = super.getDefaultConfig();
         this.i18nKey = 'ui.deleteDialog';

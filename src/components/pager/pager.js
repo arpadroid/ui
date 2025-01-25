@@ -1,7 +1,7 @@
 /**
  * @typedef {import('./pager.types').PagerConfigType} PagerConfigType
  * @typedef {import('./pager.types').PagerUpdateCallbackType} PagerUpdateCallbackType
- * @typedef {Record<string, any>} PagerItem
+ * @typedef {import('./components/pagerItem/pagerItem.js').default} PagerItem
  * @typedef {import('../pager/components/pagerItem/pagerItem.types').PagerItemConfigType} PagerItemConfigType
  */
 // @ts-ignore
