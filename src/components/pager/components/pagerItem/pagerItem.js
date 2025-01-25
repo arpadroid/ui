@@ -47,9 +47,11 @@ class PagerItem extends ArpaElement {
         if (!this.contentNode || reRender) {
             this.innerHTML = '';
             this.contentNode = this.renderContent();
-            this.appendChild(this.contentNode);
-            if (!this.isActive()) {
-                this.contentNode.append(...(this._childNodes || []));
+            if (this.contentNode instanceof HTMLElement) {
+                this.appendChild(this.contentNode);
+                if (!this.isActive()) {
+                    this.contentNode.append(...this.getChildElements());
+                }
             }
         }
     }
@@ -82,8 +84,8 @@ class PagerItem extends ArpaElement {
             </form>`
         );
 
-        this.input = this.form.querySelector('input');
-        this.form.addEventListener('submit', this._onSubmitInput);
+        this.form instanceof HTMLElement && (this.input = this.form?.querySelector('input'));
+        this.form?.addEventListener('submit', this._onSubmitInput);
         return this.form;
     }
 
@@ -93,7 +95,7 @@ class PagerItem extends ArpaElement {
      */
     _onSubmitInput(event) {
         event.preventDefault();
-        const page = this.input.value;
+        const page = this.input?.value;
         if (typeof this._config.onClick === 'function') {
             this._config.onClick(page);
         }
@@ -121,7 +123,7 @@ class PagerItem extends ArpaElement {
                 ariaLabel
             };
             const linkNode = renderNode(html`<a ${attrString(attr)}></a>`);
-            linkNode.addEventListener('click', this._onClick);
+            linkNode?.addEventListener('click', this._onClick);
             return linkNode;
         }
         return renderNode(html`<span class="pagerItem__content"></span>`);

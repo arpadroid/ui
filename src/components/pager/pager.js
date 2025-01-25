@@ -4,7 +4,6 @@
  * @typedef {import('./components/pagerItem/pagerItem.js').default} PagerItem
  * @typedef {import('../pager/components/pagerItem/pagerItem.types').PagerItemConfigType} PagerItemConfigType
  */
-// @ts-ignore
 import { getURLParam, attrString, renderNode, editURL } from '@arpadroid/tools';
 import ArpaElement from '../arpaElement/arpaElement.js';
 
@@ -126,7 +125,7 @@ class Pager extends ArpaElement {
      * @returns {boolean}
      */
     hasArrowControls() {
-        return this.hasProperty('has-arrow-controls');
+        return Boolean(this.hasProperty('has-arrow-controls'));
     }
 
     /**
@@ -245,11 +244,11 @@ class Pager extends ArpaElement {
             className,
             ariaLabel
         } = config;
-        /** @type {PagerItem} */
         let item = this.pagerItems[id];
         if (!item) {
             const attr = { page, 'is-active': isActive, class: className, ariaLabel };
             const itemHTML = html`<pager-item ${attrString(attr)}>${content}</pager-item>`;
+            // @ts-ignore
             item = renderNode(itemHTML);
             this.pagerItems[id] = item;
         } else if (typeof onUpdate === 'function') {

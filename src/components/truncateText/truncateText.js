@@ -20,7 +20,8 @@ class TruncateText extends ArpaElement {
             readMoreLabel: 'read more',
             readLessLabel: 'read less',
             buttonClasses: ['truncateText__readMoreButton', 'button--link'],
-            hasButton: false
+            hasButton: false,
+            contentClass: 'truncateText__content'
         };
     }
 
@@ -42,7 +43,8 @@ class TruncateText extends ArpaElement {
 
     _observeContents() {
         const observer = new MutationObserver(() => {
-            const textNode = this.querySelector('.truncateText__content');
+            const contentClass = this.getProperty('content-class');
+            const textNode = this.querySelector(`.${contentClass}`);
             const content = this.textContent?.trim() || '';
             if (!this.isTruncated && !textNode && content !== this.fullContent) {
                 this._childNodes = [...this.childNodes];
@@ -140,11 +142,12 @@ class TruncateText extends ArpaElement {
         const text = this.textContent?.trim() || '';
         const ellipsis = this.getProperty('ellipsis');
         if (this.shouldTruncate()) {
+            const contentClass = this.getProperty('content-class');
             this.isTruncated = true;
             const ellipsisHTML = html`<span class="truncateText__ellipsis">${ellipsis}</span>`;
             const content = text.slice(0, maxLength);
-            this.innerHTML = html`<span class="truncateText__content">${content}${ellipsisHTML}</span>`;
-            this.textNode = this.querySelector('.truncateText__content');
+            this.innerHTML = html`<span class="${contentClass}">${content}${ellipsisHTML}</span>`;
+            this.textNode = this.querySelector(`.${contentClass}`);
             this.renderButton();
         }
     }
@@ -159,7 +162,9 @@ class TruncateText extends ArpaElement {
         this.textNode = this.querySelector('.truncateText__content');
 
         this.isTruncated = false;
-        appendNodes(this.textNode, this._childNodes);
+        if (this.textNode && this._childNodes) {
+            appendNodes(this.textNode, this.getChildElements());
+        }
         this.renderButton(false);
         this.button && this.appendChild(this.button);
         setTimeout(() => {

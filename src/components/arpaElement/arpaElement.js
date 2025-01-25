@@ -124,7 +124,7 @@ class ArpaElement extends HTMLElement {
         attr(this, this.getTemplateAttributes());
         this.templateContent = this.getTemplateContent(template);
         this.template = document.createElement('template');
-        this.template.innerHTML = this.templateContent;
+        this.templateContent && (this.template.innerHTML = String(this.templateContent));
         if (typeof container === 'string') {
             container = this.querySelector(container);
         } else if (typeof container === 'function') {
@@ -140,6 +140,17 @@ class ArpaElement extends HTMLElement {
 
     getTemplateContent(template = this._config.template, payload = this.getTemplateVars()) {
         return processTemplate(template.innerHTML, payload);
+    }
+
+    /**
+     * Gets the template for the element.
+     * @returns {(Element | Node)[]} The template for the element.
+     */
+    getChildElements() {
+        // @ts-ignore
+        return Array.from(this._childNodes || []).filter(node => {
+            return node instanceof Element || node instanceof Node;
+        });
     }
 
     // #endregion
@@ -191,8 +202,8 @@ class ArpaElement extends HTMLElement {
      * @param {string} [base] - The base key for the i18n component.
      * @returns {string} The i18n component.
      */
-    i18n(key, replacements, attributes, base = this.i18nKey) {
-        return arpaElementI18n(this, key, replacements, attributes, base);
+    i18n(key, replacements = {}, attributes = {}, base = this.i18nKey) {
+        return String(arpaElementI18n(this, key, replacements, attributes, base));
     }
 
     /**
@@ -202,7 +213,7 @@ class ArpaElement extends HTMLElement {
      * @param {string} [base]
      * @returns {string}
      */
-    i18nText(key, replacements, base = this.i18nKey) {
+    i18nText(key, replacements = {}, base = this.i18nKey) {
         return I18n.getText(`${base}.${key}`, replacements);
     }
 
@@ -253,7 +264,7 @@ class ArpaElement extends HTMLElement {
      * @returns {string} The value of the property.
      */
     getProperty(name) {
-        return getProperty(this, name);
+        return getProperty(this, name)?.toString() || '';
     }
 
     /**
@@ -287,7 +298,7 @@ class ArpaElement extends HTMLElement {
     /**
      * Determines if the element has a property with the specified name.
      * @param {string} name
-     * @returns {boolean} True if the element has a property with the specified name; otherwise, false.
+     * @returns {boolean | unknown} True if the element has a property with the specified name; otherwise, false.
      */
     hasProperty(name) {
         return hasProperty(this, name);
@@ -329,7 +340,8 @@ class ArpaElement extends HTMLElement {
             this._childNodes = [...content.childNodes];
         }
         if (contentContainer instanceof HTMLElement) {
-            setNodes(contentContainer, this._childNodes);
+            // @ts-ignore
+            setNodes(contentContainer, this.getChildElements());
         }
     }
 
@@ -516,9 +528,8 @@ class ArpaElement extends HTMLElement {
      * @returns {string} The rendered template.
      */
     renderTemplate(template = this._getTemplate(), vars = this.getTemplateVars()) {
-        if (template) {
-            return processTemplate(template, vars);
-        }
+        const result = template && processTemplate(template, vars);
+        return typeof result === 'string' ? result : '';
     }
 
     _getTemplate() {

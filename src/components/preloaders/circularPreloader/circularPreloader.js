@@ -23,9 +23,11 @@ class CircularPreloader extends ArpaElement {
     }
 
     _initializeNodes() {
-        appendNodes(this, this._childNodes);
+        // @ts-ignore
+        appendNodes(this, this.getChildElements());
         this.setAttribute('role', 'progressbar');
-        this.setAttribute('aria-label', this.getProperty('label'));
+        const label = this.getProperty('label');
+        label && this.setAttribute('aria-label', label.toString());
         this.contentNode = this.querySelector('.circularPreloader__content');
     }
 

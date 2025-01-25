@@ -86,12 +86,11 @@ class InputCombo {
     /**
      * Handles the document click event.
      * @param {Event} event
-     * @static
      */
     static _onDocumentClick(event) {
         lastClicked = event.target;
         InputCombo.instances.forEach(instance => {
-            const { closeOnClick, closeOnBlur } = instance._config;
+            const { closeOnClick, closeOnBlur } = instance._config || {};
             const { combo, input } = instance;
             if (closeOnBlur && instance.isActive()) {
                 const target = event.target;
@@ -254,7 +253,7 @@ class InputCombo {
         if (this.isMouseFocus && (!isSafari || !(this.input instanceof HTMLButtonElement))) {
             return;
         }
-        const isToggle = this._config.hasToggle && this._isActive;
+        const isToggle = this._config?.hasToggle && this._isActive;
         if (isToggle) {
             this.close();
             return;
@@ -436,43 +435,45 @@ class InputCombo {
      * @protected
      */
     _getFocusedOptionContainer(node) {
-        return node?.closest(this._config.containerSelector) ?? node;
+        return (this._config?.containerSelector && node?.closest(this._config.containerSelector)) || node;
     }
 
     /**
      * Returns the currently focused option.
-     * @returns {Node | null | undefined} The currently focused option.
+     * @returns {HTMLElement | null} The currently focused option.
      */
     _getFocusedItem() {
-        return this._getFocusedOptionContainer(this._getFocused());
+        const focusedElement = this._getFocused();
+        if (focusedElement instanceof HTMLElement) {
+            return this._getFocusedOptionContainer(focusedElement);
+        }
+        return null;
     }
 
     /**
      * Returns the first available option within the combo.
-     * @returns {Node | null | undefined}
+     * @returns {Node | null}
      */
     _getFirstAvailableOption() {
         const firstOption = this.combo.querySelector(this._optionFocusSelector);
         /** @type {Node | null} */
         let firstNode = firstOption;
         while (firstNode instanceof HTMLElement && firstNode?.style?.display === 'none') {
-            firstNode = firstNode.nextSibling;
+            firstNode.nextSibling && (firstNode = firstNode.nextSibling);
         }
         return firstNode;
     }
 
     /**
      * Returns the next available option after the currently focused option.
-     * @returns {Node | null | undefined}
+     * @returns {HTMLElement | null}
      */
     _getNextAvailableOption() {
         let node = this._getFocusedItem()?.nextSibling;
-        if (node instanceof HTMLElement) {
-            while (node instanceof HTMLElement && node.style.display === 'none') {
-                node = node.nextSibling;
-            }
+        while (node instanceof HTMLElement && node?.style?.display === 'none') {
+            node = node.nextSibling;
         }
-        return node;
+        return node instanceof HTMLElement ? node : null;
     }
 
     /**
@@ -488,19 +489,27 @@ class InputCombo {
         return node || (loop && this._getLastAvailableOption());
     }
 
+    /**
+     * Returns the items within the combo.
+     * @returns {HTMLElement[]}
+     */
     getItems() {
-        return Array.from(this.combo.querySelectorAll(this._config.containerSelector));
+        return (
+            (this._config?.containerSelector &&
+                Array.from(this.combo.querySelectorAll(this._config?.containerSelector))) ||
+            []
+        );
     }
 
     /**
      * Returns the last available option within the combo.
-     * @returns {Node | null}
+     * @returns {HTMLElement | null}
      */
     _getLastAvailableOption() {
         const items = this.getItems();
         let lastNode = items[items.length - 1];
         while (lastNode?.style?.display === 'none') {
-            lastNode = lastNode.previousSibling;
+            lastNode = lastNode?.previousSibling instanceof HTMLElement ? lastNode.previousSibling : lastNode;
         }
         return lastNode;
     }

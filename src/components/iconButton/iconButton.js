@@ -30,7 +30,7 @@ class IconButton extends HTMLButtonElement {
 
     connectedCallback() {
         attr(this, {
-            'aria-label': this.getLabel(),
+            'aria-label': this.getLabel().toString(),
             type: 'button'
         });
         this.handleVariant();
@@ -58,7 +58,7 @@ class IconButton extends HTMLButtonElement {
     getId() {
         if (this.id) return this.id;
         this._config.id && (this.id = this._config.id);
-        !this.id && (this.id = `iconButton-${getSafeHtmlId(this.getLabel())}`);
+        !this.id && (this.id = `iconButton-${getSafeHtmlId(this.getLabel().toString())}`);
         return this.id;
     }
 

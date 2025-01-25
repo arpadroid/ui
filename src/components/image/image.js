@@ -316,7 +316,7 @@ class ArpaImage extends ArpaElement {
         const hasNativeLazy = this.hasNativeLazy();
         const imageAttr = attrString({
             alt: this.getProperty('alt'),
-            class: classNames({ 'image--lazy': lazyLoad }),
+            class: classNames({ 'image--lazy': Boolean(lazyLoad) }),
             'data-src': lazyLoad && !hasNativeLazy ? src : '',
             lazyLoad: lazyLoad && !hasNativeLazy,
             loading: (lazyLoad && hasNativeLazy && 'lazy') || undefined,
@@ -344,7 +344,8 @@ class ArpaImage extends ArpaElement {
             const src = this.getImageURL(size, quality);
             return html`<source srcset="${src} ${size}px" />`;
         };
-        return mapHTML(render);
+        // @ts-ignore
+        return mapHTML(sizes, size => render(sizes, size));
     }
 
     renderPreloader() {
@@ -492,7 +493,10 @@ class ArpaImage extends ArpaElement {
         this.hasDropArea() && this.initializeDropArea();
         this.initializeImage();
         const batchSize = this.getProperty('lazy-loader-batch-size');
-        this.hasLazyLoad() && !this.hasNativeLazy() && lazyLoader(this.image, batchSize);
+        this.hasLazyLoad() &&
+            !this.hasNativeLazy() &&
+            this.image &&
+            lazyLoader(this.image, Number(batchSize));
     }
 
     /**
@@ -544,14 +548,13 @@ class ArpaImage extends ArpaElement {
      * @param {ImageConfigType} config - The configuration options for the image.
      * @returns {HTMLImageElement | undefined} - The image element.
      */
-    initializeImage(image = this.image, config = this._config) {
-        const { alt, width, height } = config;
+    initializeImage(image = this.image, config = this._config || {}) {
         if (image instanceof HTMLImageElement) {
             image.removeEventListener('load', this._onLoad);
             image.removeEventListener('error', this._onError);
             image.addEventListener('load', this._onLoad);
             image.addEventListener('error', this._onError);
-            attr(image, { alt, width, height });
+            attr(image, { alt: config.alt, width: config.width, height: config.height });
             if (image.naturalWidth) {
                 this._onLoad();
             }
