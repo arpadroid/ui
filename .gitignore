@@ -10,3 +10,5 @@ storybook-static/
 src/i18n/
 stats.html
 .tsbuildinfo
+.tsconfig.tsbuildinfo
+.types
