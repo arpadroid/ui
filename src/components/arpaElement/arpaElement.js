@@ -260,10 +260,10 @@ class ArpaElement extends HTMLElement {
     /**
      * Gets the value of a property from the element's configuration or attributes.
      * @param {string} name
-     * @returns {string} The value of the property.
+     * @returns {any} The value of the property.
      */
     getProperty(name) {
-        return getProperty(this, name)?.toString() || '';
+        return getProperty(this, name);
     }
 
     /**

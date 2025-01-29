@@ -1,4 +1,5 @@
 const config = {
+    buildTypes: true,
     storybook: {
         preview: {
             parameters: {
