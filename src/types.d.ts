@@ -1,4 +1,3 @@
-export type AbstractContentInterface = string | number | HTMLElement;
 export * from './components/arpaElement/arpaElement.types';
 export * from './components/inputCombo/inputCombo.types';
 export * from './components/pager/pager.types';
