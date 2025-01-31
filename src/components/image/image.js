@@ -101,6 +101,7 @@ class ArpaImage extends ArpaElement {
         const sizes = this.getArrayProperty('sizes');
         const size = this.getProperty('default-size');
         const sizeMap = this._config.sizeMap;
+        // @ts-ignore
         return sizeMap[size] ?? sizes[0];
     }
 
@@ -332,7 +333,7 @@ class ArpaImage extends ArpaElement {
 
     renderSources() {
         const sizes = this.getArrayProperty('sizes');
-        if (!sizes.length) return '';
+        if (!Array.isArray(sizes) || !sizes.length) return '';
         const quality = this.getProperty('quality');
         /**
          * Renders a source element for the image.
