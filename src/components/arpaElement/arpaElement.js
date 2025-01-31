@@ -79,6 +79,7 @@ class ArpaElement extends HTMLElement {
 
     _initializeContent() {
         this._content = this.innerHTML;
+        /** @type {Node[]} */
         this._childNodes = [...this.childNodes];
     }
 
@@ -333,7 +334,8 @@ class ArpaElement extends HTMLElement {
     setContent(content, contentContainer = this) {
         if (typeof content === 'string') {
             this._content = content;
-            this._childNodes = [renderNode(content)];
+            const node = renderNode(content);
+            this._childNodes = node ? [node] : [];
         } else if (content instanceof HTMLElement) {
             this._content = content.outerHTML;
             this._childNodes = [...content.childNodes];
