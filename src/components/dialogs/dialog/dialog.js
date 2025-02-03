@@ -7,13 +7,16 @@ import { observerMixin, renderNode, attrString, dummySignal } from '@arpadroid/t
 
 const html = String.raw;
 class Dialog extends ArpaElement {
+    /** @type {DialogConfigType} */ // @ts-ignore
+    _config = this._config;
+
     ////////////////////////////
     // #region Initialization
     ////////////////////////////
 
     /**
      * Returns default config.
-     * @returns {DialogConfigType | Record<string, unknown>}
+     * @returns {DialogConfigType}
      */
     getDefaultConfig() {
         this.bind('open', 'close');
@@ -83,9 +86,7 @@ class Dialog extends ArpaElement {
         super._handleZones();
     }
 
-    //////////////////////////////
     // #endregion Initialization
-    /////////////////////////////
 
     ////////////////////////////
     // #region Accessors

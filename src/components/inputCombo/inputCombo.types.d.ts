@@ -3,6 +3,7 @@
  */
 
 import { PlaceToolOptionsType } from '@arpadroid/tools';
+import InputCombo from './inputCombo';
 
 export type InputComboConfigType = {
     closeOnBlur?: boolean;
@@ -14,3 +15,5 @@ export type InputComboConfigType = {
     onClose?: () => void;
     containerSelector?: string;
 };
+
+export type InputComboNodeType = HTMLElement & { InputCombo?: InputCombo };

@@ -1,13 +1,12 @@
 // import { ZoneType } from '@arpadroid/tools';
 
-export type ArpaElementConfigType =
-    | {
-          removeEmptyZoneNodes?: boolean;
-          className?: string;
-          variant?: string;
-          classNames?: string[];
-      }
-    | Record<string, unknown>;
+export type ArpaElementConfigType = {
+    removeEmptyZoneNodes?: boolean;
+    className?: string;
+    variant?: string;
+    classNames?: string[];
+    attributes?: Record<string, string>;
+};
 
 // declare global {
 //     interface HTMLElementTagNameMap {

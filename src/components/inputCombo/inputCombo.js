@@ -1,5 +1,6 @@
 /**
  * @typedef {import('./inputCombo.types').InputComboConfigType} InputComboConfigType
+ * @typedef {import('./inputCombo.types').InputComboNodeType} InputComboNodeType
  */
 
 // @ts-ignore
@@ -128,7 +129,7 @@ class InputCombo {
     /**
      * Creates a new instance of the InputCombo component.
      * @param {HTMLInputElement | HTMLButtonElement} input - The input element.
-     * @param {HTMLElement & { InputCombo: InputCombo}} combo - The combo element.
+     * @param {InputComboNodeType} combo - The combo element.
      * @param {InputComboConfigType} config - The configuration for the InputCombo component.
      */
     constructor(input, combo, config) {
@@ -137,7 +138,7 @@ class InputCombo {
         InputCombo._initializeComponent();
         /** @type {HTMLInputElement | HTMLButtonElement} */
         this.input = input;
-        /** @type {HTMLElement} */
+        /** @type {InputComboNodeType} */
         this.combo = combo;
         this.combo.classList.add('inputCombo');
         this.setConfig(config);

@@ -5,6 +5,8 @@ import Dialog from '../dialog/dialog.js';
 
 const html = String.raw;
 class ConfirmDialog extends Dialog {
+    /** @type {ConfirmDialogConfigType} */ //@ts-ignore
+    _config = this._config;
     ////////////////////////////
     // #region Initialization
     ////////////////////////////
@@ -68,7 +70,7 @@ class ConfirmDialog extends Dialog {
      * @param {string} [lblConfirm]
      * @param {string} [cancelIcon]
      * @param {string} [lblCancel]
-     * @returns {HTMLElement}
+     * @returns {string}
      */
     renderFooter(
         confirmIcon = this.getProperty('confirm-icon'),

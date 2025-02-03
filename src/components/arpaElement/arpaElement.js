@@ -231,8 +231,8 @@ class ArpaElement extends HTMLElement {
 
     /**
      * Sets the configuration for the element.
-     * @param {ArpaElementConfigType} [config]
-     * @returns {ArpaElementConfigType}
+     * @param {Record<string, unknown>} [config]
+     * @returns {Record<string, unknown>}
      */
     getDefaultConfig(config = {}) {
         return mergeObjects(

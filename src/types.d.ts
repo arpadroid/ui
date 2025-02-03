@@ -1,4 +1,4 @@
-export * from './components/arpaElement/arpaElement.types';
+export { ArpaElementConfigType } from './components/arpaElement/arpaElement.types';
 export * from './components/inputCombo/inputCombo.types';
 export * from './components/pager/pager.types';
 export * from './components/pager/components/pagerItem/pagerItem.types';
