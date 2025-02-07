@@ -1,5 +1,4 @@
-import type { PagerItem } from "./pager";
-
+import type { PagerItem } from './pager';
 
 export type PagerConfigType = {
     className?: string;
@@ -10,6 +9,16 @@ export type PagerConfigType = {
     urlParam?: string;
     ariaLabel?: string;
     renderMode?: 'default' | 'minimal';
+    onClick?: (payload: PagerCallbackPayloadType) => void;
 };
 
-export type PagerUpdateCallbackType = (payload: { node: HTMLElement & PagerItem; isCurrent: boolean }) => void;
+export type PagerCallbackPayloadType = {
+    page?: number | string;
+    node?: PagerItem | null;
+    event?: Event;
+};
+
+export type PagerUpdateCallbackType = (payload: {
+    node: HTMLElement & PagerItem;
+    isCurrent: boolean;
+}) => void;

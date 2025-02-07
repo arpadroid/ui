@@ -97,12 +97,15 @@ class ArpaImage extends ArpaElement {
 
     // #region - - Size
 
+    /**
+     * Gets the default size of the Image.
+     * @returns {number}
+     */
     getDefaultSize() {
         const sizes = this.getArrayProperty('sizes');
         const size = this.getProperty('default-size');
         const sizeMap = this._config.sizeMap;
-        // @ts-ignore
-        return sizeMap[size] ?? sizes[0];
+        return sizeMap[size] ?? (Array.isArray(sizes) && sizes[0]);
     }
 
     /**
@@ -345,8 +348,7 @@ class ArpaImage extends ArpaElement {
             const src = this.getImageURL(size, quality);
             return html`<source srcset="${src} ${size}px" />`;
         };
-        // @ts-ignore
-        return mapHTML(sizes, size => render(sizes, size));
+        return mapHTML(sizes, (/** @type {number} */ size) => render(sizes, size));
     }
 
     renderPreloader() {

@@ -9,6 +9,8 @@ import ArpaElement from '../arpaElement/arpaElement.js';
 
 const html = String.raw;
 class Pager extends ArpaElement {
+    /** @type {PagerConfigType} */ // @ts-ignore
+    _config = this._config;
     //////////////////////////
     // #region INITIALIZATION
     /////////////////////////
@@ -70,7 +72,7 @@ class Pager extends ArpaElement {
 
     /**
      * Assigns a function to be called when the page changes.
-     * @param {() => void} onClick
+     * @param {PagerConfigType['onClick']} onClick
      */
     onChange(onClick) {
         this._config.onClick = onClick;
@@ -248,7 +250,6 @@ class Pager extends ArpaElement {
         if (!item) {
             const attr = { page, 'is-active': isActive, class: className, ariaLabel };
             const itemHTML = html`<pager-item ${attrString(attr)}>${content}</pager-item>`;
-            // @ts-ignore
             item = renderNode(itemHTML);
             this.pagerItems[id] = item;
         } else if (typeof onUpdate === 'function') {

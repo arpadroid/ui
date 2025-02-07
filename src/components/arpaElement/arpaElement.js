@@ -5,9 +5,16 @@
  */
 import { getAttributes, dashedToCamel, mergeObjects, renderNode } from '@arpadroid/tools';
 import { handleZones, zoneMixin, hasZone, getZone, attr, setNodes, bind, canRender } from '@arpadroid/tools';
-import { getProperty, hasProperty, getArrayProperty, hasContent, onDestroy } from '@arpadroid/tools';
+import {
+    getProperty,
+    hasProperty,
+    getArrayProperty,
+    hasContent,
+    onDestroy,
+    processTemplate
+} from '@arpadroid/tools';
 import { I18nTool, I18n } from '@arpadroid/i18n';
-const { processTemplate, arpaElementI18n } = I18nTool;
+const { arpaElementI18n } = I18nTool;
 
 class ArpaElement extends HTMLElement {
     /**
@@ -138,6 +145,12 @@ class ArpaElement extends HTMLElement {
         }
     }
 
+    /**
+     * Gets the content of the template for the element.
+     * @param {HTMLTemplateElement} template
+     * @param {Record<string, unknown>} [payload]
+     * @returns {string}
+     */
     getTemplateContent(template = this._config.template, payload = this.getTemplateVars()) {
         return processTemplate(template.innerHTML, payload);
     }
@@ -147,7 +160,6 @@ class ArpaElement extends HTMLElement {
      * @returns {(Element | Node)[]} The template for the element.
      */
     getChildElements() {
-        // @ts-ignore
         return Array.from(this._childNodes || []).filter(node => {
             return node instanceof Element || node instanceof Node;
         });

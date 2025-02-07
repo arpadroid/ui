@@ -1,9 +1,9 @@
 /**
  * @typedef {import('./inputCombo.types').InputComboConfigType} InputComboConfigType
  * @typedef {import('./inputCombo.types').InputComboNodeType} InputComboNodeType
+ * @typedef {import('./inputCombo.types').InputComboInputType} InputComboInputType
  */
 
-// @ts-ignore
 import { isIOsSafari, mergeObjects, placeNode } from '@arpadroid/tools';
 
 /** @type {EventTarget | null | undefined} */
@@ -128,7 +128,7 @@ class InputCombo {
 
     /**
      * Creates a new instance of the InputCombo component.
-     * @param {HTMLInputElement | HTMLButtonElement} input - The input element.
+     * @param {InputComboInputType} input - The input element.
      * @param {InputComboNodeType} combo - The combo element.
      * @param {InputComboConfigType} config - The configuration for the InputCombo component.
      */
@@ -136,7 +136,7 @@ class InputCombo {
         combo.InputCombo = this;
         InputCombo.instances.push(this);
         InputCombo._initializeComponent();
-        /** @type {HTMLInputElement | HTMLButtonElement} */
+        /** @type {InputComboInputType} */
         this.input = input;
         /** @type {InputComboNodeType} */
         this.combo = combo;

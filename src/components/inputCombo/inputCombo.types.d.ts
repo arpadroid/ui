@@ -16,4 +16,6 @@ export type InputComboConfigType = {
     containerSelector?: string;
 };
 
-export type InputComboNodeType = HTMLElement & { InputCombo?: InputCombo };
+export type InputComboNodeType<T = HTMLElement> = T & { InputCombo?: InputCombo };
+
+export type InputComboInputType<T = HTMLInputElement | HTMLButtonElement | HTMLElement>  = T & { InputCombo?: InputCombo };
