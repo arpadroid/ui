@@ -3,16 +3,9 @@
  * @typedef {import('./arpaElement.types').ArpaElementConfigType} ArpaElementConfigType
  * @typedef {import('@arpadroid/tools').ElementType} ElementType
  */
-import { getAttributes, dashedToCamel, mergeObjects, renderNode } from '@arpadroid/tools';
+import { getAttributes, dashedToCamel, mergeObjects, renderNode, processTemplate } from '@arpadroid/tools';
 import { handleZones, zoneMixin, hasZone, getZone, attr, setNodes, bind, canRender } from '@arpadroid/tools';
-import {
-    getProperty,
-    hasProperty,
-    getArrayProperty,
-    hasContent,
-    onDestroy,
-    processTemplate
-} from '@arpadroid/tools';
+import { getProperty, hasProperty, getArrayProperty, hasContent, onDestroy } from '@arpadroid/tools';
 import { I18nTool, I18n } from '@arpadroid/i18n';
 const { arpaElementI18n } = I18nTool;
 
