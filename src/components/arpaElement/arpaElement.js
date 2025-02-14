@@ -2,10 +2,12 @@
  * @typedef {import('@arpadroid/tools').ZoneType} ZoneType
  * @typedef {import('./arpaElement.types').ArpaElementConfigType} ArpaElementConfigType
  * @typedef {import('@arpadroid/tools').ElementType} ElementType
+ * @typedef {import('@arpadroid/tools').CustomElementChildOptionsType} CustomElementChildOptionsType
  */
 import { getAttributes, dashedToCamel, mergeObjects, renderNode, processTemplate } from '@arpadroid/tools';
-import { handleZones, zoneMixin, hasZone, getZone, attr, setNodes, bind, canRender } from '@arpadroid/tools';
-import { getProperty, hasProperty, getArrayProperty, hasContent, onDestroy } from '@arpadroid/tools';
+import { handleZones, zoneMixin, hasZone, getZone, attr, setNodes, canRender } from '@arpadroid/tools';
+import { getProperty, hasProperty, getArrayProperty, hasContent, onDestroy, bind } from '@arpadroid/tools';
+import { renderChild } from '@arpadroid/tools';
 import { I18nTool, I18n } from '@arpadroid/i18n';
 const { arpaElementI18n } = I18nTool;
 
@@ -197,6 +199,10 @@ class ArpaElement extends HTMLElement {
      */
     getZone(name) {
         return getZone(this, name);
+    }
+
+    getClassName() {
+        return this._config.className || this.getAttribute('class')?.split(' ')[0];
     }
 
     /**
@@ -525,6 +531,16 @@ class ArpaElement extends HTMLElement {
         if (content) {
             this.innerHTML = content;
         }
+    }
+
+    /**
+     * Renders a child element.
+     * @param {string} name
+     * @param {CustomElementChildOptionsType} [options]
+     * @returns {string}
+     */
+    renderChild(name, options) {
+        return renderChild(this, name, options);
     }
 
     /**

@@ -35,8 +35,8 @@ class Tooltip extends ArpaElement {
     render() {
         this.innerHTML = '';
         if (!this._childNodes?.length) {
-            this.remove();
-            return;
+            // this.remove();
+            // return;
         }
         this.classList.add('tooltip', `tooltip--${this.getPosition()}`);
         const text = this.getProperty('text');

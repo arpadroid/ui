@@ -1,5 +1,6 @@
 :root {
     --color-terminal-task: #b7f2ff;
+    --color-terminal-subtask: #8fc4cf;
     --color-terminal-dep: #d9b4fe;
     --color-terminal-pkg: #a020f0;
     --color2: #1e90ff;
