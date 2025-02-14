@@ -2,7 +2,7 @@
  * @typedef {import('../tooltip/tooltip').default} Tooltip
  * @typedef {import('./iconButton.types').IconButtonConfigType} IconButtonConfigType
  */
-import { attr, attrString, getSafeHtmlId, mergeObjects, handleZones } from '@arpadroid/tools';
+import { attr, attrString, getSafeHtmlId, mergeObjects, handleZones, renderNode } from '@arpadroid/tools';
 import { zoneMixin, getProperty, hasProperty, hasZone } from '@arpadroid/tools';
 const html = String.raw;
 
@@ -39,6 +39,14 @@ class IconButton extends HTMLButtonElement {
         }
     }
 
+    /**
+     * Handles a lost zone.
+     * @param {import('@arpadroid/tools').ZoneToolPlaceZoneType} event - The event object.
+     */
+    _onLostZone({ zoneName, zone }) {
+        zone && zoneName === 'tooltip-content' && this.setLabel(zone.innerHTML);
+    }
+
     handleVariant() {
         const variant = this.getVariant();
         if (variant === 'delete') {
@@ -60,7 +68,8 @@ class IconButton extends HTMLButtonElement {
     }
 
     hasTooltip() {
-        return hasProperty(this, 'label') || hasZone(this, 'tooltip-content');
+        const tooltipParent = this.closest('arpa-tooltip');
+        return !tooltipParent && (hasProperty(this, 'label') || hasZone(this, 'tooltip-content'));
     }
 
     getClassNames() {
@@ -102,7 +111,12 @@ class IconButton extends HTMLButtonElement {
      * @param {string} label
      */
     setLabel(label) {
-        this.tooltip?.setContent(label);
+        if (this.tooltip) {
+            this.tooltip?.setContent(label);
+        } else {
+            this.tooltip = renderNode(this.renderTooltip());
+            this.tooltip && this.appendChild(this.tooltip);
+        }
     }
 
     renderTooltip() {
