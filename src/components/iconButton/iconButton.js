@@ -26,10 +26,7 @@ class IconButton extends HTMLButtonElement {
     }
 
     connectedCallback() {
-        attr(this, {
-            'aria-label': this.getLabel().toString(),
-            type: 'button'
-        });
+        attr(this, { type: 'button' });
         this.handleVariant();
         this.classList.add(...this.getClassNames());
         this.render();
@@ -42,9 +39,13 @@ class IconButton extends HTMLButtonElement {
     /**
      * Handles a lost zone.
      * @param {import('@arpadroid/tools').ZoneToolPlaceZoneType} event - The event object.
+     * @returns {boolean | undefined} Whether the zone was handled.
      */
     _onLostZone({ zoneName, zone }) {
-        zone && zoneName === 'tooltip-content' && this.setLabel(zone.innerHTML);
+        if (zone && zoneName === 'tooltip-content') {
+            this.setLabel(zone.innerHTML);
+            return true;
+        }
     }
 
     handleVariant() {
@@ -81,7 +82,11 @@ class IconButton extends HTMLButtonElement {
     }
 
     getLabel() {
-        return getProperty(this, 'label') || getProperty(this, 'aria-label') || '';
+        return getProperty(this, 'label') || '';
+    }
+
+    getAriaLabel() {
+        return this.getAttribute('aria-label') || this.getLabel().toString();
     }
 
     getIcon() {
