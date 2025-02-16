@@ -107,7 +107,9 @@ class ArpaElement extends HTMLElement {
         delete attr['template-id'];
         const payload = this.getTemplateVars();
         for (const key of Object.keys(attr)) {
-            attr[key] = processTemplate(attr[key], payload);
+            if (typeof attr[key] === 'string') {
+                attr[key] = processTemplate(attr[key], payload);
+            }
         }
         return attr;
     }
