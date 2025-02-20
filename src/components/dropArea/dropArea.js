@@ -2,12 +2,11 @@
  * @typedef {import('./dropArea.types').DropAreaConfigType} DropAreaConfigType
  * @typedef {import('@arpadroid/tools').ObserverType} ObserverType
  */
-
-import { eventContainsFiles, mergeObjects, render, observerMixin, dummySignal, dummyListener } from '@arpadroid/tools';
+import { eventContainsFiles, mergeObjects, render, observerMixin } from '@arpadroid/tools';
+import { dummySignal, dummyListener, defineCustomElement } from '@arpadroid/tools';
 import ArpaElement from '../arpaElement/arpaElement.js';
 
 const html = String.raw;
-
 class DropArea extends ArpaElement {
     /////////////////////////
     // #region INITIALIZATION
@@ -207,6 +206,6 @@ class DropArea extends ArpaElement {
     // #endregion
 }
 
-customElements.define('drop-area', DropArea);
+defineCustomElement('drop-area', DropArea);
 
 export default DropArea;

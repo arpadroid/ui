@@ -3,7 +3,7 @@
  * @typedef {import('./iconButton.types').IconButtonConfigType} IconButtonConfigType
  */
 import { attr, attrString, getSafeHtmlId, mergeObjects, handleZones, renderNode } from '@arpadroid/tools';
-import { zoneMixin, getProperty, hasProperty, hasZone } from '@arpadroid/tools';
+import { zoneMixin, getProperty, hasProperty, hasZone, defineCustomElement } from '@arpadroid/tools';
 const html = String.raw;
 
 class IconButton extends HTMLButtonElement {
@@ -138,6 +138,6 @@ class IconButton extends HTMLButtonElement {
     }
 }
 
-customElements.define('icon-button', IconButton, { extends: 'button' });
+defineCustomElement('icon-button', IconButton, { extends: 'button' });
 
 export default IconButton;

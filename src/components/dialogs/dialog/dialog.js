@@ -3,7 +3,7 @@
  */
 
 import ArpaElement from '../../arpaElement/arpaElement.js';
-import { observerMixin, renderNode, attrString, dummySignal } from '@arpadroid/tools';
+import { observerMixin, renderNode, attrString, dummySignal, defineCustomElement } from '@arpadroid/tools';
 
 const html = String.raw;
 class Dialog extends ArpaElement {
@@ -234,6 +234,6 @@ class Dialog extends ArpaElement {
     ////////////////////////////
 }
 
-customElements.define(Dialog.prototype.getTagName(), Dialog);
+defineCustomElement(Dialog.prototype.getTagName(), Dialog);
 
 export default Dialog;

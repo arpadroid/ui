@@ -4,7 +4,7 @@
  * @typedef {import('./components/pagerItem/pagerItem.js').default} PagerItem
  * @typedef {import('../pager/components/pagerItem/pagerItem.types').PagerItemConfigType} PagerItemConfigType
  */
-import { getURLParam, attrString, renderNode, editURL } from '@arpadroid/tools';
+import { getURLParam, attrString, renderNode, editURL, defineCustomElement } from '@arpadroid/tools';
 import ArpaElement from '../arpaElement/arpaElement.js';
 
 const html = String.raw;
@@ -405,6 +405,6 @@ class Pager extends ArpaElement {
     // #endregion EVENTS
 }
 
-customElements.define('arpa-pager', Pager);
+defineCustomElement('arpa-pager', Pager);
 
 export default Pager;

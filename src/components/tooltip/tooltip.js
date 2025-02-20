@@ -1,4 +1,4 @@
-import { resolveNode } from '@arpadroid/tools';
+import { defineCustomElement, resolveNode } from '@arpadroid/tools';
 import ArpaElement from '../arpaElement/arpaElement.js';
 
 const html = String.raw;
@@ -87,6 +87,6 @@ class Tooltip extends ArpaElement {
     }
 }
 
-customElements.define('arpa-tooltip', Tooltip);
+defineCustomElement('arpa-tooltip', Tooltip);
 
 export default Tooltip;

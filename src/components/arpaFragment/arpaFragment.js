@@ -1,4 +1,4 @@
-import { getAttributes, attrString } from '@arpadroid/tools';
+import { getAttributes, attrString, defineCustomElement } from '@arpadroid/tools';
 
 class ArpaFragment extends HTMLElement {
     constructor() {
@@ -18,6 +18,6 @@ class ArpaFragment extends HTMLElement {
     }
 }
 
-customElements.define('arpa-fragment', ArpaFragment);
+defineCustomElement('arpa-fragment', ArpaFragment);
 
 export default ArpaFragment;

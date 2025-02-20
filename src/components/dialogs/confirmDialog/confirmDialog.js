@@ -1,6 +1,7 @@
 /**
  * @typedef {import('./confirmDialog.types.js').ConfirmDialogConfigType} ConfirmDialogConfigType
  */
+import { defineCustomElement } from '@arpadroid/tools';
 import Dialog from '../dialog/dialog.js';
 
 const html = String.raw;
@@ -96,6 +97,6 @@ class ConfirmDialog extends Dialog {
     }
 }
 
-customElements.define('confirm-dialog', ConfirmDialog);
+defineCustomElement('confirm-dialog', ConfirmDialog);
 
 export default ConfirmDialog;

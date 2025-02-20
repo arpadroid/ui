@@ -6,6 +6,7 @@ export type ArpaElementConfigType = {
     variant?: string;
     classNames?: string[];
     attributes?: Record<string, string>;
+    zoneSelector?: string;
 };
 
 // declare global {

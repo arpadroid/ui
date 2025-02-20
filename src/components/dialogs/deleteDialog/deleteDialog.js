@@ -1,5 +1,5 @@
 import ConfirmDialog from '../confirmDialog/confirmDialog.js';
-import { mergeObjects } from '@arpadroid/tools';
+import { defineCustomElement, mergeObjects } from '@arpadroid/tools';
 class DeleteDialog extends ConfirmDialog {
     ////////////////////////////
     // #region Initialization
@@ -24,6 +24,6 @@ class DeleteDialog extends ConfirmDialog {
     }
 }
 
-customElements.define('delete-dialog', DeleteDialog);
+defineCustomElement('delete-dialog', DeleteDialog);
 
 export default DeleteDialog;

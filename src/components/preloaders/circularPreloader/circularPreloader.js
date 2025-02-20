@@ -1,5 +1,5 @@
 import ArpaElement from '../../arpaElement/arpaElement.js';
-import { appendNodes } from '@arpadroid/tools';
+import { appendNodes, defineCustomElement } from '@arpadroid/tools';
 const html = String.raw;
 class CircularPreloader extends ArpaElement {
     getDefaultConfig() {
@@ -44,6 +44,6 @@ class CircularPreloader extends ArpaElement {
     }
 }
 
-customElements.define('circular-preloader', CircularPreloader);
+defineCustomElement('circular-preloader', CircularPreloader);
 
 export default CircularPreloader;

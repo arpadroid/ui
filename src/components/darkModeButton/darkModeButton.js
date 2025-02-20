@@ -1,3 +1,4 @@
+import { defineCustomElement } from '@arpadroid/tools';
 import IconButton from '../iconButton/iconButton';
 
 class DarkModeButton extends IconButton {
@@ -52,6 +53,6 @@ class DarkModeButton extends IconButton {
     }
 }
 
-customElements.define('dark-mode-button', DarkModeButton, { extends: 'button' });
+defineCustomElement('dark-mode-button', DarkModeButton, { extends: 'button' });
 
 export default DarkModeButton;

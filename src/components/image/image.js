@@ -5,7 +5,7 @@
  * @typedef {import('../tooltip/tooltip.js').default} Tooltip
  * @typedef {import('../icon/icon.js').default} Icon
  */
-import { attrString, classNames, attr, mergeObjects } from '@arpadroid/tools';
+import { attrString, classNames, attr, mergeObjects, defineCustomElement } from '@arpadroid/tools';
 import { lazyLoad as lazyLoader, clearLazyImage, hasLoadedSource } from '@arpadroid/tools';
 import { editURL, mapHTML, eventContainsFiles, addCssRule } from '@arpadroid/tools';
 import ArpaElement from '../arpaElement/arpaElement.js';
@@ -688,6 +688,6 @@ class ArpaImage extends ArpaElement {
     }
 }
 
-customElements.define('arpa-image', ArpaImage);
+defineCustomElement('arpa-image', ArpaImage);
 
 export default ArpaImage;

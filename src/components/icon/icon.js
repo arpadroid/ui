@@ -1,3 +1,5 @@
+import { defineCustomElement } from '@arpadroid/tools';
+
 class Icon extends HTMLElement {
     constructor() {
         super();
@@ -18,6 +20,6 @@ class Icon extends HTMLElement {
     }
 }
 
-customElements.define('arpa-icon', Icon);
+defineCustomElement('arpa-icon', Icon);
 
 export default Icon;

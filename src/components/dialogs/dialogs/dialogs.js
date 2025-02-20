@@ -3,7 +3,7 @@
  * @typedef {import('../dialog/dialog.types.js').DialogConfigType} DialogConfigType
  */
 import ArpaElement from '../../arpaElement/arpaElement.js';
-import { isObject, renderNode, attrString } from '@arpadroid/tools';
+import { isObject, renderNode, attrString, defineCustomElement } from '@arpadroid/tools';
 
 const html = String.raw;
 class Dialogs extends ArpaElement {
@@ -74,6 +74,7 @@ class Dialogs extends ArpaElement {
         dialog?.close();
     }
 }
-customElements.define('arpa-dialogs', Dialogs);
+
+defineCustomElement('arpa-dialogs', Dialogs);
 
 export default Dialogs;

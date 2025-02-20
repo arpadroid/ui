@@ -7,7 +7,7 @@
 import { getAttributes, dashedToCamel, mergeObjects, renderNode, processTemplate } from '@arpadroid/tools';
 import { handleZones, zoneMixin, hasZone, getZone, attr, setNodes, canRender } from '@arpadroid/tools';
 import { getProperty, hasProperty, getArrayProperty, hasContent, onDestroy, bind } from '@arpadroid/tools';
-import { renderChild } from '@arpadroid/tools';
+import { renderChild, defineCustomElement } from '@arpadroid/tools';
 import { I18nTool, I18n } from '@arpadroid/i18n';
 const { arpaElementI18n } = I18nTool;
 
@@ -578,6 +578,6 @@ class ArpaElement extends HTMLElement {
     // #endregion
 }
 
-customElements.get('arpa-element') || customElements.define('arpa-element', ArpaElement);
+defineCustomElement('arpa-element', ArpaElement);
 
 export default ArpaElement;

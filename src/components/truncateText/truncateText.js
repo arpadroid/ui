@@ -1,6 +1,6 @@
 /* eslint-disable sonarjs/no-duplicate-string */
 import ArpaElement from '../arpaElement/arpaElement.js';
-import { appendNodes } from '@arpadroid/tools';
+import { appendNodes, defineCustomElement } from '@arpadroid/tools';
 /**
  * @typedef {import('./truncateText.types').TruncateTextConfigType } TruncateTextConfigType
  */
@@ -160,6 +160,6 @@ class TruncateText extends ArpaElement {
     // #endregion
 }
 
-customElements.define('truncate-text', TruncateText);
+defineCustomElement('truncate-text', TruncateText);
 
 export default TruncateText;

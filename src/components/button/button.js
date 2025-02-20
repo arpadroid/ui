@@ -1,4 +1,4 @@
-import { appendNodes, processTemplate } from '@arpadroid/tools';
+import { appendNodes, defineCustomElement, processTemplate } from '@arpadroid/tools';
 
 const html = String.raw;
 class Button extends HTMLButtonElement {
@@ -34,5 +34,7 @@ class Button extends HTMLButtonElement {
         this.contentNode && children && appendNodes(this.contentNode, children);
     }
 }
-customElements.define('arpa-button', Button, { extends: 'button' });
+
+defineCustomElement('arpa-button', Button, { extends: 'button' });
+
 export default Button;
