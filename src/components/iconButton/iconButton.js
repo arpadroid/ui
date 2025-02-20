@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-duplicate-string */
 /**
  * @typedef {import('../tooltip/tooltip').default} Tooltip
  * @typedef {import('./iconButton.types').IconButtonConfigType} IconButtonConfigType
@@ -80,7 +81,7 @@ class IconButton extends HTMLButtonElement {
     getVariant() {
         return getProperty(this, 'variant');
     }
-
+    
     getLabel() {
         return getProperty(this, 'label') || '';
     }
@@ -99,6 +100,10 @@ class IconButton extends HTMLButtonElement {
         this.innerHTML = html`${iconHTML}${this.renderTooltip()}`;
         /** @type {Tooltip | null} */
         this.tooltip = this.querySelector('arpa-tooltip');
+        const label = /** @type {string} */ (this.getLabel());
+        if (!this.hasAttribute('aria-label') && label) {
+            this.setAttribute('aria-label', label);
+        }
         handleZones();
     }
 
