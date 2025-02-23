@@ -1,5 +1,5 @@
-import copy from './node_modules/@arpadroid/arpadroid/node_modules/rollup-plugin-copy/dist/index.commonjs.js';
-import { getBuild } from '@arpadroid/arpadroid/src/rollup/builds/rollup-builds.mjs';
+import copy from './node_modules/@arpadroid/module/node_modules/rollup-plugin-copy/dist/index.commonjs.js';
+import { getBuild } from '@arpadroid/module/src/rollup/builds/rollup-builds.mjs';
 const { build, appBuild } = getBuild('ui', 'uiComponent');
 appBuild.plugins.push(
     copy({

@@ -2,20 +2,14 @@
     "name": "@arpadroid/ui",
     "version": "1.0.1",
     "description": "A UI library of web components",
-    "exports": {
-        ".": "./dist/arpadroid-ui.js",
-        "./objectTool": {
-            "import": "./node_modules/@arpadroid/tools/src/objectTool/objectTool.js",
-            "types": "./node_modules/@arpadroid/tools/dist/@types/objectTool/objectTool.d.ts"
-        }
-    },
+    "exports": "./dist/arpadroid-ui.js",
     "types": "./dist/@types/types.compiled.d.ts",
     "type": "module",
     "scripts": {
-        "build": "node ./node_modules/@arpadroid/arpadroid/scripts/build-project.mjs --project=ui --minify",
+        "build": "node ./node_modules/@arpadroid/module/scripts/build-project.mjs --project=ui --minify",
         "prepublish": "npm run build",
         "storybook": "npm run build -- --storybook=6001 --watch",
-        "test": "node ./node_modules/@arpadroid/arpadroid/scripts/test-project.mjs --project=ui --storybook --jest --port=6001"
+        "test": "node ./node_modules/@arpadroid/module/scripts/test-project.mjs --project=ui --storybook --jest --port=6001"
     },
     "repository": {
         "type": "git",
@@ -33,7 +27,7 @@
     },
     "homepage": "https://github.com/arpadroid/ui#readme",
     "devDependencies": {
-        "@arpadroid/arpadroid": "file:../arpadroid",
+        "@arpadroid/module": "file:../module",
         "@arpadroid/stylesheet-bundler": "file:../stylesheet-bundler",
         "@babel/core": "^7.23.9",
         "@babel/plugin-syntax-import-assertions": "^7.23.3",

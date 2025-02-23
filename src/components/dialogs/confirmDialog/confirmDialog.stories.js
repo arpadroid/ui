@@ -1,5 +1,5 @@
 /* eslint-disable sonarjs/no-duplicate-string */
-import { action } from '@arpadroid/arpadroid/node_modules/@storybook/addon-actions';
+import { action } from '@arpadroid/module/node_modules/@storybook/addon-actions';
 import { waitFor, expect, within, fn } from '@storybook/test';
 import DialogStory from '../dialog/dialog.stories';
 import { renderDialog } from '../dialog/dialogStoryUtil';
