@@ -1,5 +1,9 @@
 const config = {
     buildTypes: true,
+    logo: `           ┓    • ┓    •
+  ┏┓┏┓┏┓┏┓┏┫┏┓┏┓┓┏┫  ┓┏┓
+  ┗┻┛ ┣┛┗┻┗┻┛ ┗┛┗┗┻  ┗┻┗
+------┛--------------------`,
     storybook: {
         preview: {
             parameters: {

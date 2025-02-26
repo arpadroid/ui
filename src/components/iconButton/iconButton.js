@@ -114,6 +114,7 @@ class IconButton extends HTMLButtonElement {
     setIcon(icon) {
         const iconNode = this.querySelector('arpa-icon');
         iconNode && (iconNode.innerHTML = icon);
+        this.setAttribute('icon', icon);
     }
 
     /**
