@@ -3,7 +3,7 @@ import { waitFor, expect, within } from '@storybook/test';
 
 const html = String.raw;
 const ButtonStory = {
-    title: 'Buttons/Button',
+    title: 'UI/Buttons/Button',
     tags: [],
     playSetup: async canvasElement => {
         const canvas = within(canvasElement);

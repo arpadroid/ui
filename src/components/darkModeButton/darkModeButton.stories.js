@@ -3,7 +3,7 @@ import { waitFor, expect, within } from '@storybook/test';
 
 const html = String.raw;
 const DarkModeButtonStory = {
-    title: 'Buttons/DarkModeButton',
+    title: 'UI/Buttons/DarkModeButton',
     tags: [],
     playSetup: async canvasElement => {
         const canvas = within(canvasElement);

@@ -2,7 +2,7 @@ import { attrString } from '@arpadroid/tools';
 import { waitFor, expect, within } from '@storybook/test';
 const html = String.raw;
 const DropAreaStory = {
-    title: 'Components/Drop Area',
+    title: 'UI/Components/Drop Area',
     tags: [],
     parameters: {
         layout: 'padded'

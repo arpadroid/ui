@@ -7,7 +7,7 @@ import { waitFor, userEvent, fireEvent, expect, within } from '@storybook/test';
 
 const html = String.raw;
 const PagerStory = {
-    title: 'Components/Pager',
+    title: 'UI/Components/Pager',
     tags: [],
     getArgs: () => {
         return {

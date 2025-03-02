@@ -7,7 +7,7 @@ const html = String.raw;
 const category = 'Props';
 
 const DialogStory = {
-    title: 'Dialogs/Dialog',
+    title: 'UI/Dialogs/Dialog',
     tags: [],
     args: {
         id: 'dialog',

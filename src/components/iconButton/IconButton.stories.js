@@ -2,7 +2,7 @@ import { attrString } from '@arpadroid/tools';
 import { waitFor, expect, within } from '@storybook/test';
 const html = String.raw;
 const ButtonStory = {
-    title: 'Buttons/Icon Button',
+    title: 'UI/Buttons/Icon Button',
     tags: [],
     getArgs: () => ({ variant: 'primary', icon: 'play_arrow', label: 'Click me!', tooltipPosition: 'right' }),
     getArgTypes: (category = 'IconButton Props') => ({

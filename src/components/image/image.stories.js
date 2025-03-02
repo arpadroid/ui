@@ -2,7 +2,7 @@ import { attrString } from '@arpadroid/tools';
 import { waitFor, expect, within } from '@storybook/test';
 const html = String.raw;
 const ImageStory = {
-    title: 'Components/Image',
+    title: 'UI/Components/Image',
     tags: [],
     getArgs: () => ({
         src: '/api/image/convert?width=[width]&height=[height]&quality=[quality]&source=/cmsx/assets/hqrvutmy_museovaquero_assets/gallery/images/499.jpg',

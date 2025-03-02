@@ -24,7 +24,10 @@ class DarkModeButton extends IconButton {
      */
     _onClick() {
         const styleNode = document.getElementById('dark-styles');
-        if (!(styleNode instanceof HTMLStyleElement)) return;
+        if (!(styleNode instanceof HTMLLinkElement)) {
+            console.error('Dark mode styles not found.');
+            return;
+        }
         if (styleNode.disabled) {
             styleNode.removeAttribute('disabled');
             this.setIcon(this.getIconLight());

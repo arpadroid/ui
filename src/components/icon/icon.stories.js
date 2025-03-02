@@ -2,7 +2,7 @@ import { attrString } from '@arpadroid/tools';
 import { waitFor, expect, within } from '@storybook/test';
 const html = String.raw;
 const IconStory = {
-    title: 'Components/Icon',
+    title: 'UI/Components/Icon',
     tags: [],
     getArgs: () => ({ icon: 'sailing' }),
     getArgTypes: (category = 'Icon Props') => ({

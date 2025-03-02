@@ -2,7 +2,7 @@ import { attrString } from '@arpadroid/tools';
 import { waitFor, expect, within } from '@storybook/test';
 const html = String.raw;
 const TruncateTextStory = {
-    title: 'Components/Truncate Text',
+    title: 'UI/Components/Truncate Text',
     tags: [],
     getArgs: () => ({
         maxLength: 40,

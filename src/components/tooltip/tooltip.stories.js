@@ -2,7 +2,7 @@ import { attrString } from '@arpadroid/tools';
 import { waitFor, expect, within } from '@storybook/test';
 const html = String.raw;
 const TooltipStory = {
-    title: 'Components/Tooltip',
+    title: 'UI/Components/Tooltip',
     tags: [],
     getArgTypes: (category = 'Tooltip Props') => ({
         text: { control: { type: 'text' }, table: { category } },
