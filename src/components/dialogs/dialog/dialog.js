@@ -7,7 +7,7 @@ import { observerMixin, renderNode, attrString, dummySignal, defineCustomElement
 
 const html = String.raw;
 class Dialog extends ArpaElement {
-    /** @type {DialogConfigType} */ // @ts-ignore
+    /** @type {DialogConfigType} */
     _config = this._config;
 
     ////////////////////////////

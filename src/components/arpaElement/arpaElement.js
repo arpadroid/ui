@@ -354,8 +354,8 @@ class ArpaElement extends HTMLElement {
             this._childNodes = [...content.childNodes];
         }
         if (contentContainer instanceof HTMLElement) {
-            // @ts-ignore
-            setNodes(contentContainer, this.getChildElements());
+            const childElements = /** @type {Element[]} */ (this.getChildElements());
+            setNodes(contentContainer, childElements);
         }
     }
 

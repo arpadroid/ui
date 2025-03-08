@@ -6,7 +6,7 @@ import Dialog from '../dialog/dialog.js';
 
 const html = String.raw;
 class ConfirmDialog extends Dialog {
-    /** @type {ConfirmDialogConfigType} */ //@ts-ignore
+    /** @type {ConfirmDialogConfigType} */
     _config = this._config;
     ////////////////////////////
     // #region Initialization

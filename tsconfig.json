@@ -3,7 +3,14 @@
     "compilerOptions": {
         // "tsBuildInfoFile": ".tsbuildinfo"
         "rootDir": "./src",
-        "outDir": "./.tmp/.types"
+        "outDir": "./.tmp/.types",
+        "paths": {
+            "@storybook/test": ["./node_modules/@arpadroid/module/node_modules/@storybook/test"],
+            "rollup-plugin-copy": ["./node_modules/@arpadroid/module/node_modules/rollup-plugin-copy"],
+            "@storybook/web-components": [
+                "./node_modules/@arpadroid/module/node_modules/@storybook/web-components"
+            ]
+        }
     },
     "include": ["src/**/*"],
     "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.stories.js", "**/*.test.js", "./dist/@types"]

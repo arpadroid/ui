@@ -9,7 +9,7 @@ import ArpaElement from '../arpaElement/arpaElement.js';
 
 const html = String.raw;
 class Pager extends ArpaElement {
-    /** @type {PagerConfigType} */ // @ts-ignore
+    /** @type {PagerConfigType} */
     _config = this._config;
     //////////////////////////
     // #region INITIALIZATION
