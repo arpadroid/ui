@@ -5,7 +5,7 @@
         "rootDir": "./src",
         "outDir": "./.tmp/.types",
         "paths": {
-            "@storybook/test": ["./node_modules/@arpadroid/module/node_modules/@storybook/test"],
+            "@storybook/test": ["./node_modules/@arpadroid/module/node_modules/@storybook/test/dist/index.d.ts"],
             "rollup-plugin-copy": ["./node_modules/@arpadroid/module/node_modules/rollup-plugin-copy"],
             "@storybook/web-components": [
                 "./node_modules/@arpadroid/module/node_modules/@storybook/web-components"

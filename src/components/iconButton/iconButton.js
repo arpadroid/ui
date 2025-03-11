@@ -81,7 +81,7 @@ class IconButton extends HTMLButtonElement {
     getVariant() {
         return getProperty(this, 'variant');
     }
-    
+
     getLabel() {
         return getProperty(this, 'label') || '';
     }
@@ -125,17 +125,17 @@ class IconButton extends HTMLButtonElement {
         if (this.tooltip) {
             this.tooltip?.setContent(label);
         } else {
-            this.tooltip = renderNode(this.renderTooltip());
+            this.tooltip = renderNode(this.renderTooltip(label));
             this.tooltip && this.appendChild(this.tooltip);
         }
     }
 
-    renderTooltip() {
+    renderTooltip(label = this.getLabel()) {
         if (!this.hasTooltip()) return '';
         const id = this.getId();
         const attr = attrString({ position: this.getTooltipPosition(), handler: id && `#${id}` });
         return html`<arpa-tooltip ${attr}>
-            <zone name="tooltip-content">${this.getLabel()}</zone>
+            <zone name="tooltip-content">${label}</zone>
         </arpa-tooltip>`;
     }
 
