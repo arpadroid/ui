@@ -1,15 +1,18 @@
 import { defineCustomElement } from '@arpadroid/tools';
 import IconButton from '../iconButton/iconButton';
-
+import { I18nTool, I18n } from '@arpadroid/i18n';
+const { arpaElementI18n } = I18nTool;
 class DarkModeButton extends IconButton {
     getDefaultConfig() {
         this._onClick = this._onClick.bind(this);
+        this.i18nKey = 'gallery.controls.darkMode';
         return {
             className: 'darkModeButton',
             icon: 'dark_mode',
             iconLight: 'light_mode',
-            label: 'Dark mode',
-            labelLight: 'Light mode'
+            label: arpaElementI18n(this, 'lblDarkMode', {}, {}),
+            labelText: I18n.getText('lblDarkMode'),
+            labelLight: arpaElementI18n(this, 'lblLightMode', {}, {})
         };
     }
 

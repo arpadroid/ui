@@ -24,6 +24,18 @@
     }
 }
 
+.tooltip__button,
+.tooltip {
+    &:hover,
+    &:focus {
+        .tooltip__content {
+            display: block;
+        }
+    }
+}
+
+.tooltip__button:focus,
+.tooltip__button:hover,
 .tooltip__button:focus + .tooltip__content,
 .tooltip:hover .tooltip__content {
     display: block;

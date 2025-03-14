@@ -10,6 +10,7 @@ class Tooltip extends ArpaElement {
     initializeProperties() {
         super.initializeProperties();
         this.handler = this.getHandler();
+        this.handler?.classList?.add('tooltip__button');
         return true;
     }
 
