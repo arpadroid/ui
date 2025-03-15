@@ -553,9 +553,6 @@ class ArpaElement extends HTMLElement {
      */
     renderTemplate(template = this._getTemplate(), vars = this.getTemplateVars()) {
         for (const tplVar of Object.keys(vars)) {
-            if (typeof vars[tplVar] === 'function') {
-                vars[tplVar] = vars[tplVar]();
-            }
             if (typeof vars[tplVar] === 'string') {
                 vars[tplVar] = processTemplate(vars[tplVar], vars);
             }
