@@ -245,18 +245,17 @@ class ArpaElement extends HTMLElement {
     /**
      * Sets the configuration for the element.
      * @param {Record<string, unknown>} [config]
-     * @returns {Record<string, unknown>}
+     * @returns {ArpaElementConfigType}
      */
     getDefaultConfig(config = {}) {
-        return mergeObjects(
-            {
-                removeEmptyZoneNodes: true,
-                className: '',
-                variant: undefined,
-                classNames: []
-            },
-            config
-        );
+        /** @type {ArpaElementConfigType} */
+        const defaultConfig = {
+            removeEmptyZoneNodes: true,
+            className: '',
+            variant: undefined,
+            classNames: []
+        };
+        return mergeObjects(defaultConfig, config);
     }
 
     getVariant() {

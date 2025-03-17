@@ -1,3 +1,6 @@
+/**
+ * @typedef {import('./tooltip.types.js').TooltipConfigType} TooltipConfigType
+ */
 import { defineCustomElement, resolveNode } from '@arpadroid/tools';
 import ArpaElement from '../arpaElement/arpaElement.js';
 
@@ -15,18 +18,20 @@ class Tooltip extends ArpaElement {
     }
 
     getDefaultConfig() {
-        return {
+        /** @type {TooltipConfigType} */
+        const config = {
             text: '',
             handler: '',
             icon: '',
             label: '',
             position: 'top'
         };
+        return super.getDefaultConfig(config);
     }
 
     getHandler() {
         const handler = this.getProperty('handler');
-        return (handler && resolveNode(handler, this)) || this.closest('button, a');
+        return (handler && resolveNode(handler)) || this.closest('button, a');
     }
 
     getPosition() {
@@ -47,11 +52,13 @@ class Tooltip extends ArpaElement {
                 ${text}
             </span>
         `;
+
         this.innerHTML = template;
     }
 
     _initializeNodes() {
         this.contentNode = this.querySelector('.tooltip__content');
+        this._childNodes && this.contentNode?.append(...this._childNodes);
         this.button = this.querySelector('.tooltip__button');
     }
 

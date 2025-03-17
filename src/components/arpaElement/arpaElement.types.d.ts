@@ -1,4 +1,4 @@
-// import { ZoneType } from '@arpadroid/tools';
+import { ZoneFilterType } from '@arpadroid/tools';
 
 export type ArpaElementConfigType = {
     removeEmptyZoneNodes?: boolean;
@@ -7,6 +7,7 @@ export type ArpaElementConfigType = {
     classNames?: string[];
     attributes?: Record<string, string>;
     zoneSelector?: string;
+    zoneFilter?: ZoneFilterType;
 };
 
 // declare global {

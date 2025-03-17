@@ -20,7 +20,8 @@ class Dialog extends ArpaElement {
      */
     getDefaultConfig() {
         this.bind('open', 'close');
-        return super.getDefaultConfig({
+        /** @type {DialogConfigType} */
+        const config = {
             open: false,
             persist: false,
             variant: 'default',
@@ -28,7 +29,8 @@ class Dialog extends ArpaElement {
             attributes: {
                 role: 'dialog'
             }
-        });
+        };
+        return /** @type {DialogConfigType} */ (super.getDefaultConfig(config));
     }
 
     _preInitialize() {
