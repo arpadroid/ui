@@ -22,6 +22,10 @@ class Pager extends ArpaElement {
         this.onLinkClick = this.onLinkClick.bind(this);
     }
 
+    getId() {
+        return this.getProperty('id') || 'pager';
+    }
+
     /**
      * Returns the default configuration.
      * @returns {PagerConfigType}
@@ -29,6 +33,7 @@ class Pager extends ArpaElement {
     getDefaultConfig() {
         this.i18nKey = 'ui.pager';
         return {
+            id: 'pager',
             className: 'pager',
             currentPage: 1,
             totalPages: 1,

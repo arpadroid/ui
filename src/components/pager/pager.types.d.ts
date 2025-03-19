@@ -1,6 +1,7 @@
 import type { PagerItem } from './pager';
 
 export type PagerConfigType = {
+    id?: string;
     className?: string;
     currentPage?: number;
     totalPages?: number;

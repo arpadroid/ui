@@ -71,7 +71,11 @@ class PagerItem extends ArpaElement {
 
     renderInput() {
         this.form = renderNode(
-            html`<form class="pagerItem__form">
+            html`<arpa-form
+                id="pager-item-input--${this.pagerComponent?.getId()}"
+                class="pagerItem__form"
+                variant="mini"
+            >
                 <input
                     class="pagerItem__input"
                     aria-label="Current page"
@@ -82,7 +86,7 @@ class PagerItem extends ArpaElement {
                     min="1"
                     max="${this.pagerComponent?.getTotalPages()}"
                 />
-            </form>`
+            </arpa-form>`
         );
 
         this.form instanceof HTMLElement && (this.input = this.form?.querySelector('input'));
