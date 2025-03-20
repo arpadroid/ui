@@ -1,40 +1,72 @@
-import { appendNodes, defineCustomElement, processTemplate } from '@arpadroid/tools';
+/**
+ * @typedef {import('./button.types').ButtonConfigType} ButtonConfigType
+ */
+import { appendNodes, attrString, classNames, defineCustomElement } from '@arpadroid/tools';
+import ArpaElement from '../arpaElement/arpaElement';
 
 const html = String.raw;
-class Button extends HTMLButtonElement {
-    template = html`
-        <arpa-icon class="button__lhsIcon">{icon}</arpa-icon>
-        <span class="button__content">{content}</span>
-        <arpa-icon class="button__rhsIcon">{iconRight}</arpa-icon>
-    `;
-
-    constructor() {
-        super();
-        this._content = this.innerHTML;
-        this._childNodes = [...this.childNodes];
-        this.render();
+class Button extends ArpaElement {
+    /**
+     * Returns the default configuration for the button.
+     * @returns {ButtonConfigType}
+     */
+    getDefaultConfig() {
+        return {
+            type: 'button'
+        };
     }
 
-    connectedCallback() {
-        !this.getAttribute('type') && this.setAttribute('type', 'button');
+    _preRender() {
+        super._preRender();
+        this.variant = this.getProperty('variant');
+        this.disabled = this.hasAttribute('disabled');
+        this.removeAttribute('disabled');
+        this.removeAttribute('variant');
     }
 
-    update() {
-        this.render();
+    _getTemplate() {
+        return html`<button
+            ${attrString({
+                ariaLabel: this.getProperty('label-text'),
+                class: 'arpaButton',
+                type: this.getProperty('type'),
+                variant: this.variant,
+                disabled: this.disabled
+            })}
+        >
+            {icon}{content}{iconRight}
+        </button>`;
     }
 
-    render() {
-        this.innerHTML = processTemplate(this.template, {
-            content: this.getAttribute('content') || '',
-            icon: this.getAttribute('icon') || '',
-            iconRight: this.getAttribute('icon-right') || ''
-        });
+    getTemplateVars() {
+        return {
+            icon: this.renderIcon('icon', 'button__lhsIcon'),
+            content: this.renderContent(),
+            iconRight: this.renderIcon('icon-right', 'button__rhsIcon')
+        };
+    }
+
+    renderContent() {
+        const content = this.getProperty('content') || '';
+        return html`<span class="button__content">${content}</span>`;
+    }
+
+    renderIcon(iconProp = 'icon', className = '') {
+        const icon = this.getAttribute(iconProp);
+        return icon
+            ? html`<arpa-icon className="${classNames('button__icon', className)}">${icon}</arpa-icon>`
+            : '';
+    }
+
+    async _initializeNodes() {
+        super._initializeNodes();
+        this.button = this.querySelector('button');
+        await this.promise;
         this.contentNode = this.querySelector('.button__content');
-        const children = Array.from(this._childNodes || []).filter(node => node instanceof Node);
-        this.contentNode && children && appendNodes(this.contentNode, children);
+        this.contentNode && appendNodes(this.contentNode, this._childNodes);
     }
 }
 
-defineCustomElement('arpa-button', Button, { extends: 'button' });
+defineCustomElement('arpa-button', Button);
 
 export default Button;

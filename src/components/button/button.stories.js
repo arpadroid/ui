@@ -1,6 +1,6 @@
 import { attrString } from '@arpadroid/tools';
 import { waitFor, expect, within } from '@storybook/test';
-
+const category = 'Button Props';
 const html = String.raw;
 const ButtonStory = {
     title: 'UI/Buttons/Button',
@@ -11,8 +11,11 @@ const ButtonStory = {
         const buttonNode = canvasElement.querySelector('button');
         return { canvas, buttonNode };
     },
-    getArgs: () => ({ content: 'Click me', iconRight: 'send' }),
-    getArgTypes: (category = 'Button Props') => ({
+    args: {
+        content: 'Click me',
+        icon: 'task_alt'
+    },
+    argTypes: {
         content: { control: { type: 'text' }, table: { category } },
         icon: { control: { type: 'text' }, table: { category } },
         iconRight: { control: { type: 'text' }, table: { category } },
@@ -22,18 +25,16 @@ const ButtonStory = {
             control: { type: 'select' },
             table: { category }
         }
-    }),
+    },
     render: args => {
-        return html`<button is="arpa-button" ${attrString(args)}></button>`;
+        const content = args.content;
+        delete args.content;
+        return html`<arpa-button ${attrString(args)}>${content}</arpa-button>`;
     }
 };
 
 export const Default = {
     name: 'Render',
-    parameters: {},
-    argTypes: ButtonStory.getArgTypes(),
-    args: ButtonStory.getArgs(),
-
     play: async ({ canvasElement, step }) => {
         const setup = await ButtonStory.playSetup(canvasElement);
         const { buttonNode } = setup;
@@ -45,9 +46,7 @@ export const Default = {
 
 export const Disabled = {
     name: 'Disabled',
-    parameters: {},
-    argTypes: ButtonStory.getArgTypes(),
-    args: { ...ButtonStory.getArgs(), disabled: true, content: 'Disabled Button' },
+    args: { ...Default.args, disabled: true, content: 'Disabled Button' },
     play: async ({ canvasElement, step }) => {
         const setup = await ButtonStory.playSetup(canvasElement);
         const { buttonNode } = setup;

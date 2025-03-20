@@ -1,22 +1,25 @@
 :root {
     --button-border: 2px solid var(--border-color);
     --button-height: 3rem;
-    --button-padding: 0 0.75rem;
+    --button-padding: 0 1rem 0 0.8rem;
     --button-radius: 12px;
     --button-shadow-active: 2px 2px 5px 0 rgba(0, 0, 0, 0.3);
     --button-shadow: 1px 1px 5px 0 rgba(0, 0, 0, 0.1);
-    --button-weight: 500;
+    --button-weight: 700;
     --button-weight-active: 700;
-    --button-gap: 0.25rem;
-    --button-color: var(--grey-500);
+    --button-gap: 0.4rem;
+    --button-color: var(--grey-700);
+    --button-icon-color: var(--grey-400);
     --button-active-color: var(--grey-500);
     --button-active-outline: none;
     --button-active-icon-color: var(--button-active-color);
     --button-underline-color: var(--grey-200);
+    
 }
 
-button[is='arpa-button']:not([variant='minimal']),
-button[is='submit-button'] {
+.arpaButton:not([variant='minimal']) {
+    --icon-size: 1.2rem;
+
     align-items: center;
     gap: var(--button-gap);
     background-color: var(--color-background);
@@ -33,6 +36,10 @@ button[is='submit-button'] {
         padding-left: 0.5rem;
     }
 
+    arpa-icon {
+        color: var(--button-icon-color);
+        --icon-size: 1.4rem;
+    }
     /**
      * Hover / Focus
      */
@@ -91,6 +98,13 @@ button[is='submit-button'] {
                 background-color: var(--color-tertiary);
             }
         }
+    }
+    &[variant='submit'] {
+        --button-icon-color: var(--purple-dark);
+        --button-border: 2px solid var(--purple-dark);
+        --button-active-color: var(--purple-dark);
+        --button-active-icon-color: var(--purple-dark);
+        --button-underline-color: var(--purple-dark);
     }
 }
 

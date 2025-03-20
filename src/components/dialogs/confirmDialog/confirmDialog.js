@@ -1,5 +1,6 @@
 /**
  * @typedef {import('./confirmDialog.types.js').ConfirmDialogConfigType} ConfirmDialogConfigType
+ * @typedef {import('../../button/button.js').default} Button
  */
 import { defineCustomElement } from '@arpadroid/tools';
 import Dialog from '../dialog/dialog.js';
@@ -34,12 +35,19 @@ class ConfirmDialog extends Dialog {
         };
     }
 
-    _initializeNodes() {
+    async _initializeNodes() {
         super._initializeNodes();
         this.confirmBtn = this.querySelector('.confirmDialog__confirmBtn');
         this.confirmBtn?.addEventListener('click', this.confirm);
+        /** @type {Button | null} */
+        this.cancelBtnComponent = this.querySelector('.confirmDialog__cancelBtn');
+        this._initializeCancelBtn();
+    }
 
-        this.cancelBtn = this.querySelector('.confirmDialog__cancelBtn');
+    async _initializeCancelBtn() {
+        await customElements.whenDefined('arpa-button');
+        await this.cancelBtnComponent?.promise;
+        this.cancelBtn = this.cancelBtnComponent?.button;
         if (this.cancelBtn instanceof HTMLButtonElement) {
             this.cancelBtn?.focus();
             this.cancelBtn.addEventListener('click', this.cancel);
@@ -80,12 +88,8 @@ class ConfirmDialog extends Dialog {
         lblCancel = this.i18n('lblCancel')
     ) {
         const content = html`<div class="dialog__controls">
-            <button class="confirmDialog__cancelBtn" is="arpa-button" icon="${cancelIcon}">
-                ${lblCancel}
-            </button>
-            <button class="confirmDialog__confirmBtn" is="arpa-button" icon="${confirmIcon}">
-                ${lblConfirm}
-            </button>
+            <arpa-button class="confirmDialog__cancelBtn" icon="${cancelIcon}"> ${lblCancel} </arpa-button>
+            <arpa-button class="confirmDialog__confirmBtn" icon="${confirmIcon}"> ${lblConfirm} </arpa-button>
         </div>`;
         return super.renderFooter(content);
     }

@@ -73,7 +73,6 @@ export const Test = {
             expect(button).toBeInTheDocument();
             button.click();
             await waitFor(() => expect(dialogNode).not.toHaveAttribute('open'));
-            
             expect(dialogNode).not.toBeVisible();
             expect(args.onClose).toHaveBeenCalled();
         });
@@ -93,8 +92,8 @@ export const ButtonDialog = {
         open: false
     },
     render: args => {
-        return html` <arpa-dialogs id="button-dialogs"></arpa-dialogs>
-            <button is="arpa-button" variant="primary" id="openDialog">
+        return html`<arpa-dialogs id="button-dialogs"></arpa-dialogs>
+            <arpa-button variant="primary" id="openDialog">
                 Open Dialog
                 <arpa-dialog dialogs-id="button-dialogs" ${attrString(args)}>
                     <zone name="title"> Button Dialog </zone>
@@ -104,7 +103,7 @@ export const ButtonDialog = {
                         the dialogs component. <br />See the usage panel for more information.
                     </zone>
                 </arpa-dialog>
-            </button>`;
+            </arpa-button>`;
     }
 };
 
