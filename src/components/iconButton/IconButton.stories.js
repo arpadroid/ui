@@ -21,7 +21,7 @@ const ButtonStory = {
         }
     }),
     render: args => {
-        return html`<button is="icon-button" ${attrString(args)}></button>`;
+        return html`<icon-button ${attrString(args)}></icon-button>`;
     }
 };
 

@@ -13,12 +13,19 @@ const ButtonStory = {
     },
     args: {
         content: 'Click me',
-        icon: 'task_alt'
+        icon: 'task_alt',
+        tooltip: 'Some tooltip text',
     },
     argTypes: {
         content: { control: { type: 'text' }, table: { category } },
         icon: { control: { type: 'text' }, table: { category } },
         iconRight: { control: { type: 'text' }, table: { category } },
+        tooltip: { control: { type: 'text' }, table: { category } },
+        tooltipPosition: {
+            control: { type: 'select' },
+            options: ['top', 'bottom', 'left', 'right'],
+            table: { category }
+        },
         variant: {
             description: 'The field variant.',
             options: ['primary', 'secondary', 'tertiary', 'danger', 'warning', 'delete'],

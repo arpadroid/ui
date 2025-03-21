@@ -38,7 +38,7 @@
 .tooltip__button:hover,
 .tooltip__button:focus + .tooltip__content,
 .tooltip:hover .tooltip__content {
-    display: block;
+    display: flex;
 }
 
 .tooltip__content,

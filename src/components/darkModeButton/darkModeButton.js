@@ -1,31 +1,28 @@
-import { defineCustomElement } from '@arpadroid/tools';
-import IconButton from '../iconButton/iconButton';
-import { I18nTool, I18n } from '@arpadroid/i18n';
-const { arpaElementI18n } = I18nTool;
+import { defineCustomElement, mergeObjects } from '@arpadroid/tools';
+import IconButton from '../iconButton/iconButton.js';
 class DarkModeButton extends IconButton {
-    getDefaultConfig() {
-        this._onClick = this._onClick.bind(this);
-        this.i18nKey = 'gallery.controls.darkMode';
-        return {
-            className: 'darkModeButton',
-            icon: 'dark_mode',
-            iconLight: 'light_mode',
-            label: arpaElementI18n(this, 'lblDarkMode', {}, {}),
-            labelText: I18n.getText('lblDarkMode'),
-            labelLight: arpaElementI18n(this, 'lblLightMode', {}, {})
-        };
+    _initialize() {
+        super._initialize();
+        this.bind('_onClick');
     }
 
-    connectedCallback() {
-        super.connectedCallback();
-        this.removeEventListener('click', this._onClick);
-        this.addEventListener('click', this._onClick);
+    getDefaultConfig() {
+        this.i18nKey = 'gallery.controls.darkMode';
+        const config = {
+            icon: 'dark_mode',
+            iconLight: 'light_mode',
+            label: this.i18n('lblDarkMode'),
+            labelText: this.i18nText('lblDarkMode'),
+            labelLight: this.i18n('lblLightMode')
+        };
+        return mergeObjects(super.getDefaultConfig(), config);
     }
 
     /**
      * Toggles Dark Mode styles and updates the icon and label when the button is clicked.
      */
     _onClick() {
+        super._onClick();
         const styleNode = document.getElementById('dark-styles');
         if (!(styleNode instanceof HTMLLinkElement)) {
             console.error('Dark mode styles not found.');
@@ -34,11 +31,11 @@ class DarkModeButton extends IconButton {
         if (styleNode.disabled) {
             styleNode.removeAttribute('disabled');
             this.setIcon(this.getIconLight());
-            this.setLabel(this.getLabelLight());
+            this.setTooltip(this.getLabelLight());
         } else {
             styleNode.disabled = true;
             this.setIcon(this.getIcon());
-            this.setLabel(this.getLabel().toString());
+            this.setTooltip(this.getLabel().toString());
         }
     }
 
@@ -47,7 +44,7 @@ class DarkModeButton extends IconButton {
      * @returns {string}
      */
     getLabelLight() {
-        return this.getAttribute('label-light') || this._config.labelLight;
+        return this.getProperty('label-light');
     }
 
     /**
@@ -55,10 +52,10 @@ class DarkModeButton extends IconButton {
      * @returns {string}
      */
     getIconLight() {
-        return this.getAttribute('icon-light') || this._config.iconLight;
+        return this.getProperty('icon-light');
     }
 }
 
-defineCustomElement('dark-mode-button', DarkModeButton, { extends: 'button' });
+defineCustomElement('dark-mode-button', DarkModeButton);
 
 export default DarkModeButton;

@@ -30,7 +30,7 @@ class Tooltip extends ArpaElement {
     }
 
     getHandler() {
-        const handler = this.getProperty('handler');
+        const handler = this.closest('button') || this.getProperty('handler');
         return (handler && resolveNode(handler)) || this.closest('button, a');
     }
 
@@ -40,10 +40,6 @@ class Tooltip extends ArpaElement {
 
     render() {
         this.innerHTML = '';
-        if (!this._childNodes?.length) {
-            // this.remove();
-            // return;
-        }
         this.classList.add('tooltip', `tooltip--${this.getPosition()}`);
         const text = this.getProperty('text');
         const template = html`
@@ -83,14 +79,13 @@ class Tooltip extends ArpaElement {
 
     renderButton() {
         return !this.handler
-            ? html`<button
+            ? html`<icon-button
                   zone="handler"
-                  is="icon-button"
                   class="tooltip__button"
                   type="button"
                   variant="minimal"
                   icon="${this.getProperty('icon')}"
-              ></button>`
+              ></icon-button>`
             : '';
     }
 }

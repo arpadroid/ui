@@ -182,12 +182,11 @@ class Dialog extends ArpaElement {
                 </div>
                 <div class="dialog__headerActions" zone="header-actions">
                     ${(this.canClose() &&
-                        html`<button
+                        html`<icon-button
                             variant="minimal"
-                            is="icon-button"
                             class="dialog__close"
                             icon="close"
-                        ></button>`) ||
+                        ></icon-button>`) ||
                     ''}
                 </div>
             </header>

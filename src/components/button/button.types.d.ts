@@ -7,4 +7,7 @@ export type ButtonConfigType = ArpaElementConfigType & {
     variant?: 'primary' | 'secondary' | 'tertiary' | 'delete' | 'submit';
     type?: 'button' | 'submit' | 'reset';
     labelText?: string;
+    buttonClass?: string;
+    tooltip?: string;
+    tooltipPosition?: 'top' | 'bottom' | 'left' | 'right';
 };
