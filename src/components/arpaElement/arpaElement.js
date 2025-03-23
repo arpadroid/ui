@@ -475,6 +475,7 @@ class ArpaElement extends HTMLElement {
         attributes && attr(this, attributes);
         await this.render();
         await this._initializeNodes();
+        this._onDomReady();
         this._onRenderReadyCallbacks.forEach(callback => typeof callback === 'function' && callback());
         this._onRenderReadyCallbacks = [];
         this._handleZones();
@@ -482,7 +483,6 @@ class ArpaElement extends HTMLElement {
     }
 
     async _initializeNodes() {
-        // abstract method
         return true;
     }
 
@@ -492,6 +492,10 @@ class ArpaElement extends HTMLElement {
 
     _handleZones() {
         handleZones();
+    }
+
+    _onDomReady() {
+        // abstract method
     }
 
     _onRenderComplete() {
