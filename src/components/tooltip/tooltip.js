@@ -52,10 +52,11 @@ class Tooltip extends ArpaElement {
         this.innerHTML = template;
     }
 
-    _initializeNodes() {
+    async _initializeNodes() {
         this.contentNode = this.querySelector('.tooltip__content');
         this._childNodes && this.contentNode?.append(...this._childNodes);
         this.button = this.querySelector('.tooltip__button');
+        return true;
     }
 
     /**

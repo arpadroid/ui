@@ -1,4 +1,3 @@
-/* eslint-disable sonarjs/no-duplicate-string */
 /**
  * @typedef {import('../tooltip/tooltip').default} Tooltip
  * @typedef {import('./iconButton.types').IconButtonConfigType} IconButtonConfigType
@@ -17,6 +16,14 @@ class IconButton extends Button {
 
     renderContent() {
         return '';
+    }
+
+    async _initializeNodes() {
+        await super._initializeNodes();
+        const childNodes = this._childNodes || [];
+        const text = childNodes[0] instanceof Text ? childNodes[0].textContent?.trim() : '';
+        text && this.setIcon(text);
+        return true;
     }
 }
 

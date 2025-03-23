@@ -57,9 +57,17 @@ class Button extends ArpaElement {
      * @param {string} icon - The string defining the icon to display.
      */
     setIcon(icon) {
-        const iconNode = this.icon || this.querySelector('arpa-icon');
-        iconNode && (iconNode.innerHTML = icon);
+        if (typeof icon !== 'string') return;
+        this._config.icon = icon;
         this.setAttribute('icon', icon);
+        const iconNode = this.icon || this.querySelector('arpa-icon');
+
+        if (iconNode) {
+            iconNode.innerHTML = icon;
+        } else {
+            this.icon = renderNode(this.renderIcon());
+            this.button?.appendChild(this.icon);
+        }
     }
 
     /**
@@ -156,7 +164,7 @@ class Button extends ArpaElement {
     }
 
     async _initializeNodes() {
-        super._initializeNodes();
+        await super._initializeNodes();
 
         this.button = this.querySelector('button');
         if (this.variant === 'delete') {
@@ -169,10 +177,10 @@ class Button extends ArpaElement {
         this.tooltip = this.querySelector('arpa-tooltip');
         this.icon = this.querySelector('.button__icon');
 
-        await this.promise;
         this.contentNode = this.querySelector('.button__content');
         this.contentNode && appendNodes(this.contentNode, this._childNodes);
         this._initializeAriaLabel();
+        return true;
     }
 
     async _initializeAriaLabel() {

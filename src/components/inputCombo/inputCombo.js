@@ -160,8 +160,14 @@ class InputCombo {
      */
     _initialize() {
         this._initializeProperties();
-        this._initializeCombo();
-        this.initializeInput();
+        this.initialize();
+    }
+
+    initialize(input = this.input, combo = this.combo) {
+        this.input = input;
+        this.combo = combo;
+        this._initializeCombo(combo);
+        this._initializeInput(input);
     }
 
     /**
@@ -181,11 +187,12 @@ class InputCombo {
 
     /**
      * Initializes the combo element of the InputCombo component.
-     * @private
+     * @param {InputComboNodeType} [combo] - The combo element.
      */
-    _initializeCombo() {
-        this.combo.style.display = 'none';
-        this.combo.addEventListener('keyup', this._onComboKeyUp);
+    _initializeCombo(combo = this.combo) {
+        combo.style.display = 'none';
+        combo.removeEventListener('keyup', this._onComboKeyUp);
+        combo.addEventListener('keyup', this._onComboKeyUp);
     }
 
     /**
@@ -230,19 +237,20 @@ class InputCombo {
 
     /**
      * Initializes the input element of the InputCombo component.
+     * @param {InputComboInputType} [input] - The input element.
      * @protected
      */
-    initializeInput() {
-        this.input.removeEventListener('keyup', this._onInputKeyUp);
-        this.input.addEventListener('keyup', this._onInputKeyUp);
-        this.input.removeEventListener('focus', this._onFocus);
-        this.input.addEventListener('focus', this._onFocus);
-        this.input.removeEventListener('blur', this._onBlur);
-        this.input.addEventListener('blur', this._onBlur);
-        this.input.removeEventListener('click', this._onClick);
-        this.input.addEventListener('click', this._onClick);
-        this.input.removeEventListener('mousedown', this._onMouseDown);
-        this.input.addEventListener('mousedown', this._onMouseDown);
+    _initializeInput(input = this.input) {
+        input.removeEventListener('keyup', this._onInputKeyUp);
+        input.addEventListener('keyup', this._onInputKeyUp);
+        input.removeEventListener('focus', this._onFocus);
+        input.addEventListener('focus', this._onFocus);
+        input.removeEventListener('blur', this._onBlur);
+        input.addEventListener('blur', this._onBlur);
+        input.removeEventListener('click', this._onClick);
+        input.addEventListener('click', this._onClick);
+        input.removeEventListener('mousedown', this._onMouseDown);
+        input.addEventListener('mousedown', this._onMouseDown);
     }
 
     /**

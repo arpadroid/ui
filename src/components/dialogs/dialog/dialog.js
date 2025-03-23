@@ -216,7 +216,7 @@ class Dialog extends ArpaElement {
         );
     }
 
-    _initializeNodes() {
+    async _initializeNodes() {
         this.wrapperNode = this.querySelector('.dialog__wrapper');
         this.headerNode = this.querySelector('.dialog__header');
         this.contentNode = this.querySelector('.dialog__content');
@@ -228,6 +228,7 @@ class Dialog extends ArpaElement {
         promise?.finally(() => {
             this.preloader?.remove();
         });
+        return true;
     }
 
     ////////////////////////////

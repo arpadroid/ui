@@ -36,12 +36,13 @@ class ConfirmDialog extends Dialog {
     }
 
     async _initializeNodes() {
-        super._initializeNodes();
+        await super._initializeNodes();
         this.confirmBtn = this.querySelector('.confirmDialog__confirmBtn');
         this.confirmBtn?.addEventListener('click', this.confirm);
         /** @type {Button | null} */
         this.cancelBtnComponent = this.querySelector('.confirmDialog__cancelBtn');
         this._initializeCancelBtn();
+        return true;
     }
 
     async _initializeCancelBtn() {

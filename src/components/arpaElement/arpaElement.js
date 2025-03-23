@@ -377,28 +377,12 @@ class ArpaElement extends HTMLElement {
     // #region LIFECYCLE
     /////////////////////
 
+    /**
+     * Called when the element is ready.
+     * @returns {Promise<any>}
+     */
     async onReady() {
         return Promise.resolve();
-    }
-
-    /**
-     * Called when the element is connected to the DOM.
-     */
-    async connectedCallback() {
-        this._preRenderCallbacks.forEach(callback => typeof callback === 'function' && callback());
-        this._preRenderCallbacks = [];
-        await this.onReady();
-        this._addClassNames();
-        this._isReady = true;
-        if (!this._hasInitialized) {
-            this._hasInitialized = this.initializeProperties();
-            this._hasInitialized && this._onInitialized();
-        }
-        if (this.isConnected) {
-            !this._hasRendered && this._render();
-            await this._onConnected();
-            this.update();
-        }
     }
 
     disconnectedCallback() {
@@ -454,11 +438,35 @@ class ArpaElement extends HTMLElement {
         // abstract method
     }
 
+    /**
+     * Called when the element is connected to the DOM.
+     */
+    async connectedCallback() {
+        this._preRenderCallbacks.forEach(callback => typeof callback === 'function' && callback());
+        this._preRenderCallbacks = [];
+        await this.onReady();
+        this._addClassNames();
+        this._isReady = true;
+        if (!this._hasInitialized) {
+            this._hasInitialized = this.initializeProperties();
+            this._hasInitialized && this._onInitialized();
+        }
+        if (this.isConnected) {
+            !this._hasRendered && this._render();
+            await this._onConnected();
+            this.update();
+        }
+    }
+
     // #endregion
 
     ////////////////////
     // #region RENDERING
     ////////////////////
+
+    _preRender() {
+        // abstract method
+    }
 
     async _render() {
         if (!this.canRender()) return;
@@ -466,19 +474,16 @@ class ArpaElement extends HTMLElement {
         const { attributes } = this._config;
         attributes && attr(this, attributes);
         await this.render();
-        typeof this._initializeNodes === 'function' && this._initializeNodes();
+        await this._initializeNodes();
         this._onRenderReadyCallbacks.forEach(callback => typeof callback === 'function' && callback());
         this._onRenderReadyCallbacks = [];
         this._handleZones();
         this._onRenderComplete();
     }
 
-    _preRender() {
+    async _initializeNodes() {
         // abstract method
-    }
-
-    _initializeNodes() {
-        // abstract method
+        return true;
     }
 
     canRender() {
