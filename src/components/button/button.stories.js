@@ -14,7 +14,8 @@ const ButtonStory = {
     args: {
         content: 'Click me',
         icon: 'task_alt',
-        tooltip: 'Some tooltip text',
+        tooltip: 'If you click me something awesome will happen.',
+        tooltipPosition: 'top',
     },
     argTypes: {
         content: { control: { type: 'text' }, table: { category } },

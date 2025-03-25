@@ -17,6 +17,7 @@ export * from './components/truncateText/truncateText.types';
 declare global {
     interface Window {
         arpaSafeIDs: Record<string, boolean>;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         i18nInstance: any;
     }
 }
