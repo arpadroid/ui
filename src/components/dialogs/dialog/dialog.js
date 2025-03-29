@@ -41,8 +41,8 @@ class Dialog extends ArpaElement {
         observerMixin(this);
     }
 
-    async _onConnected() {
-        await this.promise;
+    async connectedCallback() {
+        await super.connectedCallback();
         this._initializeDialog();
     }
 
