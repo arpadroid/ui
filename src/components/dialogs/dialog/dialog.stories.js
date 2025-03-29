@@ -1,6 +1,6 @@
 import { attrString } from '@arpadroid/tools';
 import { action } from '@storybook/addon-actions';
-import { waitFor, expect, within, fn } from '@storybook/test';
+import { waitFor, expect, within, fn, fireEvent } from '@storybook/test';
 import { playSetup, renderDialog } from './dialogStoryUtil';
 const html = String.raw;
 
@@ -89,7 +89,8 @@ export const ButtonDialog = {
     parameters: {},
     args: {
         id: 'button-dialog',
-        open: false
+        open: false,
+        title: undefined
     },
     render: args => {
         return html`<arpa-dialogs id="button-dialogs"></arpa-dialogs>
@@ -111,15 +112,17 @@ export const ButtonDialogTest = {
     ...ButtonDialog,
     args: {
         id: 'button-dialog-test',
-        open: false
+        open: false,
+        title: undefined
     },
     play: async ({ canvasElement, step }) => {
         const { dialogNode, canvas } = await playSetup(canvasElement);
+        await dialogNode.promise;
+        const button = canvas.getByRole('button', { name: /Open Dialog/i });
+        expect(dialogNode).not.toHaveAttribute('open');
 
         await step('Clicks on the button and opens the dialog', async () => {
-            const button = canvas.getByRole('button', { name: /Open Dialog/i });
-            expect(dialogNode).not.toHaveAttribute('open');
-            button.click();
+            await fireEvent.click(button);
             await waitFor(() => {
                 expect(dialogNode).toHaveAttribute('open');
                 expect(dialogNode).toBeVisible();

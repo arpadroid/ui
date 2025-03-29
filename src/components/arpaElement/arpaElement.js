@@ -440,8 +440,9 @@ class ArpaElement extends HTMLElement {
 
     /**
      * Called when the element is connected to the DOM.
+     * @param {boolean} [forceRender] - If true it force a renders the element even if it's not connected.
      */
-    async connectedCallback() {
+    async connectedCallback(forceRender = false) {
         this._preRenderCallbacks.forEach(callback => typeof callback === 'function' && callback());
         this._preRenderCallbacks = [];
         await this.onReady();
@@ -451,7 +452,8 @@ class ArpaElement extends HTMLElement {
             this._hasInitialized = this.initializeProperties();
             this._hasInitialized && this._onInitialized();
         }
-        if (this.isConnected) {
+
+        if (forceRender || this.isConnected) {
             !this._hasRendered && this._render();
             await this._onConnected();
             this.update();
@@ -501,8 +503,8 @@ class ArpaElement extends HTMLElement {
     _onRenderComplete() {
         this._hasRendered = true;
         this._onRenderedCallbacks.forEach(callback => callback());
-        this.resolvePromise?.(true);
         this._onComplete();
+        this.resolvePromise?.(true);
     }
 
     _onComplete() {

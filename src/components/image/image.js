@@ -47,9 +47,11 @@ class ArpaImage extends ArpaElement {
             highResSrc: '',
             icon: 'crop_original',
             iconBroken: 'broken_image',
+            imageAttr: {},
             lazyLoad: false,
             lazyLoaderBatchSize: 5,
             hasNativeLazy: false,
+            isDraggable: false,
             loadedClass: 'image--loaded',
             onError: undefined,
             onInput: undefined,
@@ -310,28 +312,32 @@ class ArpaImage extends ArpaElement {
             dropArea: this.renderDropArea(),
             src: this.getProperty('src'),
             alt: this.getProperty('alt'),
-            icon: this.getProperty('icon')
+            icon: this.getProperty('icon'),
+            sources: this.renderSources(),
+            image: this.renderImage()
         };
     }
 
     renderPicture() {
+        return html`<picture>{thumbnail}{preloader}{sources}{image}{dropArea}</picture>`;
+    }
+
+    getImageAttributes() {
         const src = this.getImageURL();
         const lazyLoad = this.hasLazyLoad();
         const hasNativeLazy = this.hasNativeLazy();
-        const imageAttr = attrString({
+        return {
             alt: this.getProperty('alt'),
             class: classNames({ 'image--lazy': Boolean(lazyLoad) }),
             'data-src': lazyLoad && !hasNativeLazy ? src : '',
             lazyLoad: lazyLoad && !hasNativeLazy,
             loading: (lazyLoad && hasNativeLazy && 'lazy') || undefined,
             src: lazyLoad && !hasNativeLazy ? '' : src
-        });
-        return html`
-            <picture>
-                ${this.renderThumbnail()} ${this.renderPreloader()} ${this.renderSources()}
-                ${src ? html`<img ${imageAttr} />` : ''} ${this.renderDropArea()}
-            </picture>
-        `;
+        };
+    }
+
+    renderImage(attr = this.getImageAttributes(), src = this.getImageURL()) {
+        return src ? html`<img draggable="${this.getProperty('is-draggable')}" ${attrString(attr)} />` : '';
     }
 
     renderSources() {

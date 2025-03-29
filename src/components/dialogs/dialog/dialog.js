@@ -1,9 +1,11 @@
 /**
  * @typedef {import('./dialog.types').DialogConfigType} DialogConfigType
+ * @typedef {import('../dialogs/dialogs.js').default} Dialogs
  */
 
 import ArpaElement from '../../arpaElement/arpaElement.js';
-import { observerMixin, renderNode, attrString, dummySignal, defineCustomElement } from '@arpadroid/tools';
+import { observerMixin, renderNode } from '@arpadroid/tools';
+import { attrString, dummySignal, defineCustomElement, listen, processTemplate } from '@arpadroid/tools';
 
 const html = String.raw;
 class Dialog extends ArpaElement {
@@ -39,27 +41,37 @@ class Dialog extends ArpaElement {
         observerMixin(this);
     }
 
+    _onComplete() {
+        this._initializeDialog();
+    }
     /**
      * It will append the dialog to the dialogs component if not already added.
      * If the dialogs component does not exist, it will create it and append it to the body.
      * @returns {Promise<void>}
      */
     async _initializeDialog() {
+        this._initializeButton();
         const dialogsTagName = 'arpa-dialogs';
+        /** @type {Dialogs | null} */
         this.dialogs = this.dialogs || this.closest(dialogsTagName);
         if (this.dialogs) return;
         const dialogsId = this.getProperty('dialogs-id') || dialogsTagName;
-        this.dialogs = document.getElementById(dialogsId);
-        if (this.dialogs) return this.dialogs.addDialog(this);
+
+        this.dialogs = /** @type {Dialogs | null} */ (document.getElementById(dialogsId));
+        if (this.dialogs) {
+            await this.dialogs.promise;
+            return this.dialogs.addDialog(this);
+        }
         if (!this.dialogs) {
+            /** @type {Dialogs | null} */
             this.dialogs = renderNode(html`<arpa-dialogs ${attrString({ id: dialogsId })}></arpa-dialogs>`);
-            document.body.appendChild(this.dialogs);
+            this.dialogs && document.body.appendChild(this.dialogs);
         }
         if (this.parentNode !== this.dialogs) {
-            if (typeof this.dialogs.addDialog !== 'function') {
+            if (typeof this.dialogs?.addDialog !== 'function') {
                 await customElements.whenDefined(dialogsTagName);
             }
-            this.dialogs.addDialog(this);
+            this.dialogs?.addDialog(this);
         }
     }
 
@@ -67,25 +79,18 @@ class Dialog extends ArpaElement {
         return 'arpa-dialog';
     }
 
-    _onConnected() {
-        const button = this.getButton();
-        if (button) {
-            button.removeEventListener('click', this.open);
-            button.addEventListener('click', this.open);
-        }
+    async _initializeButton() {
+        const button = await this.getButton();
+        button && listen(button, 'click', this.open);
     }
 
-    getButton() {
-        return (
-            this.closest('button') ||
-            this.originalParent?.closest('button') ||
-            this.originalParent?.querySelector('button')
-        );
-    }
-
-    _handleZones() {
-        this._initializeDialog();
-        super._handleZones();
+    async getButton() {
+        const button = this.closest('button');
+        if (button) return button;
+        /** @type {import('../../arpaElement/arpaElement.js').ElementType} */
+        const parent = this.originalParent;
+        parent && (await parent?.promise);
+        return parent?.closest('button') || parent?.querySelector('button');
     }
 
     // #endregion Initialization
@@ -151,35 +156,44 @@ class Dialog extends ArpaElement {
         return {
             header: this.renderHeader(),
             content: this.renderContent(),
-            footer: this.renderFooter()
+            footer: this.renderFooter(),
+            headerContent: this.renderHeaderContent()
         };
     }
 
-    render() {
+    _preRender() {
+        super._preRender();
         const { variant } = this.getProperties('variant');
         this.classList.add('dialog');
         variant && this.classList.add(`dialog--${variant}`);
-        this.innerHTML =
-            this.renderTemplate(
-                html`<div class="dialog__wrapper">{header}{content}{footer}</div>`,
-                this.getTemplateVars()
-            ) || '';
-        return true;
+    }
+
+    _getTemplate() {
+        return html`<div class="dialog__wrapper">{header}{content}{footer}</div>`;
+    }
+
+    renderTitle() {
+        const { title, icon } = this.getProperties('title', 'icon');
+        if (!this.hasTitle()) return '';
+        return html`<h2 class="dialog__title" zone="title">
+            ${icon ? html`<arpa-icon class="dialog__icon">${icon}</arpa-icon>` : ''}
+            <span class="dialog__titleText" zone="title-text">${title || ''}</span>
+        </h2>`;
+    }
+
+    renderHeaderContent() {
+        if (!this.hasTitle() && !this.hasContent('icon')) return '';
+        return processTemplate(
+            html`<div class="dialog__headerContent" zone="header">${this.renderTitle()}</div>`
+        );
     }
 
     renderHeader() {
         if (!this.hasHeader()) return '';
-        const { title, icon } = this.getProperties('title', 'icon');
+
         return html`
             <header class="dialog__header">
-                <div class="dialog__headerContent" zone="header">
-                    ${(this.hasTitle() &&
-                        html`<h2 class="dialog__title" zone="title">
-                            ${icon ? html`<arpa-icon class="dialog__icon">${icon}</arpa-icon>` : ''}
-                            <span class="dialog__titleText" zone="title-text">${title || ''}</span>
-                        </h2>`) ||
-                    ''}
-                </div>
+                {headerContent}
                 <div class="dialog__headerActions" zone="header-actions">
                     ${(this.canClose() &&
                         html`<icon-button

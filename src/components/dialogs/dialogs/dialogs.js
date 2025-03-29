@@ -40,11 +40,12 @@ class Dialogs extends ArpaElement {
 
     /**
      * Adds a dialog to the dialogs component.
-     * @param {DialogConfigType} dialog - The dialog to add.
+     * @param {Dialog | DialogConfigType} dialog - The dialog to add.
      */
     addDialog(dialog) {
         if (dialog instanceof HTMLElement) {
             this.appendChild(dialog);
+            dialog.connectedCallback(true);
             return;
         }
         if (isObject(dialog)) {

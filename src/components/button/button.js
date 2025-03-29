@@ -11,6 +11,7 @@ class Button extends ArpaElement {
         this.bind('_onClick');
         super._preInitialize();
     }
+
     /**
      * Returns the default configuration for the button.
      * @returns {ButtonConfigType}

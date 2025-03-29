@@ -49,13 +49,7 @@ a.iconButton,
         justify-content: center;
         text-align: center;
     }
-
-    .button__icon {
-        display: block !important;
-    }
 }
-
-
 
 button.iconButton--small {
     width: 30px;
