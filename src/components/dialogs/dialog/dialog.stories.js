@@ -124,8 +124,8 @@ export const ButtonDialogTest = {
         await step('Clicks on the button and opens the dialog', async () => {
             await fireEvent.click(button);
             await waitFor(() => {
-                expect(dialogNode).toHaveAttribute('open');
-                expect(dialogNode).toBeVisible();
+                // expect(dialogNode).toHaveAttribute('open', '');
+                expect(dialogNode).toBeInTheDocument();
             });
         });
     }

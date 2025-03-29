@@ -41,9 +41,11 @@ class Dialog extends ArpaElement {
         observerMixin(this);
     }
 
-    _onComplete() {
+    async _onConnected() {
+        await this.promise;
         this._initializeDialog();
     }
+
     /**
      * It will append the dialog to the dialogs component if not already added.
      * If the dialogs component does not exist, it will create it and append it to the body.
