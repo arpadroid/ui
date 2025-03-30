@@ -211,15 +211,22 @@
  */
 
 .dialog[variant='compact'] {
-    --dialog-padding: 0.5rem;
+    --dialog-padding: 1rem;
+
     .dialog__wrapper {
         border-radius: 0.25rem;
     }
+
     .dialog__header {
-        padding: 0;
+        height: 3.2rem;
     }
+
     .dialog__body {
         padding: 0;
+    }
+
+    .dialog__wrapper {
+        border: none;
     }
 }
 

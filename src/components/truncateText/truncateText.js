@@ -18,8 +18,8 @@ class TruncateText extends ArpaElement {
             maxLength: 50,
             threshold: 20,
             ellipsis: '...',
-            readMoreLabel: 'read more',
-            readLessLabel: 'read less',
+            readMoreLabel: 'Read more',
+            readLessLabel: 'Read less',
             buttonClasses: ['truncateText__readMoreButton', 'button--link'],
             hasButton: false
         };

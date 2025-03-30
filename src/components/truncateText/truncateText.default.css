@@ -1,9 +1,15 @@
+truncate-text {
+    display: flex;
+    flex-direction: column;
+}
+
 .truncateText__readMoreButton.truncateText__readMoreButton {
-    display: block;
-    color: var(--grey-600);
+    align-self: flex-end;
+    display: inline-block;
+    margin-left: auto;
+    color: var(--color-primary);
     font-weight: 600;
     font-size: .9rem;
-    margin-top: .5rem;
     &:hover {
         color: var(--color-primary);
     }

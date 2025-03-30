@@ -36,20 +36,23 @@ class Dialog extends ArpaElement {
     }
 
     _preInitialize() {
-        this.originalParent = this.parentNode instanceof HTMLElement ? this.parentNode : null;
+        this.originalParent = /** @type {import('@arpadroid/tools').ElementType} */ (
+            this.parentNode instanceof HTMLElement ? this.parentNode : null
+        );
+        this.originalParent && (this.originalParent.dialog = this);
         this.signal = this.signal || dummySignal;
         observerMixin(this);
     }
 
-    async connectedCallback() {
-        await super.connectedCallback();
-        this._initializeDialog();
+    async _resolveRender() {
+        await this._initializeDialog();
+        return this.resolvePromise?.(true);
     }
 
     /**
      * It will append the dialog to the dialogs component if not already added.
      * If the dialogs component does not exist, it will create it and append it to the body.
-     * @returns {Promise<void>}
+     * @returns {Promise<boolean | undefined>}
      */
     async _initializeDialog() {
         this._initializeButton();
@@ -58,22 +61,24 @@ class Dialog extends ArpaElement {
         this.dialogs = this.dialogs || this.closest(dialogsTagName);
         if (this.dialogs) return;
         const dialogsId = this.getProperty('dialogs-id') || dialogsTagName;
-
+        
         this.dialogs = /** @type {Dialogs | null} */ (document.getElementById(dialogsId));
         if (this.dialogs) {
             await this.dialogs.promise;
-            return this.dialogs.addDialog(this);
+            await this.dialogs.addDialog(this);
+            return true;
         }
         if (!this.dialogs) {
             /** @type {Dialogs | null} */
             this.dialogs = renderNode(html`<arpa-dialogs ${attrString({ id: dialogsId })}></arpa-dialogs>`);
             this.dialogs && document.body.appendChild(this.dialogs);
+            await this.dialogs?.promise;
         }
         if (this.parentNode !== this.dialogs) {
             if (typeof this.dialogs?.addDialog !== 'function') {
                 await customElements.whenDefined(dialogsTagName);
             }
-            this.dialogs?.addDialog(this);
+            await this.dialogs?.addDialog(this);
         }
     }
 

@@ -43,7 +43,7 @@
 
     --image-bg-color: var(--grey-150);
     --input-bg-color: var(--grey-150);
-
+    --overlay-95: rgba(26, 26, 26, 0.95);
     --overlay: rgba(26, 26, 26, 0.9);
     --overlay-light: rgba(28, 28, 28, 0.5);
 

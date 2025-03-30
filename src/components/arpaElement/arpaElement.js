@@ -73,10 +73,9 @@ class ArpaElement extends HTMLElement {
 
     /**
      * Initializes the zones for the element.
-     * @param {ElementType} [container] - The container for the zones.
      */
-    _initializeZones(container) {
-        zoneMixin(this, container);
+    _initializeZones() {
+        zoneMixin(this);
     }
 
     _initializeContent() {
@@ -359,6 +358,14 @@ class ArpaElement extends HTMLElement {
     }
 
     /**
+     * Adds child nodes to the element.
+     * @param {Node[]} nodes - The child nodes to add.
+     */
+    addChildNodes(nodes = []) {
+        this._childNodes = [...(this._childNodes || []), ...nodes];
+    }
+
+    /**
      * Gets the i18n text for the specified key.
      * @param {string} key
      * @returns {string} The i18n text.
@@ -500,11 +507,15 @@ class ArpaElement extends HTMLElement {
         // abstract method
     }
 
-    _onRenderComplete() {
+    async _onRenderComplete() {
         this._hasRendered = true;
         this._onRenderedCallbacks.forEach(callback => callback());
+        await this._resolveRender();
         this._onComplete();
-        this.resolvePromise?.(true);
+    }
+
+    async _resolveRender() {
+        return this.resolvePromise?.(true);
     }
 
     _onComplete() {

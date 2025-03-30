@@ -41,12 +41,13 @@ class Dialogs extends ArpaElement {
     /**
      * Adds a dialog to the dialogs component.
      * @param {Dialog | DialogConfigType} dialog - The dialog to add.
+     * @returns {Promise<boolean | undefined>} - Returns true if the dialog was added successfully.
      */
-    addDialog(dialog) {
+    async addDialog(dialog) {
         if (dialog instanceof HTMLElement) {
             this.appendChild(dialog);
-            dialog.connectedCallback(true);
-            return;
+            await dialog.connectedCallback();
+            return true;
         }
         if (isObject(dialog)) {
             const node = renderNode(html`<arpa-dialog ${attrString(dialog)}></arpa-dialog>`);

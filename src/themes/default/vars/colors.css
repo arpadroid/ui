@@ -29,6 +29,7 @@
     --color-error-light: var(--red-lightest);
 
     --color-background: var(--color-white);
+    --overlay-95: rgba(255, 255, 255, 0.95);
     --overlay: rgba(255, 255, 255, 0.9);
     --overlay-medium: rgba(255, 255, 255, 0.75);
     --overlay-light: rgba(255, 255, 255, 0.5);
