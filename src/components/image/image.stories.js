@@ -115,6 +115,20 @@ export const NotFoundImage = {
     }
 };
 
+export const WithPreview = {
+    name: 'With Preview',
+    parameters: {},
+    argTypes: ImageStory.getArgTypes(),
+    args: {
+        ...ImageStory.getArgs(),
+        src: '/api/image/convert?width=[width]&height=[height]&quality=[quality]&source=/cmsx/assets/hqrvutmy_museovaquero_assets/gallery/images/513.jpg',
+        width: 50,
+        height: 50,
+        showPreloader: true,
+        hasPreview: true
+    }
+};
+
 export const Test = {
     ...Default,
     playSetup: async canvasElement => {

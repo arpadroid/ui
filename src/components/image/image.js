@@ -57,6 +57,7 @@ class ArpaImage extends ArpaElement {
             onInput: undefined,
             onLoad: undefined,
             preventUpscale: false,
+            previewTitle: '',
             params: ['width', 'height', 'quality'],
             quality: 50,
             sizes: [],
@@ -172,10 +173,15 @@ class ArpaImage extends ArpaElement {
      * @param {number | string} width
      * @param {number | string} height
      * @param {number | string} quality
+     * @param {string} src
      * @returns {string} - The URL for the image.
      */
-    getImageURL(width = this.getWidth(), height = this.getHeight(), quality = this.getQuality()) {
-        let src = this.getSource();
+    getImageURL(
+        width = this.getWidth(),
+        height = this.getHeight(),
+        quality = this.getQuality(),
+        src = this.getSource()
+    ) {
         if (!height) {
             src = src?.replace(/&height=\[height\]/, '');
         }
@@ -228,7 +234,7 @@ class ArpaImage extends ArpaElement {
      * @returns {boolean} - True if the component has a high-resolution preview image; otherwise, false.
      */
     hasPreview() {
-        return this._config?.highResSrc;
+        return this._config?.highResSrc || this.hasProperty('has-preview');
     }
 
     // #endregion - Has
@@ -283,25 +289,25 @@ class ArpaImage extends ArpaElement {
      * Renders the component.
      */
 
-    render() {
-        this.initializeStyles();
-        if (this.isLoading()) {
-            this.classList.add(this.getLoadingClass());
-        }
-        const caption = this.getProperty('caption');
-        const template = html`
-            ${caption ? '<figure>' : ''} {picture}
-            ${caption ? html`<figcaption zone="caption">${caption}</figcaption>` : ''}
-            ${caption ? '</figure>' : ''}
-        `;
-        this.innerHTML = this.renderTemplate(template) || '';
-        // this._initializeImagePreview();
-    }
-
     reRender() {
         this._hasLoaded = false;
         this._hasError = false;
         super.reRender();
+    }
+
+    _getTemplate() {
+        this.initializeStyles();
+        this.isLoading() && this.classList.add(this.getLoadingClass());
+        const hasCaption = this.hasContent('caption');
+        const hasPreview = this.hasPreview();
+        if (hasPreview) {
+            this._config.hasThumbnail = false;
+        }
+        const openButton = (hasPreview && '<button class="image__previewButton" type="button">') || '';
+        const closeButton = (hasPreview && html`</button>`) || '';
+        const openCaption = (hasCaption && '<figure>') || '';
+        const closeCaption = (hasCaption && '</figure>') || '';
+        return html`${openButton}${openCaption}{picture}{caption}{preview}${closeCaption}${closeButton}`;
     }
 
     getTemplateVars() {
@@ -314,8 +320,30 @@ class ArpaImage extends ArpaElement {
             alt: this.getProperty('alt'),
             icon: this.getProperty('icon'),
             sources: this.renderSources(),
-            image: this.renderImage()
+            image: this.renderImage(),
+            caption: this.renderCaption(),
+            preview: this.renderPreview()
         };
+    }
+
+    getPreviewTitle() {
+        return this.getProperty('preview-title') || '';
+    }
+
+    renderPreview() {
+        if (!this.hasPreview()) return '';
+        const src = this.getProperty('high-res-src') || this.getImageURL(2400, 1600, 80);
+        return html`<image-preview
+            ${attrString({
+                image: src,
+                title: this.getPreviewTitle()
+            })}
+        ></image-preview>`;
+    }
+
+    renderCaption() {
+        const caption = this.getProperty('caption') || '';
+        return this.hasContent('caption') ? html`<figcaption zone="caption">${caption}</figcaption>` : '';
     }
 
     renderPicture() {
@@ -366,9 +394,9 @@ class ArpaImage extends ArpaElement {
     }
 
     renderThumbnail(text = this.hasError() ? this.getProperty('errLoad') : this.getProperty('txtNoImage')) {
-        if (!this.hasThumbnail()) return '';
+        if (!this.hasThumbnail() || !this.hasPreview()) return '';
         return html`<arpa-tooltip class="image__thumbnail" icon="${this.getProperty('icon')}">
-            <zone name="tooltip-content"> ${text} </zone>
+            <zone name="tooltip-content">${text}</zone>
         </arpa-tooltip>`;
     }
 
@@ -504,25 +532,6 @@ class ArpaImage extends ArpaElement {
             !this.hasNativeLazy() &&
             this.image &&
             lazyLoader(this.image, Number(batchSize));
-    }
-
-    /**
-     * Initializes the image preview.
-     * @param {HTMLElement} handler - The element to use as the image preview handler.
-     */
-    _initializeImagePreview(handler) {
-        if (this.hasPreview()) {
-            handler.setAttribute('type', 'button');
-            // handler.addEventListener('click', () => {
-            //     const items = [
-            //         {
-            //             title: this._config?.caption,
-            //             image: this._config.highResSrc
-            //         }
-            //     ];
-            //     GalleryDialog.open(items);
-            // });
-        }
     }
 
     _onDestroy() {

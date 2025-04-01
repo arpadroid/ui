@@ -172,6 +172,13 @@ arpa-image {
     }
 }
 
+.image__previewButton {
+    padding: 0;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+}
+
 .image--size-adaptive {
     --listItem-imgSize: 100%;
 }

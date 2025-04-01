@@ -191,7 +191,7 @@ class Dialog extends ArpaElement {
     renderHeaderContent() {
         if (!this.hasTitle() && !this.hasContent('icon')) return '';
         return processTemplate(
-            html`<div class="dialog__headerContent" zone="header">${this.renderTitle()}</div>`
+            html`<div class="dialog__headerContent" zone="header">${this.renderTitle() || ''}</div>`
         );
     }
 
