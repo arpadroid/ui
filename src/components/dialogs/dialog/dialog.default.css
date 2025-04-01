@@ -25,6 +25,7 @@
     margin: 0;
     min-height: 100%;
     min-width: 100%;
+    max-width: 100%;
     padding: 24px;
     visibility: visible;
     width: 100%;
@@ -173,40 +174,6 @@
  */
 
 /**
- * Small
- */
-
-.dialog[size='small'] {
-    --dialog-padding: 1rem;
-    .dialog__wrapper {
-        max-width: 560px;
-    }
-    .dialog__body {
-        padding-bottom: 0.5rem;
-    }
-
-    .dialog__footer {
-        padding: 0rem;
-    }
-}
-
-.dialog[size='large'] {
-    .dialog__wrapper {
-        max-width: 2200px;
-        max-height: 100dvh;
-    }
-}
-
-.dialog[size='full-screen'] {
-    .dialog__wrapper {
-        max-width: calc(100dvw - 1rem);
-        max-height: calc(100dvh - 1rem);
-        width: 100dvw;
-        height: 100dvh;
-    }
-}
-
-/**
  * Compact
  */
 
@@ -251,5 +218,52 @@
 
     .dialog__content {
         font-weight: 600;
+    }
+}
+
+/**
+ * Sizes
+ */
+
+/**
+ * Small
+ */
+
+.dialog[size='small'] {
+    --dialog-padding: 1rem;
+    .dialog__wrapper {
+        max-width: 560px;
+    }
+    .dialog__body {
+        padding-bottom: 0.5rem;
+    }
+
+    .dialog__footer {
+        padding: 0rem;
+    }
+}
+
+.dialog[size='large'] {
+    .dialog__wrapper {
+        max-width: 2200px;
+        max-height: 100dvh;
+    }
+}
+
+.dialog[size='medium'] {
+    .dialog__wrapper {
+        max-width: 800px;
+        max-height: 500px;
+        height: 500px;
+        min-height: 500px;
+    }
+}
+
+.dialog[size='full-screen'] {
+    .dialog__wrapper {
+        max-width: calc(100dvw - 4rem);
+        max-height: calc(100dvh - 4rem);
+        width: 100dvw;
+        height: 100dvh;
     }
 }

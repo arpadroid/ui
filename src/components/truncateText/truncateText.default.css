@@ -4,6 +4,7 @@ truncate-text {
 }
 
 .truncateText__readMoreButton.truncateText__readMoreButton {
+    padding: .5rem 0;
     align-self: flex-end;
     display: inline-block;
     margin-left: auto;
