@@ -8,8 +8,9 @@ const DarkModeButtonStory = {
     playSetup: async canvasElement => {
         const canvas = within(canvasElement);
         await customElements.whenDefined('dark-mode-button');
-        const buttonNode = canvasElement.querySelector('dark-mode-button');
-        return { canvas, buttonNode };
+        const buttonComponent = canvasElement.querySelector('dark-mode-button');
+        await buttonComponent?.promise;
+        return { canvas, buttonNode: buttonComponent.button, buttonComponent };
     },
     render: args => {
         return html`<dark-mode-button ${attrString(args)}></dark-mode-button>`;
@@ -30,14 +31,14 @@ export const Test = {
         });
 
         await step('Focuses the button and expects tooltip', async () => {
-            buttonNode.button.focus();
+            buttonNode.focus();
             await waitFor(() => {
                 expect(canvas.getByText('Dark Mode')).toBeVisible();
             });
         });
 
         await step('Clicks the button and expects dark mode', async () => {
-            buttonNode.button.click();
+            buttonNode.click();
             const darkStyles = document.getElementById('dark-styles');
             await waitFor(() => {
                 expect(darkStyles).not.toHaveAttribute('disabled');
@@ -46,7 +47,7 @@ export const Test = {
         });
 
         await step('Clicks the button again and expects light mode', async () => {
-            buttonNode.button.click();
+            buttonNode.click();
             const darkStyles = document.getElementById('dark-styles');
             await waitFor(() => {
                 expect(darkStyles).toHaveAttribute('disabled');
