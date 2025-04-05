@@ -180,8 +180,7 @@ button.iconButton[variant='compact'] {
 }
 
 /* Mini */
-
-button.iconButton--mini {
+.iconButton--mini button{
     width: 18px;
     height: 18px;
     min-width: 18px;

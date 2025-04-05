@@ -80,6 +80,11 @@
 }
 
 @font-face {
+    font-family: RalewayItalic;
+    src: url('fonts/Raleway-Italic.ttf');
+}
+
+@font-face {
     font-family: Roboto;
     src: url('fonts/RobotoFlex.ttf');
 }
@@ -105,6 +110,8 @@
 
     /* Raleway */
     --font-raleway: Raleway, Arial, Helvetica, sans-serif;
+    --font-raleway-italic: RalewayItalic, Arial, Helvetica, sans-serif;
+    
 
     /* Avant Garde */
     --font-avant-garde: AvantGarde-Bk, Times, Helvetica, sans-serif;

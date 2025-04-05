@@ -75,12 +75,16 @@ class Button extends ArpaElement {
      * Sets the label to display in the tooltip.
      * @param {string} label
      */
-    setTooltip(label) {
+    async setTooltip(label) {
+        if (!this._hasRendered) {
+            typeof label === 'string' && (this._config.tooltip = label);
+            return;
+        }
         if (this.tooltip) {
             this.tooltip?.setContent(label);
         } else {
-            this.tooltip = renderNode(this.renderTooltip(label));
-            this.tooltip && this.appendChild(this.tooltip);
+            this.tooltip = renderNode(this.renderTooltip(label, true));
+            this.button?.appendChild(this.tooltip);
         }
     }
 
@@ -145,8 +149,8 @@ class Button extends ArpaElement {
         return !tooltipParent && (tooltipValue || this.hasZone('tooltip-content'));
     }
 
-    renderTooltip(tooltip = this.getTooltip()) {
-        if (!this.hasTooltip()) return '';
+    renderTooltip(tooltip = this.getTooltip(), skipCheck = false) {
+        if (!skipCheck && !this.hasTooltip()) return '';
         const attr = attrString({ position: this.getTooltipPosition() });
         return html`<arpa-tooltip ${attr}>${tooltip}</arpa-tooltip>`;
     }
@@ -218,7 +222,7 @@ class Button extends ArpaElement {
      * @returns {boolean | undefined} Whether the zone was handled.
      */
     _onLostZone({ zoneName, zone }) {
-        if (zone && zoneName === 'tooltip-content') {
+        if (zone && zoneName === 'tooltip') {
             this.setTooltip(zone.innerHTML);
             return true;
         }

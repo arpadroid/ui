@@ -42,7 +42,7 @@ class DropArea extends ArpaElement {
             hasInput: false,
             inputTemplate: html`<input accept="image/*" type="file" />`,
             template: html`
-                <button class="dropArea__handler" type="button">
+                <button class="dropArea__handler fieldInput" type="button">
                     <div class="dropArea__content">
                         <arpa-icon class="dropArea__icon">{icon}</arpa-icon>
                         <p class="dropArea__label" zone="label">{label}</p>

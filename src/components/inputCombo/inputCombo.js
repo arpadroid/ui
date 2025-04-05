@@ -4,7 +4,7 @@
  * @typedef {import('./inputCombo.types').InputComboInputType} InputComboInputType
  */
 
-import { isIOsSafari, mergeObjects, placeNode } from '@arpadroid/tools';
+import { isIOsSafari, listen, mergeObjects, placeNode } from '@arpadroid/tools';
 
 /** @type {EventTarget | null | undefined} */
 let lastClicked = undefined;
@@ -190,9 +190,8 @@ class InputCombo {
      * @param {InputComboNodeType} [combo] - The combo element.
      */
     _initializeCombo(combo = this.combo) {
-        combo.style.display = 'none';
-        combo.removeEventListener('keyup', this._onComboKeyUp);
-        combo.addEventListener('keyup', this._onComboKeyUp);
+        combo.style.display = 'none'; // @ts-ignore
+        listen(combo, 'keyup', this._onComboKeyUp); // @ts-ignore
     }
 
     /**
@@ -213,7 +212,7 @@ class InputCombo {
      * @protected
      */
     _onComboKeyDown(event) {
-        if (document.activeElement !== this.input) {
+        if (!this._isActive) {
             return;
         }
         if (event.keyCode === 38) {
@@ -241,16 +240,11 @@ class InputCombo {
      * @protected
      */
     _initializeInput(input = this.input) {
-        input.removeEventListener('keyup', this._onInputKeyUp);
-        input.addEventListener('keyup', this._onInputKeyUp);
-        input.removeEventListener('focus', this._onFocus);
-        input.addEventListener('focus', this._onFocus);
-        input.removeEventListener('blur', this._onBlur);
-        input.addEventListener('blur', this._onBlur);
-        input.removeEventListener('click', this._onClick);
-        input.addEventListener('click', this._onClick);
-        input.removeEventListener('mousedown', this._onMouseDown);
-        input.addEventListener('mousedown', this._onMouseDown);
+        listen(input, 'keyup', this._onInputKeyUp);
+        listen(input, 'focus', this._onFocus);
+        listen(input, 'blur', this._onBlur);
+        listen(input, 'click', this._onClick);
+        listen(input, 'mousedown', this._onMouseDown);
     }
 
     /**

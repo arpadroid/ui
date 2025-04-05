@@ -1,20 +1,22 @@
 :root {
-    --button-border: 2px solid var(--border-color);
+    --button-active-color: var(--grey-500);
+    --button-active-icon-color: var(--color-p);
+    --button-active-outline: none;
+    --button-border: 2px solid var(--grey-0);
+    --button-box-shadow-hover: -2px -2px 5px var(--grey-0), 2px 2px 5px var(--grey-200);
+    --button-box-shadow: -5px -5px 20px var(--grey-0), 5px 5px 20px var(--grey-200);
+    --button-color: var(--grey-400);
+    --button-gap: 0.4rem;
     --button-height: 3rem;
+    --button-icon-color: var(--grey-300);
+    --button-input-box-shadow-active: -2px -2px 5px var(--grey-50), 2px 2px 5px var(--grey-200);
+    --button-input-box-shadow: -5px -5px 8px var(--grey-75), 5px 5px 8px var(--grey-200);
+    --button-outline: 2px solid var(--border-color);
     --button-padding: 0 1rem 0 0.8rem;
     --button-radius: 12px;
-    --button-shadow-active: 2px 2px 5px 0 rgba(0, 0, 0, 0.3);
-    --button-shadow: 1px 1px 5px 0 rgba(0, 0, 0, 0.1);
-    --button-weight: 700;
-    --button-weight-active: 700;
-    --button-gap: 0.4rem;
-    --button-color: var(--grey-700);
-    --button-icon-color: var(--grey-400);
-    --button-active-color: var(--grey-500);
-    --button-active-outline: none;
-    --button-active-icon-color: var(--button-active-color);
     --button-underline-color: var(--grey-200);
-    
+    --button-weight-active: 700;
+    --button-weight: 800;
 }
 
 .arpaButton:not([variant='minimal']) {
@@ -25,7 +27,8 @@
     background-color: var(--color-background);
     border-radius: var(--button-radius);
     border: var(--button-border);
-    box-shadow: var(--button-shadow);
+    outline: var(--button-outline);
+    box-shadow: var(--button-box-shadow);
     cursor: pointer;
     display: flex;
     height: var(--button-height);
@@ -39,31 +42,6 @@
     arpa-icon {
         color: var(--button-icon-color);
         --icon-size: 1.4rem;
-    }
-    /**
-     * Hover / Focus
-     */
-    &:hover,
-    &:focus {
-        &:not(:disabled) {
-            box-shadow: var(--button-shadow-active);
-            outline: var(--button-active-outline);
-            .button__content {
-                text-decoration: underline;
-                text-decoration-color: var(--button-underline-color);
-                font-weight: var(--button-weight-active);
-                letter-spacing: 0px;
-                color: var(--button-active-color);
-            }
-            .icon {
-                color: var(--button-active-icon-color);
-            }
-        }
-    }
-
-    &:disabled {
-        cursor: not-allowed;
-        opacity: 0.5;
     }
 
     /**
@@ -108,6 +86,33 @@
     }
 }
 
+/**
+* Hover / Focus
+*/
+
+.arpaButton:not(:disabled):not([data-invalid]) {
+    &:hover,
+    &:focus {
+        box-shadow: var(--button-box-shadow-hover);
+        .button__content {
+            font-weight: var(--button-weight-active);
+            color: var(--button-active-color);
+        }
+        .icon {
+            color: var(--button-active-icon-color);
+        }
+    }
+}
+
+/**
+* Disabled
+*/
+
+.arpaButton:disabled,
+.arpaButton[data-invalid] {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
 
 arpa-button {
     button arpa-tooltip.tooltip {
@@ -149,4 +154,23 @@ arpa-button {
     position: absolute;
     inset: 0;
     z-index: 1;
+}
+
+.buttonInput.buttonInput {
+    box-shadow: var(--button-input-box-shadow);
+    border-radius: var(--input-border-radius);
+
+    button {
+        border-radius: 2px;
+    }
+
+    &:has(input[type='radio']),
+    &:has(input[type='checkbox']) {
+        max-height: 2.8rem;
+    }
+
+    &:has(input:checked),
+    &:hover {
+        box-shadow: var(--button-input-box-shadow-active);
+    }
 }

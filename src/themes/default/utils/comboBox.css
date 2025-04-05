@@ -51,13 +51,13 @@
         flex: 1 1 auto;
         font-family: var(--primary-font);
         font-size: 0.9rem;
-        font-weight: 400;
+        font-weight: 600;
         gap: 12px;
         height: var(--input-height);
         justify-content: space-between;
         padding-left: var(--input-padding);
         padding-right: var(--input-padding);
-        height: 3rem;
+        height: 3.5rem;
         text-align: left;
         width: 100%;
     }
@@ -80,6 +80,7 @@
         outline: none;
         background-color: var(--field-option-active-background);
         color: var(--field-option-active-color);
+        
         arpa-icon {
             color: var(--field-option-active-color);
         }

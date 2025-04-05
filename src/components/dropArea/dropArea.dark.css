@@ -1,13 +1,5 @@
 .dropArea--highlight,
 .dropArea:hover,
 .dropArea:focus {
-    border: 2px solid var(--color-background);
     outline: 2px solid var(--grey-150);
-    background: repeating-linear-gradient(
-        45deg,
-        var(--grey-150),
-        var(--grey-150) 10px,
-        var(--grey-100) 10px,
-        var(--grey-100) 20px
-    );
 }

@@ -1,10 +1,9 @@
 :root {
-    --drop-area-height: 4rem;    
+    --drop-area-height: 4rem;
 }
 
 .dropArea {
     width: 100%;
-    box-shadow: var(--box-shadow);
     min-height: var(--drop-area-height);
     display: flex;
     flex-direction: column;
@@ -12,21 +11,22 @@
 }
 
 .dropArea__handler {
+    --button-radius: 1rem;
+    --input-height: 100%;
     align-items: center;
     background: var(--striped-area);
-    border-radius: 8px;
-    border: var(--striped-area-border);
     cursor: pointer;
     display: flex;
     flex-direction: column;
+    flex: 1 1 auto;
     height: 100%;
-    justify-content: center;
-    outline: var(--striped-area-outline);
-    padding: .5rem;
-    text-align: center;
     transition: var(--theme-transition);
     width: 100%;
-    flex: 1 1 auto;
+
+    &.dropArea__handler {
+        border-radius: var(--input-border-radius);
+        padding: 1rem;
+    }
 
     input {
         display: none;
@@ -35,29 +35,18 @@
     arpa-icon {
         --icon-size: 3rem;
         font-size: var(--icon-size);
-        font-weight: 300;
-        color: var(--grey-300);
+        font-weight: 800;
+        color: var(--grey-175);
     }
 
     &.dropArea__handler--active,
     &:hover,
     &:focus {
-        border: 2px solid var(--color-background);
-        outline: 2px solid var(--color-primary);
-        background: repeating-linear-gradient(
-            50deg,
-            var(--color-background),
-            var(--color-background) 10px,
-            var(--selected-hilight) 10px,
-            var(--selected-hilight) 20px
-        );
-
-        .dropArea__label.dropArea__label,
+        outline: 1px solid var(--color-primary-light);
         arpa-icon {
-            color: var(--color-primary);
+            color: var(--grey-250);
         }
-
-        .dropArea__label.dropArea__label {
+        .dropArea__label {
             text-decoration: underline;
             color: var(--color-primary);
         }
@@ -81,7 +70,7 @@
     white-space: wrap;
 }
 
-.dropArea__label.dropArea__label {
+.dropArea__label {
     margin: 0;
     font-size: 1rem;
     color: var(--grey-300);

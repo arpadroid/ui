@@ -205,7 +205,7 @@ class Dialog extends ArpaElement {
                     ${(this.canClose() &&
                         html`<icon-button
                             variant="minimal"
-                            class="dialog__close"
+                            class="dialog__close iconButton--mini"
                             icon="close"
                         ></icon-button>`) ||
                     ''}

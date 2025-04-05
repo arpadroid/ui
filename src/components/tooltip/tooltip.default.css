@@ -26,8 +26,7 @@
 
 .tooltip__button,
 .tooltip {
-    &:hover,
-    &:focus {
+    &:hover {
         .tooltip__content {
             display: block;
         }

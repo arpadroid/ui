@@ -15,9 +15,13 @@
     --grey-350: #595959;
     --grey-300: #4d4d4d;
     --grey-250: #404040;
+    --grey-225: #3a3a3a;
     --grey-200: #333333;
+    --grey-175: #2d2d2d;
     --grey-150: #262626;
+    --grey-125: #202020;
     --grey-100: #1a1a1a;
+    --grey-75: #141414;
     --grey-50: #0d0d0d;
     --grey-40: #0a0a0a;
     --grey-30: #070707;
@@ -25,27 +29,40 @@
     --grey-10: #030303;
     --grey-0: #000000;
 
+    /**
+     * Colors
+     */
+
+    --color-primary: #2a8cef;
+    --color-tertiary: var(--color-blue-neon-light);
+
+    --color-background: var(--grey-100);
+    --color-card-hilight: var(--primary-hilight);
+    --color-error-bg: var(--grey-150);
+    --color-error-outline: var(--color-light-red);
+    --color-icon-active: var(--grey-650);
+
+    --red-lightest: #302625;
+
     /** 
-     * General
+     * Borders
      */
 
     --border-color: var(--grey-250);
     --border-dark-color: var(--grey-150);
     --border-light-color: var(--grey-100);
 
-    --color-background: var(--grey-100);
-    --color-primary: #2a8cef;
-    --color-error-bg: var(--grey-150);
-    --color-card-hilight: var(--primary-hilight);
-    --color-tertiary: var(--color-blue-neon-light);
-    --color-error-outline: var(--color-light-red);
-    --color-icon-active: var(--grey-650);
+    /** 
+     * Overlays
+     */
 
-    --image-bg-color: var(--grey-150);
-    --input-bg-color: var(--grey-150);
     --overlay-95: rgba(26, 26, 26, 0.95);
     --overlay: rgba(26, 26, 26, 0.9);
     --overlay-light: rgba(28, 28, 28, 0.5);
+
+    /** 
+     * Highlights
+     */
 
     --primary-hilight: var(--grey-150);
     --primary-highlight-outline: var(--color-primary);
@@ -60,10 +77,11 @@
     --search-hilight: var(--color-tertiary);
     --search-hilight: var(--color-yellow);
 
-    /* --color-error-text: var(--color-red); */
+    /** 
+     * Scroll bars
+     */
     --scrollbar-color: var(--grey-300);
     --scrollbar-background: var(--grey-200);
-    /* --color-icon-active: var(--color-orange); */
     --striped-area: repeating-linear-gradient(
         45deg,
         var(--grey-150),
@@ -84,4 +102,17 @@
     --bg-error: var(--grey-150);
     --bg-item-selected: #242933;
     --outline-error: var(--color-red);
+
+    /** Buttons & inputs **/
+
+    --button-box-shadow-hover: none;
+    --button-box-shadow: none;
+    --button-input-box-shadow-active: none;
+    --button-input-box-shadow: none;
+
+    --input-box-shadow: none;
+    --field-option-active-background: var(--grey-150);
+
+    --input-bg-color: var(--grey-150);
+    --image-bg-color: var(--grey-150);
 }
