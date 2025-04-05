@@ -43,9 +43,7 @@
 
 .tooltip__content,
 [role='tooltip'] {
-    /* background-color: var(--primary-hilight); */
     border-radius: 5px;
-    /* border: 1.5px solid var(--color-primary); */
     border: 2px solid var(--tooltip-border-color);
     box-shadow: 1px 1px 4px 0 rgba(0, 0, 0, 0.1);
     background-color: var(--tooltip-bg-color);
