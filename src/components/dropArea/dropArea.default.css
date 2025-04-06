@@ -35,7 +35,7 @@
     arpa-icon {
         --icon-size: 3rem;
         font-size: var(--icon-size);
-        font-weight: 800;
+        font-weight: 700;
         color: var(--grey-175);
     }
 

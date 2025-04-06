@@ -6,6 +6,9 @@ import ArpaElement from '../arpaElement/arpaElement.js';
 
 const html = String.raw;
 class Tooltip extends ArpaElement {
+    /** @type {TooltipConfigType} */
+    _config = this._config;
+
     /**
      * Creates an instance of Tooltip.
      * @param {TooltipConfigType} config - The configuration object.
@@ -14,9 +17,6 @@ class Tooltip extends ArpaElement {
         super(config);
         this.bind('_onMouseMove', '_onMouseEnter', '_onMouseLeave');
     }
-
-    /** @type {TooltipConfigType} */
-    _config = this._config;
 
     static get observedAttributes() {
         return ['text', 'handler', 'icon', 'label'];
@@ -128,7 +128,8 @@ class Tooltip extends ArpaElement {
             style(this.contentNode, { position: 'fixed', display: 'block' });
         }
         this._initializeCursorPosition();
-        if (this.handler) { // @ts-ignore
+        if (this.handler) {
+            // @ts-ignore
             listen(this.handler, ['mousemove', 'touchmove'], this._onMouseMove);
             listen(this.handler, ['mouseenter', 'touchstart'], this._onMouseEnter);
             listen(this.handler, ['pointerleave', 'mouseleave'], this._onMouseLeave);
@@ -143,11 +144,27 @@ class Tooltip extends ArpaElement {
         this.style.display = 'block';
     }
 
+    /** @type {HTMLElement | null} */
+    mouseTarget = null;
+
+    /**
+     * Handles the mouse target update event.
+     * @param {HTMLElement} target - The target element.
+     */
+    _onMouseTargetUpdate(target) {
+        const { onMouseTargetUpdate } = this._config || {};
+        if (typeof onMouseTargetUpdate === 'function') {
+            onMouseTargetUpdate(target);
+        }
+    }
     /**
      * Handles the mouse move event.
      * @param {MouseEvent} event
      */
     _onMouseMove(event) {
+        event.target !== this.mouseTarget &&
+            this._onMouseTargetUpdate(/** @type {HTMLElement} */ (event.target));
+        this.mouseTarget = /** @type {HTMLElement | null} */ (event.target);
         const offset = 16;
         const content = this.contentNode;
         const handler = this.handler;

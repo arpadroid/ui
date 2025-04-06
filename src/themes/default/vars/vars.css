@@ -4,5 +4,5 @@
     --max-page-width: 1600px;
     --comboBox-shadow: rgba(0, 0, 0, 0.3) 3px 3px 7px 0px;
     --theme-transition: background-color 0.4s ease-out, color 0.4s ease-out, border 0.4s ease-out,
-        opacity 0.4s ease-out, box-shadow 0.4s ease-out;
+        opacity 0.4s ease-out, box-shadow 0.4s ease-out, transform 0.2s var(--easeInExpo), height 0.2s var(--easeInExpo);
 }

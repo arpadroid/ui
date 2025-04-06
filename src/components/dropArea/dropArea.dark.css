@@ -3,3 +3,19 @@
 .dropArea:focus {
     outline: 2px solid var(--grey-150);
 }
+
+.dropArea__label {
+    color: var(--grey-600);
+}
+
+.dropArea__handler {
+    .icon {
+        color: var(--grey-600);
+    }
+    &:hover,
+    &:focus {
+        .icon {
+            color: var(--color-primary-light);
+        }
+    }
+}

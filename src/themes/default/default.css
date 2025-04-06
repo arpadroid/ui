@@ -4,6 +4,10 @@
     font-synthesis: none;
 }
 
+*[role='button'] {
+    cursor: pointer;
+}
+
 body,
 html {
     height: 100%;

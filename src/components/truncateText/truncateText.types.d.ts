@@ -7,6 +7,5 @@ export type TruncateTextConfigType = ArpaElementConfigType & {
     readLessLabel?: string;
     buttonClasses?: string[];
     hasReadMoreButton?: boolean;
-    hasButton?: boolean;
     contentClass?: string;
 };
