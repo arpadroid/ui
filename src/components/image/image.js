@@ -116,7 +116,30 @@ class ArpaImage extends ArpaElement {
      * @returns {number}
      */
     getSize() {
-        return Number(this.getProperty('size') || this.getDefaultSize());
+        const size = this.getProperty('size') || this.getDefaultSize();
+        if (size === 'adaptive') {
+            return 600;
+        }
+        if (size === 'full_screen') {
+            return Math.ceil(window.innerWidth / 250) * 250;
+        }
+        return Number(size);
+    }
+
+    /**
+     * Gets the sources of the Image as a number array.
+     * @returns {number[] | undefined}
+     */
+    getSizes() {
+        /** @type {number[]} */
+        let sizes = this.getArrayProperty('sizes');
+        if (!sizes?.length && this.getAttribute('size') === 'full_screen') {
+            sizes = [400, 800, 1200, 1600, 2400];
+        }
+        if (sizes?.length) {
+            return sizes.map(size => Number(this._config.sizeMap[size] || size));
+        }
+        return [];
     }
 
     /**
@@ -369,7 +392,9 @@ class ArpaImage extends ArpaElement {
     }
 
     renderSources() {
-        const sizes = this.getArrayProperty('sizes');
+        const sizes = this.getSizes()
+            ?.sort((item1, item2) => item1 - item2)
+            ?.reverse();
         if (!Array.isArray(sizes) || !sizes.length) return '';
         const quality = this.getProperty('quality');
         /**
@@ -379,8 +404,9 @@ class ArpaImage extends ArpaElement {
          * @returns {string}
          */
         const render = (sizes, size) => {
-            const src = this.getImageURL(size, quality);
-            return html`<source srcset="${src} ${size}px" />`;
+            const src = this.getImageURL(size, undefined, quality);
+            const prop = size === sizes[sizes.length - 1] ? 'min-width' : 'max-width';
+            return html`<source srcset="${src}" media="(${prop}: ${size}px)" />`;
         };
         return mapHTML(sizes, (/** @type {number} */ size) => render(sizes, size));
     }
@@ -462,7 +488,7 @@ class ArpaImage extends ArpaElement {
         const width = this.getWidth();
         this.removeSizeClasses();
         this.addSizeClass();
-        if (size === 'adaptive') {
+        if (['adaptive', 'full_screen'].includes(size)) {
             this.classList.add('image--size-adaptive');
         } else if (width || height) {
             width === height && this.classList.add('image--square');

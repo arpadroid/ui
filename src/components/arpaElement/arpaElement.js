@@ -281,7 +281,7 @@ class ArpaElement extends HTMLElement {
     /**
      * Gets the value of a property from the element's configuration or attributes as an array.
      * @param {string} name
-     * @returns {unknown} The value of the property.
+     * @returns {any[]} The value of the property.
      */
     getArrayProperty(name) {
         return getArrayProperty(this, name);
