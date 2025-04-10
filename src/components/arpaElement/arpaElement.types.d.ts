@@ -1,5 +1,26 @@
 import { ZoneFilterType } from '@arpadroid/tools';
 
+export type TemplateContentMode = 'add' | 'replace' | 'prepend' | 'append' | 'list-item';
+
+export type TemplatesType = Record<TemplateContentMode, HTMLTemplateElement> | Record<string, never>;
+
+export type TemplateContainerConfigType = Element | string | (() => Element);
+
+export type ArpaElementTemplateType = HTMLTemplateElement & {
+    _container?: TemplateContainerConfigType;
+};
+
+export type SetTemplateConfigType = {
+    container?: TemplateContainerConfigType;
+    type?: TemplateContentMode;
+};
+
+export type ApplyTemplateConfigType = {
+    container?: TemplateContainerConfigType;
+    applyAttributes?: boolean;
+    contentMode?: TemplateContentMode;
+};
+
 export type ArpaElementConfigType = {
     removeEmptyZoneNodes?: boolean;
     className?: string;
@@ -8,6 +29,9 @@ export type ArpaElementConfigType = {
     attributes?: Record<string, string>;
     zoneSelector?: string;
     zoneFilter?: ZoneFilterType;
+    templates?: TemplatesType;
+    templateContainer?: HTMLElement | string;
+    templateTypes?: TemplateContentMode[];
 };
 
 // declare global {
