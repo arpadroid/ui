@@ -1,6 +1,6 @@
 import { ZoneFilterType } from '@arpadroid/tools';
 
-export type TemplateContentMode = 'add' | 'replace' | 'prepend' | 'append' | 'list-item';
+export type TemplateContentMode = 'add' | 'content' | 'prepend' | 'append' | 'list-item' | 'views';
 
 export type TemplatesType = Record<TemplateContentMode, HTMLTemplateElement> | Record<string, never>;
 

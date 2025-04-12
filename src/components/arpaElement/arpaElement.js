@@ -103,7 +103,7 @@ class ArpaElement extends HTMLElement {
             className: '',
             variant: undefined,
             templateContainer: this,
-            templateTypes: ['add', 'replace', 'list-item', 'prepend', 'append']
+            templateTypes: ['add', 'content', 'list-item', 'prepend', 'append']
         };
         return mergeObjects(defaultConfig, config);
     }
@@ -362,6 +362,12 @@ class ArpaElement extends HTMLElement {
             type && (this.templates[type] = template);
             template.isConnected && template.remove();
         });
+        
+        const viewTemplates = this._selectViewTemplates();
+        if (viewTemplates.length) {
+            this.templates.views = viewTemplates;
+        }
+        viewTemplates.forEach(template => template.remove());
     }
 
     /**
@@ -371,6 +377,10 @@ class ArpaElement extends HTMLElement {
      */
     _selectTemplates(templateSelector = this._getTemplatesSelector()) {
         return (templateSelector && Array.from(this.querySelectorAll(templateSelector))) || [];
+    }
+
+    _selectViewTemplates() {
+        return Array.from(this.querySelectorAll(':scope > template[type="view"]'));
     }
 
     _getTemplatesSelector() {
@@ -396,7 +406,7 @@ class ArpaElement extends HTMLElement {
         const content = this.getTemplateContent(template);
         const node = document.createElement('div');
         node.innerHTML = content;
-        if (contentMode === 'replace') {
+        if (contentMode === 'content') {
             container.innerHTML = '';
             container.append(...node.childNodes);
         } else if (contentMode === 'prepend') {
@@ -623,11 +633,13 @@ class ArpaElement extends HTMLElement {
 
     /**
      * Renders the template for the element.
-     * @param {string} [template] - The template to render.
+     * @param {string} [_template] - The template to render.
      * @param {Record<string, unknown>} [vars] - The variables to use in the template.
      * @returns {string} The rendered template.
      */
-    renderTemplate(template = this._getTemplate(), vars = this.getTemplateVars()) {
+    renderTemplate(_template, vars = this.getTemplateVars()) {
+        const templateContent = this.templates?.content?.innerHTML.trim();
+        const template = _template || templateContent || this._getTemplate();
         for (const tplVar of Object.keys(vars)) {
             if (typeof vars[tplVar] === 'string') {
                 vars[tplVar] = processTemplate(vars[tplVar], vars);

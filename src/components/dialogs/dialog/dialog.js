@@ -44,6 +44,19 @@ class Dialog extends ArpaElement {
         observerMixin(this);
     }
 
+    /**
+     * Manual allocation of zones.
+     * @param {import('@arpadroid/tools').ZoneToolPlaceZoneType} payload
+     * @returns {boolean | undefined}
+     */
+    _onLostZone({ zoneName, zone }) {
+        if (!zoneName || !zone) return false;
+        if (['content'].includes(zoneName) && zone._parentNode === this) {
+            this.promise.then(() => this.contentNode?.append(...zone.childNodes));
+            return true;
+        }
+    }
+
     async _resolveRender() {
         await this._initializeDialog();
         return this.resolvePromise?.(true);
@@ -61,7 +74,7 @@ class Dialog extends ArpaElement {
         this.dialogs = this.dialogs || this.closest(dialogsTagName);
         if (this.dialogs) return;
         const dialogsId = this.getProperty('dialogs-id') || dialogsTagName;
-        
+
         this.dialogs = /** @type {Dialogs | null} */ (document.getElementById(dialogsId));
         if (this.dialogs) {
             await this.dialogs.promise;
