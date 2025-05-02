@@ -7,7 +7,7 @@
  * @typedef {import('./arpaElement.types').TemplatesType} TemplatesType
  * @typedef {import('./arpaElement.types').ArpaElementTemplateType} ArpaElementTemplateType
  */
-import { dashedToCamel, mergeObjects, renderNode, processTemplate } from '@arpadroid/tools';
+import { dashedToCamel, mergeObjects, renderNode, processTemplate, extractZones } from '@arpadroid/tools';
 import { handleZones, zoneMixin, hasZone, getZone, attr, setNodes, canRender } from '@arpadroid/tools';
 import { getProperty, hasProperty, getArrayProperty, hasContent, onDestroy, bind } from '@arpadroid/tools';
 import { renderChild, defineCustomElement, getAttributesWithPrefix, resolveNode } from '@arpadroid/tools';
@@ -362,12 +362,6 @@ class ArpaElement extends HTMLElement {
             type && (this.templates[type] = template);
             template.isConnected && template.remove();
         });
-        
-        const viewTemplates = this._selectViewTemplates();
-        if (viewTemplates.length) {
-            this.templates.views = viewTemplates;
-        }
-        viewTemplates.forEach(template => template.remove());
     }
 
     /**
@@ -379,9 +373,6 @@ class ArpaElement extends HTMLElement {
         return (templateSelector && Array.from(this.querySelectorAll(templateSelector))) || [];
     }
 
-    _selectViewTemplates() {
-        return Array.from(this.querySelectorAll(':scope > template[type="view"]'));
-    }
 
     _getTemplatesSelector() {
         const templateTypes = this.getArrayProperty('template-types');
@@ -615,9 +606,10 @@ class ArpaElement extends HTMLElement {
 
     /**
      * Renders the element.
+     * @param {string} [template] - The template to render.
      */
-    render() {
-        const content = this.renderTemplate();
+    render(template) {
+        const content = this.renderTemplate(template);
         content && (this.innerHTML = content);
     }
 
@@ -656,6 +648,9 @@ class ArpaElement extends HTMLElement {
 
     reRender() {
         this._hasRendered = false;
+        this._isReady = false;
+        this._initializeTemplates();
+        extractZones(this);
         this.promise = this.getPromise();
         this.connectedCallback();
     }

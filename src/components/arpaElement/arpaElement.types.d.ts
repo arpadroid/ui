@@ -1,6 +1,6 @@
 import { ZoneFilterType } from '@arpadroid/tools';
 
-export type TemplateContentMode = 'add' | 'content' | 'prepend' | 'append' | 'list-item' | 'views';
+export type TemplateContentMode = 'add' | 'content' | 'prepend' | 'append' | 'list-item' | 'view';
 
 export type TemplatesType = Record<TemplateContentMode, HTMLTemplateElement> | Record<string, never>;
 
@@ -28,6 +28,7 @@ export type ArpaElementConfigType = {
     classNames?: string[];
     attributes?: Record<string, string>;
     zoneSelector?: string;
+    zoneResolverSelector?: string;
     zoneFilter?: ZoneFilterType;
     templates?: TemplatesType;
     templateContainer?: HTMLElement | string;

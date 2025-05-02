@@ -8,11 +8,11 @@ truncate-text {
     align-self: flex-end;
     display: inline-block;
     margin-left: auto;
-    color: var(--color-primary);
+    color: var(--grey-600);
     font-weight: 600;
     font-size: 0.9rem;
     &:hover {
-        color: var(--color-primary);
+        color: var(--grey-800);
     }
 }
 

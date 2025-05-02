@@ -5,7 +5,7 @@
  * @typedef {import('../tooltip/tooltip.js').default} Tooltip
  * @typedef {import('../icon/icon.js').default} Icon
  */
-import { attrString, classNames, attr, mergeObjects, defineCustomElement } from '@arpadroid/tools';
+import { attrString, classNames, attr, mergeObjects, defineCustomElement, listen } from '@arpadroid/tools';
 import { lazyLoad as lazyLoader, clearLazyImage, hasLoadedSource } from '@arpadroid/tools';
 import { editURL, mapHTML, eventContainsFiles, addCssRule } from '@arpadroid/tools';
 import ArpaElement from '../arpaElement/arpaElement.js';
@@ -420,7 +420,7 @@ class ArpaImage extends ArpaElement {
     }
 
     renderThumbnail(text = this.hasError() ? this.getProperty('errLoad') : this.getProperty('txtNoImage')) {
-        if (!this.hasThumbnail() || !this.hasPreview()) return '';
+        if (!this.hasThumbnail() && !this.hasPreview()) return '';
         return html`<arpa-tooltip class="image__thumbnail" icon="${this.getProperty('icon')}">
             <zone name="tooltip-content">${text}</zone>
         </arpa-tooltip>`;
@@ -592,10 +592,8 @@ class ArpaImage extends ArpaElement {
      */
     initializeImage(image = this.image, config = this._config || {}) {
         if (image instanceof HTMLImageElement) {
-            image.removeEventListener('load', this._onLoad);
-            image.removeEventListener('error', this._onError);
-            image.addEventListener('load', this._onLoad);
-            image.addEventListener('error', this._onError);
+            listen(image, 'load', this._onLoad);
+            listen(image, 'error', this._onError);
             attr(image, { alt: config.alt, width: config.width, height: config.height });
             if (image.naturalWidth) {
                 this._onLoad();
