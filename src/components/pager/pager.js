@@ -9,39 +9,17 @@ import ArpaElement from '../arpaElement/arpaElement.js';
 
 const html = String.raw;
 class Pager extends ArpaElement {
+    ///////////////////////////////
+    // #region Initialization
+    ////////////////////////////
+
     /** @type {PagerConfigType} */
     _config = this._config;
-    //////////////////////////
-    // #region INITIALIZATION
-    /////////////////////////
-
     /** @type {Record<string, PagerItem>} */
     pagerItems = {};
 
     _initialize() {
         this.onLinkClick = this.onLinkClick.bind(this);
-    }
-
-    getId() {
-        return this.getProperty('id') || 'pager';
-    }
-
-    /**
-     * Returns the default configuration.
-     * @returns {PagerConfigType}
-     */
-    getDefaultConfig() {
-        this.i18nKey = 'ui.pager';
-        return {
-            id: 'pager',
-            className: 'pager',
-            currentPage: 1,
-            totalPages: 1,
-            maxNodes: 7,
-            hasArrowControls: true,
-            urlParam: 'page',
-            ariaLabel: this.i18nText('label')
-        };
     }
 
     initializeProperties() {
@@ -58,29 +36,33 @@ class Pager extends ArpaElement {
         super.setConfig(config);
     }
 
-    // #endregion INITIALIZATION
-
-    ////////////////////
-    // #region ACCESSORS
-    ////////////////////
-
     /**
-     * Sets the pager.
-     * @param {number} page - The current page.
-     * @param {number} totalPages - The total number of pages.
+     * Returns the default configuration.
+     * @returns {PagerConfigType}
      */
-    setPager(page, totalPages) {
-        this.setCurrentPage(page);
-        totalPages && this.setTotalPages(totalPages);
-        this.reRender();
+    getDefaultConfig() {
+        this.i18nKey = 'ui.pager';
+        return {
+            id: 'pager',
+            className: 'pager',
+            currentPage: 1,
+            totalPages: 1,
+            maxNodes: 7,
+            hasArrowControls: true,
+            urlParam: 'page',
+            itemComponent: 'pager-item',
+            ariaLabel: this.i18nText('label')
+        };
     }
 
-    /**
-     * Assigns a function to be called when the page changes.
-     * @param {PagerConfigType['onClick']} onClick
-     */
-    onChange(onClick) {
-        this._config.onClick = onClick;
+    // #endregion Initialization
+
+    ////////////////////
+    // #region Get
+    ////////////////////
+
+    getId() {
+        return this.getProperty('id') || 'pager';
     }
 
     /**
@@ -91,15 +73,6 @@ class Pager extends ArpaElement {
         const urlParam = this.getUrlParam();
         const currentPage = this.getProperty('current-page');
         return parseFloat(getURLParam(urlParam) ?? currentPage);
-    }
-
-    /**
-     * Sets the current page.
-     * @param {number} page
-     */
-    setCurrentPage(page) {
-        this._config.currentPage = page;
-        this.setAttribute('current-page', String(page));
     }
 
     /**
@@ -116,23 +89,6 @@ class Pager extends ArpaElement {
      */
     getTotalPages() {
         return parseFloat(this.getProperty('total-pages'));
-    }
-
-    /**
-     * Sets the total number of pages.
-     * @param {number} totalPages
-     */
-    setTotalPages(totalPages) {
-        this._config.totalPages = totalPages;
-        this.setAttribute('total-pages', String(totalPages));
-    }
-
-    /**
-     * Determines whether the pager has arrow controls.
-     * @returns {boolean}
-     */
-    hasArrowControls() {
-        return Boolean(this.hasProperty('has-arrow-controls'));
     }
 
     /**
@@ -165,6 +121,53 @@ class Pager extends ArpaElement {
             prevPage = this.getTotalPages();
         }
         return prevPage;
+    }
+
+    getItemComponent() {
+        return this.getProperty('item-component') || 'pager-item';
+    }
+
+    /**
+     * Determines whether the pager has arrow controls.
+     * @returns {boolean}
+     */
+    hasArrowControls() {
+        return Boolean(this.hasProperty('has-arrow-controls'));
+    }
+
+    // #region Get
+
+    ////////////////////
+    // #region Set
+    ////////////////////
+
+    /**
+     * Sets the pager.
+     * @param {number} page - The current page.
+     * @param {number} totalPages - The total number of pages.
+     */
+    setPager(page, totalPages) {
+        this.setCurrentPage(page);
+        totalPages && this.setTotalPages(totalPages);
+        this.reRender();
+    }
+
+    /**
+     * Sets the current page.
+     * @param {number} page
+     */
+    setCurrentPage(page) {
+        this._config.currentPage = page;
+        this.setAttribute('current-page', String(page));
+    }
+
+    /**
+     * Sets the total number of pages.
+     * @param {number} totalPages
+     */
+    setTotalPages(totalPages) {
+        this._config.totalPages = totalPages;
+        this.setAttribute('total-pages', String(totalPages));
     }
 
     // #endregion ACCESSORS
@@ -254,7 +257,8 @@ class Pager extends ArpaElement {
         let item = this.pagerItems[id];
         if (!item) {
             const attr = { page, 'is-active': isActive, class: className, ariaLabel };
-            const itemHTML = html`<pager-item ${attrString(attr)}>${content}</pager-item>`;
+            const itemComponent = this.getItemComponent();
+            const itemHTML = html`<${itemComponent} ${attrString(attr)}>${content}</${itemComponent}>`;
             item = renderNode(itemHTML);
             this.pagerItems[id] = item;
         } else if (typeof onUpdate === 'function') {
@@ -305,14 +309,14 @@ class Pager extends ArpaElement {
     updateNumberItem(node) {
         if (Number(node.getAttribute('page')) === this.getCurrentPage()) {
             node.setAttribute('is-active', '');
-            node.render(true);
+            node.render(undefined, true);
         } else if (node.hasAttribute('is-active')) {
             node.removeAttribute('is-active');
-            node.render(true);
+            node.render(undefined, true);
         }
     }
 
-    // #region ARROWS
+    // #region Arrows
 
     /**
      * Adds the previous page arrow control link.
@@ -374,7 +378,15 @@ class Pager extends ArpaElement {
 
     // #endregion RENDERING
 
-    // #region EVENTS
+    // #region Events
+
+    /**
+     * Assigns a function to be called when the page changes.
+     * @param {PagerConfigType['onClick']} onClick
+     */
+    onChange(onClick) {
+        this._config.onClick = onClick;
+    }
 
     /**
      * Adds click event listeners to the pager item handler nodes.
@@ -397,7 +409,7 @@ class Pager extends ArpaElement {
         const { onClick } = this._config;
         /** @type {PagerItem | null} */
         const pagerItem =
-            (event?.target instanceof HTMLElement && event?.target?.closest('pager-item')) || null;
+            (event?.target instanceof HTMLElement && event?.target?.closest(this.getItemComponent())) || null;
         typeof onClick === 'function' &&
             onClick({ page: Number(pagerItem?.getAttribute('page')), node: pagerItem, event });
         requestAnimationFrame(() => {

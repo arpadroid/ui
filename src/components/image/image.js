@@ -488,6 +488,7 @@ class ArpaImage extends ArpaElement {
         const width = this.getWidth();
         this.removeSizeClasses();
         this.addSizeClass();
+        
         if (['adaptive', 'full_screen'].includes(size)) {
             this.classList.add('image--size-adaptive');
         } else if (width || height) {
@@ -543,6 +544,13 @@ class ArpaImage extends ArpaElement {
     ///////////////////////
     // #region - Lifecycle
     ///////////////////////
+
+    async _initializeNodes() {
+        await super._initializeNodes();
+        const imagePosition = this.getProperty('image-position');
+        this.image && imagePosition && (this.image.style.objectPosition = imagePosition);
+        return true;
+    }
 
     async _onConnected() {
         /** @type {HTMLImageElement | null} */

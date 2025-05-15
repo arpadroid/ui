@@ -625,7 +625,7 @@ class ArpaElement extends HTMLElement {
 
     /**
      * Renders the template for the element.
-     * @param {string} [_template] - The template to render.
+     * @param {string | null} [_template] - The template to render.
      * @param {Record<string, unknown>} [vars] - The variables to use in the template.
      * @returns {string} The rendered template.
      */

@@ -22,6 +22,7 @@ export type ImageConfigType = ArpaElementConfigType & {
     width?: number;
     height?: number;
     icon?: string;
+    imagePosition?: string;
     caption?: string;
     showPreloader?: boolean;
     lazyLoad?: boolean;

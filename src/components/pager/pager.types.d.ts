@@ -4,6 +4,7 @@ export type PagerConfigType = {
     id?: string;
     className?: string;
     currentPage?: number;
+    itemComponent?: string;
     totalPages?: number;
     maxNodes?: number;
     hasArrowControls?: boolean;
