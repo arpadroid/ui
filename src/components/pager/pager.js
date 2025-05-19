@@ -173,7 +173,7 @@ class Pager extends ArpaElement {
     // #endregion ACCESSORS
 
     /////////////////////
-    // #region RENDERING
+    // #region Render
     /////////////////////
 
     render() {
@@ -221,9 +221,9 @@ class Pager extends ArpaElement {
     addNodes(start, end, totalPages, hasLeftSpacer, hasRightSpacer) {
         this.innerHTML = '';
         this.addPrev(this);
-        this.numbersNode = document.createElement('div');
-        this.numbersNode.classList.add('pager__numbers');
-        this.appendChild(this.numbersNode);
+        this.itemsNode = document.createElement('div');
+        this.itemsNode.classList.add('pager__numbers');
+        this.appendChild(this.itemsNode);
         /**
          * Updates the number item.
          * @type {PagerUpdateCallbackType}
@@ -249,7 +249,7 @@ class Pager extends ArpaElement {
             id = `pagerItem-${page}`,
             content = page?.toString(),
             isActive = this.getCurrentPage() === Number(page),
-            container = this.numbersNode,
+            container = this.itemsNode,
             onUpdate,
             className,
             ariaLabel
@@ -277,7 +277,7 @@ class Pager extends ArpaElement {
         this.renderItem(undefined, {
             id,
             content: '...',
-            container: this.numbersNode,
+            container: this.itemsNode,
             className: 'pager__spacer'
         });
     }
@@ -295,7 +295,7 @@ class Pager extends ArpaElement {
              */
             const onUpdate = ({ node }) => this.updateNumberItem(node);
             this.renderItem(i, {
-                container: this.numbersNode,
+                container: this.itemsNode,
                 onUpdate
             });
         }

@@ -93,8 +93,8 @@ export const Test = {
         await step(
             'Checks that the pager has the correct number of items dictated by max-nodes property',
             async () => {
-                const numbersNode = pagerNode.querySelector('.pager__numbers');
-                expect(numbersNode.children).toHaveLength(7);
+                const itemsNode = pagerNode.querySelector('.pager__numbers');
+                expect(itemsNode.children).toHaveLength(7);
             }
         );
 

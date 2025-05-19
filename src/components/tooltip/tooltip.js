@@ -24,10 +24,19 @@ class Tooltip extends ArpaElement {
 
     initializeProperties() {
         super.initializeProperties();
-        /** @type {HTMLElement | null} */
-        this.handler = this.getHandler();
-        this.handler?.classList?.add('tooltip__button');
+        const handler = this.getHandler();
+        handler && this.setHandler(handler);
         return true;
+    }
+
+    /**
+     * Sets the tooltip handler element.
+     * @param {HTMLElement} handler - The handler element.
+     */
+    setHandler(handler) {
+        this.handler = handler;
+        this.handler.classList.add('tooltip__button');
+        this.hasProperty('cursor-position') && this._handleCursorPosition();
     }
 
     getDefaultConfig() {
@@ -81,9 +90,7 @@ class Tooltip extends ArpaElement {
         this._childNodes && this.contentNode?.append(...this._childNodes);
         this.button = this.querySelector('.tooltip__button');
         const position = this.getPosition();
-        if (position === 'cursor') {
-            this._handleCursorPosition();
-        }
+        position === 'cursor' && this._handleCursorPosition();
         return true;
     }
 
@@ -149,12 +156,12 @@ class Tooltip extends ArpaElement {
 
     /**
      * Handles the mouse target update event.
-     * @param {HTMLElement} target - The target element.
+     * @param {MouseEvent} event - The target element.
      */
-    _onMouseTargetUpdate(target) {
+    _onMouseTargetUpdate(event) {
         const { onMouseTargetUpdate } = this._config || {};
         if (typeof onMouseTargetUpdate === 'function') {
-            onMouseTargetUpdate(target);
+            onMouseTargetUpdate(/** @type {HTMLElement} */ (event.target));
         }
     }
     /**
@@ -162,8 +169,7 @@ class Tooltip extends ArpaElement {
      * @param {MouseEvent} event
      */
     _onMouseMove(event) {
-        event.target !== this.mouseTarget &&
-            this._onMouseTargetUpdate(/** @type {HTMLElement} */ (event.target));
+        event.target !== this.mouseTarget && this._onMouseTargetUpdate(/** @type {MouseEvent} */ (event));
         this.mouseTarget = /** @type {HTMLElement | null} */ (event.target);
         const offset = 16;
         const content = this.contentNode;
