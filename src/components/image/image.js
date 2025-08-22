@@ -6,8 +6,9 @@
  * @typedef {import('../icon/icon.js').default} Icon
  */
 import { attrString, classNames, attr, mergeObjects, defineCustomElement, listen } from '@arpadroid/tools';
-import { lazyLoad as lazyLoader, clearLazyImage, hasLoadedSource } from '@arpadroid/tools';
-import { editURL, mapHTML, eventContainsFiles, addCssRule } from '@arpadroid/tools';
+import { lazyLoad as lazyLoader, clearLazyImage, hasLoadedSource, editURL, mapHTML } from '@arpadroid/tools';
+import { eventContainsFiles, addCssRule, observerMixin } from '@arpadroid/tools';
+import { dummySignal, dummyListener, dummyOff } from '@arpadroid/tools';
 import ArpaElement from '../arpaElement/arpaElement.js';
 
 const html = String.raw;
@@ -20,6 +21,10 @@ class ArpaImage extends ArpaElement {
 
     constructor(config = {}) {
         super(config);
+        this.signal = dummySignal;
+        this.on = dummyListener;
+        this.off = dummyOff;
+        observerMixin(this);
         this.bind('_onLoad', '_onError', '_onInput', '_onDragEnter');
         /** @type {HTMLElement | undefined} */
         this.dropAreaNode = undefined;
@@ -96,6 +101,17 @@ class ArpaImage extends ArpaElement {
 
     getErrorClass() {
         return this.getProperty('error-class');
+    }
+
+    /**
+     * Sets the source of the image.
+     * @param {string} src - The source URL of the image.
+     */
+    setSource(src) {
+        this.src = src;
+        if (this.image instanceof HTMLImageElement) {
+            this.image.src = src;
+        }
     }
 
     // #region - - Size
@@ -408,6 +424,7 @@ class ArpaImage extends ArpaElement {
             const prop = size === sizes[sizes.length - 1] ? 'min-width' : 'max-width';
             return html`<source srcset="${src}" media="(${prop}: ${size}px)" />`;
         };
+        // @ts-ignore
         return mapHTML(sizes, (/** @type {number} */ size) => render(sizes, size));
     }
 
@@ -488,7 +505,7 @@ class ArpaImage extends ArpaElement {
         const width = this.getWidth();
         this.removeSizeClasses();
         this.addSizeClass();
-        
+
         if (['adaptive', 'full_screen'].includes(size)) {
             this.classList.add('image--size-adaptive');
         } else if (width || height) {
@@ -620,6 +637,7 @@ class ArpaImage extends ArpaElement {
         this._hasLoaded = true;
         this.stopPreloading();
         this.classList.remove(this.getLoadingClass());
+        this.classList.remove(this.getErrorClass());
         if (
             this.picture &&
             this.image &&
@@ -629,6 +647,10 @@ class ArpaImage extends ArpaElement {
             this.picture.style.maxWidth = this.image.naturalWidth + 'px';
             this.picture.style.maxHeight = this.image.naturalHeight + 'px';
         }
+        this.signal('load', {
+            image: this.image,
+            event
+        });
     }
 
     /**
@@ -642,7 +664,13 @@ class ArpaImage extends ArpaElement {
         typeof onError === 'function' && onError(event, this);
         this.stopPreloading(this.getErrorClass());
         this.classList.remove(this.getLoadingClass());
-        this.thumbnail?.setContent(this.getProperty('errLoad'));
+
+        this.signal('error', {
+            image: this.image,
+            event
+        });
+        const message = this.getProperty('errLoad');
+        this.thumbnail?.setContent(message);
         /** @type {Icon | null | undefined} */
         const icon = this.thumbnail?.querySelector('arpa-icon');
         icon?.setIcon(this.getProperty('iconBroken'));

@@ -8,6 +8,7 @@ export type PagerConfigType = {
     totalPages?: number;
     maxNodes?: number;
     hasArrowControls?: boolean;
+    adjustSelectedPosition?: boolean;
     urlParam?: string;
     ariaLabel?: string;
     renderMode?: 'default' | 'minimal';

@@ -4,7 +4,8 @@
  * @typedef {import('./components/pagerItem/pagerItem.js').default} PagerItem
  * @typedef {import('../pager/components/pagerItem/pagerItem.types').PagerItemConfigType} PagerItemConfigType
  */
-import { getURLParam, attrString, renderNode, editURL, defineCustomElement } from '@arpadroid/tools';
+import { getURLParam, observerMixin, attrString, renderNode, editURL } from '@arpadroid/tools';
+import { defineCustomElement, dummySignal, dummyListener, dummyOff } from '@arpadroid/tools';
 import ArpaElement from '../arpaElement/arpaElement.js';
 
 const html = String.raw;
@@ -18,8 +19,17 @@ class Pager extends ArpaElement {
     /** @type {Record<string, PagerItem>} */
     pagerItems = {};
 
-    _initialize() {
-        this.onLinkClick = this.onLinkClick.bind(this);
+    /**
+     * Creates a new pager component.
+     * @param {PagerConfigType} config - The configuration object.
+     */
+    constructor(config) {
+        super(config);
+        this.bind('onLinkClick');
+        this.signal = dummySignal;
+        this.on = dummyListener;
+        this.off = dummyOff;
+        observerMixin(this);
     }
 
     initializeProperties() {
@@ -51,6 +61,7 @@ class Pager extends ArpaElement {
             hasArrowControls: true,
             urlParam: 'page',
             itemComponent: 'pager-item',
+            adjustSelectedPosition: true,
             ariaLabel: this.i18nText('label')
         };
     }
@@ -125,6 +136,15 @@ class Pager extends ArpaElement {
 
     getItemComponent() {
         return this.getProperty('item-component') || 'pager-item';
+    }
+
+    /**
+     * Gets the pager items by page number.
+     * @param {number | string} page - The page number.
+     * @returns {PagerItem | null} Returns the pager item for the specified page.
+     */
+    getItemByPage(page) {
+        return this.pagerItems[`pagerItem-${page}`] || null;
     }
 
     /**
@@ -410,8 +430,19 @@ class Pager extends ArpaElement {
         /** @type {PagerItem | null} */
         const pagerItem =
             (event?.target instanceof HTMLElement && event?.target?.closest(this.getItemComponent())) || null;
-        typeof onClick === 'function' &&
-            onClick({ page: Number(pagerItem?.getAttribute('page')), node: pagerItem, event });
+
+        const payload = {
+            page: Number(pagerItem?.getAttribute('page')),
+            node: pagerItem,
+            event
+        };
+
+        this.signal('change', payload);
+
+        if (typeof onClick === 'function') {
+            onClick(payload);
+        }
+
         requestAnimationFrame(() => {
             /** @type {HTMLElement | null | undefined} */
             const focusable = pagerItem?.querySelector('a, button');

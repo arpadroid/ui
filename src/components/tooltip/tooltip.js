@@ -36,7 +36,11 @@ class Tooltip extends ArpaElement {
     setHandler(handler) {
         this.handler = handler;
         this.handler.classList.add('tooltip__button');
-        this.hasProperty('cursor-position') && this._handleCursorPosition();
+        this.hasCursorPosition() && this._handleCursorPosition();
+    }
+
+    hasCursorPosition() {
+        return this.getProperty('has-cursor-position');
     }
 
     getDefaultConfig() {
@@ -139,7 +143,7 @@ class Tooltip extends ArpaElement {
             // @ts-ignore
             listen(this.handler, ['mousemove', 'touchmove'], this._onMouseMove);
             listen(this.handler, ['mouseenter', 'touchstart'], this._onMouseEnter);
-            listen(this.handler, ['pointerleave', 'mouseleave'], this._onMouseLeave);
+            listen(this.handler, ['mouseleave'], this._onMouseLeave);
         }
     }
 
@@ -148,7 +152,7 @@ class Tooltip extends ArpaElement {
     }
 
     _onMouseEnter() {
-        this.style.display = 'block';
+        this.style.display = '';
     }
 
     /** @type {HTMLElement | null} */
@@ -172,15 +176,18 @@ class Tooltip extends ArpaElement {
         event.target !== this.mouseTarget && this._onMouseTargetUpdate(/** @type {MouseEvent} */ (event));
         this.mouseTarget = /** @type {HTMLElement | null} */ (event.target);
         const offset = 16;
+        
         const content = this.contentNode;
         const handler = this.handler;
         if (!content) return;
+
         const position = this.getProperty('cursor-tooltip-position');
         const rect = handler?.getBoundingClientRect();
         if (!rect) return;
         const { clientX, clientY } = event;
         const axis = this.getProperty('cursor-position-axis') || 'x';
         if (axis === 'x') {
+            /** @type {string | number} */
             let top = rect.top - content.clientHeight - offset;
             let left = clientX;
             position === 'bottom' && (top = rect.top + rect.height - offset);
@@ -188,7 +195,12 @@ class Tooltip extends ArpaElement {
             clientX - leftLimit < 0 && (left = leftLimit);
             const rightLimit = window.innerWidth - content.clientWidth / 2 - offset;
             clientX > rightLimit && (left = rightLimit);
-            style(content, { top: `${top}px`, right: 'auto', bottom: 'auto', left: `${left}px` });
+            style(content, {
+                top: content.clientHeight <= 0 ? 'auto' : `${top}px`,
+                right: 'auto',
+                bottom: 'auto',
+                left: `${left}px`
+            });
         } else if (axis === 'y') {
             let left = rect.x - offset - content.clientWidth;
             position === 'right' && (left = rect.x + rect.width);
