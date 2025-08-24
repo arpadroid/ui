@@ -134,7 +134,6 @@ class Tooltip extends ArpaElement {
     ////////////////////////////////////
 
     _handleCursorPosition() {
-        this.style.display = 'none';
         if (this.contentNode) {
             style(this.contentNode, { position: 'fixed', display: 'block' });
         }
@@ -176,7 +175,6 @@ class Tooltip extends ArpaElement {
         event.target !== this.mouseTarget && this._onMouseTargetUpdate(/** @type {MouseEvent} */ (event));
         this.mouseTarget = /** @type {HTMLElement | null} */ (event.target);
         const offset = 16;
-        
         const content = this.contentNode;
         const handler = this.handler;
         if (!content) return;

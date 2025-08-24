@@ -29,6 +29,10 @@ class ArpaElement extends HTMLElement {
     _isReady = false;
     /** @type {TemplatesType} */
     templates = {};
+    /** @type {Record<string, CustomElementChildOptionsType>} */
+    templateChildren = {};
+    /** @type {Record<string, HTMLElement>} */
+    templateNodes = {};
 
     /**
      * Creates a new instance of ArpaElement.
@@ -215,6 +219,10 @@ class ArpaElement extends HTMLElement {
         return {};
     }
 
+    getTemplateChildren() {
+        return this._config.templateChildren || {};
+    }
+
     // #endregion get
 
     //////////////////////
@@ -373,7 +381,6 @@ class ArpaElement extends HTMLElement {
         return (templateSelector && Array.from(this.querySelectorAll(templateSelector))) || [];
     }
 
-
     _getTemplatesSelector() {
         const templateTypes = this.getArrayProperty('template-types');
         if (!templateTypes?.length) return;
@@ -430,7 +437,7 @@ class ArpaElement extends HTMLElement {
      * @returns {string}
      */
     getTemplateContent(template = this._config.template, payload = this.getTemplateVars()) {
-        return processTemplate(template.innerHTML, payload);
+        return processTemplate(template.innerHTML, payload, this);
     }
 
     // #endregion Templates
@@ -617,10 +624,11 @@ class ArpaElement extends HTMLElement {
      * Renders a child element.
      * @param {string} name
      * @param {CustomElementChildOptionsType} [options]
+     * @param {Record<string, string>} [attributes]
      * @returns {string}
      */
-    renderChild(name, options) {
-        return renderChild(this, name, options);
+    renderChild(name, options, attributes = {}) {
+        return renderChild(this, name, options, attributes);
     }
 
     /**
@@ -634,10 +642,10 @@ class ArpaElement extends HTMLElement {
         const template = _template || templateContent || this._getTemplate();
         for (const tplVar of Object.keys(vars)) {
             if (typeof vars[tplVar] === 'string') {
-                vars[tplVar] = processTemplate(vars[tplVar], vars);
+                vars[tplVar] = processTemplate(vars[tplVar], vars, this);
             }
         }
-        const result = template && processTemplate(template, vars);
+        const result = template && processTemplate(template, vars, this);
         return typeof result === 'string' ? result : '';
     }
 
