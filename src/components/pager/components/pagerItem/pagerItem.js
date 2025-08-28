@@ -97,7 +97,7 @@ class PagerItem extends ArpaElement {
         if (!this.contentNode || reRender) {
             this.innerHTML = '';
             this.contentNode = this.renderContent();
-            this.appendChild(this.contentNode);
+            this.contentNode && this.appendChild(this.contentNode);
             this.appendChildren();
         }
     }

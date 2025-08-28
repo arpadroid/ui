@@ -279,7 +279,7 @@ class Pager extends ArpaElement {
             const attr = { page, 'is-active': isActive, class: className, ariaLabel };
             const itemComponent = this.getItemComponent();
             const itemHTML = html`<${itemComponent} ${attrString(attr)}>${content}</${itemComponent}>`;
-            item = renderNode(itemHTML);
+            item = /** @type {PagerItem} */ (renderNode(itemHTML));
             this.pagerItems[id] = item;
         } else if (typeof onUpdate === 'function') {
             onUpdate({ isCurrent, node: item });

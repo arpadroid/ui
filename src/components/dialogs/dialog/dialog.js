@@ -47,7 +47,7 @@ class Dialog extends ArpaElement {
 
     /**
      * Manual allocation of zones.
-     * @param {import('@arpadroid/tools').ZoneToolPlaceZoneType} payload
+     * @param {import('../../../tools/zoneTool.types.js').ZoneToolPlaceZoneType} payload
      * @returns {boolean | undefined}
      */
     _onLostZone({ zoneName, zone }) {
@@ -83,8 +83,9 @@ class Dialog extends ArpaElement {
             return true;
         }
         if (!this.dialogs) {
-            /** @type {Dialogs | null} */
-            this.dialogs = renderNode(html`<arpa-dialogs ${attrString({ id: dialogsId })}></arpa-dialogs>`);
+            this.dialogs = /** @type {Dialogs | null} */ (
+                renderNode(html`<arpa-dialogs ${attrString({ id: dialogsId })}></arpa-dialogs>`)
+            );
             this.dialogs && document.body.appendChild(this.dialogs);
             await this.dialogs?.promise;
         }
@@ -205,7 +206,9 @@ class Dialog extends ArpaElement {
     renderHeaderContent() {
         if (!this.hasTitle() && !this.hasContent('icon')) return '';
         return processTemplate(
-            html`<div class="dialog__headerContent" zone="header">${this.renderTitle() || ''}</div>`, this.templateVars, this
+            html`<div class="dialog__headerContent" zone="header">${this.renderTitle() || ''}</div>`,
+            this.templateVars,
+            this
         );
     }
 

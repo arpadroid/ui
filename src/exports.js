@@ -29,6 +29,7 @@ export { default as CircularPreloader } from './components/preloaders/circularPr
 
 export * from './components/arpaElement/helper/renderer.helper.js';
 export * from './components/arpaElement/helper/arpaElement.helper.js';
+export * from './tools/zoneTool.js';
 
 /**
  * Inputs.

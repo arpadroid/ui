@@ -1,4 +1,4 @@
-import { CustomElementChildOptionsType, ZoneFilterType } from '@arpadroid/tools';
+import { ZoneFilterType } from '../../tools/zoneTool.types';
 
 export type TemplateContentMode = 'add' | 'content' | 'prepend' | 'append' | 'list-item' | 'view';
 
@@ -21,6 +21,18 @@ export type ApplyTemplateConfigType = {
     contentMode?: TemplateContentMode;
 };
 
+export type ArpaElementChildOptionsType = {
+    tag?: string;
+    attr?: Record<string, string | (() => string)>;
+    id?: string;
+    className?: string;
+    content?: string | (() => string);
+    hasZone?: boolean;
+    zoneName?: string;
+    propName?: string;
+    canRender?: ((component) => boolean) | boolean;
+};
+
 export type ArpaElementConfigType = {
     removeEmptyZoneNodes?: boolean;
     className?: string;
@@ -33,7 +45,7 @@ export type ArpaElementConfigType = {
     templates?: TemplatesType;
     templateContainer?: HTMLElement | string;
     templateTypes?: TemplateContentMode[];
-    templateChildren?: Record<string, CustomElementChildOptionsType> | undefined;
+    templateChildren?: Record<string, ArpaElementChildOptionsType> | undefined;
 };
 
 // declare global {

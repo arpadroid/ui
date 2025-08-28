@@ -1,18 +1,20 @@
 /**
  * @typedef {import("@arpadroid/tools").CallableType} CallableType
- * @typedef {import("@arpadroid/tools").CustomElementChildOptionsType} CustomElementChildOptionsType
+ * @typedef {import("../arpaElement.types").ArpaElementChildOptionsType} ArpaElementChildOptionsType
  * @typedef {import("../arpaElement").default} ArpaElement
  */
 
-import { attrString, dashedToCamel, hasZone, mergeObjects } from '@arpadroid/tools';
+import { attr, attrString, dashedToCamel, getAttributesWithPrefix } from '@arpadroid/tools';
+import { mergeObjects, renderNode, resolveNode } from '@arpadroid/tools';
 import { processTemplate } from './arpaElement.helper';
+import { hasZone } from '../../../tools/zoneTool';
 const html = String.raw;
 
 /**
  * Checks if an element has content.
  * @param {ArpaElement} element
  * @param {string} property
- * @param {CustomElementChildOptionsType} [config] - The configuration object.
+ * @param {ArpaElementChildOptionsType} [config] - The configuration object.
  * @returns {boolean}
  */
 export function hasContent(element, property, config = {}) {
@@ -41,6 +43,116 @@ export function canRender(element, timeout = 200) {
     return true;
 }
 
+///////////////////////////////
+// #region Template Content
+///////////////////////////////
+
+/**
+ * Returns the template selector.
+ * @param {ArpaElement} element
+ * @returns {string | undefined}
+ */
+export function getTemplatesSelector(element) {
+    const templateTypes = element.getArrayProperty('template-types');
+    if (!templateTypes?.length) return;
+    return templateTypes.map(type => `:scope > template[type="${type}"]`).join(', ');
+}
+
+/**
+ * Selects the templates for the element.
+ * @param {ArpaElement} element
+ * @param {string} [templateSelector] - The selector for the templates.
+ * @returns {HTMLTemplateElement[]} The selected templates.
+ */
+export function selectTemplates(element, templateSelector = getTemplatesSelector(element)) {
+    return (templateSelector && Array.from(element.querySelectorAll(templateSelector))) || [];
+}
+
+/**
+ * Gets the content of the template for the element.
+ * @param {ArpaElement} element
+ * @param {HTMLTemplateElement} template
+ * @param {Record<string, unknown>} [payload]
+ * @returns {string}
+ */
+export function getTemplateContent(element, template = element._config.template, payload) {
+    if (!payload) {
+        payload = element.getTemplateVars();
+        element.templateVars = payload;
+    }
+    return processTemplate(template.innerHTML, payload, element);
+}
+
+/**
+ * Returns HTML container for the template.
+ * @param {ArpaElement} element
+ * @param {import('../arpaElement.types').ArpaElementTemplateType} template
+ * @returns {HTMLElement | Element | DocumentFragment | null}
+ */
+export function getTemplateContainer(element, template) {
+    let container = template.getAttribute('container') || element.getProperty('template-container');
+    typeof container === 'function' && (container = container());
+    const resolved = resolveNode(container);
+    if (!(resolved instanceof HTMLElement)) {
+        console.error('Invalid template container', resolved);
+        return element;
+    }
+    return resolved;
+}
+
+/**
+ * Renders the template for the element.
+ * @param {ArpaElement} component - The component to render.
+ * @param {string | null} [_template] - The template to render.
+ * @param {Record<string, unknown>} [vars] - The variables to use in the template.
+ * @returns {string} The rendered template.
+ */
+export function renderTemplate(component, _template, vars = component.getTemplateVars()) {
+    const templateContent = component.templates?.content?.innerHTML.trim();
+    const template = _template || templateContent || component._getTemplate();
+    for (const tplVar of Object.keys(vars)) {
+        if (typeof vars[tplVar] === 'string') {
+            vars[tplVar] = processTemplate(vars[tplVar], vars, component);
+        }
+    }
+    const result = template && processTemplate(template, vars, component);
+    return typeof result === 'string' ? result : '';
+}
+
+/**
+ * Sets the template for the element.
+ * @param {ArpaElement} element
+ * @param {import('../arpaElement.types').ArpaElementTemplateType} template
+ * @param {import('../arpaElement.types').ApplyTemplateConfigType} [config]
+ */
+export async function applyTemplate(element, template, config = {}) {
+    const { contentMode = template.getAttribute('type') } = config;
+    const container = getTemplateContainer(element, template);
+    if (!(container instanceof HTMLElement)) {
+        console.error('Invalid template container', container);
+        return;
+    }
+    const attributes = getAttributesWithPrefix(template, 'element-');
+    attr(container, attributes);
+    const content = getTemplateContent(element, template);
+    const node = document.createElement('div');
+    node.innerHTML = content;
+    if (contentMode === 'content') {
+        container.innerHTML = '';
+        container.append(...node.childNodes);
+    } else if (contentMode === 'prepend') {
+        container.prepend(...node.childNodes);
+    } else {
+        container.append(...node.childNodes);
+    }
+}
+
+// #endregion Template Content
+
+///////////////////////////////
+// #region Template Children
+//////////////////////////////
+
 /**
  * Computes the class name for a child element.
  * @param {ArpaElement} element - The component to check.
@@ -58,7 +170,7 @@ export function getChildClassName(element, name) {
  * Renders a child element.
  * @param {ArpaElement} element - The component to check.
  * @param {string} name
- * @param {CustomElementChildOptionsType} [config] - The configuration object.
+ * @param {ArpaElementChildOptionsType} [config] - The configuration object.
  * @returns {boolean}
  */
 export function canRenderChild(element, name, config = {}) {
@@ -74,7 +186,7 @@ export function canRenderChild(element, name, config = {}) {
  * Gets the default configuration for a child element.
  * @param {ArpaElement} element - The component to check.
  * @param {string} name
- * @returns {CustomElementChildOptionsType}
+ * @returns {ArpaElementChildOptionsType}
  */
 export function getDefaultChildConfig(element, name) {
     return mergeObjects(
@@ -93,7 +205,7 @@ export function getDefaultChildConfig(element, name) {
  * Gets the attributes for a child element.
  * @param {ArpaElement} element
  * @param {string} name
- * @param {CustomElementChildOptionsType} [config] - The configuration object.
+ * @param {ArpaElementChildOptionsType} [config] - The configuration object.
  * @param {Record<string, string>} [attributes] - Additional attributes to add to the element.
  * @returns {Record<string, string>}
  */
@@ -115,7 +227,7 @@ export function getChildAttributes(element, name, config = {}, attributes = {}) 
  * Gets the content for a child element.
  * @param {ArpaElement} element - The component to check.
  * @param {string} name
- * @param {CustomElementChildOptionsType} [config] - The configuration object.
+ * @param {ArpaElementChildOptionsType} [config] - The configuration object.
  * @returns {string}
  */
 export function getChildContent(element, name, config = {}) {
@@ -128,7 +240,7 @@ export function getChildContent(element, name, config = {}) {
  * Renders a child element.
  * @param {ArpaElement} element - The component to check.
  * @param {string} name
- * @param {CustomElementChildOptionsType} [config] - The configuration object.
+ * @param {ArpaElementChildOptionsType} [config] - The configuration object.
  * @param {Record<string, string>} [attributes] - Additional attributes to add to the element.
  * @returns {string}
  */
@@ -139,3 +251,49 @@ export function renderChild(element, name, config = {}, attributes = {}) {
     const { tag } = config;
     return html`<${tag} ${attrString(attr)}>${getChildContent(element, name, config)}</${tag}>`;
 }
+
+/**
+ * Updates a child element.
+ * @param {ArpaElement} element
+ * @param {string} name
+ * @param {ArpaElementChildOptionsType} config - The configuration object.
+ * @returns {HTMLElement | null}
+ */
+export function updateChildNode(element, name, config) {
+    let node = element.templateNodes[name];
+    if (node) {
+        if (typeof config.attr === 'object') {
+            attr(node, config.attr);
+        }
+        if (config.content) {
+            const content = getChildContent(element, name, config);
+            node.innerHTML = content;
+        }
+    } else {
+        const conf = mergeObjects(element.getChildConfig(name) || {}, config);
+
+        const renderedNode = renderNode(renderChild(element, name, conf));
+        if (renderedNode) {
+            element.templateNodes[name] = renderedNode;
+            node = renderedNode;
+        }
+    }
+    return node;
+}
+
+/**
+ * Initializes the template nodes for the element.
+ * @param {ArpaElement} element - The component to check.
+ */
+export function initializeTemplateNodes(element) {
+    const conf = element.getChildrenConfig();
+    if (!conf) return;
+    for (const name of Object.keys(conf)) {
+        const className = getChildClassName(element, name);
+        /** @type {HTMLElement | null} */
+        const node = element.querySelector(`.${className}`);
+        node && (element.templateNodes[name] = node);
+    }
+}
+
+// #endregion Template Children

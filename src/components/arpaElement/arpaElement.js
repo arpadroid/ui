@@ -2,18 +2,21 @@
  * @typedef {import('@arpadroid/tools').ZoneType} ZoneType
  * @typedef {import('./arpaElement.types').ArpaElementConfigType} ArpaElementConfigType
  * @typedef {import('@arpadroid/tools').ElementType} ElementType
- * @typedef {import('@arpadroid/tools').CustomElementChildOptionsType} CustomElementChildOptionsType
+ * @typedef {import('./arpaElement.types').ArpaElementChildOptionsType} ArpaElementChildOptionsType
  * @typedef {import('./arpaElement.types').TemplateContentMode} TemplateContentMode
  * @typedef {import('./arpaElement.types').TemplatesType} TemplatesType
  * @typedef {import('./arpaElement.types').ArpaElementTemplateType} ArpaElementTemplateType
+ * @typedef {import('../../tools/zoneTool.types.js').ZoneToolPlaceZoneType} ZoneToolPlaceZoneType
  */
 import { dashedToCamel, mergeObjects, renderNode } from '@arpadroid/tools';
-import { extractZones, classNames } from '@arpadroid/tools';
-import { handleZones, zoneMixin, hasZone, getZone, attr, setNodes } from '@arpadroid/tools';
-import { onDestroy, bind } from '@arpadroid/tools';
-import { defineCustomElement, getAttributesWithPrefix, resolveNode } from '@arpadroid/tools';
-import { processTemplate, hasProperty, getProperty, getArrayProperty } from './helper/arpaElement.helper';
-import { getChildContent, getChildClassName, canRender, renderChild, hasContent } from './helper/renderer.helper';
+import { classNames } from '@arpadroid/tools';
+import { attr, setNodes } from '@arpadroid/tools';
+import { bind } from '@arpadroid/tools';
+import { defineCustomElement } from '@arpadroid/tools';
+import { handleZones, zoneMixin, hasZone, getZone, extractZones } from '../../tools/zoneTool';
+import { hasProperty, getProperty, getArrayProperty, onDestroy } from './helper/arpaElement.helper';
+import { canRender, renderChild, hasContent, renderTemplate } from './helper/renderer.helper';
+import { initializeTemplateNodes, updateChildNode, selectTemplates } from './helper/renderer.helper';
 import { I18nTool, I18n } from '@arpadroid/i18n';
 const { arpaElementI18n } = I18nTool;
 
@@ -34,7 +37,7 @@ class ArpaElement extends HTMLElement {
     _textContent = '';
     /** @type {TemplatesType} */
     templates = {};
-    /** @type {Record<string, CustomElementChildOptionsType>} */
+    /** @type {Record<string, ArpaElementChildOptionsType>} */
     templateChildren = {};
     /** @type {Record<string, HTMLElement>} */
     templateNodes = {};
@@ -244,7 +247,7 @@ class ArpaElement extends HTMLElement {
     /**
      * Gets a template child by name.
      * @param {string} name
-     * @returns {CustomElementChildOptionsType | undefined}
+     * @returns {ArpaElementChildOptionsType | undefined}
      */
     getTemplateChild(name) {
         return this._config?.templateChildren?.[name];
@@ -312,7 +315,7 @@ class ArpaElement extends HTMLElement {
     /**
      * Sets a child element.
      * @param {string} name
-     * @param {CustomElementChildOptionsType} [config] - The configuration object.
+     * @param {ArpaElementChildOptionsType} [config] - The configuration object.
      */
     setChild(name, config = {}) {
         if (!name) return;
@@ -323,32 +326,17 @@ class ArpaElement extends HTMLElement {
     /**
      * Updates a child element.
      * @param {string} name
-     * @param {CustomElementChildOptionsType} config - The configuration object.
+     * @param {ArpaElementChildOptionsType} config - The configuration object.
      * @returns {HTMLElement | null}
      */
     updateChildNode(name, config) {
-        let node = this.templateNodes[name];
-        if (node) {
-            if (typeof config.attr === 'object') {
-                attr(node, config.attr);
-            }
-            if (config.content) {
-                const content = getChildContent(this, name, config);
-                node.innerHTML = content;
-            }
-        } else {
-            const conf = mergeObjects(this.getChildConfig(name) || {}, config);
-
-            this.templateNodes[name] = renderNode(renderChild(this, name, conf));
-            node = this.templateNodes[name];
-        }
-        return node;
+        return updateChildNode(this, name, config);
     }
 
     /**
      * Sets a child element.
      * @param {string} name
-     * @param {CustomElementChildOptionsType} [config] - The configuration object.
+     * @param {ArpaElementChildOptionsType} [config] - The configuration object.
      * @returns {HTMLElement | null}
      */
     editChild(name, config = {}) {
@@ -360,7 +348,7 @@ class ArpaElement extends HTMLElement {
     /**
      * Gets the configuration for a child element.
      * @param {string} childName
-     * @returns {Record<string, CustomElementChildOptionsType> | undefined}
+     * @returns {Record<string, ArpaElementChildOptionsType> | undefined}
      */
     getChildConfig(childName) {
         return this._config?.templateChildren?.[childName];
@@ -369,7 +357,7 @@ class ArpaElement extends HTMLElement {
     /**
      * Sets the configuration for a child element.
      * @param {string} childName
-     * @param {CustomElementChildOptionsType} config
+     * @param {ArpaElementChildOptionsType} config
      */
     setChildConfig(childName, config = {}) {
         this._config.templateChildren[childName] = config;
@@ -377,7 +365,7 @@ class ArpaElement extends HTMLElement {
 
     /**
      * Gets the configuration for a child element.
-     * @returns {CustomElementChildOptionsType | undefined}
+     * @returns {ArpaElementChildOptionsType | undefined}
      */
     getChildrenConfig() {
         return this._config?.templateChildren;
@@ -465,84 +453,12 @@ class ArpaElement extends HTMLElement {
     //////////////////////////
 
     _initializeTemplates() {
-        const templates = this._selectTemplates();
+        const templates = selectTemplates(this);
         templates.forEach(template => {
             const type = /** @type {TemplateContentMode | null} */ (template.getAttribute('type'));
             type && (this.templates[type] = template);
             template.isConnected && template.remove();
         });
-    }
-
-    /**
-     * Selects the templates for the element.
-     * @param {string} [templateSelector] - The selector for the templates.
-     * @returns {HTMLTemplateElement[]} The selected templates.
-     */
-    _selectTemplates(templateSelector = this._getTemplatesSelector()) {
-        return (templateSelector && Array.from(this.querySelectorAll(templateSelector))) || [];
-    }
-
-    _getTemplatesSelector() {
-        const templateTypes = this.getArrayProperty('template-types');
-        if (!templateTypes?.length) return;
-        return templateTypes.map(type => `:scope > template[type="${type}"]`).join(', ');
-    }
-
-    /**
-     * Sets the template for the element.
-     * @param {ArpaElementTemplateType} template
-     * @param {import('./arpaElement.types').ApplyTemplateConfigType} [config]
-     */
-    async applyTemplate(template, config = {}) {
-        const { contentMode = template.getAttribute('type') } = config;
-        const container = this.getTemplateContainer(template);
-        if (!(container instanceof HTMLElement)) {
-            console.error('Invalid template container', container);
-            return;
-        }
-        const attributes = getAttributesWithPrefix(template, 'element-');
-        attr(container, attributes);
-        const content = this.getTemplateContent(template);
-        const node = document.createElement('div');
-        node.innerHTML = content;
-        if (contentMode === 'content') {
-            container.innerHTML = '';
-            container.append(...node.childNodes);
-        } else if (contentMode === 'prepend') {
-            container.prepend(...node.childNodes);
-        } else {
-            container.append(...node.childNodes);
-        }
-    }
-
-    /**
-     * Returns HTML container for the template.
-     * @param {ArpaElementTemplateType} template
-     * @returns {HTMLElement | Element | DocumentFragment | null}
-     */
-    getTemplateContainer(template) {
-        let container = template.getAttribute('container') || this.getProperty('template-container');
-        typeof container === 'function' && (container = container());
-        const resolved = resolveNode(container);
-        if (!(resolved instanceof HTMLElement)) {
-            console.error('Invalid template container', resolved);
-            return this;
-        }
-        return resolved;
-    }
-
-    /**
-     * Gets the content of the template for the element.
-     * @param {HTMLTemplateElement} template
-     * @param {Record<string, unknown>} [payload]
-     * @returns {string}
-     */
-    getTemplateContent(template = this._config.template, payload) {
-        if (!payload) {
-            payload = this.getTemplateVars();
-            this.templateVars = payload;
-        }
-        return processTemplate(template.innerHTML, payload, this);
     }
 
     // #endregion Templates
@@ -572,6 +488,21 @@ class ArpaElement extends HTMLElement {
     _onDestroy() {
         onDestroy(this);
     }
+
+    /**
+     * Handles a lost zone.
+     * @param {ZoneToolPlaceZoneType} _payload
+     * @returns {boolean | ((payload: ZoneToolPlaceZoneType) => any) | undefined}
+     */
+    _onLostZone(_payload) {
+        return false;
+    }
+
+    /**
+     * Transfers the links from the icon menu component zone to the navigation component.
+     * @param {ZoneToolPlaceZoneType} _payload - The payload object passed by the ZoneTool.
+     */
+    _onPlaceZone(_payload) {}
 
     _addClassNames() {
         const classes = classNames(
@@ -657,25 +588,13 @@ class ArpaElement extends HTMLElement {
         const { attributes } = this._config;
         attributes && attr(this, attributes);
         await this.render();
-        this._initializeTemplateNodes();
+        initializeTemplateNodes(this);
         await this._initializeNodes();
         this._onDomReady();
         this._onRenderReadyCallbacks.forEach(callback => typeof callback === 'function' && callback());
         this._onRenderReadyCallbacks = [];
         this._handleZones();
         this._onRenderComplete();
-    }
-
-    _initializeTemplateNodes() {
-        const conf = this.getChildrenConfig();
-        if (!conf) return;
-        for (const name of Object.keys(conf)) {
-            // @ts-ignore
-            const className = getChildClassName(this, name);
-            /** @type {HTMLElement | null} */
-            const node = this.querySelector(`.${className}`);
-            node && (this.templateNodes[name] = node);
-        }
     }
 
     async _initializeNodes() {
@@ -737,7 +656,7 @@ class ArpaElement extends HTMLElement {
      * Renders the element.
      * @param {string} [template] - The template to render.
      */
-    render(template) {
+    render(template = '') {
         const content = this.renderTemplate(template);
         content && (this.innerHTML = content);
     }
@@ -745,7 +664,7 @@ class ArpaElement extends HTMLElement {
     /**
      * Renders a child element.
      * @param {string} name
-     * @param {CustomElementChildOptionsType} [options]
+     * @param {ArpaElementChildOptionsType} [options]
      * @param {Record<string, string>} [attributes]
      * @returns {string}
      */
@@ -755,20 +674,12 @@ class ArpaElement extends HTMLElement {
 
     /**
      * Renders the template for the element.
-     * @param {string | null} [_template] - The template to render.
+     * @param {string} template
      * @param {Record<string, unknown>} [vars] - The variables to use in the template.
      * @returns {string} The rendered template.
      */
-    renderTemplate(_template, vars = this.getTemplateVars()) {
-        const templateContent = this.templates?.content?.innerHTML.trim();
-        const template = _template || templateContent || this._getTemplate();
-        for (const tplVar of Object.keys(vars)) {
-            if (typeof vars[tplVar] === 'string') {
-                vars[tplVar] = processTemplate(vars[tplVar], vars, this);
-            }
-        }
-        const result = template && processTemplate(template, vars, this);
-        return typeof result === 'string' ? result : '';
+    renderTemplate(template, vars = this.getTemplateVars()) {
+        return renderTemplate(this, template, vars);
     }
 
     _getTemplate() {

@@ -4,6 +4,7 @@
 
 import { dashedToCamel } from '@arpadroid/tools';
 import { renderChild } from './renderer.helper';
+import { destroyComponentZones } from '../../../tools/zoneTool';
 
 /**
  * Checks if an element has a property as an attribute or defined in the configuration.
@@ -38,7 +39,7 @@ export function getProperty(element, name, config = element._config ?? {}) {
     let rv;
     try {
         rv = element.getAttribute(name) ?? config[configName];
-    // eslint-disable-next-line sonarjs/no-ignored-exceptions
+        // eslint-disable-next-line sonarjs/no-ignored-exceptions
     } catch (_error) {
         rv = config[configName];
     }
@@ -107,4 +108,12 @@ export function processTemplate(template, props = {}, element) {
     }
     result.push(template.slice(startIndex));
     return result.join('');
+}
+
+/**
+ * Destroys the zones of a component.
+ * @param {ArpaElement} element - The component to destroy.
+ */
+export function onDestroy(element) {
+    destroyComponentZones(element);
 }

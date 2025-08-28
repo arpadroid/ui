@@ -96,7 +96,7 @@ class Button extends ArpaElement {
     async setTooltip(label) {
         let tooltip = /** @type {Tooltip | undefined} */ (this.templateNodes.tooltip);
         if (!tooltip) {
-            tooltip = renderNode(renderChild(this, 'tooltip', { content: label }));
+            tooltip = /** @type {Tooltip} */ (renderNode(renderChild(this, 'tooltip', { content: label })));
             tooltip instanceof HTMLElement && this.button?.appendChild(tooltip);
         }
         tooltip?.setContent(label);
@@ -163,7 +163,7 @@ class Button extends ArpaElement {
 
     /**
      * Handles a lost zone.
-     * @param {import('@arpadroid/tools').ZoneToolPlaceZoneType} event - The event object.
+     * @param {import('../../tools/zoneTool.types.js').ZoneToolPlaceZoneType} event - The event object.
      * @returns {boolean | undefined} Whether the zone was handled.
      */
     _onLostZone({ zoneName, zone }) {
