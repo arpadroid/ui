@@ -4,8 +4,7 @@
  * @typedef {import('../components/arpaElement/arpaElement.js').default} ArpaElement
  */
 
-import { debounce, throttle } from '../../../tools/src/functionTool/functionTool.js';
-import { appendNodes, attr, getAttributesWithPrefix } from '../../../tools/src/nodeTool/nodeTool.js';
+import { debounce, throttle, appendNodes, attr, getAttributesWithPrefix } from '@arpadroid/tools';
 
 /** @type {boolean} */
 const VERBOSE = false;

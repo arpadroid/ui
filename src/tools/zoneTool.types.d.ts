@@ -1,8 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import { ArpaElement } from '../components/arpaElement/arpaElement';
+
 export type ZoneToolPlaceZoneType = {
     nodes?: NodeList;
     zoneName?: string | null;
-    zoneComponent?: ElementType | null | undefined;
+    zoneComponent?: ArpaElement | null | undefined;
     zoneContainer?: Element | null | undefined;
     zone?: ZoneType;
 };
@@ -28,6 +29,4 @@ export type ComponentType = HTMLElement & {
     _config?: Record<string, unknown>;
 };
 
-export type ZoneFilterType = (zones: ZoneType[], component: ElementType) => ZoneType[];
-
-export type ElementType = (ComponentType & (Element | HTMLElement | ZoneType | ParentNode | Node)) | any;
+export type ZoneFilterType = (zones: ZoneType[], component: ArpaElement) => ZoneType[];

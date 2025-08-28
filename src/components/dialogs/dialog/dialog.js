@@ -37,7 +37,7 @@ class Dialog extends ArpaElement {
     }
 
     _preInitialize() {
-        this.originalParent = /** @type {import('@arpadroid/tools').ElementType} */ (
+        this.originalParent = /** @type {HTMLElement & { dialog?: Dialog }} */ (
             this.parentNode instanceof HTMLElement ? this.parentNode : null
         );
         this.originalParent && (this.originalParent.dialog = this);
@@ -109,7 +109,7 @@ class Dialog extends ArpaElement {
     async getButton() {
         const button = this.closest('button');
         if (button) return button;
-        /** @type {import('../../arpaElement/arpaElement.js').ElementType} */
+        /** @type {HTMLElement & { dialog?: Dialog, promise?: Promise<void> } | undefined} */
         const parent = this.originalParent;
         parent && (await parent?.promise);
         return parent?.closest('button') || parent?.querySelector('button');

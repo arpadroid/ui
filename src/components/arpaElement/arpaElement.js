@@ -1,7 +1,6 @@
 /**
  * @typedef {import('@arpadroid/tools').ZoneType} ZoneType
  * @typedef {import('./arpaElement.types').ArpaElementConfigType} ArpaElementConfigType
- * @typedef {import('@arpadroid/tools').ElementType} ElementType
  * @typedef {import('./arpaElement.types').ArpaElementChildOptionsType} ArpaElementChildOptionsType
  * @typedef {import('./arpaElement.types').TemplateContentMode} TemplateContentMode
  * @typedef {import('./arpaElement.types').TemplatesType} TemplatesType
