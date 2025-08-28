@@ -43,7 +43,7 @@ a.iconButton,
         gap: 0;
     }
 
-    .button__content {
+    .arpaButton__content {
         display: flex;
         align-items: center;
         justify-content: center;

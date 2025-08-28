@@ -20,11 +20,15 @@ export { default as DarkModeButton } from './components/darkModeButton/darkModeB
  */
 export { default as TruncateText } from './components/truncateText/truncateText.js';
 export { default as InputCombo } from './components/inputCombo/inputCombo.js';
+export { default as Accordion } from './components/accordion/accordion.js';
 
 /**
  * Preloaders.
  */
 export { default as CircularPreloader } from './components/preloaders/circularPreloader/circularPreloader.js';
+
+export * from './components/arpaElement/helper/renderer.helper.js';
+export * from './components/arpaElement/helper/arpaElement.helper.js';
 
 /**
  * Inputs.

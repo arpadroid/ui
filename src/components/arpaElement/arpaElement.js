@@ -7,10 +7,13 @@
  * @typedef {import('./arpaElement.types').TemplatesType} TemplatesType
  * @typedef {import('./arpaElement.types').ArpaElementTemplateType} ArpaElementTemplateType
  */
-import { dashedToCamel, mergeObjects, renderNode, processTemplate, extractZones } from '@arpadroid/tools';
-import { handleZones, zoneMixin, hasZone, getZone, attr, setNodes, canRender } from '@arpadroid/tools';
-import { getProperty, hasProperty, getArrayProperty, hasContent, onDestroy, bind } from '@arpadroid/tools';
-import { renderChild, defineCustomElement, getAttributesWithPrefix, resolveNode } from '@arpadroid/tools';
+import { dashedToCamel, mergeObjects, renderNode } from '@arpadroid/tools';
+import { extractZones, classNames } from '@arpadroid/tools';
+import { handleZones, zoneMixin, hasZone, getZone, attr, setNodes } from '@arpadroid/tools';
+import { onDestroy, bind } from '@arpadroid/tools';
+import { defineCustomElement, getAttributesWithPrefix, resolveNode } from '@arpadroid/tools';
+import { processTemplate, hasProperty, getProperty, getArrayProperty } from './helper/arpaElement.helper';
+import { getChildContent, getChildClassName, canRender, renderChild, hasContent } from './helper/renderer.helper';
 import { I18nTool, I18n } from '@arpadroid/i18n';
 const { arpaElementI18n } = I18nTool;
 
@@ -27,12 +30,16 @@ class ArpaElement extends HTMLElement {
     _hasRendered = false;
     _hasInitialized = false;
     _isReady = false;
+    /** @type {string | null} */
+    _textContent = '';
     /** @type {TemplatesType} */
     templates = {};
     /** @type {Record<string, CustomElementChildOptionsType>} */
     templateChildren = {};
     /** @type {Record<string, HTMLElement>} */
     templateNodes = {};
+    /** @type {Record<string, unknown>} */
+    templateVars = {};
 
     /**
      * Creates a new instance of ArpaElement.
@@ -80,6 +87,7 @@ class ArpaElement extends HTMLElement {
 
     _initializeContent() {
         this._content = this.innerHTML;
+        this._textContent = this.textContent;
         /** @type {Node[]} */
         this._childNodes = [...this.childNodes];
     }
@@ -190,8 +198,18 @@ class ArpaElement extends HTMLElement {
         return getZone(this, name);
     }
 
-    getClassName() {
-        return this._config.className || this.getAttribute('class')?.split(' ')[0];
+    /**
+     * Returns the base class for the element.
+     * If a name is given, it is added to the class name following BEM convention.
+     * @param {string} [name]
+     * @returns {string}
+     */
+    getClassName(name) {
+        let rv = this._config.className || this.getAttribute('class')?.split(' ')[0];
+        if (typeof name === 'string') {
+            rv += `__${name}`;
+        }
+        return rv;
     }
 
     getPayload() {
@@ -220,7 +238,16 @@ class ArpaElement extends HTMLElement {
     }
 
     getTemplateChildren() {
-        return this._config.templateChildren || {};
+        return this._config?.templateChildren || {};
+    }
+
+    /**
+     * Gets a template child by name.
+     * @param {string} name
+     * @returns {CustomElementChildOptionsType | undefined}
+     */
+    getTemplateChild(name) {
+        return this._config?.templateChildren?.[name];
     }
 
     // #endregion get
@@ -265,7 +292,7 @@ class ArpaElement extends HTMLElement {
     /**
      * Sets the content of the element.
      * @param {string | HTMLElement} content - The content to set.
-     * @param {HTMLElement} [contentContainer] - The container for the content.
+     * @param {HTMLElement | null} [contentContainer] - The container for the content.
      */
     setContent(content, contentContainer = this) {
         if (typeof content === 'string') {
@@ -280,6 +307,80 @@ class ArpaElement extends HTMLElement {
             const childElements = /** @type {Element[]} */ (this.getChildElements());
             setNodes(contentContainer, childElements);
         }
+    }
+
+    /**
+     * Sets a child element.
+     * @param {string} name
+     * @param {CustomElementChildOptionsType} [config] - The configuration object.
+     */
+    setChild(name, config = {}) {
+        if (!name) return;
+        this.setChildConfig(name, config);
+        this.updateChildNode(name, config);
+    }
+
+    /**
+     * Updates a child element.
+     * @param {string} name
+     * @param {CustomElementChildOptionsType} config - The configuration object.
+     * @returns {HTMLElement | null}
+     */
+    updateChildNode(name, config) {
+        let node = this.templateNodes[name];
+        if (node) {
+            if (typeof config.attr === 'object') {
+                attr(node, config.attr);
+            }
+            if (config.content) {
+                const content = getChildContent(this, name, config);
+                node.innerHTML = content;
+            }
+        } else {
+            const conf = mergeObjects(this.getChildConfig(name) || {}, config);
+
+            this.templateNodes[name] = renderNode(renderChild(this, name, conf));
+            node = this.templateNodes[name];
+        }
+        return node;
+    }
+
+    /**
+     * Sets a child element.
+     * @param {string} name
+     * @param {CustomElementChildOptionsType} [config] - The configuration object.
+     * @returns {HTMLElement | null}
+     */
+    editChild(name, config = {}) {
+        if (!name) return null;
+        this.setChildConfig(name, mergeObjects(this.getChildConfig(name) || {}, config));
+        return this.updateChildNode(name, config);
+    }
+
+    /**
+     * Gets the configuration for a child element.
+     * @param {string} childName
+     * @returns {Record<string, CustomElementChildOptionsType> | undefined}
+     */
+    getChildConfig(childName) {
+        return this._config?.templateChildren?.[childName];
+    }
+
+    /**
+     * Sets the configuration for a child element.
+     * @param {string} childName
+     * @param {CustomElementChildOptionsType} config
+     */
+    setChildConfig(childName, config = {}) {
+        this._config.templateChildren[childName] = config;
+    }
+
+    /**
+     * Gets the configuration for a child element.
+     * @returns {CustomElementChildOptionsType | undefined}
+     */
+    getChildrenConfig() {
+        return this._config?.templateChildren;
     }
 
     // #endregion Set
@@ -436,7 +537,11 @@ class ArpaElement extends HTMLElement {
      * @param {Record<string, unknown>} [payload]
      * @returns {string}
      */
-    getTemplateContent(template = this._config.template, payload = this.getTemplateVars()) {
+    getTemplateContent(template = this._config.template, payload) {
+        if (!payload) {
+            payload = this.getTemplateVars();
+            this.templateVars = payload;
+        }
         return processTemplate(template.innerHTML, payload, this);
     }
 
@@ -469,8 +574,12 @@ class ArpaElement extends HTMLElement {
     }
 
     _addClassNames() {
-        const classes = [this._config.className ?? '', ...(this._config.classNames ?? [])].filter(Boolean);
-        classes.length && this.classList.add(...classes);
+        const classes = classNames(
+            this._config?.className || '',
+            ...(this._config.classNames || ''),
+            this.getAttribute('class') || ''
+        );
+        this.setAttribute('class', classes);
     }
 
     /**
@@ -548,12 +657,25 @@ class ArpaElement extends HTMLElement {
         const { attributes } = this._config;
         attributes && attr(this, attributes);
         await this.render();
+        this._initializeTemplateNodes();
         await this._initializeNodes();
         this._onDomReady();
         this._onRenderReadyCallbacks.forEach(callback => typeof callback === 'function' && callback());
         this._onRenderReadyCallbacks = [];
         this._handleZones();
         this._onRenderComplete();
+    }
+
+    _initializeTemplateNodes() {
+        const conf = this.getChildrenConfig();
+        if (!conf) return;
+        for (const name of Object.keys(conf)) {
+            // @ts-ignore
+            const className = getChildClassName(this, name);
+            /** @type {HTMLElement | null} */
+            const node = this.querySelector(`.${className}`);
+            node && (this.templateNodes[name] = node);
+        }
     }
 
     async _initializeNodes() {

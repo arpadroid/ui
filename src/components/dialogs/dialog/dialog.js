@@ -5,7 +5,8 @@
 
 import ArpaElement from '../../arpaElement/arpaElement.js';
 import { observerMixin, renderNode } from '@arpadroid/tools';
-import { attrString, dummySignal, defineCustomElement, listen, processTemplate } from '@arpadroid/tools';
+import { attrString, dummySignal, defineCustomElement, listen } from '@arpadroid/tools';
+import { processTemplate } from '../../arpaElement/helper/arpaElement.helper';
 
 const html = String.raw;
 class Dialog extends ArpaElement {
@@ -204,7 +205,7 @@ class Dialog extends ArpaElement {
     renderHeaderContent() {
         if (!this.hasTitle() && !this.hasContent('icon')) return '';
         return processTemplate(
-            html`<div class="dialog__headerContent" zone="header">${this.renderTitle() || ''}</div>`
+            html`<div class="dialog__headerContent" zone="header">${this.renderTitle() || ''}</div>`, this.templateVars, this
         );
     }
 

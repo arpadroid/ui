@@ -19,7 +19,7 @@
     --button-weight: 800;
 }
 
-.arpaButton:not([variant='minimal']) {
+.arpaButton__button:not([variant='minimal']) {
     --icon-size: 1.2rem;
     position: relative;
     align-items: center;
@@ -90,11 +90,11 @@
 * Hover / Focus
 */
 
-.arpaButton:not(:disabled):not([data-invalid]) {
+.arpaButton__button:not(:disabled):not([data-invalid]):not([variant='minimal']) {
     &:hover,
     &:focus {
         box-shadow: var(--button-box-shadow-hover);
-        .button__content {
+        .arpaButton__content {
             font-weight: var(--button-weight-active);
             color: var(--button-active-color);
         }
@@ -108,8 +108,8 @@
 * Disabled
 */
 
-.arpaButton:disabled,
-.arpaButton[data-invalid] {
+.arpaButton__button:disabled,
+.arpaButton__button[data-invalid] {
     cursor: not-allowed;
     opacity: 0.5;
 }
@@ -121,7 +121,7 @@ arpa-button {
     }
 }
 
-.button__content {
+.arpaButton__content {
     flex: 1 1 auto;
     max-height: 100%;
     height: auto;

@@ -12,8 +12,11 @@ class DarkModeButton extends IconButton {
             icon: 'dark_mode',
             iconLight: 'light_mode',
             label: this.i18n('lblDarkMode'),
-            labelText: this.i18nText('lblDarkMode'),
-            labelLight: this.i18n('lblLightMode')
+            tooltip: this.i18nText('lblDarkMode'),
+            labelLight: this.i18n('lblLightMode'),
+            templateChildren: {
+                content: { canRender: false}
+            }
         };
         return mergeObjects(super.getDefaultConfig(), config);
     }
@@ -34,7 +37,7 @@ class DarkModeButton extends IconButton {
             this.setTooltip(this.getLabelLight());
         } else {
             styleNode.disabled = true;
-            this.setIcon(this.getIcon());
+            this.setIcon(this.getProperty('icon'));
             this.setTooltip(this.getLabel().toString());
         }
     }
