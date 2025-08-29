@@ -17,6 +17,7 @@
     --button-underline-color: var(--grey-200);
     --button-weight-active: 700;
     --button-weight: 800;
+    --button-width: auto;
 }
 
 .arpaButton__button:not([variant='minimal']) {
@@ -32,6 +33,7 @@
     cursor: pointer;
     display: flex;
     height: var(--button-height);
+    width: var(--button-width);
     padding: var(--button-padding);
     transition: var(--theme-transition);
 

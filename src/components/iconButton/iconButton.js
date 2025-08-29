@@ -9,7 +9,8 @@ import Button from '../button/button.js';
 class IconButton extends Button {
     getDefaultConfig() {
         const config = {
-            buttonClass: 'iconButton',
+            buttonClass: 'iconButton__button',
+            className: 'iconButton',
             templateChildren: {
                 content: { canRender: false },
                 tooltip: {

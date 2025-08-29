@@ -191,7 +191,7 @@ class InputCombo {
      */
     _initializeCombo(combo = this.combo) {
         combo.style.display = 'none'; // @ts-ignore
-        listen(combo, 'keyup', this._onComboKeyUp); // @ts-ignore
+        listen(combo, 'keyup', this._onComboKeyUp);
     }
 
     /**

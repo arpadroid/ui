@@ -1,18 +1,16 @@
 /**
- * @typedef {import('@arpadroid/tools').ZoneType} ZoneType
  * @typedef {import('./arpaElement.types').ArpaElementConfigType} ArpaElementConfigType
  * @typedef {import('./arpaElement.types').ArpaElementChildOptionsType} ArpaElementChildOptionsType
  * @typedef {import('./arpaElement.types').TemplateContentMode} TemplateContentMode
  * @typedef {import('./arpaElement.types').TemplatesType} TemplatesType
  * @typedef {import('./arpaElement.types').ArpaElementTemplateType} ArpaElementTemplateType
  * @typedef {import('../../tools/zoneTool.types.js').ZoneToolPlaceZoneType} ZoneToolPlaceZoneType
+ * @typedef {import('../../tools/zoneTool.types.js').ZoneType} ZoneType
  */
-import { dashedToCamel, mergeObjects, renderNode } from '@arpadroid/tools';
-import { classNames } from '@arpadroid/tools';
-import { attr, setNodes } from '@arpadroid/tools';
-import { bind } from '@arpadroid/tools';
-import { defineCustomElement } from '@arpadroid/tools';
-import { handleZones, zoneMixin, hasZone, getZone, extractZones } from '../../tools/zoneTool';
+import { dashedToCamel, listen, mergeObjects, renderNode } from '@arpadroid/tools';
+import { defineCustomElement, attr, setNodes, bind, classNames } from '@arpadroid/tools';
+import { handleZones, zoneMixin, hasZone, getZone } from '../../tools/zoneTool';
+import { extractZones, findNodeComponent } from '../../tools/zoneTool';
 import { hasProperty, getProperty, getArrayProperty, onDestroy } from './helper/arpaElement.helper';
 import { canRender, renderChild, hasContent, renderTemplate } from './helper/renderer.helper';
 import { initializeTemplateNodes, updateChildNode, selectTemplates } from './helper/renderer.helper';
@@ -66,6 +64,20 @@ class ArpaElement extends HTMLElement {
         this._initializeContent();
         this._initialize();
         this.promise = this.getPromise();
+        this._handleOnClick();
+    }
+
+    async _handleOnClick() {
+        const onClick = this.getProperty('on-click');
+        if (onClick?.[0] === ':') {
+            const methodName = onClick.slice(1);
+            const parentComponent = findNodeComponent(/** @type {ArpaElement} */ (this.parentNode));
+            // @ts-ignore
+            const method = parentComponent[methodName];
+            if (typeof method === 'function') {
+                listen(this, 'click', method.bind(parentComponent));
+            }
+        }
     }
 
     _preInitialize() {
