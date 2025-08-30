@@ -1,5 +1,6 @@
 :root {
     --icon-button-size: 44px;
+    --icon-button-height: var(--icon-button-size);
     --icon-button-hilight-bg: var(--selected-hilight);
     --icon-button-hilight-border: 2px solid var(--color-primary);
     --icon-button-border-radius: 50%;
@@ -7,16 +8,16 @@
 }
 
 .iconButton__button,
-a.iconButton__button,
+.iconButton__button,
 .iconLink {
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
     width: var(--icon-button-size);
-    height: var(--icon-button-size);
+    height: var(--icon-button-height);
     min-width: var(--icon-button-size);
-    min-height: var(--icon-button-size);
+    min-height: var(--icon-button-height);
     border-radius: var(--icon-button-border-radius);
     border: 2px solid transparent;
     padding: 0;

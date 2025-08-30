@@ -9,5 +9,5 @@ export type TooltipConfigType = ArpaElementConfigType & {
     text?: string;
     icon?: string;
     label?: string;
-    onMouseTargetUpdate?: (target: HTMLElement) => void;
+    onMouseTargetUpdate?: (target: HTMLElement, event: MouseEvent | TouchEvent) => void;
 };

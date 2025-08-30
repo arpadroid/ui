@@ -31,6 +31,35 @@ class Button extends ArpaElement {
     }
 
     /////////////////////////
+    // #region Render
+    /////////////////////////
+    _preRender() {
+        super._preRender();
+        this.variant = this.getProperty('variant');
+        this.handleVariant();
+        this.disabled = this.hasAttribute('disabled');
+        this.removeAttribute('disabled');
+        this.removeAttribute('variant');
+    }
+
+    _getTemplate() {
+        return this.renderButton();
+    }
+
+    renderButton() {
+        const attr = attrString({
+            ariaLabel: this.getAriaLabel(),
+            class: this.getProperty('button-class'),
+            type: this.getProperty('type'),
+            variant: this.variant,
+            disabled: this.disabled
+        });
+        return html`<button ${attr}>{icon}{content}{rhsIcon}{tooltip}</button>`;
+    }
+
+    // #endregion Render
+
+    /////////////////////////
     // #region Get
     /////////////////////////
 
@@ -106,35 +135,6 @@ class Button extends ArpaElement {
     // #endregion Set
 
     /////////////////////////
-    // #region Render
-    /////////////////////////
-    _preRender() {
-        super._preRender();
-        this.variant = this.getProperty('variant');
-        this.handleVariant();
-        this.disabled = this.hasAttribute('disabled');
-        this.removeAttribute('disabled');
-        this.removeAttribute('variant');
-    }
-
-    _getTemplate() {
-        return this.renderButton();
-    }
-
-    renderButton() {
-        const attr = attrString({
-            ariaLabel: this.getAriaLabel(),
-            class: this.getProperty('button-class'),
-            type: this.getProperty('type'),
-            variant: this.variant,
-            disabled: this.disabled
-        });
-        return html`<button ${attr}>{icon}{content}{rhsIcon}{tooltip}</button>`;
-    }
-
-    // #endregion Render
-
-    /////////////////////////
     // #region Lifecycle
     //////////////////
 
@@ -161,6 +161,7 @@ class Button extends ArpaElement {
         if (!button) return;
         this.variant === 'delete' && button.classList.add('button--delete');
         listen(button, 'click', this._onClick);
+        /** @type {HTMLButtonElement | null} */
         this.button = button;
     }
 

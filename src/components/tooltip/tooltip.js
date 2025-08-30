@@ -1,7 +1,7 @@
 /**
  * @typedef {import('./tooltip.types.js').TooltipConfigType} TooltipConfigType
  */
-import { defineCustomElement, listen, resolveNode, style } from '@arpadroid/tools';
+import { defineCustomElement, listen, normalizeTouchEvent, resolveNode, style } from '@arpadroid/tools';
 import ArpaElement from '../arpaElement/arpaElement.js';
 
 const html = String.raw;
@@ -141,8 +141,8 @@ class Tooltip extends ArpaElement {
         if (this.handler) {
             // @ts-ignore
             listen(this.handler, ['mousemove', 'touchmove'], this._onMouseMove);
-            listen(this.handler, ['mouseenter', 'touchstart'], this._onMouseEnter);
-            listen(this.handler, ['mouseleave'], this._onMouseLeave);
+            listen(this.handler, ['mouseenter', 'touchmove'], this._onMouseEnter);
+            listen(this.handler, ['mouseleave', 'touchend'], this._onMouseLeave);
         }
     }
 
@@ -159,21 +159,23 @@ class Tooltip extends ArpaElement {
 
     /**
      * Handles the mouse target update event.
-     * @param {MouseEvent} event - The target element.
+     * @param {HTMLElement | null} target - The target element.
+     * @param {MouseEvent | TouchEvent} event
      */
-    _onMouseTargetUpdate(event) {
+    _onMouseTargetUpdate(target, event) {
         const { onMouseTargetUpdate } = this._config || {};
         if (typeof onMouseTargetUpdate === 'function') {
-            onMouseTargetUpdate(/** @type {HTMLElement} */ (event.target));
+            onMouseTargetUpdate(/** @type {HTMLElement} */ (target), event);
         }
     }
     /**
      * Handles the mouse move event.
-     * @param {MouseEvent} event
+     * @param {MouseEvent | TouchEvent} event
      */
     _onMouseMove(event) {
-        event.target !== this.mouseTarget && this._onMouseTargetUpdate(/** @type {MouseEvent} */ (event));
-        this.mouseTarget = /** @type {HTMLElement | null} */ (event.target);
+        const { target, clientX, clientY } = normalizeTouchEvent(event);
+        target !== this.mouseTarget && this._onMouseTargetUpdate(target, event);
+        this.mouseTarget = /** @type {HTMLElement | null} */ (target);
         const offset = 16;
         const content = this.contentNode;
         const handler = this.handler;
@@ -182,7 +184,7 @@ class Tooltip extends ArpaElement {
         const position = this.getProperty('cursor-tooltip-position');
         const rect = handler?.getBoundingClientRect();
         if (!rect) return;
-        const { clientX, clientY } = event;
+
         const axis = this.getProperty('cursor-position-axis') || 'x';
         if (axis === 'x') {
             /** @type {string | number} */

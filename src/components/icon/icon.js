@@ -1,4 +1,4 @@
-import { defineCustomElement } from '@arpadroid/tools';
+import { defineCustomElement, mechanize } from '@arpadroid/tools';
 
 class Icon extends HTMLElement {
     constructor() {
@@ -10,6 +10,8 @@ class Icon extends HTMLElement {
         if (['', 'none'].includes(this.innerHTML)) {
             this.remove();
         }
+        const iconClass = 'icon--' +  mechanize(this.innerHTML);
+        this.classList.add(iconClass);
     }
     /**
      * Sets the icon to display.

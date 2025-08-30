@@ -365,6 +365,10 @@ class ArpaElement extends HTMLElement {
         return this._config?.templateChildren?.[childName];
     }
 
+    getChild(name = '') {
+        return this.templateNodes?.[name] || null;
+    }
+
     /**
      * Sets the configuration for a child element.
      * @param {string} childName
@@ -601,10 +605,10 @@ class ArpaElement extends HTMLElement {
         await this.render();
         initializeTemplateNodes(this);
         await this._initializeNodes();
-        this._onDomReady();
         this._onRenderReadyCallbacks.forEach(callback => typeof callback === 'function' && callback());
         this._onRenderReadyCallbacks = [];
         this._handleZones();
+        this._onDomReady();
         this._onRenderComplete();
     }
 
