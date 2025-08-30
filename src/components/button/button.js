@@ -15,19 +15,19 @@ class Button extends ArpaElement {
      */
     getDefaultConfig() {
         this.bind('_onClick');
-        return /** @type {ButtonConfigType} */ (
-            super.getDefaultConfig({
-                className: 'arpaButton',
-                type: 'button',
-                buttonClass: 'arpaButton__button',
-                templateChildren: {
-                    content: { tag: 'span', zoneName: 'buttonContent', canRender: true },
-                    icon: { tag: 'arpa-icon' },
-                    rhsIcon: { tag: 'arpa-icon' },
-                    tooltip: { tag: 'arpa-tooltip', attr: { position: this.getTooltipPosition.bind(this) } }
-                }
-            })
-        );
+        /** @type {ButtonConfigType} */
+        const config = {
+            className: 'arpaButton',
+            type: 'button',
+            buttonClass: 'arpaButton__button',
+            templateChildren: {
+                content: { tag: 'span', zoneName: 'buttonContent', canRender: true },
+                icon: { tag: 'arpa-icon' },
+                rhsIcon: { tag: 'arpa-icon' },
+                tooltip: { tag: 'arpa-tooltip', attr: { position: this.getTooltipPosition.bind(this) } }
+            }
+        };
+        return /** @type {ButtonConfigType} */ (super.getDefaultConfig(config));
     }
 
     /////////////////////////
@@ -118,6 +118,10 @@ class Button extends ArpaElement {
     }
 
     _getTemplate() {
+        return this.renderButton();
+    }
+
+    renderButton() {
         const attr = attrString({
             ariaLabel: this.getAriaLabel(),
             class: this.getProperty('button-class'),
@@ -141,14 +145,27 @@ class Button extends ArpaElement {
 
     async _initializeNodes() {
         await super._initializeNodes();
-        this.button = this.querySelector('button');
-        this.variant === 'delete' && this.button?.classList.add('button--delete');
-        this.button && listen(this.button, 'click', this._onClick);
+
         this.tooltip = /** @type {Tooltip | null} */ (this.querySelector('arpa-tooltip'));
         this.icon = this.querySelector('.arpaButton__icon');
         this.contentNode = this.querySelector('.arpaButton__content');
-        this.contentNode && appendNodes(this.contentNode, this._childNodes);
+
+        const contentNodes = this.getContentNodes();
+        this.contentNode && appendNodes(this.contentNode, contentNodes);
+        this._initializeButton();
         return true;
+    }
+
+    _initializeButton() {
+        const button = this.querySelector('button');
+        if (!button) return;
+        this.variant === 'delete' && button.classList.add('button--delete');
+        listen(button, 'click', this._onClick);
+        this.button = button;
+    }
+
+    getContentNodes() {
+        return this._childNodes;
     }
 
     handleVariant() {
