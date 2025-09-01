@@ -28,6 +28,9 @@ class Accordion {
      * @param {AccordionConfigType} config
      */
     constructor(node, config = {}) {
+        if (!node) {
+            throw new Error('Accordion: node is required');
+        }
         this.config = mergeObjects(this._defaultConfig, config);
         this.node = node;
         this.initialize();
@@ -35,7 +38,7 @@ class Accordion {
 
     initializeHandlers() {
         const { handlerSelector } = this.config || {};
-        if (handlerSelector) {
+        if (handlerSelector && this.node) {
             this.handlers = Array.from(this.node.querySelectorAll(handlerSelector));
         }
         this.handlers?.forEach(handler => this.initializeHandler(handler));
