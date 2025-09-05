@@ -175,9 +175,11 @@ export function getChildClassName(element, name) {
  */
 export function canRenderChild(element, name, config = {}) {
     const { canRender } = config;
-    if (canRender === true) return true;
-    if (typeof canRender === 'function') {
-        return canRender(element);
+    if (canRender === true || canRender === false) return canRender;
+    if (typeof canRender === 'function') return canRender(element);
+
+    if (typeof canRender === 'string' && typeof element?.hasProperty === 'function') {
+        return Boolean(element.hasProperty(canRender));
     }
     return hasContent(element, name, config);
 }
@@ -212,14 +214,18 @@ export function getDefaultChildConfig(element, name) {
 export function getChildAttributes(element, name, config = {}, attributes = {}) {
     const { className, hasZone, zoneName } = config;
     const attr = mergeObjects(config.attr || {}, attributes);
-    for (const key in attr) {
-        if (typeof attr[key] === 'function') {
-            attr[key] = attr[key](element);
-        }
-    }
     config.id && (attr.id = config.id);
     className && (attr.class = className);
     hasZone && (attr.zone = zoneName);
+    for (const key in attr) {
+        if (!attr[key]) continue;
+        if (typeof attr[key] === 'function') {
+            attr[key] = attr[key](element);
+        }
+        if (typeof attr[key] === 'string') {
+            attr[key] = processTemplate(attr[key], element?.templateVars, element);
+        }
+    }
     return attr;
 }
 

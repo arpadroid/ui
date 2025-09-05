@@ -694,6 +694,7 @@ class ArpaElement extends HTMLElement {
      * @returns {string} The rendered template.
      */
     renderTemplate(template, vars = this.getTemplateVars()) {
+        this.templateVars = vars;
         return renderTemplate(this, template, vars);
     }
 

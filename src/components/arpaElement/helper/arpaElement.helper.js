@@ -2,7 +2,7 @@
  * @typedef {import("../arpaElement").default} ArpaElement
  */
 
-import { dashedToCamel } from '@arpadroid/tools';
+import { camelToDashed, dashedToCamel } from '@arpadroid/tools';
 import { renderChild } from './renderer.helper';
 import { destroyComponentZones } from '../../../tools/zoneTool';
 
@@ -38,7 +38,7 @@ export function getProperty(element, name, config = element._config ?? {}) {
     /** @todo Try to remove the try / catch. */
     let rv;
     try {
-        rv = element.getAttribute(name) ?? config[configName];
+        rv = element.getAttribute(camelToDashed(name)) ?? config[configName];
         // eslint-disable-next-line sonarjs/no-ignored-exceptions
     } catch (_error) {
         rv = config[configName];
