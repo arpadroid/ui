@@ -120,30 +120,47 @@ export function renderTemplate(component, _template, vars = component.getTemplat
 }
 
 /**
+ * Applies the template attributes to the element.
+ * @param {ArpaElement} element
+ * @param {HTMLTemplateElement} template
+ * @param {Record<string, unknown>} [_payload]
+ * @param {string} [attributePrefix]
+ */
+export async function applyTemplateAttributes(
+    element,
+    template,
+    _payload = {},
+    attributePrefix = 'element-'
+) {
+    const payload = { ...(element.templateVars || {}), ..._payload };
+    const attributes = getAttributesWithPrefix(template, attributePrefix);
+    for (const key in attributes) {
+        if (typeof attributes[key] === 'string') {
+            attributes[key] = processTemplate(attributes[key], payload, element);
+        }
+    }
+
+    attr(element, attributes);
+}
+
+/**
  * Sets the template for the element.
  * @param {ArpaElement} element
  * @param {import('../arpaElement.types').ArpaElementTemplateType} template
- * @param {import('../arpaElement.types').ApplyTemplateConfigType} [config]
+ * @param {import('../arpaElement.types').ApplyTemplateConfigType} [payload]
  */
-export async function applyTemplate(element, template, config = {}) {
-    const { contentMode = template.getAttribute('type') } = config;
-    const container = getTemplateContainer(element, template);
-    if (!(container instanceof HTMLElement)) {
-        console.error('Invalid template container', container);
-        return;
-    }
-    const attributes = getAttributesWithPrefix(template, 'element-');
-    attr(container, attributes);
-    const content = getTemplateContent(element, template);
-    const node = document.createElement('div');
-    node.innerHTML = content;
-    if (contentMode === 'content') {
-        container.innerHTML = '';
-        container.append(...node.childNodes);
-    } else if (contentMode === 'prepend') {
-        container.prepend(...node.childNodes);
-    } else {
-        container.append(...node.childNodes);
+export async function applyTemplate(element, template, payload = {}) {
+    if (template instanceof HTMLTemplateElement) {
+        applyTemplateAttributes(element, template, payload);
+        const contentMode = template?.getAttribute('content-mode') || 'content';
+        const content = processTemplate(template.innerHTML, payload, element);
+        if (contentMode === 'content') {
+            element.templates.content = template;
+        } else if (contentMode === 'prepend') {
+            element.innerHTML = content + element.innerHTML;
+        } else if (contentMode === 'append') {
+            element.innerHTML = element.innerHTML + content;
+        }
     }
 }
 
