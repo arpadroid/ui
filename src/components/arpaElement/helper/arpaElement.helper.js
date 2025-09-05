@@ -72,7 +72,7 @@ export function getArrayProperty(element, name, config = element._config) {
  * @returns {unknown} The processed value.
  */
 export function processTemplateVariable(name, value, element) {
-    if (!value && typeof element?.getTemplateChildren === 'function') {
+    if (!value && typeof element?.getTemplateChild === 'function') {
         const child = element?.getTemplateChild(name);
         if (child) {
             value = renderChild(element, name, child);
