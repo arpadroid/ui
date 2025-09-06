@@ -268,8 +268,10 @@ export function getChildContent(element, name, config = {}) {
  * @returns {string}
  */
 export function renderChild(element, name, config = {}, attributes = {}) {
-    config = mergeObjects(getDefaultChildConfig(element, name), config);
-    if (!canRenderChild(element, name, config)) return '';
+    const defaults = getDefaultChildConfig(element, name);
+    if (!canRenderChild(element, name, mergeObjects(defaults, config))) return '';
+    config = mergeObjects(defaults, config);
+    typeof config.attr === 'function' && (config.attr = config.attr());
     const attr = getChildAttributes(element, name, config, attributes);
     const { tag } = config;
     return html`<${tag} ${attrString(attr)}>${getChildContent(element, name, config)}</${tag}>`;

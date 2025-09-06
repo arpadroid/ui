@@ -94,6 +94,11 @@ arpa-image {
             justify-content: center;
             transition: var(--theme-transition);
         }
+
+        .iconButton__button {
+            width: 100%;
+            height: 100%;
+        }
     }
 
     circular-preloader {
