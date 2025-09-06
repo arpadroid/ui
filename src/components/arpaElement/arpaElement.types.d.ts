@@ -21,7 +21,7 @@ export type ApplyTemplateConfigType = {
     contentMode?: TemplateContentMode;
 };
 
-export type ArpaElementAttributesType = Record<string, string | (() => string)>;
+export type ArpaElementAttributesType = Record<string, (string | boolean) | (() => (string | boolean))>;
 
 export type ArpaElementChildOptionsType = {
     tag?: string;
