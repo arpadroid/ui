@@ -35,14 +35,8 @@ export function hasProperty(element, name, config = element._config) {
  */
 export function getProperty(element, name, config = element._config ?? {}) {
     const configName = dashedToCamel(name);
-    /** @todo Try to remove the try / catch. */
     let rv;
-    try {
-        rv = element.getAttribute(camelToDashed(name)) ?? config[configName];
-        // eslint-disable-next-line sonarjs/no-ignored-exceptions
-    } catch (_error) {
-        rv = config[configName];
-    }
+    rv = element.getAttribute(camelToDashed(name)) || config[configName];
     if (rv === 'undefined') {
         rv = undefined;
     }
