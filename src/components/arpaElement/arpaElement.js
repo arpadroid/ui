@@ -7,11 +7,11 @@
  * @typedef {import('../../tools/zoneTool.types.js').ZoneToolPlaceZoneType} ZoneToolPlaceZoneType
  * @typedef {import('../../tools/zoneTool.types.js').ZoneType} ZoneType
  */
-import { dashedToCamel, listen, mergeObjects, renderNode } from '@arpadroid/tools';
+import { dashedToCamel, mergeObjects, renderNode } from '@arpadroid/tools';
 import { defineCustomElement, attr, setNodes, bind, classNames } from '@arpadroid/tools';
-import { handleZones, zoneMixin, hasZone, getZone } from '../../tools/zoneTool';
-import { extractZones, findNodeComponent } from '../../tools/zoneTool';
-import { hasProperty, getProperty, getArrayProperty, onDestroy } from './helper/arpaElement.helper';
+import { handleZones, zoneMixin, hasZone, getZone, extractZones } from '../../tools/zoneTool';
+import { hasProperty, getProperty, getArrayProperty } from './helper/arpaElement.helper';
+import { onDestroy, handleCallbackProperty } from './helper/arpaElement.helper';
 import { canRender, renderChild, hasContent, renderTemplate } from './helper/renderer.helper';
 import { initializeTemplateNodes, updateChildNode, selectTemplates } from './helper/renderer.helper';
 import { I18nTool, I18n } from '@arpadroid/i18n';
@@ -64,20 +64,7 @@ class ArpaElement extends HTMLElement {
         this._initializeContent();
         this._initialize();
         this.promise = this.getPromise();
-        this._handleOnClick();
-    }
-
-    async _handleOnClick() {
-        const onClick = this.getProperty('on-click');
-        if (onClick?.[0] === ':') {
-            const methodName = onClick.slice(1);
-            const parentComponent = findNodeComponent(/** @type {ArpaElement} */ (this.parentNode));
-            // @ts-ignore
-            const method = parentComponent[methodName];
-            if (typeof method === 'function') {
-                listen(this, 'click', method.bind(parentComponent));
-            }
-        }
+        handleCallbackProperty(this, 'on-click', 'click');
     }
 
     _preInitialize() {
@@ -129,7 +116,7 @@ class ArpaElement extends HTMLElement {
             className: '',
             variant: undefined,
             templateContainer: this,
-            templateTypes: ['add', 'content', 'list-item', 'prepend', 'append']
+            templateTypes: ['content']
         };
         return mergeObjects(defaultConfig, config);
     }
@@ -470,7 +457,7 @@ class ArpaElement extends HTMLElement {
     _initializeTemplates() {
         const templates = selectTemplates(this);
         templates.forEach(template => {
-            const type = /** @type {TemplateContentMode | null} */ (template.getAttribute('type'));
+            const type = /** @type {TemplateContentMode | null} */ (template.getAttribute('template-type'));
             type && (this.templates[type] = template);
             template.isConnected && template.remove();
         });

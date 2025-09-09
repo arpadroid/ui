@@ -18,7 +18,7 @@ export type SetTemplateConfigType = {
 export type ApplyTemplateConfigType = {
     container?: TemplateContainerConfigType;
     applyAttributes?: boolean;
-    contentMode?: TemplateContentMode;
+    templateMode?: TemplateContentMode;
 };
 
 export type ArpaElementAttributesType = Record<string, (string | boolean) | (() => (string | boolean))>;

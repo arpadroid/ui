@@ -2,9 +2,9 @@
  * @typedef {import("../arpaElement").default} ArpaElement
  */
 
-import { camelToDashed, dashedToCamel } from '@arpadroid/tools';
+import { camelToDashed, dashedToCamel, listen } from '@arpadroid/tools';
 import { renderChild } from './renderer.helper';
-import { destroyComponentZones } from '../../../tools/zoneTool';
+import { destroyComponentZones, findNodeComponent } from '../../../tools/zoneTool';
 
 /**
  * Checks if an element has a property as an attribute or defined in the configuration.
@@ -110,4 +110,37 @@ export function processTemplate(template, props = {}, element) {
  */
 export function onDestroy(element) {
     destroyComponentZones(element);
+}
+
+/**
+ * Gets a callback property of a component defined as a string starting with ':'.
+ * @param {ArpaElement} element
+ * @param {string} propertyName
+ * @returns {((event: Event) => void) | undefined} The callback function or undefined if not found.
+ */
+export function getPropertyCallback(element, propertyName) {
+    const val = getProperty(element, propertyName);
+    if (typeof val === 'string' && val?.[0] === ':') {
+        const methodName = val.slice(1);
+        const parentComponent = findNodeComponent(/** @type {ArpaElement} */ (element.parentNode));
+        // @ts-ignore
+        const method = parentComponent?.[methodName];
+        return method?.bind(parentComponent);
+    }
+}
+
+/**
+ * Handles a callback property of a component defined as a string starting with ':'.
+ * The callback method will be looked-up and called in the parent component.
+ * @param {ArpaElement} element - The element to handle the callback for.
+ * @param {string} propertyName - The name of the property to check.
+ * @param {string} eventName - The name of the event to listen for.
+ * @returns {((event: Event) => void) | undefined} The callback function or undefined if not found.
+ */
+export function handleCallbackProperty(element, propertyName, eventName = '') {
+    const method = getPropertyCallback(element, propertyName);
+    if (typeof method === 'function' && eventName) {
+        listen(element, eventName, method);
+    }
+    return method;
 }

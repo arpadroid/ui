@@ -4,7 +4,7 @@
  * @typedef {import("../arpaElement").default} ArpaElement
  */
 
-import { attr, attrString, dashedToCamel, getAttributesWithPrefix } from '@arpadroid/tools';
+import { attr, attrString, dashedToCamel, getAttributes, getAttributesWithPrefix } from '@arpadroid/tools';
 import { mergeObjects, renderNode, resolveNode } from '@arpadroid/tools';
 import { processTemplate } from './arpaElement.helper';
 import { hasZone } from '../../../tools/zoneTool';
@@ -55,7 +55,7 @@ export function canRender(element, timeout = 200) {
 export function getTemplatesSelector(element) {
     const templateTypes = element.getArrayProperty('template-types');
     if (!templateTypes?.length) return;
-    return templateTypes.map(type => `:scope > template[type="${type}"]`).join(', ');
+    return templateTypes.map(type => `:scope > template[template-type="${type}"]`).join(', ');
 }
 
 /**
@@ -90,7 +90,7 @@ export function getTemplateContent(element, template = element._config.template,
  * @returns {HTMLElement | Element | DocumentFragment | null}
  */
 export function getTemplateContainer(element, template) {
-    let container = template.getAttribute('container') || element.getProperty('template-container');
+    let container = template.getAttribute('container') || element.getProperty('container');
     typeof container === 'function' && (container = container());
     const resolved = resolveNode(container);
     if (!(resolved instanceof HTMLElement)) {
@@ -119,6 +119,22 @@ export function renderTemplate(component, _template, vars = component.getTemplat
     return typeof result === 'string' ? result : '';
 }
 
+/** 
+ * Gets the attributes from the template.
+ * @param {HTMLTemplateElement} template
+ * @param {string} [prefix]
+ * @returns {Record<string, string | boolean | number>} The attributes from the template.
+ */
+export function getTemplateAttributes(template, prefix = '') {
+    if (prefix) {
+        return getAttributesWithPrefix(template, prefix);
+    }
+    const attr = getAttributes(template);
+    delete attr['template-type'];
+    delete attr['template-mode'];
+    delete attr['template-container'];
+    return attr;
+}
 /**
  * Applies the template attributes to the element.
  * @param {ArpaElement} element
@@ -126,14 +142,9 @@ export function renderTemplate(component, _template, vars = component.getTemplat
  * @param {Record<string, unknown>} [_payload]
  * @param {string} [attributePrefix]
  */
-export async function applyTemplateAttributes(
-    element,
-    template,
-    _payload = {},
-    attributePrefix = 'element-'
-) {
+export async function applyTemplateAttributes(element, template, _payload = {}, attributePrefix = '') {
     const payload = { ...(element.templateVars || {}), ..._payload };
-    const attributes = getAttributesWithPrefix(template, attributePrefix);
+    const attributes = getTemplateAttributes(template, attributePrefix);
     for (const key in attributes) {
         if (typeof attributes[key] === 'string') {
             attributes[key] = processTemplate(attributes[key], payload, element);
@@ -152,13 +163,13 @@ export async function applyTemplateAttributes(
 export async function applyTemplate(element, template, payload = {}) {
     if (template instanceof HTMLTemplateElement) {
         applyTemplateAttributes(element, template, payload);
-        const contentMode = template?.getAttribute('content-mode') || 'content';
+        const templateMode = template?.getAttribute('template-mode') || 'content';
         const content = processTemplate(template.innerHTML, payload, element);
-        if (contentMode === 'content') {
+        if (templateMode === 'content') {
             element.templates.content = template;
-        } else if (contentMode === 'prepend') {
+        } else if (templateMode === 'prepend') {
             element.innerHTML = content + element.innerHTML;
-        } else if (contentMode === 'append') {
+        } else if (templateMode === 'append') {
             element.innerHTML = element.innerHTML + content;
         }
     }
