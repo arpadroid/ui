@@ -7,7 +7,7 @@ class DarkModeButton extends IconButton {
     }
 
     getDefaultConfig() {
-        this.i18nKey = 'gallery.controls.darkMode';
+        this.i18nKey = 'ui.darkModeButton';
         const config = {
             icon: 'dark_mode',
             iconLight: 'light_mode',

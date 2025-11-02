@@ -165,7 +165,7 @@ export const Test = {
                     expect(canvasElement.querySelector('pager-item[page="1"] input')).toBeInTheDocument();
                 });
                 const input = canvasElement.querySelector('pager-item[page="1"] input');
-                const form = input.closest('form');
+                const form = input.closest('form, arpa-form');
                 await userEvent.clear(input);
                 await userEvent.type(input, '50');
                 await fireEvent.submit(form);
