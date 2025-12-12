@@ -4,7 +4,7 @@
  */
 import { renderNode, mergeObjects, listen } from '@arpadroid/tools';
 import { appendNodes, attrString, defineCustomElement } from '@arpadroid/tools';
-import { renderChild } from '../arpaElement/helper/renderer.helper.js';
+import { renderChild } from '../arpaElement/helper/arpaElement.helper';
 import ArpaElement from '../arpaElement/arpaElement';
 
 const html = String.raw;

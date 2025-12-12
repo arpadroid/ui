@@ -36,13 +36,13 @@ const PagerStory = {
         <arpa-pager id="demo-pager" ${attrString(args)} views="grid, list"></arpa-pager>
 
         <script type="module">
-            import { editURL } from '/arpadroid-tools.js';
             await customElements.whenDefined('arpa-pager');
             const pager = document.getElementById('demo-pager');
             pager.onChange(({ page }) => {
                 pager.setPager(page);
-                const newURL = editURL(window.location.href, { page });
-                window.history.pushState({}, '', newURL);
+                const url = new URL(window.location.href);
+                url.searchParams.set('page', page);
+                window.history.pushState({}, '', url.href);
             });
         </script>
     `
