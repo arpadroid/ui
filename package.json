@@ -6,13 +6,13 @@
     "types": "./dist/@types/types.compiled.d.ts",
     "type": "module",
     "scripts": {
-        "build": "node ./node_modules/@arpadroid/module/scripts/build-project.mjs --project=ui --minify",
-        "prepublish": "npm run build",
-        "storybook": "npm run build -- --storybook=6001 --watch",
-        "dev": "npm run storybook",
-        "test": "node ./node_modules/@arpadroid/module/scripts/test-project.mjs --project=ui --storybook --jest --port=6001",
+        "build:dev": "arpadroid-build --watch",
+        "build": "arpadroid-build --minify",
+        "clean:build": "npm run clean && npm install",
         "clean": "rm -rf ./dist ./node_modules package-lock.json",
-        "clean:build": "npm run clean && npm install"
+        "dev": "npm run build:dev -- --storybook=6001",
+        "prepublish": "npm run build",
+        "test": "arpadroid-test --storybook --jest --port=6001"
     },
     "repository": {
         "type": "git",
@@ -32,10 +32,8 @@
     "devDependencies": {
         "@arpadroid/module": "file:../module",
         "@babel/core": "^7.23.9",
-        "@babel/plugin-syntax-import-assertions": "^7.23.3",
         "@babel/preset-env": "^7.23.9",
         "babel-jest": "^29.7.0",
-        "babel-loader": "^9.1.3",
         "jest-junit": "^16.0.0"
     },
     "peerDependencies": {
