@@ -6,11 +6,10 @@
     "types": "./dist/@types/types.compiled.d.ts",
     "type": "module",
     "scripts": {
-        "build:dev": "arpadroid-build --watch",
         "build": "arpadroid-build --minify",
         "clean:build": "npm run clean && npm install",
-        "clean": "rm -rf ./dist ./node_modules package-lock.json",
-        "dev": "npm run build:dev -- --storybook=6001",
+        "clean": "rm -rf ./dist ./node_modules ./package-lock.json",
+        "dev": "arpadroid-build --storybook=6001 --watch",
         "prepublish": "npm run build",
         "test": "arpadroid-test --storybook --jest --port=6001",
         "test:ci": "npm run test -- --ci"
