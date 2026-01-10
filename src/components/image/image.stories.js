@@ -5,7 +5,7 @@ const ImageStory = {
     title: 'UI/Components/Image',
     tags: [],
     getArgs: () => ({
-        src: '/api/image/convert?width=[width]&height=[height]&quality=[quality]&source=/cmsx/assets/hqrvutmy_museovaquero_assets/gallery/images/499.jpg',
+        src: '/test-assets/space/earth-square-400.jpg',
         alt: '',
         quality: 80,
 
@@ -61,7 +61,7 @@ export const Portrait = {
     argTypes: ImageStory.getArgTypes(),
     args: {
         ...ImageStory.getArgs(),
-        src: '/api/image/convert?width=[width]&height=[height]&quality=[quality]&source=/cmsx/assets/hqrvutmy_museovaquero_assets/gallery/images/513.jpg',
+        src: '/test-assets/space/earth-vertical-400.jpg',
         width: 270,
         height: 400
     }
@@ -72,7 +72,7 @@ export const Landscape = {
     argTypes: ImageStory.getArgTypes(),
     args: {
         ...ImageStory.getArgs(),
-        src: '/api/image/convert?width=[width]&height=[height]&quality=[quality]&source=/cmsx/assets/hqrvutmy_museovaquero_assets/gallery/images/290.jpg',
+        src: '/test-assets/space/sun-earth-moon-400.jpg',
         width: 320,
         height: 144
     }
@@ -83,7 +83,7 @@ export const mini = {
     argTypes: ImageStory.getArgTypes(),
     args: {
         ...ImageStory.getArgs(),
-        src: '/api/image/convert?width=[width]&quality=[quality]&source=/cmsx/assets/hqrvutmy_museovaquero_assets/gallery/images/513.jpg',
+        src: '/test-assets/space/black-hole-75.jpg',
         size: 30
     }
 };
@@ -93,7 +93,7 @@ export const small = {
     argTypes: ImageStory.getArgTypes(),
     args: {
         ...ImageStory.getArgs(),
-        src: '/api/image/convert?width=[width]&quality=[quality]&source=/cmsx/assets/hqrvutmy_museovaquero_assets/gallery/images/513.jpg',
+        src: '/test-assets/space/black-hole-200.jpg',
         size: 100
     }
 };
@@ -111,7 +111,7 @@ export const NotFoundImage = {
     argTypes: ImageStory.getArgTypes(),
     args: {
         ...ImageStory.getArgs(),
-        src: '/api/image/convert?width=[width]&height=[height]&quality=[quality]&source=/cmsx/assets/hqrvutmy_museovaquero_assets/gallery/images/not-found.jpg'
+        src: '/test-assets/space/this-image-does-not-exist.jpg'
     }
 };
 
@@ -121,9 +121,9 @@ export const WithPreview = {
     argTypes: ImageStory.getArgTypes(),
     args: {
         ...ImageStory.getArgs(),
-        src: '/api/image/convert?width=[width]&height=[height]&quality=[quality]&source=/cmsx/assets/hqrvutmy_museovaquero_assets/gallery/images/513.jpg',
-        width: 50,
-        height: 50,
+        src: '/test-assets/space/moon-[width].jpg',
+        width: 400,
+        height: 400,
         showPreloader: true,
         hasPreview: true
     }

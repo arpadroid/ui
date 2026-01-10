@@ -30,13 +30,13 @@
     },
     "homepage": "https://github.com/arpadroid/ui#readme",
     "devDependencies": {
-        "@arpadroid/module": "file:../module",
         "@babel/core": "^7.23.9",
         "@babel/preset-env": "^7.23.9",
         "babel-jest": "^29.7.0",
         "jest-junit": "^16.0.0"
     },
     "peerDependencies": {
+        "@arpadroid/module": "file:../module",
         "@arpadroid/style-bun": "file:../style-bun",
         "@arpadroid/i18n": "file:../i18n",
         "@arpadroid/tools": "file:../tools"
