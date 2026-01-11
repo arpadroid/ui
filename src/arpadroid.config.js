@@ -1,4 +1,5 @@
 const config = {
+    buildType: 'uiComponent',
     buildTypes: true,
     logo: `           ┓    • ┓    •
   ┏┓┏┓┏┓┏┓┏┫┏┓┏┓┓┏┫  ┓┏┓

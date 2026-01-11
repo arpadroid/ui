@@ -846,9 +846,9 @@ The use of different stylesheets for each theme reduces the complexity of CSS ov
 }
 ```
 
-For more details on creating custom themes, please refer to the @arpadroid/stylesheet-bundler documentation:
+For more details on creating custom themes, please refer to the @arpadroid/style-bun documentation:
 
--   [@arpadroid/stylesheet-bundler](https://www.npmjs.com/package/@arpadroid/stylesheet-bundler)
+-   [@arpadroid/style-bun](https://www.npmjs.com/package/@arpadroid/style-bun)
 
 ## Internationalization
 

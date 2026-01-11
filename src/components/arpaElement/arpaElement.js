@@ -12,8 +12,8 @@ import { defineCustomElement, attr, setNodes, bind, classNames } from '@arpadroi
 import { handleZones, zoneMixin, hasZone, getZone, extractZones } from '../../tools/zoneTool';
 import { hasProperty, getProperty, getArrayProperty } from './helper/arpaElement.helper';
 import { onDestroy, handleCallbackProperty } from './helper/arpaElement.helper';
-import { canRender, renderChild, hasContent, renderTemplate } from './helper/renderer.helper';
-import { initializeTemplateNodes, updateChildNode, selectTemplates } from './helper/renderer.helper';
+import { canRender, renderChild, hasContent, renderTemplate } from './helper/arpaElement.helper';
+import { initializeTemplateNodes, updateChildNode, selectTemplates } from './helper/arpaElement.helper';
 import { I18nTool, I18n } from '@arpadroid/i18n';
 const { arpaElementI18n } = I18nTool;
 

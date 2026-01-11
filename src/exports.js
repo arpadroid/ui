@@ -26,7 +26,6 @@ export { default as InputCombo } from './components/inputCombo/inputCombo.js';
  */
 export { default as CircularPreloader } from './components/preloaders/circularPreloader/circularPreloader.js';
 
-export * from './components/arpaElement/helper/renderer.helper.js';
 export * from './components/arpaElement/helper/arpaElement.helper.js';
 export * from './tools/zoneTool.js';
 
