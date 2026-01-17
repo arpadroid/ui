@@ -125,7 +125,9 @@ class Button extends ArpaElement {
     async setTooltip(label) {
         let tooltip = /** @type {Tooltip | undefined} */ (this.templateNodes.tooltip);
         if (!tooltip) {
-            tooltip = /** @type {Tooltip} */ (renderNode(renderChild(this, 'tooltip', { content: label, canRender: true })));
+            tooltip = /** @type {Tooltip} */ (
+                renderNode(renderChild(this, 'tooltip', { content: label, canRender: true }))
+            );
             tooltip instanceof HTMLElement && this.button?.appendChild(tooltip);
         }
         tooltip?.setContent(label);
