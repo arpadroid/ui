@@ -12,8 +12,7 @@
         "dev": "arpadroid-build --storybook=6001 --watch",
         "watch": "arpadroid-build --watch",
         "prepublish": "npm run build",
-        "test": "arpadroid-test --storybook --jest --port=6001",
-        "test:ci": "npm run test -- --ci"
+        "test": "arpadroid-test --storybook --jest --port=6001"
     },
     "repository": {
         "type": "git",
