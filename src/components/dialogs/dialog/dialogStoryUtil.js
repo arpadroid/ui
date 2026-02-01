@@ -1,4 +1,9 @@
-import { within } from '@storybook/test';
+/**
+ * @typedef {import('@storybook/web-components-vite').StoryContext} StoryContext
+ * @typedef {import('@storybook/web-components-vite').Args} Args
+ * @typedef {import('../dialogs/dialogs').default} Dialogs
+ * @typedef {import('../dialog/dialog').default} Dialog
+ */
 import { attrString } from '@arpadroid/tools';
 
 const html = String.raw;
@@ -8,21 +13,19 @@ export const dialogText =
 
 /**
  * Plays the test scenario.
- * @param {HTMLElement} canvasElement
- * @returns {Promise<{ canvas: ReturnType<typeof within>, dialogNode?: Element | null, dialogsNode?: Element | null }>}
+ * @returns {Promise<{ dialogNode: Dialog , dialogsNode: Dialogs }>}
  */
-export const playSetup = async canvasElement => {
-    const canvas = within(canvasElement);
+export const playSetup = async () => {
     await customElements.whenDefined('arpa-dialog');
     await customElements.whenDefined('arpa-dialogs');
-    const dialogsNode = document.querySelector('arpa-dialogs');
-    const dialogNode = document.querySelector('arpa-dialog');
-    return { canvas, dialogNode, dialogsNode };
+    const dialogsNode = /** @type {Dialogs} */ (document.querySelector('arpa-dialogs'));
+    const dialogNode = /** @type {Dialog} */ (document.querySelector('arpa-dialog'));
+    return { dialogNode, dialogsNode };
 };
 
 /**
  * Renders the dialog component.
- * @param {Record<string, unknown>} args
+ * @param {Args} args
  * @param {string} dialogType
  * @returns {string}
  */

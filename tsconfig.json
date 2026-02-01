@@ -1,17 +1,13 @@
 {
     "extends": "./node_modules/@arpadroid/module/src/tsconfig/esnext/tsconfig.json",
     "compilerOptions": {
+        "baseUrl": ".",
         // "tsBuildInfoFile": ".tsbuildinfo"
         "rootDir": "./src",
         "outDir": "./.tmp/.types",
-        "paths": {
-            "@storybook/test": ["./node_modules/@arpadroid/module/node_modules/@storybook/test/dist/index.d.ts"],
-            "rollup-plugin-copy": ["./node_modules/@arpadroid/module/node_modules/rollup-plugin-copy"],
-            "@storybook/web-components": [
-                "./node_modules/@arpadroid/module/node_modules/@storybook/web-components"
-            ]
-        }
+        "types": ["jest"],
+        "skipLibCheck": true
     },
-    "include": ["src/**/*"],
-    "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.stories.js", "**/*.test.js", "./dist/@types"]
+    "include": ["src/**/*", "scripts"],
+    "exclude": ["node_modules", "dist"]
 }

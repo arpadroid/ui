@@ -1,11 +1,19 @@
+/**
+ * @typedef {import('@storybook/web-components-vite').Meta} Meta
+ * @typedef {import('@storybook/web-components-vite').StoryObj} StoryObj
+ * @typedef {import('@storybook/web-components-vite').StoryContext} StoryContext
+ * @typedef {import('@storybook/web-components-vite').Args} Args
+ * @typedef {import('../dialogs/dialogs').default} Dialogs
+ * @typedef {import('../dialog/dialog').default} Dialog
+ */
 import { attrString } from '@arpadroid/tools';
-import { action } from '@storybook/addon-actions';
-import { waitFor, expect, within, fn, fireEvent } from '@storybook/test';
+import { waitFor, expect, within, fn, fireEvent } from 'storybook/test';
 import { playSetup, renderDialog } from './dialogStoryUtil';
 const html = String.raw;
 
 const category = 'Props';
 
+/** @type {Meta} */
 const DialogStory = {
     title: 'UI/Dialogs/Dialog',
     tags: [],
@@ -13,8 +21,8 @@ const DialogStory = {
         id: 'dialog',
         title: 'Dialog title',
         open: true,
-        onOpen: fn(() => action('open')),
-        onClose: fn(() => action('close'))
+        onOpen: fn(),
+        onClose: fn()
     },
     argTypes: {
         id: { control: { type: 'text' }, table: { category } },
@@ -34,15 +42,17 @@ const DialogStory = {
             table: { category }
         }
     },
-    render: args => renderDialog(args)
+    render: (/** @type {Args} */ args) => renderDialog(args)
 };
 
+/** @type {StoryObj} */
 export const Default = {
     name: 'Render',
     parameters: {},
     args: {}
 };
 
+/** @type {StoryObj} */
 export const Test = {
     parameters: {
         controls: { disable: true }
@@ -51,8 +61,8 @@ export const Test = {
         id: 'dialog-test',
         zoneFooter: 'Footer content'
     },
-    play: async ({ canvasElement, step, args }) => {
-        const { dialogNode, dialogsNode } = await playSetup(canvasElement);
+    play: async (/** @type {StoryContext} */ { canvasElement, step, args }) => {
+        const { dialogNode, dialogsNode } = await playSetup();
         const dialog = within(dialogNode);
         dialogNode?.on('open', args.onOpen);
         dialogNode?.on('close', args.onClose);
@@ -69,7 +79,7 @@ export const Test = {
         });
 
         await step('Closes the dialog', async () => {
-            const button = dialog.getByRole('button', { label: 'close' });
+            const button = dialog.getByRole('button', { name: 'close' });
             expect(button).toBeInTheDocument();
             button.click();
             await waitFor(() => expect(dialogNode).not.toHaveAttribute('open'));
@@ -78,13 +88,14 @@ export const Test = {
         });
 
         await step('Reopens the dialog', async () => {
-            dialogNode.open();
+            dialogNode?.open();
             await waitFor(() => expect(dialogNode).toHaveAttribute('open'));
             expect(args.onOpen).toHaveBeenCalled();
         });
     }
 };
 
+/** @type {StoryObj} */
 export const ButtonDialog = {
     parameters: {},
     args: {
@@ -92,7 +103,7 @@ export const ButtonDialog = {
         open: false,
         title: undefined
     },
-    render: args => {
+    render: (/** @type {Args} */ args) => {
         return html`<arpa-dialogs id="button-dialogs"></arpa-dialogs>
             <arpa-button variant="primary" id="openDialog">
                 Open Dialog
@@ -108,6 +119,7 @@ export const ButtonDialog = {
     }
 };
 
+/** @type {StoryObj} */
 export const ButtonDialogTest = {
     ...ButtonDialog,
     args: {
@@ -115,9 +127,9 @@ export const ButtonDialogTest = {
         open: false,
         title: undefined
     },
-    play: async ({ canvasElement, step }) => {
-        const { dialogNode, canvas } = await playSetup(canvasElement);
-        await dialogNode.promise;
+    play: async (/** @type {StoryContext} */ { canvasElement, canvas, step }) => {
+        const { dialogNode } = await playSetup();
+        await dialogNode?.promise;
         const button = canvas.getByRole('button', { name: /Open Dialog/i });
         expect(dialogNode).not.toHaveAttribute('open');
 

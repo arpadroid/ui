@@ -1,6 +1,13 @@
+/**
+ * @typedef {import('@storybook/web-components-vite').Meta} Meta
+ * @typedef {import('@storybook/web-components-vite').StoryObj} StoryObj
+ * @typedef {import('@storybook/web-components-vite').StoryContext} StoryContext
+ * @typedef {import('@storybook/web-components-vite').Args} Args
+ */
 import { attrString } from '@arpadroid/tools';
-import { waitFor, expect, within } from '@storybook/test';
+import { waitFor, expect, within } from 'storybook/test';
 const html = String.raw;
+/** @type {Meta} */
 const TruncateTextStory = {
     title: 'UI/Components/Truncate Text',
     tags: [],
@@ -17,23 +24,27 @@ const TruncateTextStory = {
         readMoreLabel: { control: { type: 'text' }, table: { category } },
         hasButton: { control: { type: 'boolean' }, table: { category } }
     }),
-    render: args => {
+    render: (/** @type {Args} */ args) => {
         return html`<truncate-text ${attrString(args)}>${args.text}</truncate-text>`;
     }
 };
 
+/** @type {StoryObj} */
 export const Default = {
     name: 'Render',
     parameters: {},
     argTypes: TruncateTextStory.getArgTypes(),
     args: TruncateTextStory.getArgs(),
+    /**
+     * @param {HTMLElement} canvasElement
+     */
     playSetup: async canvasElement => {
         const canvas = within(canvasElement);
         await customElements.whenDefined('truncate-text');
         const truncateTextNode = canvasElement.querySelector('truncate-text');
         return { canvas, truncateTextNode };
     },
-    play: async ({ canvasElement, step }) => {
+    play: async (/** @type {StoryContext} */ { canvasElement, step }) => {
         const setup = await Default.playSetup(canvasElement);
         const { truncateTextNode } = setup;
         await step('Renders the truncate text component.', async () => {

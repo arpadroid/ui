@@ -1,11 +1,14 @@
-/* eslint-disable sonarjs/no-duplicate-string */
 /**
- * @typedef {import('./list.js').default} List
+ * @typedef {import('@storybook/web-components-vite').Meta} Meta
+ * @typedef {import('@storybook/web-components-vite').StoryObj} StoryObj
+ * @typedef {import('./pager').default} Pager
+ * @typedef {import('@storybook/web-components-vite').StoryContext} StoryContext
  */
 import { attrString, getURLParam } from '@arpadroid/tools';
-import { waitFor, userEvent, fireEvent, expect, within } from '@storybook/test';
+import { waitFor, userEvent, fireEvent, expect, within } from 'storybook/test';
 
 const html = String.raw;
+/** @type {Meta} */
 const PagerStory = {
     title: 'UI/Components/Pager',
     tags: [],
@@ -32,7 +35,7 @@ const PagerStory = {
             urlParam: { control: { type: 'text' }, table: { category } }
         };
     },
-    render: args => html`
+    render: (/** @type {Record<string, unknown>} */ args) => html`
         <arpa-pager id="demo-pager" ${attrString(args)} views="grid, list"></arpa-pager>
 
         <script type="module">
@@ -48,15 +51,15 @@ const PagerStory = {
     `
 };
 
+/** @type {StoryObj} */
 export const Default = {
     name: 'Render',
     parameters: {},
     args: PagerStory.getArgs()
 };
 
+/** @type {StoryObj} */
 export const Test = {
-    args: Default.args,
-    parameters: {},
     args: {
         className: 'pager',
         currentPage: 2,
@@ -72,14 +75,17 @@ export const Test = {
         usage: { disable: true },
         options: { selectedPanel: 'storybook/interactions/panel' }
     },
+    /**
+     * @param {HTMLElement} canvasElement
+     */
     playSetup: async canvasElement => {
         const canvas = within(canvasElement);
         await customElements.whenDefined('arpa-pager');
-        const pagerNode = canvasElement.querySelector('arpa-pager');
-        await pagerNode.promise;
+        const pagerNode = /** @type {Pager} */ (canvasElement.querySelector('arpa-pager'));
+        await pagerNode?.promise;
         return { canvas, pagerNode };
     },
-    play: async ({ canvasElement, step }) => {
+    play: async (/** @type {StoryContext} */ { canvasElement, step }) => {
         const setup = await Test.playSetup(canvasElement);
         const { canvas, pagerNode } = setup;
 

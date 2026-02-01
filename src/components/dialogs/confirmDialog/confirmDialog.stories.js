@@ -1,20 +1,34 @@
 /* eslint-disable sonarjs/no-duplicate-string */
-import { action } from '@storybook/addon-actions';
-import { waitFor, expect, within, fn } from '@storybook/test';
+/**
+ * @typedef {import('@storybook/web-components-vite').Meta} Meta
+ * @typedef {import('@storybook/web-components-vite').StoryObj} StoryObj
+ * @typedef {import('@storybook/web-components-vite').StoryContext} StoryContext
+ * @typedef {import('@storybook/web-components-vite').Args} Args
+ * @typedef {import('../dialogs/dialogs').default} Dialogs
+ * @typedef {import('../dialog/dialog').default} Dialog
+ * @typedef {import('./confirmDialog').default} ConfirmDialog
+ */
+import { waitFor, expect, within, fn } from 'storybook/test';
 import DialogStory from '../dialog/dialog.stories';
 import { renderDialog } from '../dialog/dialogStoryUtil';
 
+
 const dialogText = 'Are you sure you want to proceed?';
 
+/**
+ * @param {HTMLElement} canvasElement
+ */
 const playSetup = async canvasElement => {
     const canvas = within(canvasElement);
     await customElements.whenDefined('confirm-dialog');
     await customElements.whenDefined('arpa-dialogs');
-    const dialogsNode = document.querySelector('arpa-dialogs');
-    const dialogNode = document.querySelector('confirm-dialog');
+    
+    const dialogsNode = /** @type {Dialogs} */ (document.querySelector('arpa-dialogs'));
+    const dialogNode = /** @type {ConfirmDialog} */ (document.querySelector('confirm-dialog'));
     return { canvas, dialogNode, dialogsNode };
 };
 
+/** @type {Meta} */
 const ConfirmDialogStory = {
     ...DialogStory,
     title: 'UI/Dialogs/Confirm',
@@ -24,39 +38,42 @@ const ConfirmDialogStory = {
         title: 'Confirm Action',
         zoneContent: dialogText,
         open: true,
-        onConfirm: fn(() => action('confirm')),
-        onCancel: fn(() => action('cancel'))
+        onConfirm: fn(),
+        onCancel: fn()
     },
     argTypes: {
         ...DialogStory.argTypes,
         onConfirm: { table: { category: 'Signals' } },
         onCancel: { table: { category: 'Signals' } }
     },
-    render: args => renderDialog(args, 'confirm-dialog')
+    render: (/** @type {Args} */ args) => renderDialog(args, 'confirm-dialog')
 };
 
+/** @type {StoryObj} */
 export const Default = {
     name: 'Render',
     parameters: {},
     args: {},
-    play: async ({ canvasElement, args }) => {
+    play: async (/** @type {StoryContext} */ { canvasElement, args }) => {
         const { dialogNode } = await playSetup(canvasElement);
-        dialogNode.on('confirm', args.onConfirm);
-        dialogNode.on('cancel', args.onCancel);
+        dialogNode?.on('confirm', args.onConfirm);
+        dialogNode?.on('cancel', args.onCancel);
     }
 };
 
+/** @type {StoryObj} */
 export const Test = {
     parameters: {},
     args: {
         id: 'confirm-test',
         title: 'Confirm Action'
     },
-    play: async ({ canvasElement, step, args }) => {
+    play: async (/** @type {StoryContext} */ { canvasElement, step, args }) => {
         const { dialogNode, dialogsNode } = await playSetup(canvasElement);
         const dialog = within(dialogNode);
         dialogNode.on('confirm', args.onConfirm);
         dialogNode.on('cancel', args.onCancel);
+        // @ts-ignore
         dialogNode.setPayload([{ id: 1 }]);
 
         await step('Renders the dialog', async () => {

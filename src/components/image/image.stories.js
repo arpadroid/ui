@@ -1,6 +1,15 @@
+/**
+ * @typedef {import('@storybook/web-components-vite').Meta} Meta
+ * @typedef {import('@storybook/web-components-vite').StoryObj} StoryObj
+ * @typedef {import('@storybook/web-components-vite').Args} Args
+ * @typedef {import('@storybook/web-components-vite').StoryContext} StoryContext
+ */
+
 import { attrString } from '@arpadroid/tools';
-import { waitFor, expect, within } from '@storybook/test';
+import { waitFor, expect, within } from 'storybook/test';
 const html = String.raw;
+
+/** @type {Meta} */
 const ImageStory = {
     title: 'UI/Components/Image',
     tags: [],
@@ -27,7 +36,7 @@ const ImageStory = {
         showPreloader: { control: { type: 'boolean' }, table: { category } },
         hasDropArea: { control: { type: 'boolean' }, table: { category } }
     }),
-    render: args => {
+    render: (/** @type {Args} */ args) => {
         return html`
             <style>
                 #storybook-root {
@@ -46,6 +55,7 @@ const ImageStory = {
     }
 };
 
+/** @type {StoryObj} */
 export const Default = {
     name: 'Squared',
     parameters: {},
@@ -53,6 +63,7 @@ export const Default = {
     args: { ...ImageStory.getArgs(), size: 400, caption: 'Image caption' }
 };
 
+/** @type {StoryObj} */
 export const Portrait = {
     // name: 'Portrait Image',
     parameters: {
@@ -67,6 +78,7 @@ export const Portrait = {
     }
 };
 
+/** @type {StoryObj} */
 export const Landscape = {
     parameters: {},
     argTypes: ImageStory.getArgTypes(),
@@ -78,6 +90,7 @@ export const Landscape = {
     }
 };
 
+/** @type {StoryObj} */
 export const mini = {
     parameters: {},
     argTypes: ImageStory.getArgTypes(),
@@ -88,6 +101,7 @@ export const mini = {
     }
 };
 
+/** @type {StoryObj} */
 export const small = {
     parameters: {},
     argTypes: ImageStory.getArgTypes(),
@@ -98,6 +112,7 @@ export const small = {
     }
 };
 
+/** @type {StoryObj} */
 export const NoImage = {
     name: 'No Image',
     parameters: {},
@@ -105,6 +120,7 @@ export const NoImage = {
     args: { ...ImageStory.getArgs(), src: '' }
 };
 
+/** @type {StoryObj} */
 export const NotFoundImage = {
     name: 'Not Found Image',
     parameters: {},
@@ -115,6 +131,7 @@ export const NotFoundImage = {
     }
 };
 
+/** @type {StoryObj} */
 export const WithPreview = {
     name: 'With Preview',
     parameters: {},
@@ -129,15 +146,21 @@ export const WithPreview = {
     }
 };
 
+/** @type {StoryObj} */
 export const Test = {
     ...Default,
+    /**
+     * @param {HTMLElement} canvasElement
+     */
     playSetup: async canvasElement => {
         const canvas = within(canvasElement);
         await customElements.whenDefined('arpa-image');
         const preloader = canvasElement.querySelector('arpa-image');
         return { canvas, preloader };
     },
-    play: async ({ canvasElement, step }) => {
+    play: async (
+        /** @type {import('@storybook/web-components-vite').StoryContext} */ { canvasElement, step }
+    ) => {
         const setup = await Test.playSetup(canvasElement);
         const { preloader } = setup;
         await step('renders the image preloader text', async () => {

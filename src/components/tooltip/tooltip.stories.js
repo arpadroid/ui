@@ -1,6 +1,13 @@
+/**
+ * @typedef {import('@storybook/web-components-vite').Meta} Meta
+ * @typedef {import('@storybook/web-components-vite').StoryObj} StoryObj
+ * @typedef {import('@storybook/web-components-vite').StoryContext} StoryContext
+ * @typedef {import('@storybook/web-components-vite').Args} Args
+ */
 import { attrString } from '@arpadroid/tools';
-import { waitFor, expect, within } from '@storybook/test';
+import { waitFor, expect, within } from 'storybook/test';
 const html = String.raw;
+/** @type {Meta} */
 const TooltipStory = {
     title: 'UI/Components/Tooltip',
     tags: [],
@@ -17,6 +24,7 @@ const TooltipStory = {
     })
 };
 
+/** @type {StoryObj} */
 export const Default = {
     name: 'Render',
     parameters: {},
@@ -28,19 +36,23 @@ export const Default = {
         label: '',
         position: 'top'
     },
-    render: args => html` <arpa-tooltip ${attrString(args)}> </arpa-tooltip> `
+    render: (/** @type {Args} */ args) => html` <arpa-tooltip ${attrString(args)}> </arpa-tooltip> `
 };
 
+/** @type {StoryObj} */
 export const Test = {
     ...Default,
     name: 'Test',
+    /**
+     * @param {HTMLElement} canvasElement
+     */
     playSetup: async canvasElement => {
         const canvas = within(canvasElement);
         await customElements.whenDefined('arpa-tooltip');
         const tooltipNode = canvasElement.querySelector('arpa-tooltip');
         return { canvas, tooltipNode };
     },
-    play: async ({ canvasElement, step }) => {
+    play: async (/** @type {StoryContext} */ { canvasElement, step }) => {
         const setup = await Test.playSetup(canvasElement);
         const { tooltipNode } = setup;
         await step('renders the tooltip', async () => {
@@ -50,6 +62,7 @@ export const Test = {
     }
 };
 
+/** @type {StoryObj} */
 export const Zoned = {
     name: 'Zoned Content',
     parameters: {},
@@ -62,7 +75,7 @@ export const Zoned = {
         handler: '',
         content: 'This is some informative tooltip text.'
     },
-    render: args => {
+    render: (/** @type {Args} */ args) => {
         return html`
             <arpa-tooltip ${attrString(args)}>
                 <zone name="handler"><arpa-icon>info</arpa-icon>${args.handler}</zone>

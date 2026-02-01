@@ -42,6 +42,7 @@ class Dialog extends ArpaElement {
         );
         this.originalParent && (this.originalParent.dialog = this);
         this.signal = this.signal || dummySignal;
+        this.on = this.on || dummySignal;
         observerMixin(this);
     }
 

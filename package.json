@@ -12,7 +12,8 @@
         "dev": "arpadroid-build --storybook=6001 --watch",
         "watch": "arpadroid-build --watch",
         "prepublish": "npm run build",
-        "test": "arpadroid-test --storybook --jest --port=6001"
+        "test": "arpadroid-test --storybook --jest --port=6001",
+        "test:jest": "../module/node_modules/.bin/jest"
     },
     "repository": {
         "type": "git",
@@ -32,6 +33,7 @@
     "devDependencies": {
         "@babel/core": "^7.28.6",
         "@babel/preset-env": "^7.28.6",
+        "@types/jest": "^30.0.0",
         "babel-jest": "^30.2.0",
         "jest-junit": "^16.0.0"
     },

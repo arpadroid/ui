@@ -66,7 +66,7 @@ export function getArrayProperty(element, name, config = element._config) {
  * Processes a template variable.
  * @param {string} name
  * @param {unknown} value
- * @param {ArpaElement} element
+ * @param {ArpaElement} [element] - Optional ArpaElement instance.
  * @returns {unknown} The processed value.
  */
 export function processTemplateVariable(name, value, element) {
@@ -83,7 +83,7 @@ export function processTemplateVariable(name, value, element) {
  * Processes a template string and replaces the placeholders with the provided props.
  * @param {string} template - The template string.
  * @param {Record<string, unknown>} props - The props to replace the placeholders with.
- * @param {ArpaElement} element
+ * @param {ArpaElement} [element] - Optional ArpaElement instance.
  * @returns {string} The processed template.
  */
 export function processTemplate(template, props = {}, element) {

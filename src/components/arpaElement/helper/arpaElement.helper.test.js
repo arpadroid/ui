@@ -10,14 +10,14 @@ describe('ArpaElement Helper', () => {
         const content = processTemplate(template, {
             content: 'Some content',
             secondaryContent: 'some other content'
-        });
+        }, undefined);
         const container = document.createElement('div');
         container.innerHTML = content;
 
         const testDiv = container.querySelector('.testDiv');
-        expect(testDiv.textContent).toBe('Some content');
+        expect(testDiv?.textContent).toBe('Some content');
 
         const testDiv2 = container.querySelector('.testDiv2');
-        expect(testDiv2.textContent).toBe('some other content');
+        expect(testDiv2?.textContent).toBe('some other content');
     });
 });
