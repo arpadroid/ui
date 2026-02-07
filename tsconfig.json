@@ -2,7 +2,6 @@
     "extends": "./node_modules/@arpadroid/module/src/tsconfig/esnext/tsconfig.json",
     "compilerOptions": {
         "baseUrl": ".",
-        // "tsBuildInfoFile": ".tsbuildinfo"
         "rootDir": "./src",
         "outDir": "./.tmp/.types",
         "types": ["jest"],

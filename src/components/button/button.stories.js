@@ -12,7 +12,6 @@ const html = String.raw;
 /** @type {Meta} */
 const ButtonStory = {
     title: 'UI/Buttons/Button',
-    tags: [],
     /** @param {HTMLElement} canvasElement */
     playSetup: async canvasElement => {
         const canvas = within(canvasElement);
@@ -55,7 +54,8 @@ const ButtonStory = {
 
 /** @type {StoryObj} */
 export const Default = {
-    name: 'Render'
+    name: 'Render',
+    render: (/** @type {Args} */ args) => ButtonStory.render(args),
 };
 
 /**

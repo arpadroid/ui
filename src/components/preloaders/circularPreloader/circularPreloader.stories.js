@@ -49,7 +49,7 @@ export const Test = {
      */
     playSetup: async canvasElement => {
         const canvas = within(canvasElement);
-        await customElements.whenDefined('truncate-text');
+        await customElements.whenDefined('circular-preloader');
         const preloader = canvasElement.querySelector('circular-preloader');
         return { canvas, preloader };
     },
