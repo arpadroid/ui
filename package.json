@@ -9,10 +9,10 @@
         "build": "arpadroid-build --minify",
         "clean:build": "npm run clean && npm install",
         "clean": "rm -rf ./dist ./node_modules ./package-lock.json",
-        "dev": "arpadroid-build --storybook=6001 --watch",
-        "watch": "arpadroid-build --watch",
+        "dev": "arpadroid-build --watch --storybook",
         "prepublish": "npm run build",
-        "test": "arpadroid-test --storybook --jest --port=6001",
+        "test": "arpadroid-test --storybook --jest",
+        "t": "npm run test -- --slim",
         "test:jest": "../module/node_modules/.bin/jest"
     },
     "repository": {
