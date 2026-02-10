@@ -8,7 +8,7 @@
     "scripts": {
         "build": "arpadroid-build --minify",
         "clean:build": "npm run clean && npm install",
-        "clean": "rm -rf ./dist ./node_modules ./package-lock.json",
+        "clean": "arpadroid-clean",
         "dev": "arpadroid-build --watch --storybook",
         "prepublish": "npm run build",
         "test": "arpadroid-test --storybook --jest",
