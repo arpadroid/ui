@@ -12,8 +12,8 @@ const html = String.raw;
 /** @type {Meta} */
 const ButtonStory = {
     title: 'UI/Buttons/Button',
-    /** @param {HTMLElement} canvasElement */
-    playSetup: async canvasElement => {
+
+    playSetup: async (/** @type {HTMLElement} */ canvasElement) => {
         const canvas = within(canvasElement);
         await customElements.whenDefined('arpa-button');
 
@@ -55,40 +55,28 @@ const ButtonStory = {
 /** @type {StoryObj} */
 export const Default = {
     name: 'Render',
-    render: (/** @type {Args} */ args) => ButtonStory.render(args),
+    render: (/** @type {Args} */ args) => ButtonStory.render(args)
 };
 
-/**
- * @param {Button} buttonComponent
- */
-const setNewIconTest = buttonComponent => {
+const setNewIconTest = (/** @type {Button} */ buttonComponent) => {
     buttonComponent.setIcon('home');
     const iconNode = buttonComponent.querySelector('.arpaButton__icon');
     expect(iconNode).toHaveTextContent('home');
 };
 
-/**
- * @param {Button} buttonComponent
- */
-const setRightIconTest = buttonComponent => {
+const setRightIconTest = (/** @type {Button} */ buttonComponent) => {
     buttonComponent.setIconRight('person');
     const iconNode = buttonComponent.querySelector('.arpaButton__rhsIcon');
     expect(iconNode).toHaveTextContent('person');
 };
 
-/**
- * @param {Button} buttonComponent
- */
-const setContentTest = buttonComponent => {
+const setContentTest = (/** @type {Button} */ buttonComponent) => {
     buttonComponent.setContent('New content');
     const contentNode = buttonComponent.querySelector('.arpaButton__content');
     expect(contentNode).toHaveTextContent('New content');
 };
 
-/**
- * @param {Button} buttonComponent
- */
-const setTooltipTest = async buttonComponent => {
+const setTooltipTest = async (/** @type {Button} */ buttonComponent) => {
     buttonComponent.setTooltip('New tooltip');
     const tooltip = buttonComponent.querySelector('arpa-tooltip');
     await waitFor(() => {
@@ -106,10 +94,8 @@ export const Test = {
         tooltip: 'If you click me something awesome will happen.',
         tooltipPosition: 'top'
     },
-    /**
-     * @param {StoryContext} context
-     */
-    play: async ({ canvasElement, step, canvas }) => {
+
+    play: async (/** @type {StoryContext} */ { canvasElement, step, canvas }) => {
         const setup = await ButtonStory.playSetup(canvasElement);
         const { buttonNode, buttonComponent } = setup;
 
