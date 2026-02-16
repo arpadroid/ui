@@ -6,6 +6,7 @@
     "types": "./dist/@types/types.compiled.d.ts",
     "type": "module",
     "scripts": {
+        "b": "npm run build -- --slim",
         "build": "arpadroid-build --minify",
         "clean:build": "npm run clean && npm install",
         "clean": "arpadroid-clean",
@@ -44,5 +45,6 @@
     },
     "dependencies": {
         "material-symbols": "^0.40.2"
-    }
+    },
+    "customElements": "dist/custom-elements.json"
 }
