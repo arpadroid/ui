@@ -5,16 +5,15 @@
  */
 import { attrString } from '@arpadroid/tools';
 import { waitFor, expect, within } from 'storybook/test';
+import { getArgs, getArgTypes, playSetup } from './icon.stories.util';
+
 const html = String.raw;
+
 /** @type {Meta} */
 const IconStory = {
     title: 'UI/Components/Icon',
     tags: [],
-    getArgs: () => ({ icon: 'sailing' }),
-    getArgTypes: (category = 'Icon Props') => ({
-        icon: { control: { type: 'text' }, table: { category } }
-    }),
-    render: (/** @type {Record<string, unknown>} */ args) => {
+    render: args => {
         const icon = args.icon;
         delete args.icon;
         return html`<arpa-icon ${attrString(args)}>${icon}</arpa-icon>`;
@@ -25,21 +24,14 @@ const IconStory = {
 export const Default = {
     name: 'Render',
     parameters: {},
-    argTypes: IconStory.getArgTypes(),
-    args: IconStory.getArgs(),
-    /**
-     * @param {HTMLElement} canvasElement
-     */
-    playSetup: async canvasElement => {
-        const canvas = within(canvasElement);
-        await customElements.whenDefined('arpa-icon');
-        const iconNode = canvasElement.querySelector('arpa-icon');
-        return { canvas, iconNode };
-    },
-    play: async (/** @type {StoryContext} */ { canvasElement, step }) => {
-        const setup = await Default.playSetup(canvasElement);
+    argTypes: getArgTypes(),
+    args: getArgs(),
+    play: async ({ canvasElement, step }) => {
+        const setup = await playSetup(canvasElement);
         const { iconNode } = setup;
-        const { icon } = Default.args;
+        /** @type {{icon?: string}} */
+        const { icon = '' } = Default.args || {};
+        // @ts-ignore
         iconNode.icon = icon;
 
         await step('renders the icon', async () => {

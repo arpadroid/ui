@@ -6,29 +6,20 @@
  */
 import { attrString } from '@arpadroid/tools';
 import { waitFor, expect, within } from 'storybook/test';
+import { getArgTypes, playSetup } from './tooltip.stories.util';
 const html = String.raw;
 /** @type {Meta} */
 const TooltipStory = {
     title: 'UI/Components/Tooltip',
     tags: [],
-    getArgTypes: (category = 'Tooltip Props') => ({
-        text: { control: { type: 'text' }, table: { category } },
-        handler: { control: { type: 'text' }, table: { category } },
-        icon: { control: { type: 'text' }, table: { category } },
-        label: { control: { type: 'text' }, table: { category } },
-        position: {
-            control: { type: 'select' },
-            options: ['top', 'right', 'bottom', 'left'],
-            table: { category }
-        }
-    })
+    argTypes: getArgTypes()
 };
 
 /** @type {StoryObj} */
 export const Default = {
     name: 'Render',
     parameters: {},
-    argTypes: TooltipStory.getArgTypes(),
+    argTypes: getArgTypes(),
     args: {
         text: 'This is some informative tooltip text.',
         handler: 'Hover over me',
@@ -43,17 +34,8 @@ export const Default = {
 export const Test = {
     ...Default,
     name: 'Test',
-    /**
-     * @param {HTMLElement} canvasElement
-     */
-    playSetup: async canvasElement => {
-        const canvas = within(canvasElement);
-        await customElements.whenDefined('arpa-tooltip');
-        const tooltipNode = canvasElement.querySelector('arpa-tooltip');
-        return { canvas, tooltipNode };
-    },
     play: async (/** @type {StoryContext} */ { canvasElement, step }) => {
-        const setup = await Test.playSetup(canvasElement);
+        const setup = await playSetup(canvasElement);
         const { tooltipNode } = setup;
         await step('renders the tooltip', async () => {
             await waitFor(() => expect(tooltipNode).not.toBeNull());
@@ -67,7 +49,7 @@ export const Zoned = {
     name: 'Zoned Content',
     parameters: {},
     argTypes: {
-        ...TooltipStory.getArgTypes(),
+        ...getArgTypes(),
         content: { control: { type: 'text' }, table: { category: 'zones' } },
         handler: { control: { type: 'text' }, table: { category: 'zones' } }
     },

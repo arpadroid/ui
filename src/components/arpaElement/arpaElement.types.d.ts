@@ -32,7 +32,7 @@ export type ArpaElementChildOptionsType = {
     hasZone?: boolean;
     zoneName?: string;
     propName?: string;
-    canRender?: ((component) => boolean) | boolean | string;
+    canRender?: ((component: unknown) => boolean) | boolean | string;
 };
 
 export type ArpaElementConfigType = {

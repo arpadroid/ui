@@ -395,7 +395,7 @@ class ArpaImage extends ArpaElement {
         const hasNativeLazy = this.hasNativeLazy();
         return {
             alt: this.getProperty('alt'),
-            class: classNames({ 'image--lazy': Boolean(lazyLoad) }),
+            class: classNames({ 'image--lazy': Boolean(lazyLoad) ? 'image--lazy' : false }),
             'data-src': lazyLoad && !hasNativeLazy ? src : '',
             lazyLoad: lazyLoad && !hasNativeLazy,
             loading: (lazyLoad && hasNativeLazy && 'lazy') || undefined,

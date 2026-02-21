@@ -1,10 +1,13 @@
+import '@arpadroid/module/types/declarations';
+
 export {
     ArpaElementConfigType,
-    TemplateType,
+    TemplateContentMode,
     TemplatesType,
     SetTemplateConfigType,
     ArpaElementTemplateType
 } from './components/arpaElement/arpaElement.types';
+
 export * from './components/inputCombo/inputCombo.types';
 export * from './components/pager/pager.types';
 export * from './components/pager/components/pagerItem/pagerItem.types';
@@ -23,7 +26,5 @@ export * from './components/truncateText/truncateText.types';
 declare global {
     interface Window {
         arpaSafeIDs: Record<string, boolean>;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        i18nInstance: any;
     }
 }

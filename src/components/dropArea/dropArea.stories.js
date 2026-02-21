@@ -6,6 +6,7 @@
  */
 import { attrString } from '@arpadroid/tools';
 import { waitFor, expect, within } from 'storybook/test';
+import { getArgTypes, playSetup } from './dropArea.stories.utils';
 const html = String.raw;
 /** @type {Meta} */
 const DropAreaStory = {
@@ -14,12 +15,6 @@ const DropAreaStory = {
     parameters: {
         layout: 'padded'
     },
-    getArgs: () => ({}),
-    getArgTypes: (category = 'DropArea Props') => ({
-        hasInput: { control: { type: 'boolean' }, table: { category } },
-        icon: { control: { type: 'text' }, table: { category } },
-        label: { control: { type: 'text' }, table: { category } }
-    }),
     render: (/** @type {Record<string, unknown>} */ args) => {
         return html`<drop-area ${attrString(args)}></drop-area>`;
     }
@@ -29,19 +24,11 @@ const DropAreaStory = {
 export const Default = {
     name: 'Render',
     parameters: {},
-    argTypes: DropAreaStory.getArgTypes(),
-    args: DropAreaStory.getArgs(),
-    /**
-     * @param {HTMLElement} canvasElement
-     */
-    playSetup: async canvasElement => {
-        const canvas = within(canvasElement);
-        await customElements.whenDefined('drop-area');
-        const dropAreaNode = canvasElement.querySelector('drop-area');
-        return { canvas, dropAreaNode };
-    },
+    argTypes: getArgTypes(),
+    args: getArgTypes(),
+
     play: async (/** @type {StoryContext} */ { canvasElement, step }) => {
-        const setup = await Default.playSetup(canvasElement);
+        const setup = await playSetup(canvasElement);
         const { dropAreaNode } = setup;
         await step('renders the drop area', async () => {
             await waitFor(() => expect(dropAreaNode).not.toBeNull());

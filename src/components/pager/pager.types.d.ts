@@ -12,6 +12,7 @@ export type PagerConfigType = {
     urlParam?: string;
     ariaLabel?: string;
     renderMode?: 'default' | 'minimal';
+    hasInput?: boolean;
     onClick?: (payload: PagerCallbackPayloadType) => void;
 };
 

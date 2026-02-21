@@ -6,35 +6,13 @@
  */
 import { attrString, getURLParam } from '@arpadroid/tools';
 import { waitFor, userEvent, fireEvent, expect, within } from 'storybook/test';
+import { getArgs, playSetup } from './pager.stories.utils';
 
 const html = String.raw;
 /** @type {Meta} */
 const PagerStory = {
     title: 'UI/Components/Pager',
     tags: [],
-    getArgs: () => {
-        return {
-            className: 'pager',
-            currentPage: 2,
-            totalPages: 10,
-            maxNodes: 7,
-            hasArrowControls: true,
-            hasInput: false,
-            urlParam: 'page'
-        };
-    },
-    getArgTypes: (category = 'Pager Props') => {
-        return {
-            title: { control: { type: 'text' }, table: { category } },
-            className: { control: { type: 'text' }, table: { category } },
-            currentPage: { control: { type: 'number' }, table: { category } },
-            totalPages: { control: { type: 'number' }, table: { category } },
-            maxNodes: { control: { type: 'number' }, table: { category } },
-            hasArrowControls: { control: { type: 'boolean' }, table: { category } },
-            hasInput: { control: { type: 'boolean' }, table: { category } },
-            urlParam: { control: { type: 'text' }, table: { category } }
-        };
-    },
     render: (/** @type {Record<string, unknown>} */ args) => html`
         <arpa-pager id="demo-pager" ${attrString(args)} views="grid, list"></arpa-pager>
 
@@ -55,7 +33,7 @@ const PagerStory = {
 export const Default = {
     name: 'Render',
     parameters: {},
-    args: PagerStory.getArgs()
+    args: getArgs()
 };
 
 /** @type {StoryObj} */
@@ -75,18 +53,9 @@ export const Test = {
         usage: { disable: true },
         options: { selectedPanel: 'storybook/interactions/panel' }
     },
-    /**
-     * @param {HTMLElement} canvasElement
-     */
-    playSetup: async canvasElement => {
-        const canvas = within(canvasElement);
-        await customElements.whenDefined('arpa-pager');
-        const pagerNode = /** @type {Pager} */ (canvasElement.querySelector('arpa-pager'));
-        await pagerNode?.promise;
-        return { canvas, pagerNode };
-    },
+
     play: async (/** @type {StoryContext} */ { canvasElement, step }) => {
-        const setup = await Test.playSetup(canvasElement);
+        const setup = await playSetup(canvasElement);
         const { canvas, pagerNode } = setup;
 
         await step('Renders the pager with the given props', async () => {
@@ -100,7 +69,7 @@ export const Test = {
             'Checks that the pager has the correct number of items dictated by max-nodes property',
             async () => {
                 const itemsNode = pagerNode.querySelector('.pager__numbers');
-                expect(itemsNode.children).toHaveLength(7);
+                expect(itemsNode?.children).toHaveLength(7);
             }
         );
 
@@ -171,7 +140,13 @@ export const Test = {
                     expect(canvasElement.querySelector('pager-item[page="1"] input')).toBeInTheDocument();
                 });
                 const input = canvasElement.querySelector('pager-item[page="1"] input');
+                if (!(input instanceof HTMLElement)) {
+                    throw new Error('Expected pager input element to exist');
+                }
                 const form = input.closest('form, arpa-form');
+                if (!(form instanceof Element)) {
+                    throw new Error('Expected pager form element to exist');
+                }
                 await userEvent.clear(input);
                 await userEvent.type(input, '50');
                 await fireEvent.submit(form);

@@ -7,21 +7,12 @@
  */
 import { attrString } from '@arpadroid/tools';
 import { waitFor, expect, within } from 'storybook/test';
+import { playSetup } from './button.stories.util.js';
 const category = 'Button Props';
 const html = String.raw;
 /** @type {Meta} */
 const ButtonStory = {
     title: 'UI/Buttons/Button',
-
-    playSetup: async (/** @type {HTMLElement} */ canvasElement) => {
-        const canvas = within(canvasElement);
-        await customElements.whenDefined('arpa-button');
-
-        const buttonComponent = /** @type {Button} */ (canvasElement.querySelector('arpa-button'));
-        await buttonComponent.promise;
-        const buttonNode = canvasElement.querySelector('button');
-        return { canvas, buttonNode, buttonComponent };
-    },
     args: {
         content: 'Click me',
         icon: 'task_alt',
@@ -55,7 +46,7 @@ const ButtonStory = {
 /** @type {StoryObj} */
 export const Default = {
     name: 'Render',
-    render: (/** @type {Args} */ args) => ButtonStory.render(args)
+    render: ButtonStory.render
 };
 
 const setNewIconTest = (/** @type {Button} */ buttonComponent) => {
@@ -86,7 +77,7 @@ const setTooltipTest = async (/** @type {Button} */ buttonComponent) => {
 
 /** @type {StoryObj} */
 export const Test = {
-    title: 'UI/Buttons/Button/Test',
+    name: 'UI/Buttons/Button/Test',
     args: {
         content: 'Click me',
         icon: 'task_alt',
@@ -96,7 +87,7 @@ export const Test = {
     },
 
     play: async (/** @type {StoryContext} */ { canvasElement, step, canvas }) => {
-        const setup = await ButtonStory.playSetup(canvasElement);
+        const setup = await playSetup(canvasElement);
         const { buttonNode, buttonComponent } = setup;
 
         await step('Renders the button', async () => {
@@ -127,7 +118,7 @@ export const TestDynamicRender = {
         tooltipPosition: ''
     },
     play: async (/** @type {StoryContext} */ { canvasElement, step }) => {
-        const setup = await ButtonStory.playSetup(canvasElement);
+        const setup = await playSetup(canvasElement);
         const { buttonComponent } = setup;
 
         await step('Sets a new icon', async () => setNewIconTest(buttonComponent));
@@ -141,7 +132,7 @@ export const TestDynamicRender = {
 export const VariantDisabled = {
     args: { ...Default.args, disabled: true, content: 'Disabled Button' },
     play: async (/** @type {StoryContext} */ { canvasElement, step }) => {
-        const setup = await ButtonStory.playSetup(canvasElement);
+        const setup = await playSetup(canvasElement);
         const { buttonNode } = setup;
         await step('renders the button', async () => {
             expect(buttonNode).not.toBeNull();

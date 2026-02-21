@@ -1,4 +1,4 @@
-import { ArpaElement } from '../components/arpaElement/arpaElement';
+import ArpaElement from '../components/arpaElement/arpaElement';
 
 export type ZoneToolPlaceZoneType = {
     nodes?: NodeList;
