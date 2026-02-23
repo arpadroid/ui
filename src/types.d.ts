@@ -1,4 +1,4 @@
-import '@arpadroid/module/types/declarations';
+import '@arpadroid/module/types';
 
 export {
     ArpaElementConfigType,
