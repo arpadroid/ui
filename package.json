@@ -2,7 +2,12 @@
     "name": "@arpadroid/ui",
     "version": "0.0.1",
     "description": "A UI library of web components",
-    "exports": "./dist/arpadroid-ui.js",
+    "exports": {
+        ".": {
+            "types": "./dist/@types/types.compiled.d.ts",
+            "import": "./dist/arpadroid-ui.js"
+        }
+    },
     "types": "./dist/@types/types.compiled.d.ts",
     "type": "module",
     "scripts": {

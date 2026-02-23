@@ -49,16 +49,3 @@ export type ArpaElementConfigType = {
     templateTypes?: TemplateContentMode[];
     templateChildren?: Record<string, ArpaElementChildOptionsType> | undefined;
 };
-
-// declare global {
-//     interface HTMLElementTagNameMap {
-//         'arpa-element': ArpaElement;
-//     }
-
-//     interface ArpaElementAttributes {
-//         'remove-empty-zone-nodes'?: string;
-//         'class-name'?: string;
-//         variant?: string;
-//         'class-names'?: string;
-//     }
-// }
