@@ -1,5 +1,4 @@
 /**
- * @typedef {import("@arpadroid/tools").CallableType} CallableType
  * @typedef {import("../arpaElement.types").ArpaElementChildOptionsType} ArpaElementChildOptionsType
  * @typedef {import("../arpaElement").default} ArpaElement
  */

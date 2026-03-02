@@ -3,10 +3,11 @@
     "compilerOptions": {
         "baseUrl": ".",
         "moduleResolution": "bundler",
-        "rootDir": "./src",
         "outDir": "./.tmp/.types",
-        "types": ["jest"],
-        "skipLibCheck": false
+        "preserveSymlinks": true,
+        "rootDir": "./src",
+        "skipLibCheck": false,
+        "types": ["jest"]
     },
     "include": ["src/**/*", "scripts"],
     "exclude": ["node_modules", "dist"]
