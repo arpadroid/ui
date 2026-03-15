@@ -1,11 +1,6 @@
-import { ArpaElementConfigType } from '../arpaElement/arpaElement.types';
-import { ButtonConfigType } from '../button/button.types';
+import { ButtonConfigType } from 'src/types';
 
-export type IconButtonConfigType = ArpaElementConfigType & {
+export type IconButtonConfigType = ButtonConfigType & {
     label?: string;
-    type?: ButtonConfigType['type'];
-    icon?: ButtonConfigType['icon'];
     variant?: 'primary' | 'secondary' | 'tertiary' | 'delete';
-    tooltipPosition?: 'top' | 'right' | 'bottom' | 'left';
-    tooltip?: string;
 };

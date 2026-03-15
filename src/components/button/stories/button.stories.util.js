@@ -1,5 +1,5 @@
 /**
- * @typedef {import('./button').default} Button
+ * @typedef {import('../button').default} Button
  */
 import { within } from 'storybook/test';
 

@@ -21,14 +21,14 @@ export type ApplyTemplateConfigType = {
     templateMode?: TemplateContentMode;
 };
 
-export type ArpaElementAttributesType = Record<string, (string | boolean) | (() => (string | boolean))>;
+export type ArpaElementAttributesType = Record<string, unknown> | (() => Record<string, unknown>);
 
 export type ArpaElementChildOptionsType = {
     tag?: string;
     attr?: ArpaElementAttributesType | (() => ArpaElementAttributesType);
     id?: string;
     className?: string;
-    content?: string | (() => string);
+    content?: string | (() => string) | HTMLCollection | HTMLElement;
     hasZone?: boolean;
     zoneName?: string;
     propName?: string;

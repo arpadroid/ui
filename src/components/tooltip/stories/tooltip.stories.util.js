@@ -1,6 +1,6 @@
 /**
  * @typedef {import('@storybook/web-components-vite').ArgTypes} ArgTypes
- * @typedef {import('./tooltip').default} Tooltip
+ * @typedef {import('../tooltip').default} Tooltip
  */
 import { within } from 'storybook/test';
 

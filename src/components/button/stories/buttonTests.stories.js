@@ -1,51 +1,20 @@
 /**
- * @typedef {import('./button.js').default} Button
+ * @typedef {import('../button.js').default} Button
  * @typedef {import('@storybook/web-components-vite').Meta} Meta
  * @typedef {import('@storybook/web-components-vite').StoryObj} StoryObj
  * @typedef {import('@storybook/web-components-vite').StoryContext} StoryContext
  * @typedef {import('@storybook/web-components-vite').Args} Args
  */
-import { attrString } from '@arpadroid/tools';
-import { waitFor, expect, within } from 'storybook/test';
-import { playSetup } from './button.stories.util.js';
-const category = 'Button Props';
-const html = String.raw;
-/** @type {Meta} */
-const ButtonStory = {
-    title: 'UI/Buttons/Button',
-    args: {
-        content: 'Click me',
-        icon: 'task_alt',
-        tooltip: 'If you click me something awesome will happen.',
-        tooltipPosition: 'bottom'
-    },
-    argTypes: {
-        content: { control: { type: 'text' }, table: { category } },
-        icon: { control: { type: 'text' }, table: { category } },
-        iconRight: { control: { type: 'text' }, table: { category } },
-        tooltip: { control: { type: 'text' }, table: { category } },
-        tooltipPosition: {
-            control: { type: 'select' },
-            options: ['top', 'bottom', 'left', 'right'],
-            table: { category }
-        },
-        variant: {
-            description: 'The field variant.',
-            options: ['primary', 'secondary', 'tertiary', 'danger', 'warning', 'delete'],
-            control: { type: 'select' },
-            table: { category }
-        }
-    },
-    render: (/** @type {Args} */ args) => {
-        const content = args.content;
-        delete args.content;
-        return html`<arpa-button ${attrString(args)}>${content}</arpa-button>`;
-    }
-};
 
-/** @type {StoryObj} */
-export const Default = {
-    name: 'Render',
+import { waitFor, expect } from 'storybook/test';
+import { playSetup } from '../stories/button.stories.util';
+import { attrString } from '@arpadroid/tools';
+import ButtonStory from './button.stories';
+const html = String.raw;
+
+/** @type {Meta} */
+const ButtonTestsStory = {
+    title: 'UI/Buttons/Button/Tests',
     render: ButtonStory.render
 };
 
@@ -69,15 +38,14 @@ const setContentTest = (/** @type {Button} */ buttonComponent) => {
 
 const setTooltipTest = async (/** @type {Button} */ buttonComponent) => {
     buttonComponent.setTooltip('New tooltip');
-    const tooltip = buttonComponent.querySelector('arpa-tooltip');
     await waitFor(() => {
+        const tooltip = buttonComponent.querySelector('arpa-tooltip');
         expect(tooltip).toHaveTextContent('New tooltip');
     });
 };
 
 /** @type {StoryObj} */
 export const Test = {
-    name: 'UI/Buttons/Button/Test',
     args: {
         content: 'Click me',
         icon: 'task_alt',
@@ -86,7 +54,7 @@ export const Test = {
         tooltipPosition: 'top'
     },
 
-    play: async (/** @type {StoryContext} */ { canvasElement, step, canvas }) => {
+    play: async ({ canvasElement, step, canvas }) => {
         const setup = await playSetup(canvasElement);
         const { buttonNode, buttonComponent } = setup;
 
@@ -109,7 +77,7 @@ export const Test = {
 };
 
 /** @type {StoryObj} */
-export const TestDynamicRender = {
+export const DynamicRender = {
     args: {
         content: '',
         icon: '',
@@ -117,7 +85,7 @@ export const TestDynamicRender = {
         tooltip: '',
         tooltipPosition: ''
     },
-    play: async (/** @type {StoryContext} */ { canvasElement, step }) => {
+    play: async ({ canvasElement, step }) => {
         const setup = await playSetup(canvasElement);
         const { buttonComponent } = setup;
 
@@ -128,21 +96,4 @@ export const TestDynamicRender = {
     }
 };
 
-/** @type {StoryObj} */
-export const VariantDisabled = {
-    args: { ...Default.args, disabled: true, content: 'Disabled Button' },
-    play: async (/** @type {StoryContext} */ { canvasElement, step }) => {
-        const setup = await playSetup(canvasElement);
-        const { buttonNode } = setup;
-        await step('renders the button', async () => {
-            expect(buttonNode).not.toBeNull();
-        });
-    }
-};
-
-/** @type {StoryObj} */
-export const VariantDelete = {
-    args: { ...Default.args, variant: 'delete', content: 'Delete Button', icon: undefined }
-};
-
-export default ButtonStory;
+export default ButtonTestsStory;

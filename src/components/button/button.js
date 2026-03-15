@@ -14,7 +14,7 @@ class Button extends ArpaElement {
      * @returns {ButtonConfigType}
      */
     getDefaultConfig() {
-        this.bind('_onClick');
+        this.bind('_onClick', 'getTooltipPosition');
         /** @type {ButtonConfigType} */
         const config = {
             className: 'arpaButton',
@@ -24,7 +24,7 @@ class Button extends ArpaElement {
                 content: { tag: 'span', zoneName: 'buttonContent', canRender: true },
                 icon: { tag: 'arpa-icon' },
                 rhsIcon: { tag: 'arpa-icon' },
-                tooltip: { tag: 'arpa-tooltip', attr: { position: this.getTooltipPosition.bind(this) } }
+                tooltip: { tag: 'arpa-tooltip', attr: { position: this.getTooltipPosition } }
             }
         };
         return /** @type {ButtonConfigType} */ (super.getDefaultConfig(config));
@@ -52,7 +52,8 @@ class Button extends ArpaElement {
             class: this.getProperty('button-class'),
             type: this.getProperty('type'),
             variant: this.variant,
-            disabled: this.disabled
+            disabled: this.disabled,
+            zone: this.getProperty('button-zone')
         });
         return html`<button ${attr}>{icon}{content}{rhsIcon}{tooltip}</button>`;
     }
@@ -119,19 +120,28 @@ class Button extends ArpaElement {
     }
 
     /**
-     * Sets the label to display in the tooltip.
-     * @param {string} label
+     * Creates a tooltip element with the specified content.
+     * @param {string | HTMLCollection | NodeList} content
+     * @returns {Tooltip}
      */
-    async setTooltip(label) {
-        let tooltip = /** @type {Tooltip | undefined} */ (this.templateNodes.tooltip);
-        if (!tooltip) {
-            tooltip = /** @type {Tooltip} */ (
-                renderNode(renderChild(this, 'tooltip', { content: label, canRender: true }))
-            );
-            tooltip instanceof HTMLElement && this.button?.appendChild(tooltip);
+    createTooltip(content) {
+        const stringContent = typeof content === 'string' ? content : '';
+        return /** @type {Tooltip} */ (
+            renderNode(renderChild(this, 'tooltip', { content: stringContent, canRender: true }))
+        );
+    }
+
+    /**
+     * Sets the label to display in the tooltip.
+     * @param {string | HTMLCollection | NodeList} content
+     */
+    async setTooltip(content) {
+        await this.promise;
+        this.tooltip = /** @type {Tooltip} */ (this.templateNodes.tooltip || this.createTooltip(content));
+        if (!this.tooltip?.isConnected) {
+            this.button?.appendChild(this.tooltip);
         }
-        tooltip?.setContent(label);
-        this.tooltip && (this.tooltip = tooltip);
+        this.tooltip?.setContent(content);
     }
 
     // #endregion Set
@@ -189,7 +199,7 @@ class Button extends ArpaElement {
     _onLostZone({ zoneName, zone }) {
         if (!zone || !zoneName) return;
         if (['tooltip', 'tooltip-content'].includes(zoneName)) {
-            this.setTooltip(zone.innerHTML);
+            this.setTooltip(zone.childNodes);
             return true;
         }
     }
