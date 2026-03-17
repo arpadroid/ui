@@ -31,36 +31,6 @@ class Button extends ArpaElement {
     }
 
     /////////////////////////
-    // #region Render
-    /////////////////////////
-    _preRender() {
-        super._preRender();
-        this.variant = this.getProperty('variant');
-        this.handleVariant();
-        this.disabled = this.hasAttribute('disabled');
-        this.removeAttribute('disabled');
-        this.removeAttribute('variant');
-    }
-
-    _getTemplate() {
-        return this.renderButton();
-    }
-
-    renderButton() {
-        const attr = attrString({
-            ariaLabel: this.getAriaLabel(),
-            class: this.getProperty('button-class'),
-            type: this.getProperty('type'),
-            variant: this.variant,
-            disabled: this.disabled,
-            zone: this.getProperty('button-zone')
-        });
-        return html`<button ${attr}>{icon}{content}{rhsIcon}{tooltip}</button>`;
-    }
-
-    // #endregion Render
-
-    /////////////////////////
     // #region Get
     /////////////////////////
 
@@ -145,6 +115,35 @@ class Button extends ArpaElement {
     }
 
     // #endregion Set
+
+    /////////////////////////
+    // #region Render
+    /////////////////////////
+    _preRender() {
+        super._preRender();
+        this.variant = this.getProperty('variant');
+        this.handleVariant();
+        this.disabled = this.hasAttribute('disabled');
+        this.removeAttribute('disabled');
+        this.removeAttribute('variant');
+    }
+
+    _getTemplate() {
+        return html`<button
+            ${attrString({
+                ariaLabel: this.getAriaLabel(),
+                class: this.getProperty('button-class'),
+                type: this.getProperty('type'),
+                variant: this.variant,
+                disabled: this.disabled,
+                zone: this.getProperty('button-zone')
+            })}
+        >
+            {icon}{content}{rhsIcon}{tooltip}
+        </button>`;
+    }
+
+    // #endregion Render
 
     /////////////////////////
     // #region Lifecycle

@@ -1,4 +1,4 @@
-import { ButtonConfigType } from 'src/types';
+import { ButtonConfigType } from '../button/button.types';
 
 export type IconButtonConfigType = ButtonConfigType & {
     label?: string;

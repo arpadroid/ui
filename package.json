@@ -17,6 +17,7 @@
         "clean": "arpadroid-clean",
         "initialize": "arpadroid-initialize",
         "dev": "arpadroid-build --watch --storybook",
+        "watch": "arpadroid-build --watch",
         "test": "arpadroid-test --storybook --jest",
         "t": "npm run test -- --slim",
         "test:jest": "../module/node_modules/.bin/jest",
