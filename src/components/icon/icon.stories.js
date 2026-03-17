@@ -29,13 +29,8 @@ export const Default = {
     play: async ({ canvasElement, step }) => {
         const setup = await playSetup(canvasElement);
         const { iconNode } = setup;
-        /** @type {{icon?: string}} */
-        const { icon = '' } = Default.args || {};
-        // @ts-ignore
-        iconNode.icon = icon;
-
         await step('renders the icon', async () => {
-            await waitFor(() => expect(iconNode).not.toBeNull());
+            expect(iconNode).not.toBeNull();
         });
     }
 };

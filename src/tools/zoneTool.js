@@ -376,7 +376,6 @@ const benchMarkCallback = (start, end) => benchmark(start, end);
  * Debounces the benchmark function.
  * @type {BenchmarkCallback}
  */
-// @ts-ignore
 const benchmarkDebounced = debounce(benchMarkCallback, ZONE_BENCHMARK_INTERVAL);
 
 /**

@@ -424,8 +424,7 @@ class ArpaImage extends ArpaElement {
             const prop = size === sizes[sizes.length - 1] ? 'min-width' : 'max-width';
             return html`<source srcset="${src}" media="(${prop}: ${size}px)" />`;
         };
-        // @ts-ignore
-        return mapHTML(sizes, (/** @type {number} */ size) => render(sizes, size));
+        return mapHTML(sizes, size => render(sizes, size));
     }
 
     renderPreloader() {
