@@ -11,6 +11,7 @@ class DarkModeButton extends IconButton {
         const config = {
             icon: 'dark_mode',
             iconLight: 'light_mode',
+            labelText: this.i18nText('lblDarkMode'),
             label: this.i18n('lblDarkMode'),
             tooltip: this.i18nText('lblDarkMode'),
             labelLight: this.i18n('lblLightMode'),

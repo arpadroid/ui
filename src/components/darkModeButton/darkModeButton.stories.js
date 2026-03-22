@@ -3,7 +3,6 @@
  * @typedef {import('@storybook/web-components-vite').StoryObj} StoryObj
  * @typedef {import('./darkModeButton').default} DarkModeButton
  */
-import { attrString } from '@arpadroid/tools';
 import { waitFor, expect, within } from 'storybook/test';
 
 /**
@@ -20,15 +19,11 @@ async function playSetup(canvasElement) {
     return { canvas, buttonNode: buttonComponent?.button, buttonComponent };
 }
 
-const html = String.raw;
 /** @type {Meta} */
 const DarkModeButtonStory = {
     title: 'UI/Buttons/Dark Mode Button',
     tags: [],
-
-    render: args => {
-        return html`<dark-mode-button ${attrString(args)}></dark-mode-button>`;
-    }
+    component: 'dark-mode-button'
 };
 
 /** @type {StoryObj} */

@@ -1,35 +1,73 @@
 /**
  * @typedef {import('../button.js').default} Button
- * @typedef {import('@storybook/web-components-vite').Meta} Meta
- * @typedef {import('@storybook/web-components-vite').StoryObj} StoryObj
- * @typedef {import('@storybook/web-components-vite').StoryContext} StoryContext
- * @typedef {import('@storybook/web-components-vite').Args} Args
+ * @typedef {import('../button.types.js').ButtonConfigType} ButtonConfigType
+ * @typedef {import('@storybook/web-components-vite').Meta<ButtonConfigType>} ButtonMetaVariantsMetaType
+ * @typedef {import('@storybook/web-components-vite').StoryObj<ButtonConfigType>} ButtonVariantsStoryType
  */
 
-import { expect } from 'storybook/test';
-import { playSetup } from '../stories/button.stories.util';
-import ButtonStory, { Default } from './button.stories';
-
-/** @type {Meta} */
+/** @type {ButtonMetaVariantsMetaType} */
 const ButtonVariantsStory = {
     title: 'UI/Buttons/Button/Variants',
-    render: ButtonStory.render
+    component: 'arpa-button',
+    args: {
+        content: 'Variant',
+        tooltip: 'There are several variants such as primary, secondary, and delete.'
+    }
 };
 
-/** @type {StoryObj} */
-export const VariantDelete = {
-    args: { ...Default.args, variant: 'delete', content: 'Delete Button', icon: undefined }
+/** @type {ButtonVariantsStoryType} */
+export const Primary = {
+    args: {
+        content: 'Primary Button',
+        variant: 'primary'
+    }
 };
 
-/** @type {StoryObj} */
-export const VariantDisabled = {
-    args: { ...Default.args, disabled: true, content: 'Disabled Button' },
-    play: async ({ canvasElement, step }) => {
-        const setup = await playSetup(canvasElement);
-        const { buttonNode } = setup;
-        await step('renders the button', async () => {
-            expect(buttonNode).not.toBeNull();
-        });
+/** @type {ButtonVariantsStoryType} */
+export const PrimaryOutlined = {
+    args: {
+        content: 'Primary Outlined Button',
+        variant: 'primary-outlined'
+    }
+};
+
+/** @type {ButtonVariantsStoryType} */
+export const Secondary = {
+    args: {
+        content: 'Secondary Button',
+        variant: 'secondary'
+    }
+};
+
+/** @type {ButtonVariantsStoryType} */
+export const SecondaryOutlined = {
+    args: {
+        content: 'Secondary Outlined Button',
+        variant: 'secondary-outlined'
+    }
+};
+
+/** @type {ButtonVariantsStoryType} */
+export const Tertiary = {
+    args: {
+        content: 'Tertiary Button',
+        variant: 'tertiary'
+    }
+};
+
+/** @type {ButtonVariantsStoryType} */
+export const TertiaryOutlined = {
+    args: {
+        content: 'Tertiary Outlined Button',
+        variant: 'tertiary-outlined'
+    }
+};
+
+/** @type {ButtonVariantsStoryType} */
+export const Delete = {
+    args: {
+        content: 'Delete Button',
+        variant: 'delete'
     }
 };
 

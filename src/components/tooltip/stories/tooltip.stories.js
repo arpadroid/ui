@@ -5,7 +5,7 @@
  * @typedef {import('@storybook/web-components-vite').Args} Args
  */
 import { attrString } from '@arpadroid/tools';
-import { waitFor, expect, within } from 'storybook/test';
+import { waitFor, expect } from 'storybook/test';
 import { getArgTypes, playSetup } from './tooltip.stories.util';
 const html = String.raw;
 /** @type {Meta} */

@@ -21,10 +21,19 @@ class Button extends ArpaElement {
             type: 'button',
             buttonClass: 'arpaButton__button',
             templateChildren: {
-                content: { tag: 'span', zoneName: 'buttonContent', canRender: true },
+                content: {
+                    tag: 'span',
+                    canRender: true,
+                    content: '{label}'
+                },
                 icon: { tag: 'arpa-icon' },
                 rhsIcon: { tag: 'arpa-icon' },
-                tooltip: { tag: 'arpa-tooltip', attr: { position: this.getTooltipPosition } }
+                tooltip: {
+                    tag: 'arpa-tooltip',
+                    attr: {
+                        position: this.getTooltipPosition
+                    }
+                }
             }
         };
         return /** @type {ButtonConfigType} */ (super.getDefaultConfig(config));
@@ -46,14 +55,14 @@ class Button extends ArpaElement {
         return this.getProperty('tooltip-position') || 'left';
     }
 
+    /**
+     * Returns the aria-label for the button, prioritizing the ariaLabel property, then label, then tooltip content.
+     * @returns {string} The resolved aria-label for the button.
+     */
     getAriaLabel() {
-        return (
-            this.getProperty('aria-label') ||
-            this.getProperty('label-text') ||
-            this.getProperty('tooltip') ||
-            this.getLabel() ||
-            ''
-        );
+        const { ariaLabel, label, tooltip } = this.getProperties('ariaLabel', 'label', 'tooltip');
+        const aria = ariaLabel || label || tooltip || '';
+        return this.resolveAriaLabel(aria) || '';
     }
 
     // #endregion Get
@@ -126,6 +135,13 @@ class Button extends ArpaElement {
         this.disabled = this.hasAttribute('disabled');
         this.removeAttribute('disabled');
         this.removeAttribute('variant');
+    }
+
+    getTemplateVars() {
+        return {
+            ...super.getTemplateVars(),
+            label: this.getLabel()
+        };
     }
 
     _getTemplate() {

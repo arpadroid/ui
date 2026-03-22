@@ -7,7 +7,7 @@
  * @typedef {import('../../tools/zoneTool.types.js').ZoneToolPlaceZoneType} ZoneToolPlaceZoneType
  * @typedef {import('../../tools/zoneTool.types.js').ZoneType} ZoneType
  */
-import { dashedToCamel, mergeObjects, renderNode } from '@arpadroid/tools';
+import { dashedToCamel, getStringBetween, mergeObjects, renderNode } from '@arpadroid/tools';
 import { defineCustomElement, attr, setNodes, bind, classNames } from '@arpadroid/tools';
 import { handleZones, zoneMixin, hasZone, getZone, extractZones } from '../../tools/zoneTool';
 import { hasProperty, getProperty, getArrayProperty } from './helper/arpaElement.helper';
@@ -36,7 +36,7 @@ class ArpaElement extends HTMLElement {
     templates = {};
     /** @type {Record<string, ArpaElementChildOptionsType>} */
     templateChildren = {};
-    /** @type {Record<string, HTMLElement>} */
+    /** @type {Record<string, HTMLElement | Node>} */
     templateNodes = {};
     /** @type {Record<string, unknown>} */
     templateVars = {};
@@ -59,6 +59,7 @@ class ArpaElement extends HTMLElement {
         this.i18nKey = '';
         this._preInitialize();
         this.setConfig(config);
+        this._preInitializeContent();
         this._initializeTemplates();
         this._initializeZones();
         this._initializeContent();
@@ -85,6 +86,26 @@ class ArpaElement extends HTMLElement {
     _initializeZones() {
         zoneMixin(this);
     }
+
+    _preInitializeContent() {
+        const { content } = this._config;
+
+        if (typeof content === 'string') {
+            this.innerHTML = content;
+        }
+        const attributes = { ...this.userConfig };
+        delete attributes.content;
+        for (const key in attributes) {
+            if (!['string', 'number', 'boolean'].includes(typeof attributes[key])) {
+                delete attributes[key];
+            }
+        }
+        if (Object.keys(attributes).length > 0) {
+            attr(this, attributes);
+        }
+    }
+
+    _initializeAttributes() {}
 
     _initializeContent() {
         this._content = this.innerHTML;
@@ -119,6 +140,19 @@ class ArpaElement extends HTMLElement {
             templateTypes: ['content']
         };
         return mergeObjects(defaultConfig, config);
+    }
+
+    getUserConfig(_config = this._config) {
+        /** @type {Record<string, unknown>} */
+        const config = { ..._config };
+        /** @type {Record<string, unknown>} */
+        const defaultConfig = this.getDefaultConfig();
+        Object.keys(config).forEach(key => {
+            if (config[key] === defaultConfig[key]) {
+                delete config[key];
+            }
+        });
+        return config;
     }
 
     // #endregion Setup
@@ -325,7 +359,7 @@ class ArpaElement extends HTMLElement {
      * Updates a child element.
      * @param {string} name
      * @param {ArpaElementChildOptionsType} config - The configuration object.
-     * @returns {HTMLElement | null}
+     * @returns {HTMLElement | Node | null}
      */
     updateChildNode(name, config) {
         return updateChildNode(this, name, config);
@@ -335,7 +369,7 @@ class ArpaElement extends HTMLElement {
      * Sets a child element.
      * @param {string} name
      * @param {ArpaElementChildOptionsType} [config] - The configuration object.
-     * @returns {HTMLElement | null}
+     * @returns {HTMLElement | Node | null}
      */
     editChild(name, config = {}) {
         if (!name) return null;
@@ -352,8 +386,13 @@ class ArpaElement extends HTMLElement {
         return this._config?.templateChildren?.[childName];
     }
 
+    /**
+     * Returns the child node with the specified name.
+     * @param {string} name - The name of the child node to retrieve.
+     * @returns {HTMLElement | null}
+     */
     getChild(name = '') {
-        return this.templateNodes?.[name] || null;
+        return /** @type {HTMLElement | null} */ (this.templateNodes?.[name] || null);
     }
 
     /**
@@ -374,6 +413,31 @@ class ArpaElement extends HTMLElement {
     }
 
     // #endregion Set
+
+    /////////////////////
+    // #region Utils
+    /////////////////////
+
+    /**
+     * Computes the aria-label for the element based on its properties.
+     * @param {string | unknown} content
+     * @returns {string}
+     */
+    resolveAriaLabel(content) {
+        let label = content;
+        if (typeof content === 'string') {
+            if (content.startsWith('<i18n-text ')) {
+                const key = getStringBetween(content, 'key="', '"');
+                if (key) {
+                    const text = I18n.getText(key);
+                    text && (label = text);
+                }
+            }
+        }
+        return String(label);
+    }
+
+    // #endregion Utils
 
     ////////////////////
     // #region API
@@ -415,7 +479,9 @@ class ArpaElement extends HTMLElement {
      * @param {ArpaElementConfigType} [config]
      */
     setConfig(config = {}) {
-        this._config = mergeObjects(this.getDefaultConfig(), config);
+        this.userConfig = this.getUserConfig(config);
+        const defaultConfig = this.getDefaultConfig();
+        this._config = mergeObjects(defaultConfig, config);
     }
 
     /**

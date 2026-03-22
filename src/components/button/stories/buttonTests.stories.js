@@ -1,21 +1,20 @@
 /**
  * @typedef {import('../button.js').default} Button
- * @typedef {import('@storybook/web-components-vite').Meta} Meta
- * @typedef {import('@storybook/web-components-vite').StoryObj} StoryObj
+ * @typedef {import('../button.types.js').ButtonConfigType} ButtonConfigType
+ * @typedef {import('@storybook/web-components-vite').Meta<ButtonConfigType>} ButtonTestsMetaType
+ * @typedef {import('@storybook/web-components-vite').StoryObj<ButtonConfigType>} ButtonTestsStoryType
  * @typedef {import('@storybook/web-components-vite').StoryContext} StoryContext
  * @typedef {import('@storybook/web-components-vite').Args} Args
  */
 
 import { waitFor, expect } from 'storybook/test';
 import { playSetup } from '../stories/button.stories.util';
-import { attrString } from '@arpadroid/tools';
 import ButtonStory from './button.stories';
-const html = String.raw;
 
-/** @type {Meta} */
+/** @type {ButtonTestsMetaType} */
 const ButtonTestsStory = {
-    title: 'UI/Buttons/Button/Tests',
-    render: ButtonStory.render
+    ...ButtonStory,
+    title: 'UI/Buttons/Button/Tests'
 };
 
 const setNewIconTest = (/** @type {Button} */ buttonComponent) => {
@@ -44,12 +43,12 @@ const setTooltipTest = async (/** @type {Button} */ buttonComponent) => {
     });
 };
 
-/** @type {StoryObj} */
+/** @type {ButtonTestsStoryType} */
 export const Test = {
     args: {
         content: 'Click me',
         icon: 'task_alt',
-        iconRight: 'person',
+        rhsIcon: 'person',
         tooltip: 'If you click me something awesome will happen.',
         tooltipPosition: 'top'
     },
@@ -76,14 +75,14 @@ export const Test = {
     }
 };
 
-/** @type {StoryObj} */
+/** @type {ButtonTestsStoryType} */
 export const DynamicRender = {
     args: {
         content: '',
         icon: '',
-        iconRight: '',
+        rhsIcon: '',
         tooltip: '',
-        tooltipPosition: ''
+        tooltipPosition: undefined
     },
     play: async ({ canvasElement, step }) => {
         const setup = await playSetup(canvasElement);

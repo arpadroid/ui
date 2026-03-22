@@ -3,25 +3,24 @@
  * @typedef {import('@storybook/web-components-vite').StoryObj} StoryObj
  * @typedef {import('@storybook/web-components-vite').StoryContext} StoryContext
  */
-import { attrString } from '@arpadroid/tools';
 import { waitFor, expect } from 'storybook/test';
-import { getArgs, getArgTypes, playSetup } from './IconButton.stories.util';
-const html = String.raw;
+import { playSetup } from './IconButton.stories.util';
+
 /** @type {Meta} */
 const ButtonStory = {
     title: 'UI/Buttons/Icon Button',
     tags: [],
-    render: (/** @type {Record<string, unknown>} */ args) => {
-        return html`<icon-button ${attrString(args)}></icon-button>`;
+    component: 'icon-button',
+    args: {
+        tooltip: 'Tooltip',
+        icon: 'play_arrow',
+        tooltipPosition: 'right'
     }
 };
 
 /** @type {StoryObj} */
 export const Default = {
     name: 'Render',
-    parameters: {},
-    argTypes: getArgTypes(),
-    args: getArgs(),
     play: async (/** @type {StoryContext} */ { canvasElement, step }) => {
         const setup = await playSetup(canvasElement);
         const { buttonNode } = setup;

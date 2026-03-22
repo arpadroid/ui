@@ -21,21 +21,16 @@ export type ApplyTemplateConfigType = {
     templateMode?: TemplateContentMode;
 };
 
+export type ArpaElementContentType =
+    | string
+    | HTMLElement
+    | HTMLCollection
+    | (() => string | HTMLElement | HTMLCollection);
+
 export type ArpaElementAttributesType = Record<string, unknown> | (() => Record<string, unknown>);
 
-export type ArpaElementChildOptionsType = {
-    tag?: string;
-    attr?: ArpaElementAttributesType | (() => ArpaElementAttributesType);
-    id?: string;
-    className?: string;
-    content?: string | (() => string) | HTMLCollection | HTMLElement;
-    hasZone?: boolean;
-    zoneName?: string;
-    propName?: string;
-    canRender?: ((component: unknown) => boolean) | boolean | string;
-};
-
 export type ArpaElementConfigType = {
+    content?: ArpaElementContentType;
     removeEmptyZoneNodes?: boolean;
     className?: string;
     variant?: string;
@@ -48,4 +43,16 @@ export type ArpaElementConfigType = {
     templateContainer?: HTMLElement | string;
     templateTypes?: TemplateContentMode[];
     templateChildren?: Record<string, ArpaElementChildOptionsType> | undefined;
+};
+
+export type ArpaElementChildOptionsType = {
+    tag?: string;
+    attr?: ArpaElementAttributesType | (() => ArpaElementAttributesType);
+    id?: string;
+    className?: string;
+    content?: ArpaElementContentType;
+    hasZone?: boolean;
+    zoneName?: string;
+    propName?: string;
+    canRender?: ((component: unknown) => boolean) | boolean | string;
 };

@@ -96,7 +96,7 @@ class PagerItem extends ArpaElement {
         super.render(template);
         if (!this.contentNode || reRender) {
             this.innerHTML = '';
-            this.contentNode = this.renderContent();
+            this.contentNode = /** @type {HTMLElement } */ (this.renderContent());
             this.contentNode && this.appendChild(this.contentNode);
             this.appendChildren();
         }
@@ -127,6 +127,10 @@ class PagerItem extends ArpaElement {
         return this.form;
     }
 
+    /**
+     * Renders the content of the pager item.
+     * @returns {HTMLElement | Node | null}
+     */
     renderContent() {
         if (this.isActive()) {
             if (this.hasInput()) return this.renderInput();
@@ -144,7 +148,7 @@ class PagerItem extends ArpaElement {
     /**
      * Renders the page link.
      * @param {number} page - The page number.
-     * @returns {HTMLElement | null}
+     * @returns {HTMLElement | Node | null}
      */
     renderPage(page) {
         const ariaLabel = this.getProperty('aria-label');

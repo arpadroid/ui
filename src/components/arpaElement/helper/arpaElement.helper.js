@@ -435,21 +435,22 @@ export function renderChild(element, name, config = {}, attributes = {}) {
  * @param {ArpaElement} element
  * @param {string} name
  * @param {ArpaElementChildOptionsType} config - The configuration object.
- * @returns {HTMLElement | null}
+ * @returns {HTMLElement | Node | null}
  */
 export function updateChildNode(element, name, config) {
     let node = element.templateNodes[name];
     if (node) {
-        if (typeof config.attr === 'object') {
-            attr(node, config.attr);
-        }
-        if (config.content) {
-            const content = getChildContent(element, name, config);
-            node.innerHTML = content;
+        if (node instanceof HTMLElement) {
+            if (typeof config.attr === 'object') {
+                attr(node, config.attr);
+            }
+            if (config.content) {
+                const content = getChildContent(element, name, config);
+                node.innerHTML = content;
+            }
         }
     } else {
         const conf = mergeObjects(element.getChildConfig(name) || {}, config);
-
         const renderedNode = renderNode(renderChild(element, name, conf));
         if (renderedNode) {
             element.templateNodes[name] = renderedNode;
