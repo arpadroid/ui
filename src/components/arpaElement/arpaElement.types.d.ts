@@ -39,6 +39,7 @@ export type ArpaElementConfigType = {
     zoneSelector?: string;
     zoneResolverSelector?: string;
     zoneFilter?: ZoneFilterType;
+    template?: string;  
     templates?: TemplatesType;
     templateContainer?: HTMLElement | string;
     templateTypes?: TemplateContentMode[];

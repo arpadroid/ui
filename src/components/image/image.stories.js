@@ -1,12 +1,13 @@
 /**
- * @typedef {import('@storybook/web-components-vite').Meta} Meta
- * @typedef {import('@storybook/web-components-vite').StoryObj} StoryObj
+ * @typedef {import('./image.types').ImageConfigType} ImageConfigType
+ * @typedef {import('@storybook/web-components-vite').Meta<ImageConfigType>} Meta
+ * @typedef {import('@storybook/web-components-vite').StoryObj<ImageConfigType>} StoryObj
  * @typedef {import('@storybook/web-components-vite').Args} Args
  * @typedef {import('@storybook/web-components-vite').StoryContext} StoryContext
  */
 
 import { attrString } from '@arpadroid/tools';
-import { waitFor, expect, within } from 'storybook/test';
+import { waitFor, expect } from 'storybook/test';
 import { getArgs, getArgTypes, playSetup } from './image.stories.util';
 const html = String.raw;
 

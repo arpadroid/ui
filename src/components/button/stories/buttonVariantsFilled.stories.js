@@ -5,12 +5,17 @@
  * @typedef {import('@storybook/web-components-vite').StoryObj<ButtonConfigType>} ButtonVariantsStoryType
  */
 
+import { playSetup } from './button.stories.util.js';
+import { expect } from 'storybook/test';
+
 /** @type {ButtonMetaVariantsMetaType} */
 const ButtonVariantsStory = {
-    title: 'UI/Buttons/Button/Variants',
+    title: 'UI/Buttons/Button/Variants/Filled',
     component: 'arpa-button',
     args: {
+        icon: 'star',
         content: 'Variant',
+        tooltipPosition: 'bottom',
         tooltip: 'There are several variants such as primary, secondary, and delete.'
     }
 };
@@ -24,26 +29,10 @@ export const Primary = {
 };
 
 /** @type {ButtonVariantsStoryType} */
-export const PrimaryOutlined = {
-    args: {
-        content: 'Primary Outlined Button',
-        variant: 'primary-outlined'
-    }
-};
-
-/** @type {ButtonVariantsStoryType} */
 export const Secondary = {
     args: {
         content: 'Secondary Button',
         variant: 'secondary'
-    }
-};
-
-/** @type {ButtonVariantsStoryType} */
-export const SecondaryOutlined = {
-    args: {
-        content: 'Secondary Outlined Button',
-        variant: 'secondary-outlined'
     }
 };
 
@@ -56,18 +45,35 @@ export const Tertiary = {
 };
 
 /** @type {ButtonVariantsStoryType} */
-export const TertiaryOutlined = {
+export const Delete = {
     args: {
-        content: 'Tertiary Outlined Button',
-        variant: 'tertiary-outlined'
+        content: 'Delete Button',
+        variant: 'delete',
+        icon: undefined
     }
 };
 
 /** @type {ButtonVariantsStoryType} */
-export const Delete = {
+export const Submit = {
     args: {
-        content: 'Delete Button',
-        variant: 'delete'
+        content: 'Submit Button',
+        variant: 'submit',
+        icon: undefined
+    },
+    play: async ({ canvasElement, step }) => {
+        const { buttonNode } = await playSetup(canvasElement);
+        await step('renders the submit button with the correct type', async () => {
+            expect(buttonNode).toBeInTheDocument();
+            expect(buttonNode).toHaveAttribute('type', 'submit');
+        });
+    }
+};
+
+/** @type {ButtonVariantsStoryType} */
+export const Highlight = {
+    args: {
+        content: 'Highlight Button',
+        variant: 'highlight'
     }
 };
 

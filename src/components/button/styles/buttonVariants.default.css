@@ -1,0 +1,100 @@
+:root {
+    --button-variant-color: var(--color-primary);
+    --button-variant-light-color: var(--color-primary-light);
+    --button-variant-lightest-color: var(--color-primary-lightest);
+    --button-variant-text-color: var(--grey-0);
+}
+
+.arpaButton__button {
+    &[variant='default'] {
+        .arpaButton__content {
+            margin-bottom: 2px;
+        }
+    }
+
+    &[variant='primary'],
+    &[variant='secondary'],
+    &[variant='tertiary'],
+    &[variant='delete'],
+    &[variant='submit'],
+    &[variant='highlight'],
+    &[variant$='-outlined'] {
+        --button-icon-color: var(--button-variant-text-color);
+        --button-color: var(--button-variant-text-color);
+        --button-bg-color: var(--button-variant-color);
+
+        --button-border: 2px solid var(--button-variant-color);
+        --button-outline: 2px solid var(--button-variant-color);
+        --button-underline-color: var(--button-variant-light-color);
+        --button-underline-offset: 2px;
+
+        /* Hover state */
+        --button-border-hover: 1px solid var(--button-variant-light-color);
+        --button-color-hover: var(--button-variant-text-color);
+        --button-icon-color-hover: var(--button-variant-text-color);
+        --button-outline-hover: 2px solid var(--button-variant-light-color);
+
+        /* Active state */
+        --button-border-active: 2px solid var(--button-variant-light-color);
+        --button-outline-active: 2px solid var(--button-variant-light-color);
+        --button-color-active: var(--button-variant-text-color);
+        --button-icon-color-active: var(--button-variant-text-color);
+        --button-weight-active: 700;
+    }
+
+    &[variant$='-outlined'] {
+        --button-icon-color: var(--button-variant-color);
+        --button-color: var(--button-variant-color);
+        --button-bg-color: transparent;
+
+        /* Hover state */
+        --button-color-hover: var(--button-variant-color);
+        --button-icon-color-hover: var(--button-variant-color);
+        --button-outline-hover: 2px solid var(--button-variant-color);
+
+        /* Active state */
+        --button-color-active: var(--button-variant-color);
+        --button-icon-color-active: var(--button-variant-color);
+        --button-variant-text-color: var(--button-variant-color);
+    }
+    &[variant='primary'] &[variant='primary-outlined'] {
+        --button-variant-color: var(--color-primary);
+        --button-variant-light-color: var(--color-primary-light);
+        --button-variant-lightest-color: var(--color-primary-lightest);
+    }
+
+    &[variant='secondary'],
+    &[variant='secondary-outlined'] {
+        --button-variant-color: var(--color-secondary);
+        --button-variant-light-color: var(--color-secondary-light);
+        --button-variant-lightest-color: var(--color-secondary-lightest);
+    }
+
+    &[variant='tertiary'],
+    &[variant='tertiary-outlined'] {
+        --button-variant-color: var(--color-tertiary);
+        --button-variant-light-color: var(--color-tertiary-light);
+        --button-variant-lightest-color: var(--color-tertiary-lightest);
+    }
+
+    &[variant='delete'],
+    &[variant='delete-outlined'] {
+        --button-variant-color: var(--color-delete);
+        --button-variant-light-color: var(--color-delete-light);
+        --button-variant-lightest-color: var(--color-delete-lightest);
+    }
+
+    &[variant='submit'],
+    &[variant='submit-outlined'] {
+        --button-variant-color: var(--blue-navy);
+        --button-variant-light-color: var(--blue-navy-light);
+        --button-variant-lightest-color: var(--blue-navy-lightest);
+    }
+
+    &[variant='highlight'],
+    &[variant='highlight-outlined'] {
+        --button-variant-color: var(--color-highlight);
+        --button-variant-light-color: var(--color-highlight-light);
+        --button-variant-lightest-color: var(--color-highlight-lightest);
+    }
+}

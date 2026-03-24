@@ -4,7 +4,7 @@
  * @typedef {import('@storybook/web-components-vite').StoryContext} StoryContext
  */
 import { attrString } from '@arpadroid/tools';
-import { waitFor, expect, within } from 'storybook/test';
+import { expect } from 'storybook/test';
 import { getArgs, getArgTypes, playSetup } from './icon.stories.util';
 
 const html = String.raw;
@@ -12,6 +12,7 @@ const html = String.raw;
 /** @type {Meta} */
 const IconStory = {
     title: 'UI/Components/Icon',
+    component: 'arpa-icon',
     tags: [],
     render: args => {
         const icon = args.icon;

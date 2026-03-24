@@ -10,7 +10,7 @@
 import { dashedToCamel, getStringBetween, mergeObjects, renderNode } from '@arpadroid/tools';
 import { defineCustomElement, attr, setNodes, bind, classNames } from '@arpadroid/tools';
 import { handleZones, zoneMixin, hasZone, getZone, extractZones } from '../../tools/zoneTool';
-import { hasProperty, getProperty, getArrayProperty } from './helper/arpaElement.helper';
+import { hasProperty, getProperty, getArrayProperty, getPropertyCallback } from './helper/arpaElement.helper';
 import { onDestroy, handleCallbackProperty } from './helper/arpaElement.helper';
 import { canRender, renderChild, hasContent, renderTemplate } from './helper/arpaElement.helper';
 import { initializeTemplateNodes, updateChildNode, selectTemplates } from './helper/arpaElement.helper';
@@ -435,6 +435,18 @@ class ArpaElement extends HTMLElement {
             }
         }
         return String(label);
+    }
+
+    /**
+     * Calls a callback function defined in the element's properties.
+     * @param {string} callbackName - The name of the callback property to call.
+     * @param {...any} args - The arguments to pass to the callback function.
+     */
+    callCallback(callbackName, ...args) {
+        const cb = /** @type {((...args: any[]) => void) | undefined} */ (getPropertyCallback(this, callbackName));
+        if (typeof cb === 'function') {
+            cb.apply(this, args);
+        }
     }
 
     // #endregion Utils

@@ -1,0 +1,166 @@
+:root {
+    --button-border: 2px solid var(--grey-50);
+    --button-bg-color: var(--color-background);
+    --button-box-shadow: -5px -5px 10px var(--grey-0), 3px 3px 5px var(--grey-300);
+    --button-color: var(--grey-500);
+    --button-gap: 0.5rem;
+    --button-height: 3rem;
+    --button-icon-color: var(--grey-400);
+    --button-outline: 2px solid var(--border-color);
+    --button-padding: 0 1rem 0 1rem;
+    --button-radius: 12px;
+    --button-underline-color: var(--grey-125);
+    --button-underline-thickness: 2px;
+    --button-underline-offset: 6px;
+    --button-weight: 800;
+    --button-width: auto;
+
+    /* Active state */
+    --button-border-active: 2px solid var(--grey-150);
+    --button-color-active: var(--grey-700);
+    --button-icon-color-active: var(--grey-700);
+    --button-outline-active: 2px solid var(--grey-50);
+    --button-weight-active: 700;
+
+    /* Hover state */
+    --button-border-hover: 2px solid var(--grey-125);
+    --button-color-hover: var(--grey-600);
+    --button-icon-color-hover: var(--grey-600);
+    --button-outline-hover: 2px solid var(--grey-175);
+    --button-weight-hover: 700;
+}
+
+.arpaButton__button {
+    --icon-size: 1.2rem;
+    --theme-transition-speed: 0.1s;
+    align-items: center;
+    background-color: var(--button-bg-color);
+    border-radius: var(--button-radius);
+    border: var(--button-border);
+    box-shadow: var(--button-box-shadow);
+    cursor: pointer;
+    display: flex;
+    gap: var(--button-gap);
+    height: var(--button-height);
+    outline: var(--button-outline);
+    padding: var(--button-padding);
+    position: relative;
+    transition: var(--theme-transition);
+    width: var(--button-width);
+
+    &:has(.arpaButton__lhsIcon) {
+        padding-left: 0.5rem;
+    }
+
+    &:has(.arpaButton__rhsIcon) {
+        padding-right: 0.5rem;
+        padding-left: 1rem;
+    }
+
+    arpa-icon {
+        transition: var(--theme-transition);
+        color: var(--button-icon-color);
+        --icon-size: 1.4rem;
+    }
+}
+
+/**
+* Hover / Focus
+*/
+
+.arpaButton__button:not(:disabled):not([data-invalid]):not([variant='minimal']) {
+    &:hover,
+    &:focus {
+        .arpaButton__content {
+            text-decoration: underline;
+            text-decoration-thickness: var(--button-underline-thickness);
+            text-decoration-color: var(--button-underline-color);
+            text-underline-offset: var(--button-underline-offset);
+        }
+    }
+
+    &:hover {
+        border: var(--button-border-hover);
+        outline: var(--button-outline-hover);
+
+        .arpaButton__content {
+            color: var(--button-color-hover);
+        }
+
+        arpa-icon {
+            color: var(--button-icon-color-hover);
+        }
+    }
+
+    &:focus {
+        box-shadow: var(--button-box-shadow-hover);
+        border: var(--button-border-active);
+        outline: var(--button-outline-active);
+        box-shadow: inset 1px 1px 3px rgba(61, 61, 61, 0.5);
+
+        .arpaButton__content {
+            font-weight: var(--button-weight-active);
+            color: var(--button-color-active);
+        }
+
+        .icon {
+            color: var(--button-icon-color-active);
+        }
+    }
+}
+
+.arpaButton__content {
+    flex: 1 1 auto;
+    max-height: 100%;
+    height: auto;
+    display: block;
+    white-space: nowrap;
+    font-weight: var(--button-weight);
+    font-size: 1rem;
+    letter-spacing: normal;
+    color: var(--button-color);
+    text-underline-offset: 4px;
+    font-family: var(--primary-font);
+    letter-spacing: 0.2px;
+    background-color: var(--button-bg-color);
+}
+
+.button__tooltip {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+}
+
+arpa-button button arpa-tooltip.tooltip {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+/* Disabled */
+.arpaButton__button:disabled,
+.arpaButton__button[data-invalid] {
+    --button-box-shadow: none;
+    cursor: not-allowed;
+    arpa-icon {
+        color: var(--grey-150);
+    }
+    .arpaButton__content {
+        color: var(--grey-300);
+        text-decoration: line-through;
+    }
+}
+
+.button--link {
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    height: auto;
+    padding: 0px 0px;
+    color: var(--color-primary);
+    cursor: pointer;
+}
+
+.button--link:hover {
+    text-decoration: underline;
+}

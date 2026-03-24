@@ -1,4 +1,4 @@
-import { ArpaElementConfigType } from "../../arpaElement/arpaElement";
+import { ArpaElementConfigType } from '../../arpaElement/arpaElement';
 
 export type DialogConfigType = ArpaElementConfigType & {
     canClose?: boolean;
@@ -12,4 +12,6 @@ export type DialogConfigType = ArpaElementConfigType & {
     promise?: Promise<unknown>;
     title?: string;
     variant?: 'primary' | 'secondary' | 'tertiary' | 'minimal' | 'delete' | 'default';
+    '@onOpen'?: (dialogInstance: unknown) => void;
+    '@onClose'?: (dialogInstance: unknown) => void;
 };

@@ -1,10 +1,20 @@
 import { ArpaElementConfigType } from '../arpaElement/arpaElement.types';
+import Button from './button';
 
 export type ButtonConfigType = ArpaElementConfigType & {
-    icon?: string;
-    rhsIcon?: string;
+    buttonClass?: string;
+    buttonZone?: string;
     content?: string;
+    disabled?: boolean;
+    icon?: string;
+    label?: string;
+    rhsIcon?: string;
+    tooltip?: string;
+    '@onClick'?: (buttonInstance: Button) => void;
+    tooltipPosition?: 'top' | 'bottom' | 'left' | 'right';
+    type?: 'button' | 'submit' | 'reset';
     variant?:
+        | 'default'
         | 'primary'
         | 'primary-outlined'
         | 'secondary'
@@ -12,12 +22,9 @@ export type ButtonConfigType = ArpaElementConfigType & {
         | 'tertiary'
         | 'tertiary-outlined'
         | 'delete'
-        | 'submit';
-    type?: 'button' | 'submit' | 'reset';
-    label?: string;
-    buttonClass?: string;
-    buttonZone?: string;
-    tooltip?: string;
-    tooltipPosition?: 'top' | 'bottom' | 'left' | 'right';
-    disabled?: boolean;
+        | 'delete-outlined'
+        | 'submit'
+        | 'submit-outlined'
+        | 'highlight'
+        | 'highlight-outlined'
 };

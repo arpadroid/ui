@@ -18,9 +18,9 @@ const ButtonTestsStory = {
 };
 
 const setNewIconTest = (/** @type {Button} */ buttonComponent) => {
-    buttonComponent.setIcon('home');
+    buttonComponent.setIcon('labs');
     const iconNode = buttonComponent.querySelector('.arpaButton__icon');
-    expect(iconNode).toHaveTextContent('home');
+    expect(iconNode).toHaveTextContent('labs');
 };
 
 const setRightIconTest = (/** @type {Button} */ buttonComponent) => {
@@ -30,9 +30,9 @@ const setRightIconTest = (/** @type {Button} */ buttonComponent) => {
 };
 
 const setContentTest = (/** @type {Button} */ buttonComponent) => {
-    buttonComponent.setContent('New content');
+    buttonComponent.setContent('Test button');
     const contentNode = buttonComponent.querySelector('.arpaButton__content');
-    expect(contentNode).toHaveTextContent('New content');
+    expect(contentNode).toHaveTextContent('Test button');
 };
 
 const setTooltipTest = async (/** @type {Button} */ buttonComponent) => {

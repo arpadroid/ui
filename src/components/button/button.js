@@ -1,14 +1,18 @@
 /**
  * @typedef {import('./button.types').ButtonConfigType} ButtonConfigType
  * @typedef {import('../tooltip/tooltip').default} Tooltip
+ * @typedef {import('../icon/icon').default} Icon
  */
-import { renderNode, mergeObjects, listen } from '@arpadroid/tools';
+import { renderNode, listen } from '@arpadroid/tools';
 import { appendNodes, attrString, defineCustomElement } from '@arpadroid/tools';
 import { renderChild } from '../arpaElement/helper/arpaElement.helper';
 import ArpaElement from '../arpaElement/arpaElement';
 
 const html = String.raw;
 class Button extends ArpaElement {
+    /** @type {ButtonConfigType} */
+    _config = this._config;
+
     /**
      * Returns the default configuration for the button.
      * @returns {ButtonConfigType}
@@ -20,6 +24,7 @@ class Button extends ArpaElement {
             className: 'arpaButton',
             type: 'button',
             buttonClass: 'arpaButton__button',
+            variant: 'default',
             templateChildren: {
                 content: {
                     tag: 'span',
@@ -47,6 +52,10 @@ class Button extends ArpaElement {
         return this.getProperty('label') || '';
     }
 
+    /**
+     * Returns the variant of the button.
+     * @returns {string}
+     */
     getVariant() {
         return this.variant || this.getProperty('variant');
     }
@@ -130,9 +139,8 @@ class Button extends ArpaElement {
     /////////////////////////
     _preRender() {
         super._preRender();
-        this.variant = this.getProperty('variant');
-        this.handleVariant();
-        this.disabled = this.hasAttribute('disabled');
+        this.variant = this.getVariant();
+        this.disabled = this.hasAttribute('disabled') || this.variant === 'disabled';
         this.removeAttribute('disabled');
         this.removeAttribute('variant');
     }
@@ -166,20 +174,24 @@ class Button extends ArpaElement {
     //////////////////
 
     _onClick() {
-        const { onClick } = this._config;
-        typeof onClick === 'function' && onClick(this);
+        const { '@onClick': onClick } = this._config;
+        if (typeof onClick === 'function') {
+            onClick(this);
+        }
     }
 
     async _initializeNodes() {
         await super._initializeNodes();
 
         this.tooltip = /** @type {Tooltip | null} */ (this.querySelector('arpa-tooltip'));
+        /** @type {Icon | null} */
         this.icon = this.querySelector('.arpaButton__icon');
         this.contentNode = this.querySelector('.arpaButton__content');
 
         const contentNodes = this.getContentNodes();
         this.contentNode && appendNodes(this.contentNode, contentNodes);
         this._initializeButton();
+        this.handleVariant();
         return true;
     }
 
@@ -197,12 +209,15 @@ class Button extends ArpaElement {
     }
 
     handleVariant() {
-        if (this.getProperty('variant') === 'delete') {
-            this._config = mergeObjects(this._config, {
-                icon: 'delete',
-                tooltipPosition: 'left',
-                tooltip: 'delete'
-            });
+        const variant = this.getVariant();
+        const icon = this.icon?.getIcon();
+        if (!icon) {
+            if (['delete', 'delete-outlined'].includes(variant)) {
+                this.setIcon('delete');
+            } else if (['submit', 'submit-outlined'].includes(variant)) {
+                this.setIcon('check_circle');
+                this.button?.setAttribute('type', 'submit');
+            }
         }
     }
 

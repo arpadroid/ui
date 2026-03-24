@@ -119,7 +119,7 @@ export function onDestroy(element) {
  * Gets a callback property of a component defined as a string starting with ':'.
  * @param {ArpaElement} element
  * @param {string} propertyName
- * @returns {((event: Event) => void) | undefined} The callback function or undefined if not found.
+ * @returns {(() => void) | undefined} The callback function or undefined if not found.
  */
 export function getPropertyCallback(element, propertyName) {
     const val = getProperty(element, propertyName);
@@ -138,7 +138,7 @@ export function getPropertyCallback(element, propertyName) {
  * @param {ArpaElement} element - The element to handle the callback for.
  * @param {string} propertyName - The name of the property to check.
  * @param {string} eventName - The name of the event to listen for.
- * @returns {((event: Event) => void) | undefined} The callback function or undefined if not found.
+ * @returns {((...args: any[]) => void) | undefined} The callback function or undefined if not found.
  */
 export function handleCallbackProperty(element, propertyName, eventName = '') {
     const method = getPropertyCallback(element, propertyName);

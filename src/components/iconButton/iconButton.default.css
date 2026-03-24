@@ -126,11 +126,11 @@ a.iconButton:focus {
 
 /* Disabled */
 
-button.iconButton:disabled {
+button.iconButton__button:disabled {
     cursor: auto;
 }
 
-button.iconButton:disabled {
+button.iconButton__button:disabled {
     cursor: not-allowed;
     .icon {
         opacity: 0.5;
@@ -139,10 +139,6 @@ button.iconButton:disabled {
         .icon {
             color: var(--grey-400);
         }
-    }
-    .tooltip {
-        display: none;
-        opacity: 0.5;
     }
 }
 

@@ -66,11 +66,13 @@ class ConfirmDialog extends Dialog {
     cancel() {
         this.close();
         this.signal('cancel', this._config.payload);
+        this.callCallback('@onCancel', this._config.payload);
     }
 
     confirm() {
         const { payload } = this._config;
         this.signal('confirm', payload);
+        this.callCallback('@onConfirm', payload);
         this.close();
     }
 

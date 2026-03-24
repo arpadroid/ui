@@ -134,12 +134,14 @@ class Dialog extends ArpaElement {
         document.body.style.overflow = 'hidden';
         this.setAttribute('open', '');
         this.signal('open');
+        this.callCallback('@onOpen', this);
     }
 
     close() {
         document.body.style.overflow = '';
         this.removeAttribute('open');
         this.signal('close');
+        this.callCallback('@onClose', this);
     }
 
     isOpen() {

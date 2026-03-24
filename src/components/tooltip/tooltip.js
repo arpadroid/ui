@@ -135,9 +135,8 @@ class Tooltip extends ArpaElement {
      * @returns {Promise<void>}
      */
     async setContent(content = '') {
-        await new Promise(resolve => requestIdleCallback(resolve));
-        const contentNode = this.contentNode || this.querySelector('.tooltip__content');
         !this._hasRendered && (await this.promise);
+        const contentNode = this.contentNode || this.querySelector('.tooltip__content');
         if (!contentNode) return;
         contentNode.innerHTML = '';
         if (typeof content === 'string') {

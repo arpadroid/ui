@@ -9,15 +9,41 @@
 
     /* Primary */
     --color-primary: var(--blue);
-    --color-primary-light: #2879c9;
+    --color-primary-dark: var(--blue-navy);
+    --color-primary-light: #8cbff1;
+    --color-primary-lightest: #cadff5;
+
     --primary-hilight: var(--blue-lightest);
     --primary-highlight-outline: var(--blue-navy);
 
     /* Secondary */
-    --color-secondary: #e89613;
+    --color-secondary: var(--deep-ocean);
+    --color-secondary-dark: var(--deep-ocean-dark);
+    --color-secondary-light: var(--deep-ocean-light);
+    --color-secondary-lightest: var(--deep-ocean-lightest);
 
     /* Tertiary */
-    --color-tertiary: var(--blue-neon);
+    --color-tertiary: var(--purple);
+    --color-tertiary-dark: var(--purple-dark);
+    --color-tertiary-light: var(--purple-light);
+    --color-tertiary-lightest: var(--purple-lightest);
+
+    --color-highlight: var(--yellow);
+    --color-highlight-dark: var(--yellow-banana);
+    --color-highlight-light: var(--yellow-butter);
+    --color-highlight-lightest: var(--yellow-pale);
+
+    /** Delete */
+    --color-delete: var(--red-dark);
+    --color-delete-dark: var(--red-dark);
+    --color-delete-light: var(--red-light);
+    --color-delete-lightest: var(--red-lightest);
+
+    /** Success */
+    --color-success: var(--green);
+    --color-success-dark: var(--green-dark);
+    --color-success-light: var(--green-light);
+    --color-success-lightest: var(--green-lightest);
 
     /* Borders */
     --border-color: #e9e9e9;
@@ -26,7 +52,9 @@
 
     /* Errors */
     --color-error: var(--red);
-    --color-error-light: var(--red-lightest);
+    --color-error-dark: var(--red-dark);
+    --color-error-light: var(--red-light);
+    --color-error-lightest: var(--red-lightest);
 
     --color-background: var(--grey-20);
     --overlay-95: rgba(247, 247, 247, 0.95);
@@ -39,7 +67,6 @@
 
     /* Backgrounds */
     --bg-light-green: #d4ebce;
-    
+
     --bg-light-red: #ffeeec;
 }
-

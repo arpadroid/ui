@@ -1,22 +1,19 @@
 /**
- * @typedef {import('@storybook/web-components-vite').Meta} Meta
- * @typedef {import('@storybook/web-components-vite').StoryObj} StoryObj
- * @typedef {import('@storybook/web-components-vite').StoryContext} StoryContext
- *
+ * @typedef {import('./dropArea').default} DropArea
+ * @typedef {import('./dropArea.types').DropAreaConfigType} DropAreaConfigType
+ * @typedef {import('@storybook/web-components-vite').Meta<DropAreaConfigType>} Meta
+ * @typedef {import('@storybook/web-components-vite').StoryObj<DropAreaConfigType>} StoryObj
  */
-import { attrString } from '@arpadroid/tools';
-import { waitFor, expect, within } from 'storybook/test';
-import { getArgTypes, playSetup } from './dropArea.stories.utils';
-const html = String.raw;
+
+import { waitFor, expect } from 'storybook/test';
+import { playSetup } from './dropArea.stories.utils';
 /** @type {Meta} */
 const DropAreaStory = {
     title: 'UI/Components/Drop Area',
     tags: [],
+    component: 'drop-area',
     parameters: {
         layout: 'padded'
-    },
-    render: (/** @type {Record<string, unknown>} */ args) => {
-        return html`<drop-area ${attrString(args)}></drop-area>`;
     }
 };
 
@@ -24,10 +21,7 @@ const DropAreaStory = {
 export const Default = {
     name: 'Render',
     parameters: {},
-    argTypes: getArgTypes(),
-    args: getArgTypes(),
-
-    play: async (/** @type {StoryContext} */ { canvasElement, step }) => {
+    play: async ({ canvasElement, step }) => {
         const setup = await playSetup(canvasElement);
         const { dropAreaNode } = setup;
         await step('renders the drop area', async () => {
