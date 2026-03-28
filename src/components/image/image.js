@@ -88,7 +88,7 @@ class ArpaImage extends ArpaElement {
     // #endregion - INITIALIZATION
 
     ///////////////////////
-    // #region - ACCESSORS
+    // #region - Get
     ///////////////////////
 
     getLoadedClass() {
@@ -321,7 +321,7 @@ class ArpaImage extends ArpaElement {
     // #endregion - ACCESSORS
 
     ////////////////////////////
-    // #region - RENDERING
+    // #region - Render
     ///////////////////////////
 
     /**

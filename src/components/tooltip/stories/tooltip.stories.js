@@ -22,7 +22,6 @@ export const Default = {
     argTypes: getArgTypes(),
     args: {
         text: 'This is some informative tooltip text.',
-        handler: 'Hover over me',
         icon: 'info',
         label: '',
         position: 'top'

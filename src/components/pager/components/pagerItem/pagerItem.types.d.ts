@@ -1,6 +1,7 @@
+import { ArpaElementConfigType } from '../../../arpaElement/arpaElement.types';
 import { PagerUpdateCallbackType } from '../../pager.types';
 
-export type PagerItemConfigType = {
+export type PagerItemConfigType = ArpaElementConfigType & {
     className?: string;
     isActive?: boolean;
     hasInput?: boolean;

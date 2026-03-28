@@ -30,30 +30,32 @@ export type ArpaElementContentType =
 export type ArpaElementAttributesType = Record<string, unknown> | (() => Record<string, unknown>);
 
 export type ArpaElementConfigType = {
-    content?: ArpaElementContentType;
-    removeEmptyZoneNodes?: boolean;
-    className?: string;
-    variant?: string;
-    classNames?: string[];
     attributes?: Record<string, string>;
-    zoneSelector?: string;
-    zoneResolverSelector?: string;
-    zoneFilter?: ZoneFilterType;
-    template?: string;  
-    templates?: TemplatesType;
-    templateContainer?: HTMLElement | string;
-    templateTypes?: TemplateContentMode[];
+    className?: string;
+    classNames?: string[];
+    content?: ArpaElementContentType;
+    handleContent?: boolean;
+    template?: string;
     templateChildren?: Record<string, ArpaElementChildOptionsType> | undefined;
+    templateContainer?: HTMLElement | string;
+    templates?: TemplatesType;
+    templateTypes?: TemplateContentMode[];
+    templateVars?: Record<string, unknown> | (() => Record<string, unknown>);
+    variant?: string;
+    zoneFilter?: ZoneFilterType;
+    zoneResolverSelector?: string;
+    zoneSelector?: string;
 };
 
 export type ArpaElementChildOptionsType = {
-    tag?: string;
     attr?: ArpaElementAttributesType | (() => ArpaElementAttributesType);
-    id?: string;
+    canRender?: ((component: unknown) => boolean) | boolean | string;
     className?: string;
     content?: ArpaElementContentType;
     hasZone?: boolean;
-    zoneName?: string;
+    id?: string;
+    isContent?: boolean;
     propName?: string;
-    canRender?: ((component: unknown) => boolean) | boolean | string;
+    tag?: string;
+    zoneName?: string;
 };

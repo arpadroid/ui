@@ -4,9 +4,11 @@
  */
 
 import { attr, attrString, dashedToCamel, getAttributes, getAttributesWithPrefix } from '@arpadroid/tools';
-import { camelToDashed, listen, mergeObjects, renderNode, resolveNode } from '@arpadroid/tools';
+import { camelToDashed, listen, mergeObjects, renderNode, resolveNode, sortKeys } from '@arpadroid/tools';
 import { hasZone } from '../../../tools/zoneTool';
 import { destroyComponentZones, findNodeComponent } from '../../../tools/zoneTool';
+
+const FORBIDDEN_ATTRIBUTES = ['template', 'content', 'classNames', 'className'];
 
 const html = String.raw;
 /**
@@ -185,6 +187,70 @@ export function canRender(element, timeout = 200) {
     return true;
 }
 
+/**
+ * Returns the user configuration for the component excluding default values.
+ * @param {ArpaElement} element
+ * @param {Record<string, unknown>} _config
+ * @returns {Record<string, unknown>}
+ */
+export function getUserConfig(element, _config = element._config) {
+    /** @type {Record<string, unknown>} */
+    const config = { ..._config };
+    /** @type {Record<string, unknown>} */
+    const defaultConfig = element.getDefaultConfig();
+    Object.keys(config).forEach(key => {
+        if (
+            config[key] === defaultConfig[key] ||
+            (Array.isArray(defaultConfig[key]) &&
+                JSON.stringify(String(config[key]).split(',')) === JSON.stringify(defaultConfig[key]))
+        ) {
+            delete config[key];
+        }
+    });
+    return config;
+}
+
+/**
+ * Sanitizes an element's attributes by removing any properties that should not be rendered as attributes.
+ * This is necessary to prevent rendering internal configuration properties as HTML attributes, which could lead to unexpected behavior or security issues.
+ * @param {Record<string, unknown>} attr
+ * @param {string} key
+ * @returns {Record<string, unknown> | void}
+ */
+export function sanitizeAttributeEffect(attr, key) {
+    if (key === 'attributes' && attr[key] && typeof attr[key] === 'object') {
+        const _attr = /** @type {Record<string, unknown>} */ (attr[key]);
+        Object.keys(_attr).forEach(attrKey => (attr[attrKey] = _attr[attrKey]));
+        delete attr[key];
+        return;
+    }
+    if (FORBIDDEN_ATTRIBUTES.includes(key)) {
+        delete attr[key];
+        return;
+    }
+    if (Array.isArray(attr[key])) {
+        if (attr[key].length === 0) {
+            delete attr[key];
+            return;
+        }
+        attr[key] = attr[key].join(', ');
+    }
+    if (!Array.isArray(attr[key]) && ['object', 'function'].includes(typeof attr[key])) {
+        delete attr[key];
+    }
+}
+/**
+ * Sanitizes an element's config to be rendered as attributes.
+ * @param {ArpaElement} element
+ * @param {Record<string, unknown>} attributes
+ * @returns {Record<string, unknown>}
+ */
+export function sanitizeAttributes(element, attributes) {
+    const attr = getUserConfig(element, attributes);
+    Object.keys(attr).forEach(key => sanitizeAttributeEffect(attr, key));
+    return sortKeys(attr);
+}
+
 ///////////////////////////////
 // #region Template Content
 ///////////////////////////////
@@ -208,21 +274,6 @@ export function getTemplatesSelector(element) {
  */
 export function selectTemplates(element, templateSelector = getTemplatesSelector(element)) {
     return (templateSelector && Array.from(element.querySelectorAll(templateSelector))) || [];
-}
-
-/**
- * Gets the content of the template for the element.
- * @param {ArpaElement} element
- * @param {HTMLTemplateElement} template
- * @param {Record<string, unknown>} [payload]
- * @returns {string}
- */
-export function getTemplateContent(element, template = element._config.template, payload) {
-    if (!payload) {
-        payload = element.getTemplateVars();
-        element.templateVars = payload;
-    }
-    return processTemplate(template.innerHTML, payload, element);
 }
 
 /**
@@ -253,6 +304,9 @@ export function renderTemplate(component, _template, vars = component.getTemplat
     const templateContent = component.templates?.content?.innerHTML.trim();
     const template = _template || templateContent || component._getTemplate();
     for (const tplVar of Object.keys(vars)) {
+        if (typeof vars[tplVar] === 'function') {
+            vars[tplVar] = vars[tplVar](component);
+        }
         if (typeof vars[tplVar] === 'string') {
             vars[tplVar] = processTemplate(vars[tplVar], vars, component);
         }
@@ -298,7 +352,8 @@ export async function applyTemplateAttributes(element, template, _payload = {}, 
 
 /**
  * Sets the template for the element.
- * @param {ArpaElement} element
+ * @template {ArpaElement} T
+ * @param {T} element
  * @param {import('../arpaElement.types').ArpaElementTemplateType} template
  * @param {import('../arpaElement.types').ApplyTemplateConfigType} [payload]
  */
@@ -345,8 +400,12 @@ export function getChildClassName(element, name) {
  */
 export function canRenderChild(element, name, config = {}) {
     const { canRender } = config;
+
     if (canRender === true || canRender === false) return canRender;
     if (typeof canRender === 'function') return canRender(element);
+    if (config.isContent) {
+        return true;
+    }
 
     if (typeof canRender === 'string' && typeof element?.hasProperty === 'function') {
         return Boolean(element.hasProperty(canRender));
@@ -378,11 +437,13 @@ export function getDefaultChildConfig(element, name) {
  * @param {ArpaElement} element
  * @param {string} name
  * @param {ArpaElementChildOptionsType} [config] - The configuration object.
- * @param {Record<string, string>} [attributes] - Additional attributes to add to the element.
+ * @param {Record<string, unknown>} [attributes] - Additional attributes to add to the element.
  * @returns {Record<string, string>}
  */
 export function getChildAttributes(element, name, config = {}, attributes = {}) {
-    const { className, hasZone, zoneName } = config;
+    const { className, hasZone, zoneName, isContent = false } = config;
+    attributes.isContent = isContent;
+
     const attr = mergeObjects(config.attr || {}, attributes);
     config.id && (attr.id = config.id);
     className && (attr.class = className);

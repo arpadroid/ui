@@ -7,11 +7,11 @@
  * @typedef {import('../../tools/zoneTool.types.js').ZoneToolPlaceZoneType} ZoneToolPlaceZoneType
  * @typedef {import('../../tools/zoneTool.types.js').ZoneType} ZoneType
  */
-import { dashedToCamel, getStringBetween, mergeObjects, renderNode } from '@arpadroid/tools';
+import { attrString, dashedToCamel, getStringBetween, mergeObjects, renderNode } from '@arpadroid/tools';
 import { defineCustomElement, attr, setNodes, bind, classNames } from '@arpadroid/tools';
 import { handleZones, zoneMixin, hasZone, getZone, extractZones } from '../../tools/zoneTool';
 import { hasProperty, getProperty, getArrayProperty, getPropertyCallback } from './helper/arpaElement.helper';
-import { onDestroy, handleCallbackProperty } from './helper/arpaElement.helper';
+import { onDestroy, handleCallbackProperty, sanitizeAttributes } from './helper/arpaElement.helper';
 import { canRender, renderChild, hasContent, renderTemplate } from './helper/arpaElement.helper';
 import { initializeTemplateNodes, updateChildNode, selectTemplates } from './helper/arpaElement.helper';
 import { I18nTool, I18n } from '@arpadroid/i18n';
@@ -40,6 +40,7 @@ class ArpaElement extends HTMLElement {
     templateNodes = {};
     /** @type {Record<string, unknown>} */
     templateVars = {};
+    isArpaElement = true;
 
     /**
      * Creates a new instance of ArpaElement.
@@ -56,7 +57,7 @@ class ArpaElement extends HTMLElement {
         /** @type {(() => unknown)[]} */
         this._preRenderCallbacks = [];
         this._zones = new Set();
-        this.i18nKey = '';
+        this.i18nKey = 'arpaElement';
         this._preInitialize();
         this.setConfig(config);
         this._preInitializeContent();
@@ -89,20 +90,8 @@ class ArpaElement extends HTMLElement {
 
     _preInitializeContent() {
         const { content } = this._config;
-
-        if (typeof content === 'string') {
-            this.innerHTML = content;
-        }
-        const attributes = { ...this.userConfig };
-        delete attributes.content;
-        for (const key in attributes) {
-            if (!['string', 'number', 'boolean'].includes(typeof attributes[key])) {
-                delete attributes[key];
-            }
-        }
-        if (Object.keys(attributes).length > 0) {
-            attr(this, attributes);
-        }
+        typeof content === 'string' && (this.innerHTML = content);
+        attr(this, sanitizeAttributes(this, this._config));
     }
 
     _initializeAttributes() {}
@@ -133,26 +122,13 @@ class ArpaElement extends HTMLElement {
     getDefaultConfig(config = {}) {
         /** @type {ArpaElementConfigType} */
         const defaultConfig = {
-            removeEmptyZoneNodes: true,
             className: '',
             variant: undefined,
             templateContainer: this,
+            handleContent: true,
             templateTypes: ['content']
         };
         return mergeObjects(defaultConfig, config);
-    }
-
-    getUserConfig(_config = this._config) {
-        /** @type {Record<string, unknown>} */
-        const config = { ..._config };
-        /** @type {Record<string, unknown>} */
-        const defaultConfig = this.getDefaultConfig();
-        Object.keys(config).forEach(key => {
-            if (config[key] === defaultConfig[key]) {
-                delete config[key];
-            }
-        });
-        return config;
     }
 
     // #endregion Setup
@@ -181,6 +157,14 @@ class ArpaElement extends HTMLElement {
      */
     getConfig() {
         return this._config;
+    }
+
+    /**
+     * Returns the content node for the element. If the element has template children, it returns the node marked with "is-content". Otherwise, it returns the element itself.
+     * @returns {HTMLElement | null} The content node for the element.
+     */
+    getContentNode() {
+        return this.querySelector('[is-content]') || this;
     }
 
     /**
@@ -269,11 +253,16 @@ class ArpaElement extends HTMLElement {
      * @returns {Record<string, unknown>} The template variables.
      */
     getTemplateVars() {
-        return {};
+        const { templateVars = {} } = this._config;
+        return templateVars || {};
     }
 
     getTemplateChildren() {
         return this._config?.templateChildren || {};
+    }
+
+    hasTemplateChildren() {
+        return Object.keys(this.getTemplateChildren()).length > 0;
     }
 
     /**
@@ -443,10 +432,21 @@ class ArpaElement extends HTMLElement {
      * @param {...any} args - The arguments to pass to the callback function.
      */
     callCallback(callbackName, ...args) {
-        const cb = /** @type {((...args: any[]) => void) | undefined} */ (getPropertyCallback(this, callbackName));
+        const cb = /** @type {((...args: any[]) => void) | undefined} */ (
+            getPropertyCallback(this, callbackName)
+        );
         if (typeof cb === 'function') {
             cb.apply(this, args);
         }
+    }
+
+    /**
+     * Applies the specified attributes to the element after sanitizing them.
+     * @param {Record<string, unknown>} attributes - The attributes to apply.
+     * @returns {string}
+     */
+    renderAttributes(attributes = this._config) {
+        return attrString(sanitizeAttributes(this, attributes));
     }
 
     // #endregion Utils
@@ -491,7 +491,6 @@ class ArpaElement extends HTMLElement {
      * @param {ArpaElementConfigType} [config]
      */
     setConfig(config = {}) {
-        this.userConfig = this.getUserConfig(config);
         const defaultConfig = this.getDefaultConfig();
         this._config = mergeObjects(defaultConfig, config);
     }
@@ -585,9 +584,10 @@ class ArpaElement extends HTMLElement {
     _onPlaceZone(_payload) {}
 
     _addClassNames() {
+        const _classes = /** @type {string[]} */ (getArrayProperty(this, 'classNames')) || [];
         const classes = classNames(
             this._config?.className || '',
-            ...(this._config.classNames || ''),
+            ..._classes,
             this.getAttribute('class') || ''
         );
         this.setAttribute('class', classes);
@@ -697,7 +697,19 @@ class ArpaElement extends HTMLElement {
         this._hasRendered = true;
         this._onRenderedCallbacks.forEach(callback => callback());
         await this._resolveRender();
+        this.handleContent();
         this._onComplete();
+    }
+
+    handleContent() {
+        if (!this.hasTemplateChildren() || !this._config.handleContent) {
+            return;
+        }
+        this.contentNode = (this.contentNode?.isConnected && this.contentNode) || this.getContentNode();
+        if (!this.contentNode) return;
+        for (const child of this._childNodes || []) {
+            this.contentNode?.appendChild(child);
+        }
     }
 
     async _resolveRender() {
@@ -765,7 +777,7 @@ class ArpaElement extends HTMLElement {
 
     _getTemplate() {
         const { getTemplate } = this._config;
-        return typeof getTemplate === 'function' ? getTemplate() : this._config?.template;
+        return typeof getTemplate === 'function' ? getTemplate(this) : this._config?.template;
     }
 
     reRender() {

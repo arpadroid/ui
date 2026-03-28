@@ -882,7 +882,6 @@ type ArpaElementConfigType = {
     className?: string;
     variant?: string;
     templateChildren?: Record<string, ArpaElementChildOptionsType>;
-    removeEmptyZoneNodes?: boolean;
     // ... additional options
 };
 ```

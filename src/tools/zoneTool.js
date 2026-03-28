@@ -296,7 +296,7 @@ export async function placeZone(zone, parent = zone._parentNode) {
     ZONES.delete(zone);
     LOST_ZONES.delete(zone);
     attr(zoneContainer, getAttributesWithPrefix(zone, 'el-'));
-    const append = () => appendNodes(zoneContainer, zone.childNodes);
+    const append = () => appendNodes(zoneContainer, zone.childNodes, zone.hasAttribute('prepend'));
     if (typeof zoneComponent.onRendered === 'function') {
         zoneComponent.onRendered(append);
     } else {

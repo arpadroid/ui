@@ -1,4 +1,3 @@
-/* eslint-disable sonarjs/no-duplicate-string */
 import ArpaElement from '../arpaElement/arpaElement.js';
 import { appendNodes, defineCustomElement } from '@arpadroid/tools';
 /**
