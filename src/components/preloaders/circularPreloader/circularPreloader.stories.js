@@ -4,13 +4,14 @@
  * @typedef {import('@storybook/web-components-vite').StoryContext} StoryContext
  */
 import { attrString } from '@arpadroid/tools';
-import { waitFor, expect, within } from 'storybook/test';
+import { waitFor, expect } from 'storybook/test';
 import { getArgs, getArgTypes, playSetup } from './circularPreloader.stories.util';
 const html = String.raw;
 /** @type {Meta} */
 const CircularPreloaderStory = {
     title: 'UI/Preloaders/Circular Preloader',
     tags: [],
+    component: 'circular-preloader',
     render: (/** @type {Record<string, unknown>} */ args) => {
         return html`<circular-preloader ${attrString(args)}>${args.content}</circular-preloader>`;
     }

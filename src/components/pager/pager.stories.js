@@ -5,7 +5,7 @@
  * @typedef {import('@storybook/web-components-vite').StoryContext} StoryContext
  */
 import { attrString, getURLParam } from '@arpadroid/tools';
-import { waitFor, userEvent, fireEvent, expect, within } from 'storybook/test';
+import { waitFor, userEvent, fireEvent, expect } from 'storybook/test';
 import { getArgs, playSetup } from './pager.stories.utils';
 
 const html = String.raw;
@@ -13,6 +13,7 @@ const html = String.raw;
 const PagerStory = {
     title: 'UI/Components/Pager',
     tags: [],
+    component: 'arpa-pager',
     render: (/** @type {Record<string, unknown>} */ args) => html`
         <arpa-pager id="demo-pager" ${attrString(args)} views="grid, list"></arpa-pager>
 

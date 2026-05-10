@@ -1,5 +1,5 @@
 import { getBuild } from '@arpadroid/module';
-const { build = {}, appBuild, Plugins, constants } = getBuild('ui');
+const { build = {}, appBuild, Plugins } = getBuild('ui');
 appBuild?.plugins && (appBuild.plugins = appBuild?.plugins || []);
 
 Array.isArray(appBuild?.plugins) &&

@@ -10,6 +10,7 @@ import ButtonVariantsStory from './buttonVariantsFilled.stories.js';
 /** @type {ButtonMetaOutlinedType} */
 const ButtonVariantsOutlinedStory = {
     ...ButtonVariantsStory,
+    component: 'arpa-button',
     args: {
         ...ButtonVariantsStory.args,
         content: 'Outlined'

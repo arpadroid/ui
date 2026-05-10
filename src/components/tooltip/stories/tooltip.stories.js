@@ -12,6 +12,7 @@ const html = String.raw;
 const TooltipStory = {
     title: 'UI/Components/Tooltip',
     tags: [],
+    component: 'arpa-tooltip',
     argTypes: getArgTypes()
 };
 

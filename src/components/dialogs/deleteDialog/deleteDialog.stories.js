@@ -16,6 +16,7 @@ const tagName = 'delete-dialog';
 const DeleteDialogStory = {
     ...ConfirmDialogStory,
     title: 'UI/Dialogs/Delete',
+    component: tagName,
     args: {
         ...ConfirmDialogStory.args,
         id: 'delete',

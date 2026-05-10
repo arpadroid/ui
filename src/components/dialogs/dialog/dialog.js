@@ -277,6 +277,6 @@ class Dialog extends ArpaElement {
     ////////////////////////////
 }
 
-defineCustomElement(Dialog.prototype.getTagName(), Dialog);
+defineCustomElement('arpa-dialog', Dialog);
 
 export default Dialog;

@@ -34,6 +34,7 @@ const playSetup = async canvasElement => {
 const ConfirmDialogStory = {
     ...DialogStory,
     title: 'UI/Dialogs/Confirm',
+    component: 'confirm-dialog',
     args: {
         ...DialogStory.args,
         id: 'confirm',

@@ -14,6 +14,7 @@ import ButtonStory from './button.stories';
 /** @type {ButtonTestsMetaType} */
 const ButtonTestsStory = {
     ...ButtonStory,
+    component: 'arpa-button',
     title: 'UI/Buttons/Button/Tests'
 };
 

@@ -15,6 +15,7 @@ const html = String.raw;
 const ImageStory = {
     title: 'UI/Components/Image',
     tags: [],
+    component: 'arpa-image',
     render: args => {
         return html`
             <style>
