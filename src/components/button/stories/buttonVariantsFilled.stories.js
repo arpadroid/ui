@@ -1,14 +1,14 @@
 /**
  * @typedef {import('../button.js').default} Button
  * @typedef {import('../button.types.js').ButtonConfigType} ButtonConfigType
- * @typedef {import('@storybook/web-components-vite').Meta<ButtonConfigType>} ButtonMetaVariantsMetaType
- * @typedef {import('@storybook/web-components-vite').StoryObj<ButtonConfigType>} ButtonVariantsStoryType
+ * @typedef {import('@storybook/web-components-vite').Meta<ButtonConfigType>} Meta
+ * @typedef {import('@storybook/web-components-vite').StoryObj<ButtonConfigType>} Story
  */
 
 import { playSetup } from './button.stories.util.js';
 import { expect } from 'storybook/test';
 
-/** @type {ButtonMetaVariantsMetaType} */
+/** @type {Meta} */
 const ButtonVariantsStory = {
     title: 'UI/Buttons/Button/Variants/Filled',
     component: 'arpa-button',
@@ -20,7 +20,7 @@ const ButtonVariantsStory = {
     }
 };
 
-/** @type {ButtonVariantsStoryType} */
+/** @type {Story} */
 export const Primary = {
     args: {
         content: 'Primary Button',
@@ -28,7 +28,7 @@ export const Primary = {
     }
 };
 
-/** @type {ButtonVariantsStoryType} */
+/** @type {Story} */
 export const Secondary = {
     args: {
         content: 'Secondary Button',
@@ -36,7 +36,7 @@ export const Secondary = {
     }
 };
 
-/** @type {ButtonVariantsStoryType} */
+/** @type {Story} */
 export const Tertiary = {
     args: {
         content: 'Tertiary Button',
@@ -44,7 +44,7 @@ export const Tertiary = {
     }
 };
 
-/** @type {ButtonVariantsStoryType} */
+/** @type {Story} */
 export const Delete = {
     args: {
         content: 'Delete Button',
@@ -53,7 +53,7 @@ export const Delete = {
     }
 };
 
-/** @type {ButtonVariantsStoryType} */
+/** @type {Story} */
 export const Submit = {
     args: {
         content: 'Submit Button',
@@ -69,7 +69,7 @@ export const Submit = {
     }
 };
 
-/** @type {ButtonVariantsStoryType} */
+/** @type {Story} */
 export const Highlight = {
     args: {
         content: 'Highlight Button',

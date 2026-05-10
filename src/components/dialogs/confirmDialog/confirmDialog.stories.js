@@ -2,9 +2,8 @@
 /**
  * @typedef {import('./confirmDialog.types.js').ConfirmDialogConfigType} ConfirmDialogConfigType
  * @typedef {import('@storybook/web-components-vite').Meta<ConfirmDialogConfigType & {zoneContent?: string}>} Meta
- * @typedef {import('@storybook/web-components-vite').StoryObj<ConfirmDialogConfigType>} StoryObj
+ * @typedef {import('@storybook/web-components-vite').StoryObj<ConfirmDialogConfigType>} Story
  * @typedef {import('@storybook/web-components-vite').StoryContext<ConfirmDialogConfigType>} StoryContext
- * @typedef {import('@storybook/web-components-vite').Args} Args
  * @typedef {import('../dialogs/dialogs').default} Dialogs
  * @typedef {import('../dialog/dialog').default} Dialog
  * @typedef {import('./confirmDialog').default} ConfirmDialog
@@ -24,9 +23,10 @@ const playSetup = async canvasElement => {
     const canvas = within(canvasElement);
     await customElements.whenDefined('confirm-dialog');
     await customElements.whenDefined('arpa-dialogs');
-
-    const dialogsNode = /** @type {Dialogs} */ (document.querySelector('arpa-dialogs'));
-    const dialogNode = /** @type {ConfirmDialog} */ (document.querySelector('confirm-dialog'));
+    /** @type {Dialogs | null} */
+    const dialogsNode = document.querySelector('arpa-dialogs');
+    /** @type {ConfirmDialog | null} */
+    const dialogNode = document.querySelector('confirm-dialog');
     return { canvas, dialogNode, dialogsNode };
 };
 
@@ -47,26 +47,26 @@ const ConfirmDialogStory = {
     render: args => renderDialog(args, 'confirm-dialog')
 };
 
-/** @type {StoryObj} */
+/** @type {Story} */
 export const Default = {
     name: 'Render',
     parameters: {},
     args: {},
-    play: async (/** @type {StoryContext} */ { canvasElement, args }) => {
+    play: async ({ canvasElement, args }) => {
         const { dialogNode } = await playSetup(canvasElement);
         dialogNode?.on('confirm', args['@onConfirm']);
         dialogNode?.on('cancel', args['@onCancel']);
     }
 };
 
-/** @type {StoryObj} */
+/** @type {Story} */
 export const Test = {
     parameters: {},
     args: {
         id: 'confirm-test',
         title: 'Confirm Action'
     },
-    play: async (/** @type {StoryContext} */ { canvasElement, step, args }) => {
+    play: async ({ canvasElement, step, args }) => {
         const { dialogNode, dialogsNode } = await playSetup(canvasElement);
         if (!dialogNode || !dialogsNode) {
             throw new Error('Dialog or Dialogs component not found');
@@ -74,7 +74,6 @@ export const Test = {
         const dialog = within(dialogNode);
         dialogNode?.on('confirm', args['@onConfirm']);
         dialogNode?.on('cancel', args['@onCancel']);
-        // @ts-ignore
         dialogNode.setPayload([{ id: 1 }]);
 
         await step('Renders the dialog', async () => {
@@ -82,10 +81,7 @@ export const Test = {
             expect(dialogNode).toBeInTheDocument();
             expect(dialogsNode).toContainElement(dialogNode);
             expect(dialog.getByText('Confirm Action')).toBeInTheDocument();
-            /**
-             * @todo - Fix this test, for some reason this is flaky in the pipeline but always passes in the browser.
-             */
-            // await waitFor(() => expect(dialog.getByText(dialogText)).toBeDefined());
+            await waitFor(() => expect(dialog.getByText(dialogText)).toBeDefined());
         });
 
         await step(
@@ -101,7 +97,7 @@ export const Test = {
         );
 
         await step('Reopens the dialog and clicks on confirm button.', async () => {
-            dialogNode?.open();
+            await dialogNode?.open();
             const button = dialog.getByRole('button', { name: /Confirm/i });
             expect(dialogNode).toHaveAttribute('open');
             expect(button).toBeInTheDocument();
@@ -112,6 +108,8 @@ export const Test = {
                 expect(args['@onConfirm']).toHaveBeenCalledWith([{ id: 1 }], undefined, undefined);
             });
         });
+
+        dialogNode?.open();
     }
 };
 

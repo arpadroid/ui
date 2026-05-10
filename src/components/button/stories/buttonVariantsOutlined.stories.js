@@ -1,13 +1,13 @@
 /**
  * @typedef {import('../button.js').default} Button
  * @typedef {import('../button.types.js').ButtonConfigType} ButtonConfigType
- * @typedef {import('@storybook/web-components-vite').Meta<ButtonConfigType>} ButtonMetaOutlinedType
- * @typedef {import('@storybook/web-components-vite').StoryObj<ButtonConfigType>} ButtonVariantsStoryType
+ * @typedef {import('@storybook/web-components-vite').Meta<ButtonConfigType>} Meta
+ * @typedef {import('@storybook/web-components-vite').StoryObj<ButtonConfigType>} Story
  */
 
 import ButtonVariantsStory from './buttonVariantsFilled.stories.js';
 
-/** @type {ButtonMetaOutlinedType} */
+/** @type {Meta} */
 const ButtonVariantsOutlinedStory = {
     ...ButtonVariantsStory,
     component: 'arpa-button',
@@ -20,7 +20,7 @@ const ButtonVariantsOutlinedStory = {
 
 export default ButtonVariantsOutlinedStory;
 
-/** @type {ButtonVariantsStoryType} */
+/** @type {Story} */
 export const Primary = {
     args: {
         content: 'Primary Outlined',
@@ -28,7 +28,7 @@ export const Primary = {
     }
 };
 
-/** @type {ButtonVariantsStoryType} */
+/** @type {Story} */
 export const Secondary = {
     args: {
         content: 'Secondary Outlined',
@@ -36,7 +36,7 @@ export const Secondary = {
     }
 };
 
-/** @type {ButtonVariantsStoryType} */
+/** @type {Story} */
 export const Tertiary = {
     args: {
         content: 'Tertiary Outlined',
@@ -44,7 +44,7 @@ export const Tertiary = {
     }
 };
 
-/** @type {ButtonVariantsStoryType} */
+/** @type {Story} */
 export const Submit = {
     args: {
         content: 'Submit Outlined',
@@ -53,7 +53,7 @@ export const Submit = {
     }
 };
 
-/** @type {ButtonVariantsStoryType} */
+/** @type {Story} */
 export const Delete = {
     args: {
         content: 'Delete Outlined',
@@ -62,7 +62,7 @@ export const Delete = {
     }
 };
 
-/** @type {ButtonVariantsStoryType} */
+/** @type {Story} */
 export const Highlight = {
     args: {
         content: 'Highlight Outlined',

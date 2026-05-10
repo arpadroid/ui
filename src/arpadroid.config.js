@@ -9,6 +9,7 @@ const config = {
   ┗┻┛ ┣┛┗┻┗┻┛ ┗┛┗┗┻  ┗┻┗
 ------┛--------------------`,
     storybook: {
+        managerCache: false,
         preview: {
             parameters: {
                 layout: 'centered'

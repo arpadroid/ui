@@ -1,17 +1,15 @@
 /**
  * @typedef {import('../button.js').default} Button
  * @typedef {import('../button.types.js').ButtonConfigType} ButtonConfigType
- * @typedef {import('@storybook/web-components-vite').Meta<ButtonConfigType>} ButtonTestsMetaType
- * @typedef {import('@storybook/web-components-vite').StoryObj<ButtonConfigType>} ButtonTestsStoryType
- * @typedef {import('@storybook/web-components-vite').StoryContext} StoryContext
- * @typedef {import('@storybook/web-components-vite').Args} Args
+ * @typedef {import('@storybook/web-components-vite').Meta<ButtonConfigType>} Meta
+ * @typedef {import('@storybook/web-components-vite').StoryObj<ButtonConfigType>} Story
  */
 
 import { waitFor, expect } from 'storybook/test';
 import { playSetup } from '../stories/button.stories.util';
 import ButtonStory from './button.stories';
 
-/** @type {ButtonTestsMetaType} */
+/** @type {Meta} */
 const ButtonTestsStory = {
     ...ButtonStory,
     component: 'arpa-button',
@@ -44,7 +42,7 @@ const setTooltipTest = async (/** @type {Button} */ buttonComponent) => {
     });
 };
 
-/** @type {ButtonTestsStoryType} */
+/** @type {Story} */
 export const Test = {
     args: {
         content: 'Click me',
@@ -53,7 +51,6 @@ export const Test = {
         tooltip: 'If you click me something awesome will happen.',
         tooltipPosition: 'top'
     },
-
     play: async ({ canvasElement, step, canvas }) => {
         const setup = await playSetup(canvasElement);
         const { buttonNode, buttonComponent } = setup;
@@ -76,7 +73,7 @@ export const Test = {
     }
 };
 
-/** @type {ButtonTestsStoryType} */
+/** @type {Story} */
 export const DynamicRender = {
     args: {
         content: '',

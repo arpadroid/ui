@@ -5,7 +5,7 @@ export type ConfirmDialogConfigType = DialogConfigType & {
     cancelIcon?: string;
     lblConfirm?: string;
     lblCancel?: string;
-    payload?: Record<string, unknown>;
-    '@onConfirm'?: (payload: Record<string, unknown>) => void;
-    '@onCancel'?: (payload: Record<string, unknown>) => void;
+    payload?: unknown;
+    '@onConfirm'?: (payload: unknown) => void;
+    '@onCancel'?: (payload: unknown) => void;
 };

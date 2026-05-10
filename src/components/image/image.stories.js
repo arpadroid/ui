@@ -2,13 +2,11 @@
  * @typedef {import('./image.types').ImageConfigType} ImageConfigType
  * @typedef {import('@storybook/web-components-vite').Meta<ImageConfigType>} Meta
  * @typedef {import('@storybook/web-components-vite').StoryObj<ImageConfigType>} StoryObj
- * @typedef {import('@storybook/web-components-vite').Args} Args
- * @typedef {import('@storybook/web-components-vite').StoryContext} StoryContext
  */
 
 import { attrString } from '@arpadroid/tools';
 import { waitFor, expect } from 'storybook/test';
-import { getArgs, getArgTypes, playSetup } from './image.stories.util';
+import { playSetup } from './image.stories.util';
 const html = String.raw;
 
 /** @type {Meta} */
@@ -35,24 +33,35 @@ const ImageStory = {
     }
 };
 
+const sources = {
+    square: '/test-assets/space/earth-vertical-400.jpg',
+    portrait: '/test-assets/space/earth-vertical-400.jpg',
+    landscape: '/test-assets/space/sun-earth-moon-400.jpg',
+    mini: '/test-assets/space/black-hole-75.jpg',
+    small: '/test-assets/space/black-hole-200.jpg',
+    notFound: '/test-assets/space/this-image-does-not-exist.jpg',
+    withPreview: '/test-assets/space/moon-[width].jpg'
+};
+
 /** @type {StoryObj} */
 export const Default = {
     name: 'Squared',
     parameters: {},
-    argTypes: getArgTypes(),
-    args: { ...getArgs(), size: 400, caption: 'Image caption' }
+    args: {
+        size: 400,
+        src: sources.square,
+
+        caption: 'Image caption'
+    }
 };
 
 /** @type {StoryObj} */
 export const Portrait = {
-    // name: 'Portrait Image',
     parameters: {
         layout: 'centered'
     },
-    argTypes: getArgTypes(),
     args: {
-        ...getArgs(),
-        src: '/test-assets/space/earth-vertical-400.jpg',
+        src: sources.portrait,
         width: 270,
         height: 400
     }
@@ -60,11 +69,8 @@ export const Portrait = {
 
 /** @type {StoryObj} */
 export const Landscape = {
-    parameters: {},
-    argTypes: getArgTypes(),
     args: {
-        ...getArgs(),
-        src: '/test-assets/space/sun-earth-moon-400.jpg',
+        src: sources.landscape,
         width: 320,
         height: 144
     }
@@ -72,22 +78,16 @@ export const Landscape = {
 
 /** @type {StoryObj} */
 export const mini = {
-    parameters: {},
-    argTypes: getArgTypes(),
     args: {
-        ...getArgs(),
-        src: '/test-assets/space/black-hole-75.jpg',
+        src: sources.mini,
         size: 30
     }
 };
 
 /** @type {StoryObj} */
 export const small = {
-    parameters: {},
-    argTypes: getArgTypes(),
     args: {
-        ...getArgs(),
-        src: '/test-assets/space/black-hole-200.jpg',
+        src: sources.small,
         size: 100
     }
 };
@@ -95,30 +95,22 @@ export const small = {
 /** @type {StoryObj} */
 export const NoImage = {
     name: 'No Image',
-    parameters: {},
-    argTypes: getArgTypes(),
-    args: { ...getArgs(), src: '' }
+    args: { src: '' }
 };
 
 /** @type {StoryObj} */
 export const NotFoundImage = {
     name: 'Not Found Image',
-    parameters: {},
-    argTypes: getArgTypes(),
     args: {
-        ...getArgs(),
-        src: '/test-assets/space/this-image-does-not-exist.jpg'
+        src: sources.notFound
     }
 };
 
 /** @type {StoryObj} */
 export const WithPreview = {
     name: 'With Preview',
-    parameters: {},
-    argTypes: getArgTypes(),
     args: {
-        ...getArgs(),
-        src: '/test-assets/space/moon-[width].jpg',
+        src: sources.withPreview,
         width: 400,
         height: 400,
         showPreloader: true,

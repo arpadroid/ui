@@ -1,13 +1,15 @@
-import { playSetup } from './button.stories.util';
-import { waitFor, expect } from 'storybook/test';
 /**
  * @typedef {import('../button').default} Button
  * @typedef {import('../button.types').ButtonConfigType} ButtonConfigType
- * @typedef {import('@storybook/web-components-vite').Meta<ButtonConfigType>} ButtonMetaType
- * @typedef {import('@storybook/web-components-vite').StoryObj<ButtonConfigType>} ButtonStoryType
+ * @typedef {import('@storybook/web-components-vite').Meta<ButtonConfigType>} Meta
+ * @typedef {import('@storybook/web-components-vite').StoryObj<ButtonConfigType>} Story
  */
+import { playSetup } from './button.stories.util';
+import { waitFor, expect } from 'storybook/test';
+
 const html = String.raw;
-/** @type {ButtonMetaType} */
+
+/** @type {Meta} */
 const ButtonStory = {
     title: 'UI/Buttons/Button',
     component: 'arpa-button',
@@ -18,7 +20,7 @@ const ButtonStory = {
     }
 };
 
-/** @type {ButtonStoryType} */
+/** @type {Story} */
 export const Default = {
     name: 'Render',
     args: {
@@ -29,7 +31,7 @@ export const Default = {
     }
 };
 
-/** @type {ButtonStoryType} */
+/** @type {Story} */
 export const Zones = {
     name: 'Zones',
     args: {

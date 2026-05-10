@@ -57,7 +57,7 @@ class ConfirmDialog extends Dialog {
 
     /**
      * Sets the payload for the dialog.
-     * @param {Record<string, unknown>} payload - The payload to set.
+     * @param {unknown} payload - The payload to set.
      */
     setPayload(payload) {
         this._config.payload = payload;
