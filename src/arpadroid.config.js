@@ -3,11 +3,7 @@ const config = {
     buildType: 'uiComponent',
     buildTypes: true,
     storybook_port: 6001,
-    buildManifest: false,
-    logo: `           ┓    • ┓    •
-  ┏┓┏┓┏┓┏┓┏┫┏┓┏┓┓┏┫  ┓┏┓
-  ┗┻┛ ┣┛┗┻┗┻┛ ┗┛┗┗┻  ┗┻┗
-------┛--------------------`,
+    buildManifest: true,
     storybook: {
         managerCache: false,
         preview: {

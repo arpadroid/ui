@@ -1,47 +1,42 @@
+/**
+ * @typedef {import('./circularPreloader.types.js').CircularPreloaderConfigType} CircularPreloaderConfigType
+ */
+
 import ArpaElement from '../../arpaElement/arpaElement.js';
-import { appendNodes, defineCustomElement } from '@arpadroid/tools';
+import { defineCustomElement } from '@arpadroid/tools';
 const html = String.raw;
 class CircularPreloader extends ArpaElement {
+    /** @type {CircularPreloaderConfigType} */
+    _config = this._config;
+
     getDefaultConfig() {
-        return {
+        /** @type {CircularPreloaderConfigType} */
+        const conf = {
             hasMask: false,
-            variant: 'default',
             label: 'Loading...',
-            text: '',
-            template: html`
-                {mask}
-                <div class="circularPreloader__spinnerContainer">
-                    <span class="circularPreloader__spinner"></span>
-                    {text}
-                </div>
-            `
+            className: 'circularPreloader',
+            attributes: {
+                variant: 'default',
+                role: 'progressbar'
+            },
+            content: '',
+            templateChildren: {
+                mask: {
+                    className: 'circularPreloader__mask',
+                    canRender: 'has-mask'
+                },
+                container: {
+                    className: 'circularPreloader__spinnerContainer',
+                    content: html`<span class="circularPreloader__spinner"></span>`
+                },
+                content: {
+                    isContent: true,
+                    className: 'circularPreloader__content',
+                    content: '{label}',
+                }
+            }
         };
-    }
-
-    _initialize() {
-        this.classList.add('circularPreloader');
-    }
-
-    async _initializeNodes() {
-        appendNodes(this, this.getChildElements());
-        this.setAttribute('role', 'progressbar');
-        const label = this.getProperty('label');
-        label && this.setAttribute('aria-label', label.toString());
-        this.contentNode = this.querySelector('.circularPreloader__content');
-        return true;
-    }
-
-    getTemplateVars() {
-        const text = this.getProperty('text') || '';
-        const hasContent = text || this._childNodes?.length;
-        return {
-            text: hasContent && html`<div class="circularPreloader__content">${text}</div>`,
-            mask: this.hasMask() && html`<div class="circularPreloader__mask"></div>`
-        };
-    }
-
-    hasMask() {
-        return this.hasProperty('has-mask');
+        return super.getDefaultConfig(conf);
     }
 }
 

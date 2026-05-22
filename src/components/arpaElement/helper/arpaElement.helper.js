@@ -470,7 +470,7 @@ export function getChildAttributes(element, name, config = {}, attributes = {}) 
 export function getChildContent(element, name, config = {}) {
     let content = config.content || (name && element?.getProperty(name)) || '';
     typeof content === 'function' && (content = content());
-    return processTemplate(/** @type {string} **/ (content), element?.templateVars, element);
+    return processTemplate(/** @type {string} **/ (content), element?.getPayload(), element);
 }
 
 /**

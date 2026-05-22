@@ -2,7 +2,8 @@ import { ArpaElementConfigType } from "../../arpaElement/arpaElement.types";
 
 export type CircularPreloaderConfigType  = ArpaElementConfigType & {
     hasMask?: boolean;
-    text?: string;
-    variant?: string;
-    template?: string;
+    variant?: 'primary' | 'secondary' | 'tertiary';
+    size?: 'mini' | 'small' | 'medium' | 'large' | 'x-large';
+    thickness?: 'thin' | 'medium' | 'thick';
+    label?: string;
 }

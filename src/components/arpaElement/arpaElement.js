@@ -232,7 +232,7 @@ class ArpaElement extends HTMLElement {
     }
 
     getPayload() {
-        return this.getTemplateVars();
+        return mergeObjects(this._config, this.getTemplateVars());
     }
 
     /**
@@ -777,12 +777,20 @@ class ArpaElement extends HTMLElement {
 
     _getTemplate() {
         const { getTemplate } = this._config;
-        return typeof getTemplate === 'function' ? getTemplate(this) : this._config?.template;
+        let template = typeof getTemplate === 'function' ? getTemplate(this) : this._config?.template;
+        if (!template && this._config?.templateChildren) {
+            template = '';
+            for (const key of Object.keys(this._config.templateChildren)) {
+                template += `{${key}}`;
+            }
+        }
+        return template;
     }
 
     reRender() {
         this._hasRendered = false;
         this._isReady = false;
+
         this._initializeTemplates();
         extractZones(this);
         this.promise = this.getPromise();

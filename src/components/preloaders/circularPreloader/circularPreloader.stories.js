@@ -1,38 +1,60 @@
 /**
- * @typedef {import('@storybook/web-components-vite').Meta} Meta
- * @typedef {import('@storybook/web-components-vite').StoryObj} StoryObj
- * @typedef {import('@storybook/web-components-vite').StoryContext} StoryContext
+ * @typedef {import('./circularPreloader').default} CircularPreloader
+ * @typedef {import('./circularPreloader.types').CircularPreloaderConfigType} CircularPreloaderConfigType
+ * @typedef {import('@storybook/web-components-vite').Meta<CircularPreloaderConfigType>} Meta
+ * @typedef {import('@storybook/web-components-vite').StoryObj<CircularPreloaderConfigType>} StoryObj
  */
-import { attrString } from '@arpadroid/tools';
-import { waitFor, expect } from 'storybook/test';
-import { getArgs, getArgTypes, playSetup } from './circularPreloader.stories.util';
-const html = String.raw;
+import { expect } from 'storybook/test';
 /** @type {Meta} */
 const CircularPreloaderStory = {
     title: 'UI/Preloaders/Circular Preloader',
     tags: [],
-    component: 'circular-preloader',
-    render: (/** @type {Record<string, unknown>} */ args) => {
-        return html`<circular-preloader ${attrString(args)}>${args.content}</circular-preloader>`;
-    }
+    component: 'circular-preloader'
 };
 
 /** @type {StoryObj} */
 export const Default = {
     name: 'Render',
     parameters: {},
-    argTypes: getArgTypes(),
-    args: getArgs()
+    args: {
+        label: 'Loading...'
+    }
 };
 
 /** @type {StoryObj} */
 export const Test = {
     ...Default,
-    play: async (/** @type {StoryContext} */ { canvasElement, step }) => {
-        const setup = await playSetup(canvasElement);
-        const { preloader } = setup;
+    play: async ({ canvasElement, step }) => {
+        await customElements.whenDefined('circular-preloader');
+        const preloader = /** @type {CircularPreloader | null} */ (
+            canvasElement.querySelector('circular-preloader')
+        );
         await step('renders the circular preloader text', async () => {
-            await waitFor(() => expect(preloader).not.toBeNull());
+            expect(preloader).toBeInTheDocument();
+
+            const mask = preloader?.querySelector('.circularPreloader__mask');
+            expect(mask).not.toBeInTheDocument();
+        });
+    }
+};
+
+/** @type {StoryObj} */
+export const WithMask = {
+    ...Default,
+    name: 'With Mask',
+    args: {
+        ...Default.args,
+        hasMask: true
+    },
+    play: async ({ canvasElement, step }) => {
+        await customElements.whenDefined('circular-preloader');
+        const preloader = /** @type {CircularPreloader | null} */ (
+            canvasElement.querySelector('circular-preloader')
+        );
+        await step('renders the circular preloader with mask', async () => {
+            expect(preloader).toBeInTheDocument();
+            const mask = preloader?.querySelector('.circularPreloader__mask');
+            expect(mask).toBeInTheDocument();
         });
     }
 };

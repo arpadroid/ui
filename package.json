@@ -49,7 +49,7 @@
         "@arpadroid/tools": "file:../tools"
     },
     "dependencies": {
-        "material-symbols": "^0.40.2"
+        "material-symbols": "^0.44.8"
     },
     "customElements": "dist/custom-elements.json"
 }
