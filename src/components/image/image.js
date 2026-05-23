@@ -5,7 +5,7 @@
  * @typedef {import('../tooltip/tooltip.js').default} Tooltip
  * @typedef {import('../icon/icon.js').default} Icon
  */
-import { attrString, classNames, attr, mergeObjects, defineCustomElement, listen } from '@arpadroid/tools';
+import { attrString, classNames, attr, defineCustomElement, listen } from '@arpadroid/tools';
 import { lazyLoad as lazyLoader, clearLazyImage, hasLoadedSource, editURL, mapHTML } from '@arpadroid/tools';
 import { eventContainsFiles, addCssRule, observerMixin } from '@arpadroid/tools';
 import { dummySignal, dummyListener, dummyOff } from '@arpadroid/tools';
@@ -18,6 +18,9 @@ class ArpaImage extends ArpaElement {
     ////////////////////////////
     _hasLoaded = false;
     _hasError = false;
+
+    /** @type {ImageConfigType} */
+    _config = this._config;
 
     constructor(config = {}) {
         super(config);
@@ -38,7 +41,8 @@ class ArpaImage extends ArpaElement {
      */
     getDefaultConfig() {
         this.i18nKey = 'ui.image';
-        return mergeObjects(super.getDefaultConfig(), {
+        /** @type {ImageConfigType} */
+        const config = {
             alt: '',
             caption: '',
             defaultSize: 'medium',
@@ -59,7 +63,7 @@ class ArpaImage extends ArpaElement {
             isDraggable: false,
             loadedClass: 'image--loaded',
             onError: undefined,
-            onInput: undefined,
+            //onInput: undefined,
             onLoad: undefined,
             preventUpscale: false,
             previewTitle: '',
@@ -67,6 +71,7 @@ class ArpaImage extends ArpaElement {
             quality: 50,
             sizes: [],
             sizeMap: {
+                mini: 20,
                 xx_small: 50,
                 x_small: 100,
                 small: 200,
@@ -75,6 +80,7 @@ class ArpaImage extends ArpaElement {
                 large: 900,
                 x_large: 1200,
                 xx_large: 2500,
+                huge: 4000,
                 adaptive: '100%'
             },
             // i18n
@@ -82,7 +88,8 @@ class ArpaImage extends ArpaElement {
             lblLoadingImage: this.i18n('lblLoadingImage'),
             txtNoImage: this.i18n('txtNoImage'),
             txtUploadImage: this.i18n('txtUploadImage')
-        });
+        };
+        return /** @type {ImageConfigType} */ (super.getDefaultConfig(config));
     }
 
     // #endregion - INITIALIZATION
@@ -122,9 +129,11 @@ class ArpaImage extends ArpaElement {
      */
     getDefaultSize() {
         const sizes = this.getArrayProperty('sizes');
-        const size = this.getProperty('default-size');
-        const sizeMap = this._config.sizeMap;
-        return sizeMap[size] ?? (Array.isArray(sizes) && sizes[0]);
+        const defaultSize = this.getProperty('default-size');
+        const sizeMap = this._config?.sizeMap;
+        // @ts-ignore
+        const size = Number(sizeMap?.[defaultSize]);
+        return size || (Array.isArray(sizes) && sizes[0]);
     }
 
     /**
@@ -147,13 +156,16 @@ class ArpaImage extends ArpaElement {
      * @returns {number[] | undefined}
      */
     getSizes() {
-        /** @type {number[]} */
+        /** @type {(string | number)[]} */
         let sizes = this.getArrayProperty('sizes');
         if (!sizes?.length && this.getAttribute('size') === 'full_screen') {
             sizes = [400, 800, 1200, 1600, 2400];
         }
         if (sizes?.length) {
-            return sizes.map(size => Number(this._config.sizeMap[size] || size));
+            const sizeMap = /** @type {Record<string, string | number>} */ (
+                /** @type {unknown} */ (this._config.sizeMap || {})
+            );
+            return sizes.map(size => Number(sizeMap[String(size)] || size));
         }
         return [];
     }
@@ -273,7 +285,7 @@ class ArpaImage extends ArpaElement {
      * @returns {boolean} - True if the component has a high-resolution preview image; otherwise, false.
      */
     hasPreview() {
-        return this._config?.highResSrc || this.hasProperty('has-preview');
+        return Boolean(this._config?.highResSrc || this.hasProperty('has-preview'));
     }
 
     // #endregion - Has
@@ -548,7 +560,7 @@ class ArpaImage extends ArpaElement {
     }
 
     getSizeKey(width = this.getWidth()) {
-        for (const [key, value] of Object.entries(this._config.sizeMap)) {
+        for (const [key, value] of Object.entries(this._config.sizeMap || {})) {
             if (value >= width) {
                 return key;
             }
@@ -628,7 +640,7 @@ class ArpaImage extends ArpaElement {
 
     /**
      * Called when the image has finished loading.
-     * @param {Event} [event]
+     * @param {Event | undefined} [event]
      */
     _onLoad(event) {
         const { onLoad } = this._config;
@@ -682,7 +694,7 @@ class ArpaImage extends ArpaElement {
      */
     _onInput(files, event) {
         const { onInput } = this._config;
-        typeof onInput === 'function' && onInput(files, event, this);
+        typeof onInput === 'function' && onInput(Array.from(files), event, this);
         this.hideDropArea();
     }
 

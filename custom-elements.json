@@ -2200,7 +2200,6 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: Record<string, string>",
               "optional": true
             },
             {
@@ -2210,7 +2209,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
@@ -2220,17 +2218,16 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: string[]",
               "optional": true
             },
             {
               "name": "content",
               "type": {
                 "text": "ArpaElementContentType",
-                "summary": "unknown"
+                "summary": "string",
+                "detail": "string | HTMLElement | HTMLCollection | (() => string | HTMLElement | HTMLCollection)"
               },
-              "serializedAs": "property-only",
-              "description": "TS type: ArpaElementContentType",
+              "serializedAs": "string",
               "optional": true
             },
             {
@@ -2240,7 +2237,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": true
             },
             {
@@ -2250,47 +2246,44 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
               "name": "template-children",
               "type": {
-                "text": "Record<string, ArpaElementChildOptionsType>",
+                "text": "Record<string, ArpaElementChildOptionsType> | undefined",
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: Record<string, ArpaElementChildOptionsType>",
               "optional": true
             },
             {
               "name": "template-container",
               "type": {
-                "text": "string | HTMLElement",
+                "text": "HTMLElement | string",
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string | HTMLElement",
               "optional": true
             },
             {
               "name": "templates",
               "type": {
                 "text": "TemplatesType",
-                "summary": "unknown"
+                "summary": "string",
+                "detail": "Record<TemplateContentMode, HTMLTemplateElement> | Record<string, never>"
               },
-              "serializedAs": "property-only",
-              "description": "TS type: TemplatesType",
+              "serializedAs": "json",
               "optional": true
             },
             {
               "name": "template-types",
               "type": {
                 "text": "TemplateContentMode[]",
-                "summary": "array"
+                "summary": "array",
+                "detail": "('add' | 'content' | 'prepend' | 'append' | 'list-item' | 'view')[]"
               },
               "serializedAs": "json",
-              "description": "TS type: TemplateContentMode[]",
               "optional": true
             },
             {
@@ -2300,7 +2293,6 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: Record<string, unknown> | (() => Record<string, unknown>)",
               "optional": true
             },
             {
@@ -2310,7 +2302,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
@@ -2320,7 +2311,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "description": "TS type: ZoneFilterType",
               "optional": true
             },
             {
@@ -2330,7 +2320,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
@@ -2340,7 +2329,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             }
           ],
@@ -2358,46 +2346,6 @@
           "declaration": {
             "name": "ArpaElement",
             "module": "src/components/arpaElement/arpaElement.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/components/arpaFragment/arpaFragment.js",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "",
-          "name": "ArpaFragment",
-          "members": [
-            {
-              "kind": "method",
-              "name": "getAttributes"
-            },
-            {
-              "kind": "field",
-              "name": "_childNodes",
-              "type": {
-                "text": "array"
-              },
-              "default": "[...this.childNodes]"
-            }
-          ],
-          "superclass": {
-            "name": "HTMLElement"
-          },
-          "tagName": "arpa-fragment",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "default",
-          "declaration": {
-            "name": "ArpaFragment",
-            "module": "src/components/arpaFragment/arpaFragment.js"
           }
         }
       ]
@@ -4007,7 +3955,6 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: Record<string, string>",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -4021,7 +3968,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -4035,7 +3981,6 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: string[]",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -4046,10 +3991,10 @@
               "name": "content",
               "type": {
                 "text": "ArpaElementContentType",
-                "summary": "unknown"
+                "summary": "string",
+                "detail": "string | HTMLElement | HTMLCollection | (() => string | HTMLElement | HTMLCollection)"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -4063,7 +4008,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -4077,7 +4021,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -4087,11 +4030,10 @@
             {
               "name": "template-children",
               "type": {
-                "text": "Record<string, ArpaElementChildOptionsType>",
+                "text": "Record<string, ArpaElementChildOptionsType> | undefined",
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: Record<string, ArpaElementChildOptionsType>",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -4101,11 +4043,10 @@
             {
               "name": "template-container",
               "type": {
-                "text": "string | HTMLElement",
+                "text": "HTMLElement | string",
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string | HTMLElement",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -4116,10 +4057,10 @@
               "name": "templates",
               "type": {
                 "text": "TemplatesType",
-                "summary": "unknown"
+                "summary": "string",
+                "detail": "Record<TemplateContentMode, HTMLTemplateElement> | Record<string, never>"
               },
               "serializedAs": "property-only",
-              "description": "TS type: TemplatesType",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -4130,10 +4071,10 @@
               "name": "template-types",
               "type": {
                 "text": "TemplateContentMode[]",
-                "summary": "array"
+                "summary": "array",
+                "detail": "('add' | 'content' | 'prepend' | 'append' | 'list-item' | 'view')[]"
               },
               "serializedAs": "json",
-              "description": "TS type: TemplateContentMode[]",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -4147,7 +4088,6 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: Record<string, unknown> | (() => Record<string, unknown>)",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -4161,7 +4101,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: \"submit\" | \"default\" | \"primary\" | \"primary-outlined\" | \"secondary\" | \"secondary-outlined\" | \"tertiary\" | \"tertiary-outlined\" | \"delete\" | \"delete-outlined\" | \"submit-outlined\" | \"highlight\" | \"highlight-outlined\"",
               "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -4175,7 +4114,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "description": "TS type: ZoneFilterType",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -4189,7 +4127,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -4203,7 +4140,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -4217,7 +4153,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
@@ -4227,7 +4162,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
@@ -4237,7 +4171,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": true
             },
             {
@@ -4247,7 +4180,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
@@ -4257,7 +4189,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
@@ -4267,7 +4198,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
@@ -4277,7 +4207,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
@@ -4287,27 +4216,24 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "description": "TS type: (buttonInstance: Button) => void",
               "optional": true
             },
             {
               "name": "tooltip-position",
               "type": {
-                "text": "\"top\" | \"bottom\" | \"left\" | \"right\"",
+                "text": "'top' | 'bottom' | 'left' | 'right'",
                 "summary": "unknown"
               },
               "serializedAs": "string",
-              "description": "TS type: \"top\" | \"bottom\" | \"left\" | \"right\"",
               "optional": true
             },
             {
               "name": "type",
               "type": {
-                "text": "\"button\" | \"submit\" | \"reset\"",
+                "text": "'button' | 'submit' | 'reset'",
                 "summary": "unknown"
               },
               "serializedAs": "string",
-              "description": "TS type: \"button\" | \"submit\" | \"reset\"",
               "optional": true
             }
           ],
@@ -6010,7 +5936,6 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: Record<string, string>",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -6024,7 +5949,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -6038,7 +5962,6 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: string[]",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -6049,10 +5972,10 @@
               "name": "content",
               "type": {
                 "text": "ArpaElementContentType",
-                "summary": "unknown"
+                "summary": "string",
+                "detail": "string | HTMLElement | HTMLCollection | (() => string | HTMLElement | HTMLCollection)"
               },
               "serializedAs": "string",
-              "description": "TS type: ArpaElementContentType & string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -6066,7 +5989,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -6080,7 +6002,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -6090,11 +6011,10 @@
             {
               "name": "template-children",
               "type": {
-                "text": "Record<string, ArpaElementChildOptionsType>",
+                "text": "Record<string, ArpaElementChildOptionsType> | undefined",
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: Record<string, ArpaElementChildOptionsType>",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -6104,11 +6024,10 @@
             {
               "name": "template-container",
               "type": {
-                "text": "string | HTMLElement",
+                "text": "HTMLElement | string",
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string | HTMLElement",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -6119,10 +6038,10 @@
               "name": "templates",
               "type": {
                 "text": "TemplatesType",
-                "summary": "unknown"
+                "summary": "string",
+                "detail": "Record<TemplateContentMode, HTMLTemplateElement> | Record<string, never>"
               },
               "serializedAs": "property-only",
-              "description": "TS type: TemplatesType",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -6133,10 +6052,10 @@
               "name": "template-types",
               "type": {
                 "text": "TemplateContentMode[]",
-                "summary": "array"
+                "summary": "array",
+                "detail": "('add' | 'content' | 'prepend' | 'append' | 'list-item' | 'view')[]"
               },
               "serializedAs": "json",
-              "description": "TS type: TemplateContentMode[]",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -6150,7 +6069,6 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: Record<string, unknown> | (() => Record<string, unknown>)",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -6164,7 +6082,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: \"primary\" | \"secondary\" | \"tertiary\" | \"delete\"",
               "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -6178,7 +6095,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "description": "TS type: ZoneFilterType",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -6192,7 +6108,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -6206,7 +6121,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -6220,7 +6134,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "Button",
@@ -6234,7 +6147,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "Button",
@@ -6248,7 +6160,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": false,
               "inheritedFrom": {
                 "name": "Button",
@@ -6262,7 +6173,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "Button",
@@ -6276,7 +6186,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true,
               "inheritedFrom": {
                 "name": "Button",
@@ -6290,7 +6199,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "Button",
@@ -6304,7 +6212,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "Button",
@@ -6318,7 +6225,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "description": "TS type: (buttonInstance: Button) => void",
               "optional": false,
               "inheritedFrom": {
                 "name": "Button",
@@ -6328,11 +6234,10 @@
             {
               "name": "tooltip-position",
               "type": {
-                "text": "\"top\" | \"bottom\" | \"left\" | \"right\"",
+                "text": "'top' | 'bottom' | 'left' | 'right'",
                 "summary": "unknown"
               },
               "serializedAs": "string",
-              "description": "TS type: \"top\" | \"bottom\" | \"left\" | \"right\"",
               "optional": false,
               "inheritedFrom": {
                 "name": "Button",
@@ -6342,11 +6247,10 @@
             {
               "name": "type",
               "type": {
-                "text": "\"button\" | \"submit\" | \"reset\"",
+                "text": "'button' | 'submit' | 'reset'",
                 "summary": "unknown"
               },
               "serializedAs": "string",
-              "description": "TS type: \"submit\" | \"button\" | \"reset\"",
               "optional": false,
               "inheritedFrom": {
                 "name": "Button",
@@ -6363,6 +6267,46 @@
           "declaration": {
             "name": "DarkModeButton",
             "module": "src/components/darkModeButton/darkModeButton.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/arpaFragment/arpaFragment.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "ArpaFragment",
+          "members": [
+            {
+              "kind": "method",
+              "name": "getAttributes"
+            },
+            {
+              "kind": "field",
+              "name": "_childNodes",
+              "type": {
+                "text": "array"
+              },
+              "default": "[...this.childNodes]"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "arpa-fragment",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "ArpaFragment",
+            "module": "src/components/arpaFragment/arpaFragment.js"
           }
         }
       ]
@@ -6443,7 +6387,13 @@
             },
             {
               "kind": "method",
-              "name": "_initializeHandler"
+              "name": "_initializeHandler",
+              "parameters": [
+                {
+                  "name": "node",
+                  "default": "this.handlerNode"
+                }
+              ]
             },
             {
               "kind": "method",
@@ -7957,7 +7907,6 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: Record<string, string>",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -7971,7 +7920,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -7985,7 +7933,6 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: string[]",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -7996,10 +7943,10 @@
               "name": "content",
               "type": {
                 "text": "ArpaElementContentType",
-                "summary": "unknown"
+                "summary": "string",
+                "detail": "string | HTMLElement | HTMLCollection | (() => string | HTMLElement | HTMLCollection)"
               },
               "serializedAs": "property-only",
-              "description": "TS type: ArpaElementContentType",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -8013,7 +7960,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -8027,7 +7973,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -8037,11 +7982,10 @@
             {
               "name": "template-children",
               "type": {
-                "text": "Record<string, ArpaElementChildOptionsType>",
+                "text": "Record<string, ArpaElementChildOptionsType> | undefined",
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: Record<string, ArpaElementChildOptionsType>",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -8051,11 +7995,10 @@
             {
               "name": "template-container",
               "type": {
-                "text": "string | HTMLElement",
+                "text": "HTMLElement | string",
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string | HTMLElement",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -8066,10 +8009,10 @@
               "name": "templates",
               "type": {
                 "text": "TemplatesType",
-                "summary": "unknown"
+                "summary": "string",
+                "detail": "Record<TemplateContentMode, HTMLTemplateElement> | Record<string, never>"
               },
               "serializedAs": "property-only",
-              "description": "TS type: TemplatesType",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -8080,10 +8023,10 @@
               "name": "template-types",
               "type": {
                 "text": "TemplateContentMode[]",
-                "summary": "array"
+                "summary": "array",
+                "detail": "('add' | 'content' | 'prepend' | 'append' | 'list-item' | 'view')[]"
               },
               "serializedAs": "json",
-              "description": "TS type: TemplateContentMode[]",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -8097,7 +8040,6 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: Record<string, unknown> | (() => Record<string, unknown>)",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -8111,7 +8053,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -8125,7 +8066,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "description": "TS type: ZoneFilterType",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -8139,7 +8079,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -8153,7 +8092,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -8167,7 +8105,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "description": "TS type: HTMLInputElement",
               "optional": true
             },
             {
@@ -8177,7 +8114,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "description": "TS type: (files: FileList) => void",
               "optional": true
             }
           ],
@@ -9905,7 +9841,6 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: Record<string, string>",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -9919,7 +9854,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -9933,7 +9867,6 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: string[]",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -9944,10 +9877,10 @@
               "name": "content",
               "type": {
                 "text": "ArpaElementContentType",
-                "summary": "unknown"
+                "summary": "string",
+                "detail": "string | HTMLElement | HTMLCollection | (() => string | HTMLElement | HTMLCollection)"
               },
               "serializedAs": "string",
-              "description": "TS type: ArpaElementContentType & string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -9961,7 +9894,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -9975,7 +9907,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -9985,11 +9916,10 @@
             {
               "name": "template-children",
               "type": {
-                "text": "Record<string, ArpaElementChildOptionsType>",
+                "text": "Record<string, ArpaElementChildOptionsType> | undefined",
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: Record<string, ArpaElementChildOptionsType>",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -9999,11 +9929,10 @@
             {
               "name": "template-container",
               "type": {
-                "text": "string | HTMLElement",
+                "text": "HTMLElement | string",
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string | HTMLElement",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -10014,10 +9943,10 @@
               "name": "templates",
               "type": {
                 "text": "TemplatesType",
-                "summary": "unknown"
+                "summary": "string",
+                "detail": "Record<TemplateContentMode, HTMLTemplateElement> | Record<string, never>"
               },
               "serializedAs": "property-only",
-              "description": "TS type: TemplatesType",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -10028,10 +9957,10 @@
               "name": "template-types",
               "type": {
                 "text": "TemplateContentMode[]",
-                "summary": "array"
+                "summary": "array",
+                "detail": "('add' | 'content' | 'prepend' | 'append' | 'list-item' | 'view')[]"
               },
               "serializedAs": "json",
-              "description": "TS type: TemplateContentMode[]",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -10045,7 +9974,6 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: Record<string, unknown> | (() => Record<string, unknown>)",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -10059,7 +9987,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: \"primary\" | \"secondary\" | \"tertiary\" | \"delete\"",
               "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -10073,7 +10000,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "description": "TS type: ZoneFilterType",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -10087,7 +10013,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -10101,7 +10026,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -10115,7 +10039,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "Button",
@@ -10129,7 +10052,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "Button",
@@ -10143,7 +10065,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": false,
               "inheritedFrom": {
                 "name": "Button",
@@ -10157,7 +10078,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "Button",
@@ -10171,7 +10091,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true,
               "inheritedFrom": {
                 "name": "Button",
@@ -10185,7 +10104,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "Button",
@@ -10199,7 +10117,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "Button",
@@ -10213,7 +10130,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "description": "TS type: (buttonInstance: Button) => void",
               "optional": false,
               "inheritedFrom": {
                 "name": "Button",
@@ -10223,11 +10139,10 @@
             {
               "name": "tooltip-position",
               "type": {
-                "text": "\"top\" | \"bottom\" | \"left\" | \"right\"",
+                "text": "'top' | 'bottom' | 'left' | 'right'",
                 "summary": "unknown"
               },
               "serializedAs": "string",
-              "description": "TS type: \"top\" | \"bottom\" | \"left\" | \"right\"",
               "optional": false,
               "inheritedFrom": {
                 "name": "Button",
@@ -10237,11 +10152,10 @@
             {
               "name": "type",
               "type": {
-                "text": "\"button\" | \"submit\" | \"reset\"",
+                "text": "'button' | 'submit' | 'reset'",
                 "summary": "unknown"
               },
               "serializedAs": "string",
-              "description": "TS type: \"submit\" | \"button\" | \"reset\"",
               "optional": false,
               "inheritedFrom": {
                 "name": "Button",
@@ -10292,6 +10206,13 @@
                 "text": "boolean"
               },
               "default": "false"
+            },
+            {
+              "kind": "field",
+              "name": "_config",
+              "type": {
+                "text": "ImageConfigType"
+              }
             },
             {
               "kind": "method",
@@ -10743,7 +10664,7 @@
                   "name": "event",
                   "optional": true,
                   "type": {
-                    "text": "Event"
+                    "text": "Event | undefined"
                   }
                 }
               ],
@@ -12274,13 +12195,358 @@
               }
             }
           ],
-          "superclass": {
-            "name": "ArpaElement",
-            "module": "/src/components/arpaElement/arpaElement.js"
-          },
-          "tagName": "arpa-image",
-          "customElement": true,
           "attributes": [
+            {
+              "name": "alt",
+              "type": {
+                "text": "string",
+                "summary": "string"
+              },
+              "serializedAs": "string",
+              "optional": true
+            },
+            {
+              "name": "caption",
+              "type": {
+                "text": "string",
+                "summary": "string"
+              },
+              "serializedAs": "string",
+              "optional": true
+            },
+            {
+              "name": "default-size",
+              "type": {
+                "text": "ImageSizeOptionsType",
+                "summary": "unknown"
+              },
+              "serializedAs": "property-only",
+              "optional": true
+            },
+            {
+              "name": "drop-area-handler",
+              "type": {
+                "text": "HTMLElement",
+                "summary": "unknown"
+              },
+              "serializedAs": "property-only",
+              "optional": true
+            },
+            {
+              "name": "err-load",
+              "type": {
+                "text": "string",
+                "summary": "string"
+              },
+              "serializedAs": "string",
+              "optional": true
+            },
+            {
+              "name": "error-class",
+              "type": {
+                "text": "string",
+                "summary": "string"
+              },
+              "serializedAs": "string",
+              "optional": true
+            },
+            {
+              "name": "lbl-loading-image",
+              "type": {
+                "text": "string",
+                "summary": "string"
+              },
+              "serializedAs": "string",
+              "optional": true
+            },
+            {
+              "name": "loading-class",
+              "type": {
+                "text": "string",
+                "summary": "string"
+              },
+              "serializedAs": "string",
+              "optional": true
+            },
+            {
+              "name": "txt-no-image",
+              "type": {
+                "text": "string",
+                "summary": "string"
+              },
+              "serializedAs": "string",
+              "optional": true
+            },
+            {
+              "name": "txt-upload-image",
+              "type": {
+                "text": "string",
+                "summary": "string"
+              },
+              "serializedAs": "string",
+              "optional": true
+            },
+            {
+              "name": "has-native-lazy",
+              "type": {
+                "text": "boolean",
+                "summary": "boolean"
+              },
+              "serializedAs": "boolean-attr",
+              "optional": true
+            },
+            {
+              "name": "has-preloader",
+              "type": {
+                "text": "boolean",
+                "summary": "boolean"
+              },
+              "serializedAs": "boolean-attr",
+              "optional": true
+            },
+            {
+              "name": "has-preview",
+              "type": {
+                "text": "boolean",
+                "summary": "boolean"
+              },
+              "serializedAs": "boolean-attr",
+              "optional": true
+            },
+            {
+              "name": "has-drop-area",
+              "type": {
+                "text": "boolean",
+                "summary": "boolean"
+              },
+              "serializedAs": "boolean-attr",
+              "optional": true
+            },
+            {
+              "name": "has-thumbnail",
+              "type": {
+                "text": "boolean",
+                "summary": "boolean"
+              },
+              "serializedAs": "boolean-attr",
+              "optional": true
+            },
+            {
+              "name": "height",
+              "type": {
+                "text": "number",
+                "summary": "number"
+              },
+              "serializedAs": "number",
+              "optional": true
+            },
+            {
+              "name": "high-res-src",
+              "type": {
+                "text": "string",
+                "summary": "string"
+              },
+              "serializedAs": "string",
+              "optional": true
+            },
+            {
+              "name": "icon",
+              "type": {
+                "text": "string",
+                "summary": "string"
+              },
+              "serializedAs": "string",
+              "optional": true
+            },
+            {
+              "name": "icon-broken",
+              "type": {
+                "text": "string",
+                "summary": "string"
+              },
+              "serializedAs": "string",
+              "optional": true
+            },
+            {
+              "name": "is-draggable",
+              "type": {
+                "text": "boolean",
+                "summary": "boolean"
+              },
+              "serializedAs": "boolean-attr",
+              "optional": true
+            },
+            {
+              "name": "image-attr",
+              "type": {
+                "text": "Record<string, string>",
+                "summary": "string"
+              },
+              "serializedAs": "json",
+              "optional": true
+            },
+            {
+              "name": "image-position",
+              "type": {
+                "text": "string",
+                "summary": "string"
+              },
+              "serializedAs": "string",
+              "optional": true
+            },
+            {
+              "name": "lazy-load",
+              "type": {
+                "text": "boolean",
+                "summary": "boolean"
+              },
+              "serializedAs": "boolean-attr",
+              "optional": true
+            },
+            {
+              "name": "lazy-loader-batch-size",
+              "type": {
+                "text": "number",
+                "summary": "number"
+              },
+              "serializedAs": "number",
+              "optional": true
+            },
+            {
+              "name": "loaded-class",
+              "type": {
+                "text": "string",
+                "summary": "string"
+              },
+              "serializedAs": "string",
+              "optional": true
+            },
+            {
+              "name": "on-error",
+              "type": {
+                "text": "(event: Event, image: ImageComponent) => void",
+                "summary": "unknown"
+              },
+              "serializedAs": "property-only",
+              "optional": true
+            },
+            {
+              "name": "on-input",
+              "type": {
+                "text": "(files: File[], event: Event, image: ImageComponent) => void",
+                "summary": "array"
+              },
+              "serializedAs": "json",
+              "optional": true
+            },
+            {
+              "name": "on-load",
+              "type": {
+                "text": "(event?: Event, image?: ImageComponent) => void",
+                "summary": "unknown"
+              },
+              "serializedAs": "property-only",
+              "optional": true
+            },
+            {
+              "name": "params",
+              "type": {
+                "text": "string[]",
+                "summary": "string"
+              },
+              "serializedAs": "json",
+              "optional": true
+            },
+            {
+              "name": "prevent-upscale",
+              "type": {
+                "text": "boolean",
+                "summary": "boolean"
+              },
+              "serializedAs": "boolean-attr",
+              "optional": true
+            },
+            {
+              "name": "preview-title",
+              "type": {
+                "text": "string",
+                "summary": "string"
+              },
+              "serializedAs": "string",
+              "optional": true
+            },
+            {
+              "name": "quality",
+              "type": {
+                "text": "number",
+                "summary": "number"
+              },
+              "serializedAs": "number",
+              "optional": true
+            },
+            {
+              "name": "show-preloader",
+              "type": {
+                "text": "boolean",
+                "summary": "boolean"
+              },
+              "serializedAs": "boolean-attr",
+              "optional": true
+            },
+            {
+              "name": "size-map",
+              "type": {
+                "text": "Record<ImageSizeOptionsType, number | string>",
+                "summary": "string"
+              },
+              "serializedAs": "json",
+              "optional": true
+            },
+            {
+              "name": "sizes",
+              "type": {
+                "text": "ImageSizeOptionsType[]",
+                "summary": "array"
+              },
+              "serializedAs": "json",
+              "optional": true
+            },
+            {
+              "name": "size",
+              "type": {
+                "text": "ImageSizeOptionsType | number",
+                "summary": "number"
+              },
+              "serializedAs": "number",
+              "optional": true
+            },
+            {
+              "name": "sources",
+              "type": {
+                "text": "ImageSourcesType",
+                "summary": "unknown"
+              },
+              "serializedAs": "property-only",
+              "optional": true
+            },
+            {
+              "name": "src",
+              "type": {
+                "text": "string",
+                "summary": "string"
+              },
+              "serializedAs": "string",
+              "optional": true
+            },
+            {
+              "name": "width",
+              "type": {
+                "text": "number",
+                "summary": "number"
+              },
+              "serializedAs": "number",
+              "optional": true
+            },
             {
               "name": "attributes",
               "type": {
@@ -12288,7 +12554,6 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: Record<string, string>",
               "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -12302,7 +12567,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -12316,7 +12580,6 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: string[]",
               "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -12327,10 +12590,10 @@
               "name": "content",
               "type": {
                 "text": "ArpaElementContentType",
-                "summary": "unknown"
+                "summary": "string",
+                "detail": "string | HTMLElement | HTMLCollection | (() => string | HTMLElement | HTMLCollection)"
               },
-              "serializedAs": "property-only",
-              "description": "TS type: ArpaElementContentType",
+              "serializedAs": "string",
               "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -12344,7 +12607,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -12358,7 +12620,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -12368,11 +12629,10 @@
             {
               "name": "template-children",
               "type": {
-                "text": "Record<string, ArpaElementChildOptionsType>",
+                "text": "Record<string, ArpaElementChildOptionsType> | undefined",
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: Record<string, ArpaElementChildOptionsType>",
               "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -12382,11 +12642,10 @@
             {
               "name": "template-container",
               "type": {
-                "text": "string | HTMLElement",
+                "text": "HTMLElement | string",
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string | HTMLElement",
               "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -12397,10 +12656,10 @@
               "name": "templates",
               "type": {
                 "text": "TemplatesType",
-                "summary": "unknown"
+                "summary": "string",
+                "detail": "Record<TemplateContentMode, HTMLTemplateElement> | Record<string, never>"
               },
-              "serializedAs": "property-only",
-              "description": "TS type: TemplatesType",
+              "serializedAs": "json",
               "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -12411,10 +12670,10 @@
               "name": "template-types",
               "type": {
                 "text": "TemplateContentMode[]",
-                "summary": "array"
+                "summary": "array",
+                "detail": "('add' | 'content' | 'prepend' | 'append' | 'list-item' | 'view')[]"
               },
               "serializedAs": "json",
-              "description": "TS type: TemplateContentMode[]",
               "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -12428,7 +12687,6 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: Record<string, unknown> | (() => Record<string, unknown>)",
               "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -12442,7 +12700,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -12456,7 +12713,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "description": "TS type: ZoneFilterType",
               "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -12470,7 +12726,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -12484,14 +12739,19 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
                 "module": "src/components/arpaElement/arpaElement.js"
               }
             }
-          ]
+          ],
+          "superclass": {
+            "name": "ArpaElement",
+            "module": "/src/components/arpaElement/arpaElement.js"
+          },
+          "tagName": "arpa-image",
+          "customElement": true
         }
       ],
       "exports": [
@@ -14873,7 +15133,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
@@ -14883,7 +15142,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -14897,7 +15155,6 @@
                 "summary": "number"
               },
               "serializedAs": "number",
-              "description": "TS type: number",
               "optional": true
             },
             {
@@ -14907,7 +15164,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
@@ -14917,7 +15173,6 @@
                 "summary": "number"
               },
               "serializedAs": "number",
-              "description": "TS type: number",
               "optional": true
             },
             {
@@ -14927,7 +15182,6 @@
                 "summary": "number"
               },
               "serializedAs": "number",
-              "description": "TS type: number",
               "optional": true
             },
             {
@@ -14937,7 +15191,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": true
             },
             {
@@ -14947,7 +15200,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": true
             },
             {
@@ -14957,7 +15209,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
@@ -14967,17 +15218,15 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
               "name": "render-mode",
               "type": {
-                "text": "\"default\" | \"minimal\"",
+                "text": "'default' | 'minimal'",
                 "summary": "unknown"
               },
               "serializedAs": "string",
-              "description": "TS type: \"default\" | \"minimal\"",
               "optional": true
             },
             {
@@ -14987,7 +15236,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": true
             },
             {
@@ -14997,7 +15245,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "description": "TS type: (payload: PagerCallbackPayloadType) => void",
               "optional": true
             },
             {
@@ -15007,7 +15254,6 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: Record<string, string>",
               "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -15021,7 +15267,6 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: string[]",
               "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -15032,10 +15277,10 @@
               "name": "content",
               "type": {
                 "text": "ArpaElementContentType",
-                "summary": "unknown"
+                "summary": "string",
+                "detail": "string | HTMLElement | HTMLCollection | (() => string | HTMLElement | HTMLCollection)"
               },
-              "serializedAs": "property-only",
-              "description": "TS type: ArpaElementContentType",
+              "serializedAs": "string",
               "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -15049,7 +15294,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -15063,7 +15307,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -15073,11 +15316,10 @@
             {
               "name": "template-children",
               "type": {
-                "text": "Record<string, ArpaElementChildOptionsType>",
+                "text": "Record<string, ArpaElementChildOptionsType> | undefined",
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: Record<string, ArpaElementChildOptionsType>",
               "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -15087,11 +15329,10 @@
             {
               "name": "template-container",
               "type": {
-                "text": "string | HTMLElement",
+                "text": "HTMLElement | string",
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string | HTMLElement",
               "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -15102,10 +15343,10 @@
               "name": "templates",
               "type": {
                 "text": "TemplatesType",
-                "summary": "unknown"
+                "summary": "string",
+                "detail": "Record<TemplateContentMode, HTMLTemplateElement> | Record<string, never>"
               },
-              "serializedAs": "property-only",
-              "description": "TS type: TemplatesType",
+              "serializedAs": "json",
               "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -15116,10 +15357,10 @@
               "name": "template-types",
               "type": {
                 "text": "TemplateContentMode[]",
-                "summary": "array"
+                "summary": "array",
+                "detail": "('add' | 'content' | 'prepend' | 'append' | 'list-item' | 'view')[]"
               },
               "serializedAs": "json",
-              "description": "TS type: TemplateContentMode[]",
               "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -15133,7 +15374,6 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: Record<string, unknown> | (() => Record<string, unknown>)",
               "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -15147,7 +15387,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -15161,7 +15400,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "description": "TS type: ZoneFilterType",
               "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -15175,7 +15413,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -15189,7 +15426,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -16825,7 +17061,6 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: Record<string, string>",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -16839,7 +17074,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -16853,7 +17087,6 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: string[]",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -16864,10 +17097,10 @@
               "name": "content",
               "type": {
                 "text": "ArpaElementContentType",
-                "summary": "unknown"
+                "summary": "string",
+                "detail": "string | HTMLElement | HTMLCollection | (() => string | HTMLElement | HTMLCollection)"
               },
               "serializedAs": "property-only",
-              "description": "TS type: ArpaElementContentType",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -16881,7 +17114,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -16895,7 +17127,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -16905,11 +17136,10 @@
             {
               "name": "template-children",
               "type": {
-                "text": "Record<string, ArpaElementChildOptionsType>",
+                "text": "Record<string, ArpaElementChildOptionsType> | undefined",
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: Record<string, ArpaElementChildOptionsType>",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -16919,11 +17149,10 @@
             {
               "name": "template-container",
               "type": {
-                "text": "string | HTMLElement",
+                "text": "HTMLElement | string",
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string | HTMLElement",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -16934,10 +17163,10 @@
               "name": "templates",
               "type": {
                 "text": "TemplatesType",
-                "summary": "unknown"
+                "summary": "string",
+                "detail": "Record<TemplateContentMode, HTMLTemplateElement> | Record<string, never>"
               },
               "serializedAs": "property-only",
-              "description": "TS type: TemplatesType",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -16948,10 +17177,10 @@
               "name": "template-types",
               "type": {
                 "text": "TemplateContentMode[]",
-                "summary": "array"
+                "summary": "array",
+                "detail": "('add' | 'content' | 'prepend' | 'append' | 'list-item' | 'view')[]"
               },
               "serializedAs": "json",
-              "description": "TS type: TemplateContentMode[]",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -16965,7 +17194,6 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: Record<string, unknown> | (() => Record<string, unknown>)",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -16979,7 +17207,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -16993,7 +17220,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "description": "TS type: ZoneFilterType",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -17007,7 +17233,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -17021,7 +17246,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -17035,27 +17259,24 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string | HTMLElement",
               "optional": true
             },
             {
               "name": "position",
               "type": {
-                "text": "\"top\" | \"bottom\" | \"left\" | \"right\" | \"cursor\"",
+                "text": "'top' | 'bottom' | 'left' | 'right' | 'cursor'",
                 "summary": "unknown"
               },
               "serializedAs": "string",
-              "description": "TS type: \"top\" | \"bottom\" | \"left\" | \"right\" | \"cursor\"",
               "optional": true
             },
             {
               "name": "cursor-position-axis",
               "type": {
-                "text": "\"x\" | \"y\"",
+                "text": "'x' | 'y'",
                 "summary": "unknown"
               },
               "serializedAs": "string",
-              "description": "TS type: \"x\" | \"y\"",
               "optional": true
             },
             {
@@ -17065,17 +17286,15 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": true
             },
             {
               "name": "cursor-tooltip-position",
               "type": {
-                "text": "\"top\" | \"bottom\" | \"left\" | \"right\"",
+                "text": "'top' | 'bottom' | 'left' | 'right'",
                 "summary": "unknown"
               },
               "serializedAs": "string",
-              "description": "TS type: \"top\" | \"bottom\" | \"left\" | \"right\"",
               "optional": true
             },
             {
@@ -17085,7 +17304,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
@@ -17095,7 +17313,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
@@ -17105,7 +17322,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
@@ -17115,7 +17331,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "string",
-              "description": "TS type: (target: HTMLElement, event: MouseEvent | TouchEvent) => void",
               "optional": true
             }
           ],
@@ -18683,7 +18898,6 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: Record<string, string>",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -18697,7 +18911,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -18711,7 +18924,6 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: string[]",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -18722,10 +18934,10 @@
               "name": "content",
               "type": {
                 "text": "ArpaElementContentType",
-                "summary": "unknown"
+                "summary": "string",
+                "detail": "string | HTMLElement | HTMLCollection | (() => string | HTMLElement | HTMLCollection)"
               },
               "serializedAs": "property-only",
-              "description": "TS type: ArpaElementContentType",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -18739,7 +18951,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -18753,7 +18964,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -18763,11 +18973,10 @@
             {
               "name": "template-children",
               "type": {
-                "text": "Record<string, ArpaElementChildOptionsType>",
+                "text": "Record<string, ArpaElementChildOptionsType> | undefined",
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: Record<string, ArpaElementChildOptionsType>",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -18777,11 +18986,10 @@
             {
               "name": "template-container",
               "type": {
-                "text": "string | HTMLElement",
+                "text": "HTMLElement | string",
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string | HTMLElement",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -18792,10 +19000,10 @@
               "name": "templates",
               "type": {
                 "text": "TemplatesType",
-                "summary": "unknown"
+                "summary": "string",
+                "detail": "Record<TemplateContentMode, HTMLTemplateElement> | Record<string, never>"
               },
               "serializedAs": "property-only",
-              "description": "TS type: TemplatesType",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -18806,10 +19014,10 @@
               "name": "template-types",
               "type": {
                 "text": "TemplateContentMode[]",
-                "summary": "array"
+                "summary": "array",
+                "detail": "('add' | 'content' | 'prepend' | 'append' | 'list-item' | 'view')[]"
               },
               "serializedAs": "json",
-              "description": "TS type: TemplateContentMode[]",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -18823,7 +19031,6 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: Record<string, unknown> | (() => Record<string, unknown>)",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -18837,7 +19044,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -18851,7 +19057,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "description": "TS type: ZoneFilterType",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -18865,7 +19070,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -18879,7 +19083,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -18893,7 +19096,6 @@
                 "summary": "number"
               },
               "serializedAs": "number",
-              "description": "TS type: number",
               "optional": true
             },
             {
@@ -18903,7 +19105,6 @@
                 "summary": "number"
               },
               "serializedAs": "number",
-              "description": "TS type: number",
               "optional": true
             },
             {
@@ -18913,7 +19114,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
@@ -18923,7 +19123,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
@@ -18933,7 +19132,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
@@ -18943,7 +19141,6 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: string[]",
               "optional": true
             },
             {
@@ -18953,7 +19150,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": true
             },
             {
@@ -18963,7 +19159,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             }
           ],
@@ -21757,7 +21952,6 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: Record<string, string>",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -21771,7 +21965,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -21785,7 +21978,6 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: string[]",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -21796,10 +21988,10 @@
               "name": "content",
               "type": {
                 "text": "ArpaElementContentType",
-                "summary": "unknown"
+                "summary": "string",
+                "detail": "string | HTMLElement | HTMLCollection | (() => string | HTMLElement | HTMLCollection)"
               },
               "serializedAs": "string",
-              "description": "TS type: ArpaElementContentType & string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -21813,7 +22005,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -21827,7 +22018,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -21837,11 +22027,10 @@
             {
               "name": "template-children",
               "type": {
-                "text": "Record<string, ArpaElementChildOptionsType>",
+                "text": "Record<string, ArpaElementChildOptionsType> | undefined",
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: Record<string, ArpaElementChildOptionsType>",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -21851,11 +22040,10 @@
             {
               "name": "template-container",
               "type": {
-                "text": "string | HTMLElement",
+                "text": "HTMLElement | string",
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string | HTMLElement",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -21866,10 +22054,10 @@
               "name": "templates",
               "type": {
                 "text": "TemplatesType",
-                "summary": "unknown"
+                "summary": "string",
+                "detail": "Record<TemplateContentMode, HTMLTemplateElement> | Record<string, never>"
               },
               "serializedAs": "property-only",
-              "description": "TS type: TemplatesType",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -21880,10 +22068,10 @@
               "name": "template-types",
               "type": {
                 "text": "TemplateContentMode[]",
-                "summary": "array"
+                "summary": "array",
+                "detail": "('add' | 'content' | 'prepend' | 'append' | 'list-item' | 'view')[]"
               },
               "serializedAs": "json",
-              "description": "TS type: TemplateContentMode[]",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -21897,7 +22085,6 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: Record<string, unknown> | (() => Record<string, unknown>)",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -21911,7 +22098,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: \"primary\" | \"secondary\" | \"tertiary\" | \"minimal\" | \"delete\" | \"default\"",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -21925,7 +22111,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "description": "TS type: ZoneFilterType",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -21939,7 +22124,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -21953,7 +22137,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -21967,7 +22150,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": false,
               "inheritedFrom": {
                 "name": "Dialog",
@@ -21981,7 +22163,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "Dialog",
@@ -21995,7 +22176,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "Dialog",
@@ -22009,7 +22189,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "Dialog",
@@ -22023,7 +22202,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "Dialog",
@@ -22037,7 +22215,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": false,
               "inheritedFrom": {
                 "name": "Dialog",
@@ -22051,7 +22228,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": false,
               "inheritedFrom": {
                 "name": "Dialog",
@@ -22065,7 +22241,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "description": "TS type: Promise<unknown>",
               "optional": false,
               "inheritedFrom": {
                 "name": "Dialog",
@@ -22079,7 +22254,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "Dialog",
@@ -22093,7 +22267,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "description": "TS type: (dialogInstance: unknown) => void",
               "optional": false,
               "inheritedFrom": {
                 "name": "Dialog",
@@ -22107,7 +22280,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "description": "TS type: (dialogInstance: unknown) => void",
               "optional": false,
               "inheritedFrom": {
                 "name": "Dialog",
@@ -22121,7 +22293,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
@@ -22131,7 +22302,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
@@ -22141,7 +22311,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
@@ -22151,7 +22320,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
@@ -22161,7 +22329,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "description": "TS type: unknown",
               "optional": true
             },
             {
@@ -22171,7 +22338,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "description": "TS type: (payload: unknown) => void",
               "optional": true
             },
             {
@@ -22181,7 +22347,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "description": "TS type: (payload: unknown) => void",
               "optional": true
             }
           ],
@@ -23945,7 +24110,6 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: Record<string, string>",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -23959,7 +24123,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -23973,7 +24136,6 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: string[]",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -23984,10 +24146,10 @@
               "name": "content",
               "type": {
                 "text": "ArpaElementContentType",
-                "summary": "unknown"
+                "summary": "string",
+                "detail": "string | HTMLElement | HTMLCollection | (() => string | HTMLElement | HTMLCollection)"
               },
               "serializedAs": "string",
-              "description": "TS type: ArpaElementContentType & string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -24001,7 +24163,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -24015,7 +24176,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -24025,11 +24185,10 @@
             {
               "name": "template-children",
               "type": {
-                "text": "Record<string, ArpaElementChildOptionsType>",
+                "text": "Record<string, ArpaElementChildOptionsType> | undefined",
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: Record<string, ArpaElementChildOptionsType>",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -24039,11 +24198,10 @@
             {
               "name": "template-container",
               "type": {
-                "text": "string | HTMLElement",
+                "text": "HTMLElement | string",
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string | HTMLElement",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -24054,10 +24212,10 @@
               "name": "templates",
               "type": {
                 "text": "TemplatesType",
-                "summary": "unknown"
+                "summary": "string",
+                "detail": "Record<TemplateContentMode, HTMLTemplateElement> | Record<string, never>"
               },
               "serializedAs": "property-only",
-              "description": "TS type: TemplatesType",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -24068,10 +24226,10 @@
               "name": "template-types",
               "type": {
                 "text": "TemplateContentMode[]",
-                "summary": "array"
+                "summary": "array",
+                "detail": "('add' | 'content' | 'prepend' | 'append' | 'list-item' | 'view')[]"
               },
               "serializedAs": "json",
-              "description": "TS type: TemplateContentMode[]",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -24085,7 +24243,6 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: Record<string, unknown> | (() => Record<string, unknown>)",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -24099,7 +24256,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: \"primary\" | \"secondary\" | \"tertiary\" | \"minimal\" | \"delete\" | \"default\"",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -24113,7 +24269,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "description": "TS type: ZoneFilterType",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -24127,7 +24282,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -24141,7 +24295,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -24155,7 +24308,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": false,
               "inheritedFrom": {
                 "name": "Dialog",
@@ -24169,7 +24321,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "Dialog",
@@ -24183,7 +24334,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "Dialog",
@@ -24197,7 +24347,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "Dialog",
@@ -24211,7 +24360,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "Dialog",
@@ -24225,7 +24373,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": false,
               "inheritedFrom": {
                 "name": "Dialog",
@@ -24239,7 +24386,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": false,
               "inheritedFrom": {
                 "name": "Dialog",
@@ -24253,7 +24399,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "description": "TS type: Promise<unknown>",
               "optional": false,
               "inheritedFrom": {
                 "name": "Dialog",
@@ -24267,7 +24412,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "Dialog",
@@ -24281,7 +24425,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "description": "TS type: (dialogInstance: unknown) => void",
               "optional": false,
               "inheritedFrom": {
                 "name": "Dialog",
@@ -24295,7 +24438,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "description": "TS type: (dialogInstance: unknown) => void",
               "optional": false,
               "inheritedFrom": {
                 "name": "Dialog",
@@ -24309,7 +24451,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ConfirmDialog",
@@ -24323,7 +24464,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ConfirmDialog",
@@ -24337,7 +24477,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ConfirmDialog",
@@ -24351,7 +24490,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ConfirmDialog",
@@ -24365,7 +24503,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "description": "TS type: unknown",
               "optional": false,
               "inheritedFrom": {
                 "name": "ConfirmDialog",
@@ -24379,7 +24516,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "description": "TS type: (payload: unknown) => void",
               "optional": false,
               "inheritedFrom": {
                 "name": "ConfirmDialog",
@@ -24393,7 +24529,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "description": "TS type: (payload: unknown) => void",
               "optional": false,
               "inheritedFrom": {
                 "name": "ConfirmDialog",
@@ -24407,7 +24542,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "description": "TS type: () => void",
               "optional": true
             }
           ],
@@ -26019,7 +26153,6 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: Record<string, string>",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -26033,7 +26166,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -26047,7 +26179,6 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: string[]",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -26058,10 +26189,10 @@
               "name": "content",
               "type": {
                 "text": "ArpaElementContentType",
-                "summary": "unknown"
+                "summary": "string",
+                "detail": "string | HTMLElement | HTMLCollection | (() => string | HTMLElement | HTMLCollection)"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -26075,7 +26206,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -26089,7 +26219,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -26099,11 +26228,10 @@
             {
               "name": "template-children",
               "type": {
-                "text": "Record<string, ArpaElementChildOptionsType>",
+                "text": "Record<string, ArpaElementChildOptionsType> | undefined",
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: Record<string, ArpaElementChildOptionsType>",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -26113,11 +26241,10 @@
             {
               "name": "template-container",
               "type": {
-                "text": "string | HTMLElement",
+                "text": "HTMLElement | string",
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string | HTMLElement",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -26128,10 +26255,10 @@
               "name": "templates",
               "type": {
                 "text": "TemplatesType",
-                "summary": "unknown"
+                "summary": "string",
+                "detail": "Record<TemplateContentMode, HTMLTemplateElement> | Record<string, never>"
               },
               "serializedAs": "property-only",
-              "description": "TS type: TemplatesType",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -26142,10 +26269,10 @@
               "name": "template-types",
               "type": {
                 "text": "TemplateContentMode[]",
-                "summary": "array"
+                "summary": "array",
+                "detail": "('add' | 'content' | 'prepend' | 'append' | 'list-item' | 'view')[]"
               },
               "serializedAs": "json",
-              "description": "TS type: TemplateContentMode[]",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -26159,7 +26286,6 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: Record<string, unknown> | (() => Record<string, unknown>)",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -26173,7 +26299,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: \"primary\" | \"secondary\" | \"tertiary\" | \"minimal\" | \"delete\" | \"default\"",
               "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -26187,7 +26312,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "description": "TS type: ZoneFilterType",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -26201,7 +26325,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -26215,7 +26338,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -26229,7 +26351,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": true
             },
             {
@@ -26239,7 +26360,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
@@ -26249,7 +26369,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
@@ -26259,7 +26378,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
@@ -26269,7 +26387,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
@@ -26279,7 +26396,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": true
             },
             {
@@ -26289,7 +26405,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": true
             },
             {
@@ -26299,7 +26414,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "description": "TS type: Promise<unknown>",
               "optional": true
             },
             {
@@ -26309,7 +26423,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
@@ -26319,7 +26432,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "description": "TS type: (dialogInstance: unknown) => void",
               "optional": true
             },
             {
@@ -26329,7 +26441,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "description": "TS type: (dialogInstance: unknown) => void",
               "optional": true
             }
           ],
@@ -27991,7 +28102,6 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: Record<string, string>",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -28005,7 +28115,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -28019,7 +28128,6 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: string[]",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -28030,10 +28138,10 @@
               "name": "content",
               "type": {
                 "text": "ArpaElementContentType",
-                "summary": "unknown"
+                "summary": "string",
+                "detail": "string | HTMLElement | HTMLCollection | (() => string | HTMLElement | HTMLCollection)"
               },
               "serializedAs": "property-only",
-              "description": "TS type: ArpaElementContentType",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -28047,7 +28155,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -28061,7 +28168,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -28071,11 +28177,10 @@
             {
               "name": "template-children",
               "type": {
-                "text": "Record<string, ArpaElementChildOptionsType>",
+                "text": "Record<string, ArpaElementChildOptionsType> | undefined",
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: Record<string, ArpaElementChildOptionsType>",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -28085,11 +28190,10 @@
             {
               "name": "template-container",
               "type": {
-                "text": "string | HTMLElement",
+                "text": "HTMLElement | string",
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string | HTMLElement",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -28100,10 +28204,10 @@
               "name": "templates",
               "type": {
                 "text": "TemplatesType",
-                "summary": "unknown"
+                "summary": "string",
+                "detail": "Record<TemplateContentMode, HTMLTemplateElement> | Record<string, never>"
               },
               "serializedAs": "property-only",
-              "description": "TS type: TemplatesType",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -28114,10 +28218,10 @@
               "name": "template-types",
               "type": {
                 "text": "TemplateContentMode[]",
-                "summary": "array"
+                "summary": "array",
+                "detail": "('add' | 'content' | 'prepend' | 'append' | 'list-item' | 'view')[]"
               },
               "serializedAs": "json",
-              "description": "TS type: TemplateContentMode[]",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -28131,7 +28235,6 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: Record<string, unknown> | (() => Record<string, unknown>)",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -28145,7 +28248,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -28159,7 +28261,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "description": "TS type: ZoneFilterType",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -28173,7 +28274,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -28187,7 +28287,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -28201,7 +28300,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "description": "TS type: unknown",
               "optional": true
             }
           ],
@@ -29726,7 +29824,6 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: Record<string, string>",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -29740,7 +29837,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -29754,7 +29850,6 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: string[]",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -29765,10 +29860,10 @@
               "name": "content",
               "type": {
                 "text": "ArpaElementContentType",
-                "summary": "unknown"
+                "summary": "string",
+                "detail": "string | HTMLElement | HTMLCollection | (() => string | HTMLElement | HTMLCollection)"
               },
               "serializedAs": "property-only",
-              "description": "TS type: ArpaElementContentType",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -29782,7 +29877,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -29796,7 +29890,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -29806,11 +29899,10 @@
             {
               "name": "template-children",
               "type": {
-                "text": "Record<string, ArpaElementChildOptionsType>",
+                "text": "Record<string, ArpaElementChildOptionsType> | undefined",
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: Record<string, ArpaElementChildOptionsType>",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -29820,11 +29912,10 @@
             {
               "name": "template-container",
               "type": {
-                "text": "string | HTMLElement",
+                "text": "HTMLElement | string",
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string | HTMLElement",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -29835,10 +29926,10 @@
               "name": "templates",
               "type": {
                 "text": "TemplatesType",
-                "summary": "unknown"
+                "summary": "string",
+                "detail": "Record<TemplateContentMode, HTMLTemplateElement> | Record<string, never>"
               },
               "serializedAs": "property-only",
-              "description": "TS type: TemplatesType",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -29849,10 +29940,10 @@
               "name": "template-types",
               "type": {
                 "text": "TemplateContentMode[]",
-                "summary": "array"
+                "summary": "array",
+                "detail": "('add' | 'content' | 'prepend' | 'append' | 'list-item' | 'view')[]"
               },
               "serializedAs": "json",
-              "description": "TS type: TemplateContentMode[]",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -29866,7 +29957,6 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: Record<string, unknown> | (() => Record<string, unknown>)",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -29880,7 +29970,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: \"primary\" | \"secondary\" | \"tertiary\"",
               "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -29894,7 +29983,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "description": "TS type: ZoneFilterType",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -29908,7 +29996,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -29922,7 +30009,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -29936,27 +30022,24 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": true
             },
             {
               "name": "size",
               "type": {
-                "text": "\"mini\" | \"small\" | \"medium\" | \"large\" | \"x-large\"",
+                "text": "'mini' | 'small' | 'medium' | 'large' | 'x-large'",
                 "summary": "unknown"
               },
               "serializedAs": "string",
-              "description": "TS type: \"mini\" | \"small\" | \"medium\" | \"large\" | \"x-large\"",
               "optional": true
             },
             {
               "name": "thickness",
               "type": {
-                "text": "\"medium\" | \"thin\" | \"thick\"",
+                "text": "'thin' | 'medium' | 'thick'",
                 "summary": "unknown"
               },
               "serializedAs": "string",
-              "description": "TS type: \"medium\" | \"thin\" | \"thick\"",
               "optional": true
             },
             {
@@ -29966,7 +30049,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             }
           ],
@@ -31595,7 +31677,6 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: Record<string, string>",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -31609,7 +31690,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -31623,7 +31703,6 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: string[]",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -31634,10 +31713,10 @@
               "name": "content",
               "type": {
                 "text": "ArpaElementContentType",
-                "summary": "unknown"
+                "summary": "string",
+                "detail": "string | HTMLElement | HTMLCollection | (() => string | HTMLElement | HTMLCollection)"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -31651,7 +31730,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -31665,7 +31743,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -31675,11 +31752,10 @@
             {
               "name": "template-children",
               "type": {
-                "text": "Record<string, ArpaElementChildOptionsType>",
+                "text": "Record<string, ArpaElementChildOptionsType> | undefined",
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: Record<string, ArpaElementChildOptionsType>",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -31689,11 +31765,10 @@
             {
               "name": "template-container",
               "type": {
-                "text": "string | HTMLElement",
+                "text": "HTMLElement | string",
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string | HTMLElement",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -31704,10 +31779,10 @@
               "name": "templates",
               "type": {
                 "text": "TemplatesType",
-                "summary": "unknown"
+                "summary": "string",
+                "detail": "Record<TemplateContentMode, HTMLTemplateElement> | Record<string, never>"
               },
               "serializedAs": "property-only",
-              "description": "TS type: TemplatesType",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -31718,10 +31793,10 @@
               "name": "template-types",
               "type": {
                 "text": "TemplateContentMode[]",
-                "summary": "array"
+                "summary": "array",
+                "detail": "('add' | 'content' | 'prepend' | 'append' | 'list-item' | 'view')[]"
               },
               "serializedAs": "json",
-              "description": "TS type: TemplateContentMode[]",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -31735,7 +31810,6 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "description": "TS type: Record<string, unknown> | (() => Record<string, unknown>)",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -31749,7 +31823,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -31763,7 +31836,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "description": "TS type: ZoneFilterType",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -31777,7 +31849,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -31791,7 +31862,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": false,
               "inheritedFrom": {
                 "name": "ArpaElement",
@@ -31805,7 +31875,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": true
             },
             {
@@ -31815,7 +31884,6 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "description": "TS type: boolean",
               "optional": true
             },
             {
@@ -31825,7 +31893,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
@@ -31835,7 +31902,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
@@ -31845,7 +31911,6 @@
                 "summary": "number"
               },
               "serializedAs": "number",
-              "description": "TS type: number",
               "optional": true
             },
             {
@@ -31855,7 +31920,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "description": "TS type: HTMLElement",
               "optional": true
             },
             {
@@ -31865,7 +31929,6 @@
                 "summary": "number"
               },
               "serializedAs": "number",
-              "description": "TS type: (page: number) => void",
               "optional": true
             },
             {
@@ -31875,7 +31938,6 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "description": "TS type: string",
               "optional": true
             },
             {
@@ -31885,7 +31947,6 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "description": "TS type: PagerUpdateCallbackType",
               "optional": true
             }
           ],

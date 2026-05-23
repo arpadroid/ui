@@ -105,6 +105,8 @@ class DropArea extends ArpaElement {
             this.classList.add('dropArea--hasInput');
         }
         this._initializeInput();
+        /** @type {HTMLElement | null} */
+        this.handlerNode = this.querySelector('.dropArea__handler');
         this._initializeHandler();
     }
 
@@ -112,27 +114,23 @@ class DropArea extends ArpaElement {
         this.input = this.getInput();
     }
 
-    _initializeHandler() {
-        /** @type {HTMLElement | null} */
-        this.handlerNode = this.querySelector('.dropArea__handler');
-        const node = this.handlerNode;
-        if (node) {
-            node.removeEventListener('click', this._onHandlerClick);
-            node.addEventListener('click', this._onHandlerClick);
-            node.addEventListener('drop', this._onDrop, false);
-            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                node.removeEventListener(eventName, this._preventDefaultBehavior, false);
-                node.addEventListener(eventName, this._preventDefaultBehavior, false);
-            });
-            ['dragenter', 'dragover'].forEach(eventName => {
-                node.removeEventListener(eventName, this._onHandlerEnter, false);
-                node.addEventListener(eventName, this._onHandlerEnter, false);
-            });
-            ['dragleave', 'drop'].forEach(eventName => {
-                node.removeEventListener(eventName, this._onHandlerLeave, false);
-                node.addEventListener(eventName, this._onHandlerLeave, false);
-            });
-        }
+    _initializeHandler(node = this.handlerNode) {
+        if (!node) return;
+        node.removeEventListener('click', this._onHandlerClick);
+        node.addEventListener('click', this._onHandlerClick);
+        node.addEventListener('drop', this._onDrop, false);
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            node.removeEventListener(eventName, this._preventDefaultBehavior, false);
+            node.addEventListener(eventName, this._preventDefaultBehavior, false);
+        });
+        ['dragenter', 'dragover'].forEach(eventName => {
+            node.removeEventListener(eventName, this._onHandlerEnter, false);
+            node.addEventListener(eventName, this._onHandlerEnter, false);
+        });
+        ['dragleave', 'drop'].forEach(eventName => {
+            node.removeEventListener(eventName, this._onHandlerLeave, false);
+            node.addEventListener(eventName, this._onHandlerLeave, false);
+        });
     }
 
     // #endregion
