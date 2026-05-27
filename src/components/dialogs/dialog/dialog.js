@@ -3,10 +3,10 @@
  * @typedef {import('../dialogs/dialogs.js').default} Dialogs
  */
 
-import ArpaElement from '../../arpaElement/arpaElement.js';
+import ArpaElement from '../../core/arpaElement/arpaElement.js';
 import { observerMixin, renderNode } from '@arpadroid/tools';
 import { attrString, dummySignal, defineCustomElement, listen } from '@arpadroid/tools';
-import { processTemplate } from '../../arpaElement/helper/arpaElement.helper';
+import { processTemplate } from '../../core/arpaElement/helper/arpaElement.helper.js';
 
 const html = String.raw;
 class Dialog extends ArpaElement {

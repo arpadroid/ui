@@ -1,4 +1,4 @@
-import ArpaElement from '../arpaElement/arpaElement.js';
+import ArpaElement from '../core/arpaElement/arpaElement.js';
 import { appendNodes, defineCustomElement } from '@arpadroid/tools';
 /**
  * @typedef {import('./truncateText.types').TruncateTextConfigType } TruncateTextConfigType

@@ -4,7 +4,7 @@
  */
 import { eventContainsFiles, mergeObjects, render, observerMixin } from '@arpadroid/tools';
 import { dummySignal, dummyListener, defineCustomElement } from '@arpadroid/tools';
-import ArpaElement from '../arpaElement/arpaElement.js';
+import ArpaElement from '../core/arpaElement/arpaElement.js';
 
 const html = String.raw;
 class DropArea extends ArpaElement {

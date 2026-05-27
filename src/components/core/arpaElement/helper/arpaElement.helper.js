@@ -6,8 +6,8 @@
 
 import { attr, dashedToCamel, getAttributes, getAttributesWithPrefix } from '@arpadroid/tools';
 import { camelToDashed, listen, mergeObjects, renderNode, resolveNode, sortKeys } from '@arpadroid/tools';
-import { hasZone } from '../../../tools/zoneTool';
-import { destroyComponentZones, findNodeComponent } from '../../../tools/zoneTool';
+import { hasZone } from '../../../../tools/zoneTool';
+import { destroyComponentZones, findNodeComponent } from '../../../../tools/zoneTool';
 import { getChildContent, renderChild } from '../../arpaNode/arpaNode.helper';
 
 const FORBIDDEN_ATTRIBUTES = ['template', 'content', 'classNames', 'className'];

@@ -2,7 +2,7 @@
  * @typedef {import('./circularPreloader.types.js').CircularPreloaderConfigType} CircularPreloaderConfigType
  */
 
-import ArpaElement from '../../arpaElement/arpaElement.js';
+import ArpaElement from '../../core/arpaElement/arpaElement.js';
 import { defineCustomElement } from '@arpadroid/tools';
 const html = String.raw;
 class CircularPreloader extends ArpaElement {

@@ -1,4 +1,4 @@
-import { ZoneFilterType } from '../../tools/zoneTool.types';
+import { ZoneFilterType } from '../../../tools/zoneTool.types';
 import { ArpaNodeConfigType } from '../arpaNode/arpaNode.types';
 
 export type ArpaElementConfigType = {

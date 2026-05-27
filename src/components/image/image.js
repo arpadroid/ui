@@ -9,7 +9,7 @@ import { attrString, classNames, attr, defineCustomElement, listen } from '@arpa
 import { lazyLoad as lazyLoader, clearLazyImage, hasLoadedSource, editURL, mapHTML } from '@arpadroid/tools';
 import { eventContainsFiles, addCssRule, observerMixin } from '@arpadroid/tools';
 import { dummySignal, dummyListener, dummyOff } from '@arpadroid/tools';
-import ArpaElement from '../arpaElement/arpaElement.js';
+import ArpaElement from '../core/arpaElement/arpaElement.js';
 
 const html = String.raw;
 class ArpaImage extends ArpaElement {

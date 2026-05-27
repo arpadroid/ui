@@ -6,7 +6,7 @@
  */
 
 import { waitFor, expect } from 'storybook/test';
-import { playSetup } from '../stories/button.stories.util';
+import { playSetup } from './button.stories.util';
 import ButtonStory from './button.stories';
 
 /** @type {Meta} */

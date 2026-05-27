@@ -4,7 +4,7 @@
  */
 import { mergeObjects, editURL, renderNode, sanitizeURL } from '@arpadroid/tools';
 import { attrString, defineCustomElement } from '@arpadroid/tools';
-import ArpaElement from '../../../arpaElement/arpaElement';
+import ArpaElement from '../../../core/arpaElement/arpaElement';
 
 const html = String.raw;
 class PagerItem extends ArpaElement {

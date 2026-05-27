@@ -1,4 +1,4 @@
-import { ArpaElementConfigType } from '../arpaElement/arpaElement';
+import { ArpaElementConfigType } from '../core/arpaElement/arpaElement';
 
 export type DropAreaConfigType = ArpaElementConfigType & {
     fileInput?: HTMLInputElement;

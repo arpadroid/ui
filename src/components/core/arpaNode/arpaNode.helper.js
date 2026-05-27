@@ -1,5 +1,5 @@
 /**
- * @typedef {import("../arpaNode/arpaNode.types").ArpaNodeConfigType} ArpaNodeConfigType
+ * @typedef {import("./arpaNode.types").ArpaNodeConfigType} ArpaNodeConfigType
  * @typedef {import("../arpaElement/arpaElement").default} ArpaElement
  */
 

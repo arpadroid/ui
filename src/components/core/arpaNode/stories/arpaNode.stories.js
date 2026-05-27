@@ -1,6 +1,6 @@
 /**
- * @typedef {import('../arpaNode.types').ArpaNodeConfigType} ArpaNodeConfigType
- * @typedef {import('../arpaNode').default} ArpaNode
+ * @typedef {import('../arpaNode.types.js').ArpaNodeConfigType} ArpaNodeConfigType
+ * @typedef {import('../arpaNode.js').default} ArpaNode
  * @typedef {import('@storybook/web-components-vite').Meta<ArpaNodeConfigType>} Meta
  * @typedef {import('@storybook/web-components-vite').StoryObj<ArpaNodeConfigType>} StoryObj
  */
@@ -82,24 +82,32 @@ export const Test = {
         });
 
         await step('Renders the zoned content', async () => {
-            expect(canvas.getByText('Header -> Zone')).toBeInTheDocument();
-            expect(canvas.getByText('Content -> Zone')).toBeInTheDocument();
-            expect(canvas.getByText('Aside -> Zone')).toBeInTheDocument();
+            await waitFor(() => {
+                expect(canvas.getByText('Header -> Zone')).toBeInTheDocument();
+                expect(canvas.getByText('Content -> Zone')).toBeInTheDocument();
+                expect(canvas.getByText('Aside -> Zone')).toBeInTheDocument();
+            });
         });
 
         await step('Renders static content', async () => {
-            expect(canvas.getByText('Header -> Static')).toBeInTheDocument();
-            expect(canvas.getByText('Main -> Static')).toBeInTheDocument();
-            expect(canvas.getByText('Content -> Static')).toBeInTheDocument();
-            expect(canvas.getByText('Footer -> Static')).toBeInTheDocument();
+            await waitFor(() => {
+                expect(canvas.getByText('Header -> Static')).toBeInTheDocument();
+                expect(canvas.getByText('Main -> Static')).toBeInTheDocument();
+                expect(canvas.getByText('Content -> Static')).toBeInTheDocument();
+                expect(canvas.getByText('Footer -> Static')).toBeInTheDocument();
+            });
         });
 
         await step('Renders attribute content', async () => {
-            expect(canvas.getByText('Aside -> Attribute')).toBeInTheDocument();
+            await waitFor(() => {
+                expect(canvas.getByText('Aside -> Attribute')).toBeInTheDocument();
+            });
         });
 
         await step('Renders config content', async () => {
-            expect(canvas.getByText('Header -> Config')).toBeInTheDocument();
+            await waitFor(() => {
+                expect(canvas.getByText('Header -> Config')).toBeInTheDocument();
+            });
         });
     }
 };

@@ -4,12 +4,12 @@
  * @typedef {import('../arpaNode/arpaNode.types').ArpaNodeConfigType} ArpaNodeConfigType
  * @typedef {import('./arpaElement.types').TemplatesType} TemplatesType
  * @typedef {import('./arpaElement.types').ArpaElementTemplateType} ArpaElementTemplateType
- * @typedef {import('../../tools/zoneTool.types.js').ZoneToolPlaceZoneType} ZoneToolPlaceZoneType
- * @typedef {import('../../tools/zoneTool.types.js').ZoneType} ZoneType
+ * @typedef {import('../../../tools/zoneTool.types.js').ZoneToolPlaceZoneType} ZoneToolPlaceZoneType
+ * @typedef {import('../../../tools/zoneTool.types.js').ZoneType} ZoneType
  */
 import { attrString, dashedToCamel, getStringBetween, mergeObjects, renderNode } from '@arpadroid/tools';
 import { defineCustomElement, attr, setNodes, bind, classNames } from '@arpadroid/tools';
-import { handleZones, zoneMixin, hasZone, getZone, extractZones } from '../../tools/zoneTool';
+import { handleZones, zoneMixin, hasZone, getZone, extractZones } from '../../../tools/zoneTool';
 import { hasProperty, getProperty, getArrayProperty, getPropertyCallback } from './helper/arpaElement.helper';
 import { onDestroy, handleCallbackProperty, sanitizeAttributes } from './helper/arpaElement.helper';
 import { canRender, hasContent, renderTemplate } from './helper/arpaElement.helper';

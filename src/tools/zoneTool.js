@@ -1,7 +1,7 @@
 /**
  * @typedef {import('./zoneTool.types.js').ZoneToolPlaceZoneType} ZoneToolPlaceZoneType
  * @typedef {import('./zoneTool.types.js').ZoneType} ZoneType
- * @typedef {import('../components/arpaElement/arpaElement.js').default} ArpaElement
+ * @typedef {import('../components/core/arpaElement/arpaElement.js').default} ArpaElement
  */
 
 import { debounce, throttle, appendNodes, attr, getAttributesWithPrefix } from '@arpadroid/tools';

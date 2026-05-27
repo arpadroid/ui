@@ -6,12 +6,12 @@ export {
     TemplatesType,
     SetTemplateConfigType,
     ArpaElementTemplateType
-} from './components/arpaElement/arpaElement.types';
+} from './components/core/arpaElement/arpaElement.types';
 
 export * from './components/inputCombo/inputCombo.types';
 export * from './components/pager/pager.types';
 export * from './components/pager/components/pagerItem/pagerItem.types';
-export * from './components/button/button.types';
+export * from './components/buttons/button/button.types';
 export * from './components/iconButton/iconButton.types';
 export * from './components/dialogs/dialog/dialog.types';
 export * from './components/dropArea/dropArea.types';

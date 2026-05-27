@@ -1,12 +1,12 @@
 /**
  * @typedef {import('./button.types').ButtonConfigType} ButtonConfigType
- * @typedef {import('../tooltip/tooltip').default} Tooltip
- * @typedef {import('../icon/icon').default} Icon
+ * @typedef {import('../../tooltip/tooltip').default} Tooltip
+ * @typedef {import('../../icon/icon').default} Icon
  */
 import { renderNode, listen } from '@arpadroid/tools';
 import { appendNodes, attrString, defineCustomElement } from '@arpadroid/tools';
-import ArpaElement from '../arpaElement/arpaElement';
-import { renderChild } from '../arpaNode/arpaNode.helper';
+import ArpaElement from '../../core/arpaElement/arpaElement';
+import { renderChild } from '../../core/arpaNode/arpaNode.helper';
 
 const html = String.raw;
 class Button extends ArpaElement {
@@ -223,7 +223,7 @@ class Button extends ArpaElement {
 
     /**
      * Handles a lost zone.
-     * @param {import('../../tools/zoneTool.types.js').ZoneToolPlaceZoneType} event - The event object.
+     * @param {import('../../../tools/zoneTool.types.js').ZoneToolPlaceZoneType} event - The event object.
      * @returns {boolean | undefined} Whether the zone was handled.
      */
     _onLostZone({ zoneName, zone }) {

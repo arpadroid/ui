@@ -1,9 +1,9 @@
 /**
  * Core.
  */
-export { default as ArpaElement } from './components/arpaElement/arpaElement.js';
-export { default as ArpaNode } from './components/arpaNode/arpaNode.js';
-export { default as ArpaFragment } from './components/arpaFragment/arpaFragment.js';
+export { default as ArpaElement } from './components/core/arpaElement/arpaElement.js';
+export { default as ArpaNode } from './components/core/arpaNode/arpaNode.js';
+export { default as ArpaFragment } from './components/core/arpaFragment/arpaFragment.js';
 
 /**
  * Elements.
@@ -16,9 +16,9 @@ export { default as Image } from './components/image/image.js';
 /**
  * Buttons.
  */
-export { default as Button } from './components/button/button.js';
-export { default as IconButton } from './components/iconButton/iconButton.js';
-export { default as DarkModeButton } from './components/darkModeButton/darkModeButton.js';
+export { default as Button } from './components/buttons/button/button.js';
+export { default as IconButton } from './components/buttons/iconButton/iconButton.js';
+export { default as DarkModeButton } from './components/buttons/darkModeButton/darkModeButton.js';
 
 /**
  * Utils.
@@ -31,7 +31,7 @@ export { default as InputCombo } from './components/inputCombo/inputCombo.js';
  */
 export { default as CircularPreloader } from './components/preloaders/circularPreloader/circularPreloader.js';
 
-export * from './components/arpaElement/helper/arpaElement.helper.js';
+export * from './components/core/arpaElement/helper/arpaElement.helper.js';
 export * from './tools/zoneTool.js';
 
 /**

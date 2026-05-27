@@ -1,4 +1,4 @@
-import { ArpaElementConfigType } from '../arpaElement/arpaElement.types';
+import { ArpaElementConfigType } from '../core/arpaElement/arpaElement.types';
 import ImageComponent from './image.js';
 
 export type ImageSizeOptionsType =

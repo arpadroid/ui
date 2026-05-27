@@ -2,7 +2,7 @@
  * @typedef {import('../dialog/dialog.js').default} Dialog
  * @typedef {import('../dialog/dialog.types.js').DialogConfigType} DialogConfigType
  */
-import ArpaElement from '../../arpaElement/arpaElement.js';
+import ArpaElement from '../../core/arpaElement/arpaElement.js';
 import { isObject, renderNode, attrString, defineCustomElement } from '@arpadroid/tools';
 
 const html = String.raw;

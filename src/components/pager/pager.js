@@ -6,7 +6,7 @@
  */
 import { getURLParam, observerMixin, attrString, renderNode, editURL } from '@arpadroid/tools';
 import { defineCustomElement, dummySignal, dummyListener, dummyOff } from '@arpadroid/tools';
-import ArpaElement from '../arpaElement/arpaElement.js';
+import ArpaElement from '../core/arpaElement/arpaElement.js';
 
 const html = String.raw;
 class Pager extends ArpaElement {

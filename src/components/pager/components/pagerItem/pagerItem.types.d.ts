@@ -1,4 +1,4 @@
-import { ArpaElementConfigType } from '../../../arpaElement/arpaElement.types';
+import { ArpaElementConfigType } from '../../../core/arpaElement/arpaElement.types';
 import { PagerUpdateCallbackType } from '../../pager.types';
 
 export type PagerItemConfigType = ArpaElementConfigType & {

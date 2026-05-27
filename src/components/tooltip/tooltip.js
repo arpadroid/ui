@@ -3,7 +3,7 @@
  * @typedef {import('../iconButton/iconButton.js').default} IconButton
  */
 import { defineCustomElement, listen, normalizeTouchEvent, resolveNode, style } from '@arpadroid/tools';
-import ArpaElement from '../arpaElement/arpaElement.js';
+import ArpaElement from '../core/arpaElement/arpaElement.js';
 
 const html = String.raw;
 class Tooltip extends ArpaElement {

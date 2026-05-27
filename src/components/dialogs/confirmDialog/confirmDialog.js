@@ -1,6 +1,6 @@
 /**
  * @typedef {import('./confirmDialog.types.js').ConfirmDialogConfigType} ConfirmDialogConfigType
- * @typedef {import('../../button/button.js').default} Button
+ * @typedef {import('../../buttons/button/button.js').default} Button
  */
 import { defineCustomElement } from '@arpadroid/tools';
 import Dialog from '../dialog/dialog.js';
