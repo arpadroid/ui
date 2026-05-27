@@ -11,7 +11,7 @@ import { TestElement } from './arpaElement.stories.util';
 const html = String.raw;
 /** @type {ArpaElementMetaType} */
 const ArpaElementStory = {
-    title: 'UI/ArpaElement',
+    title: 'UI/Core/ArpaElement',
     component: 'arpa-element',
     args: {
         className: 'testComponent',

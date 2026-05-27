@@ -15,15 +15,14 @@ const CircularPreloaderStory = {
 /** @type {StoryObj} */
 export const Default = {
     name: 'Render',
-    parameters: {},
-    args: {
-        label: 'Loading...'
-    }
+    parameters: {}
 };
 
 /** @type {StoryObj} */
 export const Test = {
-    ...Default,
+    args: {
+        label: 'Loading...'
+    },
     play: async ({ canvasElement, step }) => {
         await customElements.whenDefined('circular-preloader');
         const preloader = /** @type {CircularPreloader | null} */ (
@@ -40,10 +39,27 @@ export const Test = {
 
 /** @type {StoryObj} */
 export const WithMask = {
-    ...Default,
     name: 'With Mask',
     args: {
         ...Default.args,
+        hasMask: true
+    },
+    play: async ({ canvasElement, step }) => {
+        await customElements.whenDefined('circular-preloader');
+        const preloader = /** @type {CircularPreloader | null} */ (
+            canvasElement.querySelector('circular-preloader')
+        );
+        await step('renders the circular preloader with mask', async () => {
+            expect(preloader).toBeInTheDocument();
+            const mask = preloader?.querySelector('.circularPreloader__mask');
+            expect(mask).toBeInTheDocument();
+        });
+    }
+};
+
+/** @type {StoryObj} */
+export const CustomContent = {
+    args: {
         hasMask: true
     },
     play: async ({ canvasElement, step }) => {

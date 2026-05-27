@@ -10,7 +10,7 @@ import { getArgTypes, playSetup } from './tooltip.stories.util';
 const html = String.raw;
 /** @type {Meta} */
 const TooltipStory = {
-    title: 'UI/Components/Tooltip',
+    title: 'UI/Tooltip',
     tags: [],
     component: 'arpa-tooltip',
     argTypes: getArgTypes()

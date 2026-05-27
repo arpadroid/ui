@@ -11,7 +11,7 @@ import { getArgs, playSetup } from './pager.stories.utils';
 const html = String.raw;
 /** @type {Meta} */
 const PagerStory = {
-    title: 'UI/Components/Pager',
+    title: 'UI/Pager',
     tags: [],
     component: 'arpa-pager',
     render: (/** @type {Record<string, unknown>} */ args) => html`

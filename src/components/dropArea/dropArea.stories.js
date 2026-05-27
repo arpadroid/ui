@@ -9,7 +9,7 @@ import { waitFor, expect } from 'storybook/test';
 import { playSetup } from './dropArea.stories.utils';
 /** @type {Meta} */
 const DropAreaStory = {
-    title: 'UI/Components/Drop Area',
+    title: 'UI/Drop Area',
     tags: [],
     component: 'drop-area',
     parameters: {

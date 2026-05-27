@@ -5,8 +5,8 @@
  */
 import { renderNode, listen } from '@arpadroid/tools';
 import { appendNodes, attrString, defineCustomElement } from '@arpadroid/tools';
-import { renderChild } from '../arpaElement/helper/arpaElement.helper';
 import ArpaElement from '../arpaElement/arpaElement';
+import { renderChild } from '../arpaNode/arpaNode.helper';
 
 const html = String.raw;
 class Button extends ArpaElement {
@@ -115,7 +115,7 @@ class Button extends ArpaElement {
     createTooltip(content) {
         const stringContent = typeof content === 'string' ? content : '';
         return /** @type {Tooltip} */ (
-            renderNode(renderChild(this, 'tooltip', { content: stringContent, canRender: true }))
+            renderNode(renderChild(this, 'tooltip', { content: stringContent, canRender: () => true }))
         );
     }
 
@@ -125,7 +125,7 @@ class Button extends ArpaElement {
      */
     async setTooltip(content) {
         await this.promise;
-        this.tooltip = /** @type {Tooltip} */ (this.templateNodes.tooltip || this.createTooltip(content));
+        this.tooltip = /** @type {Tooltip} */ (this.templateNodes.tooltip || this.createTooltip(''));
         if (!this.tooltip?.isConnected) {
             this.button?.appendChild(this.tooltip);
         }

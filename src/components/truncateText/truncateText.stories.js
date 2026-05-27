@@ -10,7 +10,7 @@ import { getArgTypes, playSetup } from './truncateText.stories.util.js';
 const html = String.raw;
 /** @type {Meta} */
 const TruncateTextStory = {
-    title: 'UI/Components/Truncate Text',
+    title: 'UI/Truncate Text',
     tags: [],
     component: 'truncate-text',
     args: {

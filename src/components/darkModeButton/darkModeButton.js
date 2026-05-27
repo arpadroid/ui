@@ -16,7 +16,7 @@ class DarkModeButton extends IconButton {
             tooltip: this.i18nText('lblDarkMode'),
             labelLight: this.i18n('lblLightMode'),
             templateChildren: {
-                content: { canRender: false}
+                content: { canRender: false }
             }
         };
         return mergeObjects(super.getDefaultConfig(), config);

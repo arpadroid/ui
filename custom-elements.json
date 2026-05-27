@@ -17,6 +17,14 @@
         },
         {
           "kind": "js",
+          "name": "ArpaNode",
+          "declaration": {
+            "name": "default",
+            "module": "./components/arpaNode/arpaNode.js"
+          }
+        },
+        {
+          "kind": "js",
           "name": "ArpaFragment",
           "declaration": {
             "name": "default",
@@ -1166,7 +1174,7 @@
               "kind": "field",
               "name": "templateChildren",
               "type": {
-                "text": "Record<string, ArpaElementChildOptionsType>"
+                "text": "Record<string, ArpaNodeConfigType>"
               },
               "default": "{}"
             },
@@ -1382,7 +1390,13 @@
             },
             {
               "kind": "method",
-              "name": "getPayload"
+              "name": "getPayload",
+              "parameters": [
+                {
+                  "name": "templateVars",
+                  "default": "this.templateVars || this.getTemplateVars()"
+                }
+              ]
             },
             {
               "kind": "method",
@@ -1438,7 +1452,7 @@
               "description": "Gets a template child by name.",
               "return": {
                 "type": {
-                  "text": "ArpaElementChildOptionsType | undefined"
+                  "text": "ArpaNodeConfigType | undefined"
                 }
               }
             },
@@ -1536,7 +1550,7 @@
                   "description": "The configuration object.",
                   "optional": true,
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -1556,7 +1570,7 @@
                   "name": "config",
                   "description": "The configuration object.",
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -1583,7 +1597,7 @@
                   "description": "The configuration object.",
                   "optional": true,
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -1608,7 +1622,7 @@
               "description": "Gets the configuration for a child element.",
               "return": {
                 "type": {
-                  "text": "Record<string, ArpaElementChildOptionsType> | undefined"
+                  "text": "Record<string, ArpaNodeConfigType> | undefined"
                 }
               }
             },
@@ -1646,7 +1660,7 @@
                   "name": "config",
                   "default": "{}",
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -1658,7 +1672,7 @@
               "description": "Gets the configuration for a child element.",
               "return": {
                 "type": {
-                  "text": "ArpaElementChildOptionsType | undefined"
+                  "text": "ArpaNodeConfigType | undefined"
                 }
               }
             },
@@ -2088,7 +2102,7 @@
                   "name": "options",
                   "optional": true,
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 },
                 {
@@ -2251,7 +2265,7 @@
             {
               "name": "template-children",
               "type": {
-                "text": "Record<string, ArpaElementChildOptionsType> | undefined",
+                "text": "Record<string, ArpaNodeConfigType> | undefined",
                 "summary": "string"
               },
               "serializedAs": "json",
@@ -2346,6 +2360,504 @@
           "declaration": {
             "name": "ArpaElement",
             "module": "src/components/arpaElement/arpaElement.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/arpaFragment/arpaFragment.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "ArpaFragment",
+          "members": [
+            {
+              "kind": "method",
+              "name": "getAttributes"
+            },
+            {
+              "kind": "field",
+              "name": "_childNodes",
+              "type": {
+                "text": "array"
+              },
+              "default": "[...this.childNodes]"
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "arpa-fragment",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "ArpaFragment",
+            "module": "src/components/arpaFragment/arpaFragment.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/arpaNode/arpaNode.helper.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "getChildClassName",
+          "parameters": [
+            {
+              "name": "element",
+              "description": "The component to check.",
+              "type": {
+                "text": "ArpaElement"
+              }
+            },
+            {
+              "name": "name",
+              "type": {
+                "text": "string"
+              }
+            }
+          ],
+          "description": "Computes the class name for a child element.",
+          "return": {
+            "type": {
+              "text": "string"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "getDefaultChildConfig",
+          "parameters": [
+            {
+              "name": "element",
+              "description": "The component to check.",
+              "type": {
+                "text": "ArpaElement"
+              }
+            },
+            {
+              "name": "name",
+              "type": {
+                "text": "string"
+              }
+            }
+          ],
+          "description": "Gets the default configuration for a child element.",
+          "return": {
+            "type": {
+              "text": "ArpaNodeConfigType"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "canRenderChild",
+          "parameters": [
+            {
+              "name": "element",
+              "description": "The component to check.",
+              "type": {
+                "text": "ArpaElement"
+              }
+            },
+            {
+              "name": "name",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "config",
+              "default": "{}",
+              "description": "The configuration object.",
+              "optional": true,
+              "type": {
+                "text": "ArpaNodeConfigType"
+              }
+            },
+            {
+              "name": "attributes",
+              "default": "{}",
+              "description": "Additional attributes to add to the element.",
+              "optional": true,
+              "type": {
+                "text": "Record<string, boolean | string>"
+              }
+            }
+          ],
+          "description": "Renders a child element.",
+          "return": {
+            "type": {
+              "text": "boolean"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "getChildAttributes",
+          "parameters": [
+            {
+              "name": "element",
+              "type": {
+                "text": "ArpaElement"
+              }
+            },
+            {
+              "name": "name",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "config",
+              "default": "{}",
+              "description": "The configuration object.",
+              "optional": true,
+              "type": {
+                "text": "ArpaNodeConfigType"
+              }
+            },
+            {
+              "name": "attributes",
+              "default": "{}",
+              "description": "Additional attributes to add to the element.",
+              "optional": true,
+              "type": {
+                "text": "Record<string, unknown>"
+              }
+            }
+          ],
+          "description": "Gets the attributes for a child element.",
+          "return": {
+            "type": {
+              "text": "Record<string, string>"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "getChildContent",
+          "parameters": [
+            {
+              "name": "element",
+              "description": "The component to check.",
+              "type": {
+                "text": "ArpaElement"
+              }
+            },
+            {
+              "name": "name",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "config",
+              "default": "{}",
+              "description": "The configuration object.",
+              "optional": true,
+              "type": {
+                "text": "ArpaNodeConfigType"
+              }
+            }
+          ],
+          "description": "Gets the content for a child element.",
+          "return": {
+            "type": {
+              "text": "string"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "renderChild",
+          "parameters": [
+            {
+              "name": "element",
+              "type": {
+                "text": "ArpaElement"
+              }
+            },
+            {
+              "name": "name",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "config",
+              "default": "{}",
+              "optional": true,
+              "type": {
+                "text": "ArpaNodeConfigType"
+              }
+            },
+            {
+              "name": "attributes",
+              "default": "{}",
+              "optional": true,
+              "type": {
+                "text": "Record<string, boolean>"
+              }
+            }
+          ],
+          "description": "Renders a child element.",
+          "return": {
+            "type": {
+              "text": "string"
+            }
+          }
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "getChildClassName",
+          "declaration": {
+            "name": "getChildClassName",
+            "module": "src/components/arpaNode/arpaNode.helper.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "getDefaultChildConfig",
+          "declaration": {
+            "name": "getDefaultChildConfig",
+            "module": "src/components/arpaNode/arpaNode.helper.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "canRenderChild",
+          "declaration": {
+            "name": "canRenderChild",
+            "module": "src/components/arpaNode/arpaNode.helper.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "getChildAttributes",
+          "declaration": {
+            "name": "getChildAttributes",
+            "module": "src/components/arpaNode/arpaNode.helper.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "getChildContent",
+          "declaration": {
+            "name": "getChildContent",
+            "module": "src/components/arpaNode/arpaNode.helper.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "renderChild",
+          "declaration": {
+            "name": "renderChild",
+            "module": "src/components/arpaNode/arpaNode.helper.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/arpaNode/arpaNode.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "ArpaNode",
+          "members": [
+            {
+              "kind": "method",
+              "name": "_initializeContent"
+            },
+            {
+              "kind": "method",
+              "name": "getProperty",
+              "parameters": [
+                {
+                  "name": "name",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "Gets the value of a property from the element's configuration or attributes.",
+              "return": {
+                "type": {
+                  "text": "any"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "setConfig",
+              "parameters": [
+                {
+                  "name": "config",
+                  "description": "The configuration object.",
+                  "type": {
+                    "text": "ArpaNodeConfigType"
+                  }
+                }
+              ],
+              "description": "Sets the configuration for the ArpaNode component."
+            },
+            {
+              "kind": "method",
+              "name": "getDefaultConfig",
+              "description": "Returns the default configuration for the ArpaNode component.",
+              "return": {
+                "type": {
+                  "text": "ArpaNodeConfigType"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "getElement",
+              "description": "Returns the parent ArpaElement of the node.",
+              "return": {
+                "type": {
+                  "text": "ArpaElement | null"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "getNodeAttributes"
+            },
+            {
+              "kind": "method",
+              "name": "getConfig"
+            },
+            {
+              "kind": "method",
+              "name": "renderNode"
+            },
+            {
+              "kind": "field",
+              "name": "fragment"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "attr",
+              "type": {
+                "text": "ArpaNodeAttributesType",
+                "summary": "string",
+                "detail": "Record<string, unknown> | (() => Record<string, unknown>)"
+              },
+              "serializedAs": "json",
+              "optional": true
+            },
+            {
+              "name": "class-name",
+              "type": {
+                "text": "string",
+                "summary": "string"
+              },
+              "serializedAs": "string",
+              "optional": true
+            },
+            {
+              "name": "can-render",
+              "type": {
+                "text": "((component: unknown) => boolean) | boolean | string",
+                "summary": "string"
+              },
+              "serializedAs": "boolean-attr",
+              "optional": true
+            },
+            {
+              "name": "content",
+              "type": {
+                "text": "ArpaElementContentType",
+                "summary": "unknown"
+              },
+              "serializedAs": "property-only",
+              "optional": true
+            },
+            {
+              "name": "has-zone",
+              "type": {
+                "text": "boolean",
+                "summary": "boolean"
+              },
+              "serializedAs": "boolean-attr",
+              "optional": true
+            },
+            {
+              "name": "is-content",
+              "type": {
+                "text": "boolean",
+                "summary": "boolean"
+              },
+              "serializedAs": "boolean-attr",
+              "optional": true
+            },
+            {
+              "name": "name",
+              "type": {
+                "text": "string",
+                "summary": "string"
+              },
+              "serializedAs": "string",
+              "optional": true
+            },
+            {
+              "name": "tag",
+              "type": {
+                "text": "string",
+                "summary": "string"
+              },
+              "serializedAs": "string",
+              "optional": true
+            },
+            {
+              "name": "zone-name",
+              "type": {
+                "text": "string",
+                "summary": "string"
+              },
+              "serializedAs": "string",
+              "optional": true
+            },
+            {
+              "name": "child-nodes",
+              "type": {
+                "text": "ChildNode[]",
+                "summary": "array"
+              },
+              "serializedAs": "json",
+              "optional": true
+            }
+          ],
+          "superclass": {
+            "name": "HTMLElement"
+          },
+          "tagName": "arpa-node",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "ArpaNode",
+            "module": "src/components/arpaNode/arpaNode.js"
           }
         }
       ]
@@ -2688,7 +3200,7 @@
               "kind": "field",
               "name": "templateChildren",
               "type": {
-                "text": "Record<string, ArpaElementChildOptionsType>"
+                "text": "Record<string, ArpaNodeConfigType>"
               },
               "default": "{}",
               "inheritedFrom": {
@@ -2969,6 +3481,12 @@
             {
               "kind": "method",
               "name": "getPayload",
+              "parameters": [
+                {
+                  "name": "templateVars",
+                  "default": "this.templateVars || this.getTemplateVars()"
+                }
+              ],
               "inheritedFrom": {
                 "name": "ArpaElement",
                 "module": "src/components/arpaElement/arpaElement.js"
@@ -3034,7 +3552,7 @@
               "description": "Gets a template child by name.",
               "return": {
                 "type": {
-                  "text": "ArpaElementChildOptionsType | undefined"
+                  "text": "ArpaNodeConfigType | undefined"
                 }
               },
               "inheritedFrom": {
@@ -3125,7 +3643,7 @@
                   "description": "The configuration object.",
                   "optional": true,
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -3149,7 +3667,7 @@
                   "name": "config",
                   "description": "The configuration object.",
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -3180,7 +3698,7 @@
                   "description": "The configuration object.",
                   "optional": true,
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -3209,7 +3727,7 @@
               "description": "Gets the configuration for a child element.",
               "return": {
                 "type": {
-                  "text": "Record<string, ArpaElementChildOptionsType> | undefined"
+                  "text": "Record<string, ArpaNodeConfigType> | undefined"
                 }
               },
               "inheritedFrom": {
@@ -3255,7 +3773,7 @@
                   "name": "config",
                   "default": "{}",
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -3271,7 +3789,7 @@
               "description": "Gets the configuration for a child element.",
               "return": {
                 "type": {
-                  "text": "ArpaElementChildOptionsType | undefined"
+                  "text": "ArpaNodeConfigType | undefined"
                 }
               },
               "inheritedFrom": {
@@ -3807,7 +4325,7 @@
                   "name": "options",
                   "optional": true,
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 },
                 {
@@ -4030,7 +4548,7 @@
             {
               "name": "template-children",
               "type": {
-                "text": "Record<string, ArpaElementChildOptionsType> | undefined",
+                "text": "Record<string, ArpaNodeConfigType> | undefined",
                 "summary": "string"
               },
               "serializedAs": "json",
@@ -4671,7 +5189,7 @@
               "kind": "field",
               "name": "templateChildren",
               "type": {
-                "text": "Record<string, ArpaElementChildOptionsType>"
+                "text": "Record<string, ArpaNodeConfigType>"
               },
               "default": "{}",
               "inheritedFrom": {
@@ -4944,6 +5462,12 @@
             {
               "kind": "method",
               "name": "getPayload",
+              "parameters": [
+                {
+                  "name": "templateVars",
+                  "default": "this.templateVars || this.getTemplateVars()"
+                }
+              ],
               "inheritedFrom": {
                 "name": "ArpaElement",
                 "module": "src/components/arpaElement/arpaElement.js"
@@ -5009,7 +5533,7 @@
               "description": "Gets a template child by name.",
               "return": {
                 "type": {
-                  "text": "ArpaElementChildOptionsType | undefined"
+                  "text": "ArpaNodeConfigType | undefined"
                 }
               },
               "inheritedFrom": {
@@ -5100,7 +5624,7 @@
                   "description": "The configuration object.",
                   "optional": true,
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -5124,7 +5648,7 @@
                   "name": "config",
                   "description": "The configuration object.",
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -5155,7 +5679,7 @@
                   "description": "The configuration object.",
                   "optional": true,
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -5184,7 +5708,7 @@
               "description": "Gets the configuration for a child element.",
               "return": {
                 "type": {
-                  "text": "Record<string, ArpaElementChildOptionsType> | undefined"
+                  "text": "Record<string, ArpaNodeConfigType> | undefined"
                 }
               },
               "inheritedFrom": {
@@ -5230,7 +5754,7 @@
                   "name": "config",
                   "default": "{}",
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -5246,7 +5770,7 @@
               "description": "Gets the configuration for a child element.",
               "return": {
                 "type": {
-                  "text": "ArpaElementChildOptionsType | undefined"
+                  "text": "ArpaNodeConfigType | undefined"
                 }
               },
               "inheritedFrom": {
@@ -5782,7 +6306,7 @@
                   "name": "options",
                   "optional": true,
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 },
                 {
@@ -6011,7 +6535,7 @@
             {
               "name": "template-children",
               "type": {
-                "text": "Record<string, ArpaElementChildOptionsType> | undefined",
+                "text": "Record<string, ArpaNodeConfigType> | undefined",
                 "summary": "string"
               },
               "serializedAs": "json",
@@ -6273,46 +6797,6 @@
     },
     {
       "kind": "javascript-module",
-      "path": "src/components/arpaFragment/arpaFragment.js",
-      "declarations": [
-        {
-          "kind": "class",
-          "description": "",
-          "name": "ArpaFragment",
-          "members": [
-            {
-              "kind": "method",
-              "name": "getAttributes"
-            },
-            {
-              "kind": "field",
-              "name": "_childNodes",
-              "type": {
-                "text": "array"
-              },
-              "default": "[...this.childNodes]"
-            }
-          ],
-          "superclass": {
-            "name": "HTMLElement"
-          },
-          "tagName": "arpa-fragment",
-          "customElement": true
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "default",
-          "declaration": {
-            "name": "ArpaFragment",
-            "module": "src/components/arpaFragment/arpaFragment.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
       "path": "src/components/dropArea/dropArea.js",
       "declarations": [
         {
@@ -6568,7 +7052,7 @@
               "kind": "field",
               "name": "templateChildren",
               "type": {
-                "text": "Record<string, ArpaElementChildOptionsType>"
+                "text": "Record<string, ArpaNodeConfigType>"
               },
               "default": "{}",
               "inheritedFrom": {
@@ -6857,6 +7341,12 @@
             {
               "kind": "method",
               "name": "getPayload",
+              "parameters": [
+                {
+                  "name": "templateVars",
+                  "default": "this.templateVars || this.getTemplateVars()"
+                }
+              ],
               "inheritedFrom": {
                 "name": "ArpaElement",
                 "module": "src/components/arpaElement/arpaElement.js"
@@ -6922,7 +7412,7 @@
               "description": "Gets a template child by name.",
               "return": {
                 "type": {
-                  "text": "ArpaElementChildOptionsType | undefined"
+                  "text": "ArpaNodeConfigType | undefined"
                 }
               },
               "inheritedFrom": {
@@ -7040,7 +7530,7 @@
                   "description": "The configuration object.",
                   "optional": true,
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -7064,7 +7554,7 @@
                   "name": "config",
                   "description": "The configuration object.",
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -7095,7 +7585,7 @@
                   "description": "The configuration object.",
                   "optional": true,
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -7124,7 +7614,7 @@
               "description": "Gets the configuration for a child element.",
               "return": {
                 "type": {
-                  "text": "Record<string, ArpaElementChildOptionsType> | undefined"
+                  "text": "Record<string, ArpaNodeConfigType> | undefined"
                 }
               },
               "inheritedFrom": {
@@ -7170,7 +7660,7 @@
                   "name": "config",
                   "default": "{}",
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -7186,7 +7676,7 @@
               "description": "Gets the configuration for a child element.",
               "return": {
                 "type": {
-                  "text": "ArpaElementChildOptionsType | undefined"
+                  "text": "ArpaNodeConfigType | undefined"
                 }
               },
               "inheritedFrom": {
@@ -7751,7 +8241,7 @@
                   "name": "options",
                   "optional": true,
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 },
                 {
@@ -7982,7 +8472,7 @@
             {
               "name": "template-children",
               "type": {
-                "text": "Record<string, ArpaElementChildOptionsType> | undefined",
+                "text": "Record<string, ArpaNodeConfigType> | undefined",
                 "summary": "string"
               },
               "serializedAs": "json",
@@ -8574,7 +9064,7 @@
               "kind": "field",
               "name": "templateChildren",
               "type": {
-                "text": "Record<string, ArpaElementChildOptionsType>"
+                "text": "Record<string, ArpaNodeConfigType>"
               },
               "default": "{}",
               "inheritedFrom": {
@@ -8855,6 +9345,12 @@
             {
               "kind": "method",
               "name": "getPayload",
+              "parameters": [
+                {
+                  "name": "templateVars",
+                  "default": "this.templateVars || this.getTemplateVars()"
+                }
+              ],
               "inheritedFrom": {
                 "name": "ArpaElement",
                 "module": "src/components/arpaElement/arpaElement.js"
@@ -8920,7 +9416,7 @@
               "description": "Gets a template child by name.",
               "return": {
                 "type": {
-                  "text": "ArpaElementChildOptionsType | undefined"
+                  "text": "ArpaNodeConfigType | undefined"
                 }
               },
               "inheritedFrom": {
@@ -9011,7 +9507,7 @@
                   "description": "The configuration object.",
                   "optional": true,
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -9035,7 +9531,7 @@
                   "name": "config",
                   "description": "The configuration object.",
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -9066,7 +9562,7 @@
                   "description": "The configuration object.",
                   "optional": true,
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -9095,7 +9591,7 @@
               "description": "Gets the configuration for a child element.",
               "return": {
                 "type": {
-                  "text": "Record<string, ArpaElementChildOptionsType> | undefined"
+                  "text": "Record<string, ArpaNodeConfigType> | undefined"
                 }
               },
               "inheritedFrom": {
@@ -9141,7 +9637,7 @@
                   "name": "config",
                   "default": "{}",
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -9157,7 +9653,7 @@
               "description": "Gets the configuration for a child element.",
               "return": {
                 "type": {
-                  "text": "ArpaElementChildOptionsType | undefined"
+                  "text": "ArpaNodeConfigType | undefined"
                 }
               },
               "inheritedFrom": {
@@ -9693,7 +10189,7 @@
                   "name": "options",
                   "optional": true,
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 },
                 {
@@ -9916,7 +10412,7 @@
             {
               "name": "template-children",
               "type": {
-                "text": "Record<string, ArpaElementChildOptionsType> | undefined",
+                "text": "Record<string, ArpaNodeConfigType> | undefined",
                 "summary": "string"
               },
               "serializedAs": "json",
@@ -10896,7 +11392,7 @@
               "kind": "field",
               "name": "templateChildren",
               "type": {
-                "text": "Record<string, ArpaElementChildOptionsType>"
+                "text": "Record<string, ArpaNodeConfigType>"
               },
               "default": "{}",
               "inheritedFrom": {
@@ -11185,6 +11681,12 @@
             {
               "kind": "method",
               "name": "getPayload",
+              "parameters": [
+                {
+                  "name": "templateVars",
+                  "default": "this.templateVars || this.getTemplateVars()"
+                }
+              ],
               "inheritedFrom": {
                 "name": "ArpaElement",
                 "module": "src/components/arpaElement/arpaElement.js"
@@ -11250,7 +11752,7 @@
               "description": "Gets a template child by name.",
               "return": {
                 "type": {
-                  "text": "ArpaElementChildOptionsType | undefined"
+                  "text": "ArpaNodeConfigType | undefined"
                 }
               },
               "inheritedFrom": {
@@ -11368,7 +11870,7 @@
                   "description": "The configuration object.",
                   "optional": true,
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -11392,7 +11894,7 @@
                   "name": "config",
                   "description": "The configuration object.",
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -11423,7 +11925,7 @@
                   "description": "The configuration object.",
                   "optional": true,
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -11452,7 +11954,7 @@
               "description": "Gets the configuration for a child element.",
               "return": {
                 "type": {
-                  "text": "Record<string, ArpaElementChildOptionsType> | undefined"
+                  "text": "Record<string, ArpaNodeConfigType> | undefined"
                 }
               },
               "inheritedFrom": {
@@ -11498,7 +12000,7 @@
                   "name": "config",
                   "default": "{}",
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -11514,7 +12016,7 @@
               "description": "Gets the configuration for a child element.",
               "return": {
                 "type": {
-                  "text": "ArpaElementChildOptionsType | undefined"
+                  "text": "ArpaNodeConfigType | undefined"
                 }
               },
               "inheritedFrom": {
@@ -12063,7 +12565,7 @@
                   "name": "options",
                   "optional": true,
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 },
                 {
@@ -12629,7 +13131,7 @@
             {
               "name": "template-children",
               "type": {
-                "text": "Record<string, ArpaElementChildOptionsType> | undefined",
+                "text": "Record<string, ArpaNodeConfigType> | undefined",
                 "summary": "string"
               },
               "serializedAs": "json",
@@ -13818,7 +14320,7 @@
               "kind": "field",
               "name": "templateChildren",
               "type": {
-                "text": "Record<string, ArpaElementChildOptionsType>"
+                "text": "Record<string, ArpaNodeConfigType>"
               },
               "default": "{}",
               "inheritedFrom": {
@@ -14099,6 +14601,12 @@
             {
               "kind": "method",
               "name": "getPayload",
+              "parameters": [
+                {
+                  "name": "templateVars",
+                  "default": "this.templateVars || this.getTemplateVars()"
+                }
+              ],
               "inheritedFrom": {
                 "name": "ArpaElement",
                 "module": "src/components/arpaElement/arpaElement.js"
@@ -14178,7 +14686,7 @@
               "description": "Gets a template child by name.",
               "return": {
                 "type": {
-                  "text": "ArpaElementChildOptionsType | undefined"
+                  "text": "ArpaNodeConfigType | undefined"
                 }
               },
               "inheritedFrom": {
@@ -14296,7 +14804,7 @@
                   "description": "The configuration object.",
                   "optional": true,
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -14320,7 +14828,7 @@
                   "name": "config",
                   "description": "The configuration object.",
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -14351,7 +14859,7 @@
                   "description": "The configuration object.",
                   "optional": true,
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -14380,7 +14888,7 @@
               "description": "Gets the configuration for a child element.",
               "return": {
                 "type": {
-                  "text": "Record<string, ArpaElementChildOptionsType> | undefined"
+                  "text": "Record<string, ArpaNodeConfigType> | undefined"
                 }
               },
               "inheritedFrom": {
@@ -14426,7 +14934,7 @@
                   "name": "config",
                   "default": "{}",
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -14442,7 +14950,7 @@
               "description": "Gets the configuration for a child element.",
               "return": {
                 "type": {
-                  "text": "ArpaElementChildOptionsType | undefined"
+                  "text": "ArpaNodeConfigType | undefined"
                 }
               },
               "inheritedFrom": {
@@ -14977,7 +15485,7 @@
                   "name": "options",
                   "optional": true,
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 },
                 {
@@ -15316,7 +15824,7 @@
             {
               "name": "template-children",
               "type": {
-                "text": "Record<string, ArpaElementChildOptionsType> | undefined",
+                "text": "Record<string, ArpaNodeConfigType> | undefined",
                 "summary": "string"
               },
               "serializedAs": "json",
@@ -15448,6 +15956,1840 @@
           "declaration": {
             "name": "Pager",
             "module": "src/components/pager/pager.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/truncateText/truncateText.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "TruncateText",
+          "members": [
+            {
+              "kind": "method",
+              "name": "getDefaultConfig",
+              "parameters": [
+                {
+                  "name": "config",
+                  "default": "{}",
+                  "optional": true,
+                  "type": {
+                    "text": "Record<string, unknown>"
+                  }
+                }
+              ],
+              "description": "Returns the default component config.",
+              "return": {
+                "type": {
+                  "text": "TruncateTextConfigType"
+                }
+              },
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "_initialize",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "_observeContents"
+            },
+            {
+              "kind": "method",
+              "name": "_onConnected",
+              "description": "Called when the element is connected to the DOM.",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "getMaxLength"
+            },
+            {
+              "kind": "method",
+              "name": "getThreshold"
+            },
+            {
+              "kind": "method",
+              "name": "hasReadMoreButton"
+            },
+            {
+              "kind": "method",
+              "name": "getButtonLabel"
+            },
+            {
+              "kind": "method",
+              "name": "toggleTruncate"
+            },
+            {
+              "kind": "method",
+              "name": "renderButton",
+              "parameters": [
+                {
+                  "name": "isTruncated",
+                  "default": "this.isTruncated"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "getButtonClasses"
+            },
+            {
+              "kind": "method",
+              "name": "truncateText"
+            },
+            {
+              "kind": "method",
+              "name": "shouldTruncate"
+            },
+            {
+              "kind": "method",
+              "name": "showFullContent"
+            },
+            {
+              "kind": "field",
+              "name": "_bindings",
+              "type": {
+                "text": "(() => unknown)[]"
+              },
+              "default": "[]",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "zonesByName",
+              "default": "undefined",
+              "type": {
+                "text": "Set<string> | undefined"
+              },
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "_lastRendered",
+              "default": "undefined",
+              "type": {
+                "text": "number | undefined"
+              },
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "_hasRendered",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "_hasInitialized",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "_isReady",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "_textContent",
+              "type": {
+                "text": "string | null"
+              },
+              "default": "''",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "templates",
+              "type": {
+                "text": "TemplatesType"
+              },
+              "default": "{}",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "templateChildren",
+              "type": {
+                "text": "Record<string, ArpaNodeConfigType>"
+              },
+              "default": "{}",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "templateNodes",
+              "type": {
+                "text": "Record<string, HTMLElement | Node>"
+              },
+              "default": "{}",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "templateVars",
+              "type": {
+                "text": "Record<string, unknown>"
+              },
+              "default": "{}",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "isArpaElement",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "true",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "_preInitialize",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "_initializeProperties",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "_initializeZones",
+              "description": "Initializes the zones for the element.",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "_preInitializeContent",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "_initializeAttributes",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "_initializeContent",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "getPromise",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "initializeProperties",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "getChildElements",
+              "description": "Gets the template for the element.",
+              "return": {
+                "type": {
+                  "text": "(Element | Node)[]"
+                }
+              },
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "getVariant",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "getConfig",
+              "description": "Gets the current configuration of the element.",
+              "return": {
+                "type": {
+                  "text": "Record<string, unknown>"
+                }
+              },
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "getContentNode",
+              "description": "Returns the content node for the element. If the element has template children, it returns the node marked with \"is-content\". Otherwise, it returns the element itself.",
+              "return": {
+                "type": {
+                  "text": "HTMLElement | null"
+                }
+              },
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "getProperty",
+              "parameters": [
+                {
+                  "name": "name",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "Gets the value of a property from the element's configuration or attributes.",
+              "return": {
+                "type": {
+                  "text": "any"
+                }
+              },
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "getArrayProperty",
+              "parameters": [
+                {
+                  "name": "name",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "Gets the value of a property from the element's configuration or attributes as an array.",
+              "return": {
+                "type": {
+                  "text": "any[]"
+                }
+              },
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "getProperties",
+              "parameters": [
+                {
+                  "name": "names",
+                  "type": {
+                    "text": "...string"
+                  }
+                }
+              ],
+              "description": "Gets the values of the specified properties from the element's configuration or attributes.",
+              "return": {
+                "type": {
+                  "text": "Record<string, unknown>"
+                }
+              },
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "getTagName",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "getZone",
+              "parameters": [
+                {
+                  "name": "name",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "Gets the zone with the specified name.",
+              "return": {
+                "type": {
+                  "text": "ZoneType | null"
+                }
+              },
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "getClassName",
+              "parameters": [
+                {
+                  "name": "name",
+                  "optional": true,
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "Returns the base class for the element.\nIf a name is given, it is added to the class name following BEM convention.",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              },
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "getPayload",
+              "parameters": [
+                {
+                  "name": "templateVars",
+                  "default": "this.templateVars || this.getTemplateVars()"
+                }
+              ],
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "getText",
+              "parameters": [
+                {
+                  "name": "key",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "Gets the i18n text for the specified key.",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              },
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "getZones",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "getTemplateVars",
+              "description": "Gets the variables to be used in the template rendering.",
+              "return": {
+                "type": {
+                  "text": "Record<string, unknown>"
+                }
+              },
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "getTemplateChildren",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "hasTemplateChildren",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "getTemplateChild",
+              "parameters": [
+                {
+                  "name": "name",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "Gets a template child by name.",
+              "return": {
+                "type": {
+                  "text": "ArpaNodeConfigType | undefined"
+                }
+              },
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "hasZone",
+              "parameters": [
+                {
+                  "name": "name",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "Determines if the element has a zone with the specified name.",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "hasContent",
+              "parameters": [
+                {
+                  "name": "property",
+                  "description": "The name of the property.",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "Determines if the element has content for the specified property.",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "hasProperty",
+              "parameters": [
+                {
+                  "name": "name",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "Determines if the element has a property with the specified name.",
+              "return": {
+                "type": {
+                  "text": "boolean | unknown"
+                }
+              },
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "setContent",
+              "parameters": [
+                {
+                  "name": "content",
+                  "description": "The content to set.",
+                  "type": {
+                    "text": "string | HTMLElement"
+                  }
+                },
+                {
+                  "name": "contentContainer",
+                  "default": "this",
+                  "description": "The container for the content.",
+                  "optional": true,
+                  "type": {
+                    "text": "HTMLElement | null"
+                  }
+                }
+              ],
+              "description": "Sets the content of the element.",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "setChild",
+              "parameters": [
+                {
+                  "name": "name",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "config",
+                  "default": "{}",
+                  "description": "The configuration object.",
+                  "optional": true,
+                  "type": {
+                    "text": "ArpaNodeConfigType"
+                  }
+                }
+              ],
+              "description": "Sets a child element.",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "updateChildNode",
+              "parameters": [
+                {
+                  "name": "name",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "config",
+                  "description": "The configuration object.",
+                  "type": {
+                    "text": "ArpaNodeConfigType"
+                  }
+                }
+              ],
+              "description": "Updates a child element.",
+              "return": {
+                "type": {
+                  "text": "HTMLElement | Node | null"
+                }
+              },
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "editChild",
+              "parameters": [
+                {
+                  "name": "name",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "config",
+                  "default": "{}",
+                  "description": "The configuration object.",
+                  "optional": true,
+                  "type": {
+                    "text": "ArpaNodeConfigType"
+                  }
+                }
+              ],
+              "description": "Sets a child element.",
+              "return": {
+                "type": {
+                  "text": "HTMLElement | Node | null"
+                }
+              },
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "getChildConfig",
+              "parameters": [
+                {
+                  "name": "childName",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "Gets the configuration for a child element.",
+              "return": {
+                "type": {
+                  "text": "Record<string, ArpaNodeConfigType> | undefined"
+                }
+              },
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "getChild",
+              "parameters": [
+                {
+                  "name": "name",
+                  "default": "''",
+                  "description": "The name of the child node to retrieve.",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "Returns the child node with the specified name.",
+              "return": {
+                "type": {
+                  "text": "HTMLElement | null"
+                }
+              },
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "setChildConfig",
+              "parameters": [
+                {
+                  "name": "childName",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "config",
+                  "default": "{}",
+                  "type": {
+                    "text": "ArpaNodeConfigType"
+                  }
+                }
+              ],
+              "description": "Sets the configuration for a child element.",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "getChildrenConfig",
+              "description": "Gets the configuration for a child element.",
+              "return": {
+                "type": {
+                  "text": "ArpaNodeConfigType | undefined"
+                }
+              },
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "resolveAriaLabel",
+              "parameters": [
+                {
+                  "name": "content",
+                  "type": {
+                    "text": "string | unknown"
+                  }
+                }
+              ],
+              "description": "Computes the aria-label for the element based on its properties.",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              },
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "callCallback",
+              "parameters": [
+                {
+                  "name": "callbackName",
+                  "description": "The name of the callback property to call.",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "args",
+                  "description": "The arguments to pass to the callback function.",
+                  "type": {
+                    "text": "...any"
+                  }
+                }
+              ],
+              "description": "Calls a callback function defined in the element's properties.",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "renderAttributes",
+              "parameters": [
+                {
+                  "name": "attributes",
+                  "default": "this._config",
+                  "description": "The attributes to apply.",
+                  "type": {
+                    "text": "Record<string, unknown>"
+                  }
+                }
+              ],
+              "description": "Applies the specified attributes to the element after sanitizing them.",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              },
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "bind",
+              "parameters": [
+                {
+                  "name": "args",
+                  "description": "The arguments to bind.",
+                  "type": {
+                    "text": "string[]"
+                  }
+                }
+              ],
+              "description": "Binds methods to the element. Each parameter is a string representing the name of the method to bind.",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "i18n",
+              "parameters": [
+                {
+                  "name": "key",
+                  "description": "The key for the i18n component.",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "replacements",
+                  "default": "{}",
+                  "optional": true,
+                  "type": {
+                    "text": "Record<string, string>"
+                  }
+                },
+                {
+                  "name": "attributes",
+                  "default": "{}",
+                  "optional": true,
+                  "type": {
+                    "text": "Record<string, string>"
+                  }
+                },
+                {
+                  "name": "base",
+                  "default": "this.i18nKey",
+                  "description": "The base key for the i18n component.",
+                  "optional": true,
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "Returns a i18n component for the specified key.",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              },
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "i18nText",
+              "parameters": [
+                {
+                  "name": "key",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "replacements",
+                  "default": "{}",
+                  "optional": true,
+                  "type": {
+                    "text": "Record<string, string>"
+                  }
+                },
+                {
+                  "name": "base",
+                  "default": "this.i18nKey",
+                  "optional": true,
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "Returns the i18n text for the specified key.",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              },
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "setConfig",
+              "parameters": [
+                {
+                  "name": "config",
+                  "default": "{}",
+                  "optional": true,
+                  "type": {
+                    "text": "ArpaElementConfigType"
+                  }
+                }
+              ],
+              "description": "Sets the configuration for the element.",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "addChildNodes",
+              "parameters": [
+                {
+                  "name": "nodes",
+                  "default": "[]",
+                  "description": "The child nodes to add.",
+                  "type": {
+                    "text": "Node[]"
+                  }
+                }
+              ],
+              "description": "Adds child nodes to the element.",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "addConfig",
+              "parameters": [
+                {
+                  "name": "config",
+                  "default": "{}"
+                }
+              ],
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "deleteProperty",
+              "parameters": [
+                {
+                  "name": "name",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "Deletes the property with the specified name.",
+              "return": {
+                "type": {
+                  "text": "void"
+                }
+              },
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "deleteProperties",
+              "parameters": [
+                {
+                  "name": "names",
+                  "description": "The names of the properties to delete.",
+                  "type": {
+                    "text": "...string"
+                  }
+                }
+              ],
+              "description": "Deletes the properties with the specified names.",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "_initializeTemplates",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "onReady",
+              "description": "Called when the element is ready.",
+              "return": {
+                "type": {
+                  "text": "Promise<any>"
+                }
+              },
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "_onDestroy",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "_onLostZone",
+              "parameters": [
+                {
+                  "name": "_payload",
+                  "type": {
+                    "text": "ZoneToolPlaceZoneType"
+                  }
+                }
+              ],
+              "description": "Handles a lost zone.",
+              "return": {
+                "type": {
+                  "text": "boolean | ((payload: ZoneToolPlaceZoneType) => any) | undefined"
+                }
+              },
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "_onPlaceZone",
+              "parameters": [
+                {
+                  "name": "_payload",
+                  "description": "The payload object passed by the ZoneTool.",
+                  "type": {
+                    "text": "ZoneToolPlaceZoneType"
+                  }
+                }
+              ],
+              "description": "Transfers the links from the icon menu component zone to the navigation component.",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "_addClassNames",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "_onInitialized",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "_onAttributeChanged",
+              "parameters": [
+                {
+                  "name": "att",
+                  "description": "The name of the attribute that changed.",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "oldValue",
+                  "description": "The previous value of the attribute.",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "newValue",
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "Called when an attribute of the element changes.",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "update",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "_preRender",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "_render",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "_initializeNodes",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "canRender",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "_handleZones",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "_onDomReady",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "_onRenderComplete",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "handleContent",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "_resolveRender",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "_onComplete",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "onRendered",
+              "parameters": [
+                {
+                  "name": "callback",
+                  "type": {
+                    "text": "() => unknown"
+                  }
+                }
+              ],
+              "description": "Called when the element has finished rendering.",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "onRenderReady",
+              "parameters": [
+                {
+                  "name": "callback",
+                  "type": {
+                    "text": "() => unknown"
+                  }
+                }
+              ],
+              "description": "Called when the element is ready to render.",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "onPreRender",
+              "parameters": [
+                {
+                  "name": "callback",
+                  "type": {
+                    "text": "() => unknown"
+                  }
+                }
+              ],
+              "description": "Called before the element is rendered.",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "render",
+              "parameters": [
+                {
+                  "name": "template",
+                  "default": "''",
+                  "description": "The template to render.",
+                  "optional": true,
+                  "type": {
+                    "text": "string"
+                  }
+                }
+              ],
+              "description": "Renders the element.",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "renderChild",
+              "parameters": [
+                {
+                  "name": "name",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "options",
+                  "optional": true,
+                  "type": {
+                    "text": "ArpaNodeConfigType"
+                  }
+                },
+                {
+                  "name": "attributes",
+                  "default": "{}",
+                  "optional": true,
+                  "type": {
+                    "text": "Record<string, string>"
+                  }
+                }
+              ],
+              "description": "Renders a child element.",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              },
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "renderTemplate",
+              "parameters": [
+                {
+                  "name": "template",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "vars",
+                  "default": "this.getTemplateVars()",
+                  "description": "The variables to use in the template.",
+                  "optional": true,
+                  "type": {
+                    "text": "Record<string, unknown>"
+                  }
+                }
+              ],
+              "description": "Renders the template for the element.",
+              "return": {
+                "type": {
+                  "text": "string"
+                }
+              },
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "_getTemplate",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "reRender",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "_unsubscribes",
+              "type": {
+                "text": "(() => unknown)[]"
+              },
+              "default": "[]",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "_onRenderedCallbacks",
+              "type": {
+                "text": "(() => unknown)[]"
+              },
+              "default": "[]",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "_onRenderReadyCallbacks",
+              "type": {
+                "text": "(() => unknown)[]"
+              },
+              "default": "[]",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "_preRenderCallbacks",
+              "type": {
+                "text": "(() => unknown)[]"
+              },
+              "default": "[]",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "_zones",
+              "default": "new Set()",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "i18nKey",
+              "type": {
+                "text": "string"
+              },
+              "default": "'arpaElement'",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "field",
+              "name": "promise",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "attributes",
+              "type": {
+                "text": "Record<string, string>",
+                "summary": "string"
+              },
+              "serializedAs": "json",
+              "optional": false,
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "name": "class-name",
+              "type": {
+                "text": "string",
+                "summary": "string"
+              },
+              "serializedAs": "string",
+              "optional": false,
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "name": "class-names",
+              "type": {
+                "text": "string[]",
+                "summary": "string"
+              },
+              "serializedAs": "json",
+              "optional": false,
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "name": "content",
+              "type": {
+                "text": "ArpaElementContentType",
+                "summary": "string",
+                "detail": "string | HTMLElement | HTMLCollection | (() => string | HTMLElement | HTMLCollection)"
+              },
+              "serializedAs": "property-only",
+              "optional": false,
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "name": "handle-content",
+              "type": {
+                "text": "boolean",
+                "summary": "boolean"
+              },
+              "serializedAs": "boolean-attr",
+              "optional": false,
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "name": "template",
+              "type": {
+                "text": "string",
+                "summary": "string"
+              },
+              "serializedAs": "string",
+              "optional": false,
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "name": "template-children",
+              "type": {
+                "text": "Record<string, ArpaNodeConfigType> | undefined",
+                "summary": "string"
+              },
+              "serializedAs": "json",
+              "optional": false,
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "name": "template-container",
+              "type": {
+                "text": "HTMLElement | string",
+                "summary": "string"
+              },
+              "serializedAs": "string",
+              "optional": false,
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "name": "templates",
+              "type": {
+                "text": "TemplatesType",
+                "summary": "string",
+                "detail": "Record<TemplateContentMode, HTMLTemplateElement> | Record<string, never>"
+              },
+              "serializedAs": "property-only",
+              "optional": false,
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "name": "template-types",
+              "type": {
+                "text": "TemplateContentMode[]",
+                "summary": "array",
+                "detail": "('add' | 'content' | 'prepend' | 'append' | 'list-item' | 'view')[]"
+              },
+              "serializedAs": "json",
+              "optional": false,
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "name": "template-vars",
+              "type": {
+                "text": "Record<string, unknown> | (() => Record<string, unknown>)",
+                "summary": "string"
+              },
+              "serializedAs": "json",
+              "optional": false,
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "name": "variant",
+              "type": {
+                "text": "string",
+                "summary": "string"
+              },
+              "serializedAs": "string",
+              "optional": false,
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "name": "zone-filter",
+              "type": {
+                "text": "ZoneFilterType",
+                "summary": "unknown"
+              },
+              "serializedAs": "property-only",
+              "optional": false,
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "name": "zone-resolver-selector",
+              "type": {
+                "text": "string",
+                "summary": "string"
+              },
+              "serializedAs": "string",
+              "optional": false,
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "name": "zone-selector",
+              "type": {
+                "text": "string",
+                "summary": "string"
+              },
+              "serializedAs": "string",
+              "optional": false,
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "name": "max-length",
+              "type": {
+                "text": "number",
+                "summary": "number"
+              },
+              "serializedAs": "number",
+              "optional": true
+            },
+            {
+              "name": "threshold",
+              "type": {
+                "text": "number",
+                "summary": "number"
+              },
+              "serializedAs": "number",
+              "optional": true
+            },
+            {
+              "name": "ellipsis",
+              "type": {
+                "text": "string",
+                "summary": "string"
+              },
+              "serializedAs": "string",
+              "optional": true
+            },
+            {
+              "name": "read-more-label",
+              "type": {
+                "text": "string",
+                "summary": "string"
+              },
+              "serializedAs": "string",
+              "optional": true
+            },
+            {
+              "name": "read-less-label",
+              "type": {
+                "text": "string",
+                "summary": "string"
+              },
+              "serializedAs": "string",
+              "optional": true
+            },
+            {
+              "name": "button-classes",
+              "type": {
+                "text": "string[]",
+                "summary": "string"
+              },
+              "serializedAs": "json",
+              "optional": true
+            },
+            {
+              "name": "has-read-more-button",
+              "type": {
+                "text": "boolean",
+                "summary": "boolean"
+              },
+              "serializedAs": "boolean-attr",
+              "optional": true
+            },
+            {
+              "name": "content-class",
+              "type": {
+                "text": "string",
+                "summary": "string"
+              },
+              "serializedAs": "string",
+              "optional": true
+            }
+          ],
+          "superclass": {
+            "name": "ArpaElement",
+            "module": "/src/components/arpaElement/arpaElement.js"
+          },
+          "tagName": "truncate-text",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "TruncateText",
+            "module": "src/components/truncateText/truncateText.js"
           }
         }
       ]
@@ -15764,7 +18106,7 @@
               "kind": "field",
               "name": "templateChildren",
               "type": {
-                "text": "Record<string, ArpaElementChildOptionsType>"
+                "text": "Record<string, ArpaNodeConfigType>"
               },
               "default": "{}",
               "inheritedFrom": {
@@ -16045,6 +18387,12 @@
             {
               "kind": "method",
               "name": "getPayload",
+              "parameters": [
+                {
+                  "name": "templateVars",
+                  "default": "this.templateVars || this.getTemplateVars()"
+                }
+              ],
               "inheritedFrom": {
                 "name": "ArpaElement",
                 "module": "src/components/arpaElement/arpaElement.js"
@@ -16110,7 +18458,7 @@
               "description": "Gets a template child by name.",
               "return": {
                 "type": {
-                  "text": "ArpaElementChildOptionsType | undefined"
+                  "text": "ArpaNodeConfigType | undefined"
                 }
               },
               "inheritedFrom": {
@@ -16201,7 +18549,7 @@
                   "description": "The configuration object.",
                   "optional": true,
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -16225,7 +18573,7 @@
                   "name": "config",
                   "description": "The configuration object.",
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -16256,7 +18604,7 @@
                   "description": "The configuration object.",
                   "optional": true,
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -16285,7 +18633,7 @@
               "description": "Gets the configuration for a child element.",
               "return": {
                 "type": {
-                  "text": "Record<string, ArpaElementChildOptionsType> | undefined"
+                  "text": "Record<string, ArpaNodeConfigType> | undefined"
                 }
               },
               "inheritedFrom": {
@@ -16331,7 +18679,7 @@
                   "name": "config",
                   "default": "{}",
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -16347,7 +18695,7 @@
               "description": "Gets the configuration for a child element.",
               "return": {
                 "type": {
-                  "text": "ArpaElementChildOptionsType | undefined"
+                  "text": "ArpaNodeConfigType | undefined"
                 }
               },
               "inheritedFrom": {
@@ -16913,7 +19261,7 @@
                   "name": "options",
                   "optional": true,
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 },
                 {
@@ -17136,7 +19484,7 @@
             {
               "name": "template-children",
               "type": {
-                "text": "Record<string, ArpaElementChildOptionsType> | undefined",
+                "text": "Record<string, ArpaNodeConfigType> | undefined",
                 "summary": "string"
               },
               "serializedAs": "json",
@@ -17355,12 +19703,819 @@
     },
     {
       "kind": "javascript-module",
-      "path": "src/components/truncateText/truncateText.js",
+      "path": "src/components/arpaElement/helper/arpaElement.helper.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "hasProperty",
+          "parameters": [
+            {
+              "name": "element",
+              "type": {
+                "text": "ArpaElement"
+              }
+            },
+            {
+              "name": "name",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "config",
+              "default": "element._config",
+              "optional": true,
+              "type": {
+                "text": "Record<string, unknown>"
+              }
+            }
+          ],
+          "description": "Checks if an element has a property as an attribute or defined in the configuration.",
+          "return": {
+            "type": {
+              "text": "unknown | undefined"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "getProperty",
+          "parameters": [
+            {
+              "name": "element",
+              "type": {
+                "text": "ArpaElement | ArpaNode"
+              }
+            },
+            {
+              "name": "name",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "config",
+              "default": "element._config ?? {}",
+              "optional": true,
+              "type": {
+                "text": "Record<string, unknown>"
+              }
+            }
+          ],
+          "description": "Gets the value of a property from the element's configuration or attributes.",
+          "return": {
+            "type": {
+              "text": "string | unknown"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "getArrayProperty",
+          "parameters": [
+            {
+              "name": "element",
+              "type": {
+                "text": "ArpaElement | ArpaNode"
+              }
+            },
+            {
+              "name": "name",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "config",
+              "default": "element._config",
+              "optional": true,
+              "type": {
+                "text": "Record<string, unknown>"
+              }
+            }
+          ],
+          "description": "Gets the value of a property from the element's configuration or attributes as an array.",
+          "return": {
+            "type": {
+              "text": "any[] | unknown"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "processTemplateVariable",
+          "parameters": [
+            {
+              "name": "name",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "value",
+              "type": {
+                "text": "unknown"
+              }
+            },
+            {
+              "name": "element",
+              "description": "Optional ArpaElement instance.",
+              "optional": true,
+              "type": {
+                "text": "ArpaElement"
+              }
+            }
+          ],
+          "description": "Processes a template variable.",
+          "return": {
+            "type": {
+              "text": "unknown"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "hasTemplateVariables",
+          "parameters": [
+            {
+              "name": "content",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "variables",
+              "type": {
+                "text": "Record<string, unknown>"
+              }
+            }
+          ],
+          "description": "Checks if a template string contains variables.",
+          "return": {
+            "type": {
+              "text": "boolean"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "processTemplate",
+          "parameters": [
+            {
+              "name": "template",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "props",
+              "default": "{}",
+              "type": {
+                "text": "Record<string, unknown>"
+              }
+            },
+            {
+              "name": "element",
+              "optional": true,
+              "type": {
+                "text": "ArpaElement"
+              }
+            }
+          ],
+          "description": "Processes a template string and replaces the placeholders with the provided props.",
+          "return": {
+            "type": {
+              "text": "string"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "onDestroy",
+          "parameters": [
+            {
+              "name": "element",
+              "description": "The component to destroy.",
+              "type": {
+                "text": "ArpaElement"
+              }
+            }
+          ],
+          "description": "Destroys the zones of a component."
+        },
+        {
+          "kind": "function",
+          "name": "getPropertyCallback",
+          "parameters": [
+            {
+              "name": "element",
+              "type": {
+                "text": "ArpaElement"
+              }
+            },
+            {
+              "name": "propertyName",
+              "type": {
+                "text": "string"
+              }
+            }
+          ],
+          "description": "Gets a callback property of a component defined as a string starting with ':'.",
+          "return": {
+            "type": {
+              "text": "(() => void) | undefined"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "handleCallbackProperty",
+          "parameters": [
+            {
+              "name": "element",
+              "type": {
+                "text": "ArpaElement"
+              }
+            },
+            {
+              "name": "propertyName",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "eventName",
+              "default": "''",
+              "type": {
+                "text": "string"
+              }
+            }
+          ],
+          "description": "Handles a callback property of a component defined as a string starting with ':'.\nThe callback method will be looked-up and called in the parent component.",
+          "return": {
+            "type": {
+              "text": "((...args: any[]) => void) | undefined"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "hasContent",
+          "parameters": [
+            {
+              "name": "element",
+              "type": {
+                "text": "ArpaElement"
+              }
+            },
+            {
+              "name": "property",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "config",
+              "default": "{}",
+              "optional": true,
+              "type": {
+                "text": "ArpaNodeConfigType"
+              }
+            }
+          ],
+          "description": "Checks if an element has content.",
+          "return": {
+            "type": {
+              "text": "boolean"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "canRender",
+          "parameters": [
+            {
+              "name": "element",
+              "type": {
+                "text": "ArpaElement"
+              }
+            },
+            {
+              "name": "timeout",
+              "default": "200",
+              "type": {
+                "text": "number"
+              }
+            }
+          ],
+          "description": "Checks if a component can render.",
+          "return": {
+            "type": {
+              "text": "boolean"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "getUserConfig",
+          "parameters": [
+            {
+              "name": "element",
+              "type": {
+                "text": "ArpaElement"
+              }
+            },
+            {
+              "name": "_config",
+              "default": "element._config",
+              "type": {
+                "text": "Record<string, unknown>"
+              }
+            }
+          ],
+          "description": "Returns the user configuration for the component excluding default values.",
+          "return": {
+            "type": {
+              "text": "Record<string, unknown>"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "sanitizeAttributeEffect",
+          "parameters": [
+            {
+              "name": "attr",
+              "type": {
+                "text": "Record<string, unknown>"
+              }
+            },
+            {
+              "name": "key",
+              "type": {
+                "text": "string"
+              }
+            }
+          ],
+          "description": "Sanitizes an element's attributes by removing any properties that should not be rendered as attributes.\nThis is necessary to prevent rendering internal configuration properties as HTML attributes, which could lead to unexpected behavior or security issues.",
+          "return": {
+            "type": {
+              "text": "Record<string, unknown> | void"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "sanitizeAttributes",
+          "parameters": [
+            {
+              "name": "element",
+              "type": {
+                "text": "ArpaElement"
+              }
+            },
+            {
+              "name": "attributes",
+              "type": {
+                "text": "Record<string, unknown>"
+              }
+            }
+          ],
+          "description": "Sanitizes an element's config to be rendered as attributes.",
+          "return": {
+            "type": {
+              "text": "Record<string, unknown>"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "getTemplatesSelector",
+          "parameters": [
+            {
+              "name": "element",
+              "type": {
+                "text": "ArpaElement"
+              }
+            }
+          ],
+          "description": "Returns the template selector.",
+          "return": {
+            "type": {
+              "text": "string | undefined"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "selectTemplates",
+          "parameters": [
+            {
+              "name": "element",
+              "type": {
+                "text": "ArpaElement"
+              }
+            },
+            {
+              "name": "templateSelector",
+              "default": "getTemplatesSelector(element)",
+              "optional": true,
+              "type": {
+                "text": "string"
+              }
+            }
+          ],
+          "description": "Selects the templates for the element.",
+          "return": {
+            "type": {
+              "text": "HTMLTemplateElement[]"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "getTemplateContainer",
+          "parameters": [
+            {
+              "name": "element",
+              "type": {
+                "text": "ArpaElement"
+              }
+            },
+            {
+              "name": "template",
+              "type": {
+                "text": "ArpaElementTemplateType"
+              }
+            }
+          ],
+          "description": "Returns HTML container for the template.",
+          "return": {
+            "type": {
+              "text": "HTMLElement | Element | DocumentFragment | null"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "renderTemplate",
+          "parameters": [
+            {
+              "name": "component",
+              "type": {
+                "text": "ArpaElement"
+              }
+            },
+            {
+              "name": "_template",
+              "optional": true,
+              "type": {
+                "text": "string | null"
+              }
+            },
+            {
+              "name": "vars",
+              "default": "component.getTemplateVars()",
+              "optional": true,
+              "type": {
+                "text": "Record<string, unknown>"
+              }
+            }
+          ],
+          "description": "Renders the template for the element.",
+          "return": {
+            "type": {
+              "text": "string"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "getTemplateAttributes",
+          "parameters": [
+            {
+              "name": "template",
+              "type": {
+                "text": "HTMLTemplateElement"
+              }
+            },
+            {
+              "name": "prefix",
+              "default": "''",
+              "optional": true,
+              "type": {
+                "text": "string"
+              }
+            }
+          ],
+          "description": "Gets the attributes from the template.",
+          "return": {
+            "type": {
+              "text": "Record<string, string | boolean | number>"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "applyTemplateAttributes",
+          "parameters": [
+            {
+              "name": "element",
+              "type": {
+                "text": "ArpaElement"
+              }
+            },
+            {
+              "name": "template",
+              "type": {
+                "text": "HTMLTemplateElement"
+              }
+            },
+            {
+              "name": "_payload",
+              "default": "{}",
+              "optional": true,
+              "type": {
+                "text": "Record<string, unknown>"
+              }
+            },
+            {
+              "name": "attributePrefix",
+              "default": "''",
+              "optional": true,
+              "type": {
+                "text": "string"
+              }
+            }
+          ],
+          "description": "Applies the template attributes to the element."
+        },
+        {
+          "kind": "function",
+          "name": "applyTemplate",
+          "parameters": [
+            {
+              "name": "element",
+              "type": {
+                "text": "T"
+              }
+            },
+            {
+              "name": "template",
+              "type": {
+                "text": "ArpaElementTemplateType"
+              }
+            },
+            {
+              "name": "payload",
+              "default": "{}",
+              "optional": true,
+              "type": {
+                "text": "ApplyTemplateConfigType"
+              }
+            }
+          ],
+          "description": "Sets the template for the element."
+        },
+        {
+          "kind": "function",
+          "name": "updateChildNode",
+          "parameters": [
+            {
+              "name": "element",
+              "type": {
+                "text": "ArpaElement"
+              }
+            },
+            {
+              "name": "name",
+              "type": {
+                "text": "string"
+              }
+            },
+            {
+              "name": "config",
+              "type": {
+                "text": "ArpaNodeConfigType"
+              }
+            }
+          ],
+          "description": "Updates a child element.",
+          "return": {
+            "type": {
+              "text": "HTMLElement | Node | null"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "initializeTemplateNodes",
+          "parameters": [
+            {
+              "name": "element",
+              "type": {
+                "text": "ArpaElement"
+              }
+            }
+          ],
+          "description": "Initializes the template nodes for the element."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "hasProperty",
+          "declaration": {
+            "name": "hasProperty",
+            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "getProperty",
+          "declaration": {
+            "name": "getProperty",
+            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "getArrayProperty",
+          "declaration": {
+            "name": "getArrayProperty",
+            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "processTemplateVariable",
+          "declaration": {
+            "name": "processTemplateVariable",
+            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "hasTemplateVariables",
+          "declaration": {
+            "name": "hasTemplateVariables",
+            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "processTemplate",
+          "declaration": {
+            "name": "processTemplate",
+            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "onDestroy",
+          "declaration": {
+            "name": "onDestroy",
+            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "getPropertyCallback",
+          "declaration": {
+            "name": "getPropertyCallback",
+            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "handleCallbackProperty",
+          "declaration": {
+            "name": "handleCallbackProperty",
+            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "hasContent",
+          "declaration": {
+            "name": "hasContent",
+            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "canRender",
+          "declaration": {
+            "name": "canRender",
+            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "getUserConfig",
+          "declaration": {
+            "name": "getUserConfig",
+            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "sanitizeAttributeEffect",
+          "declaration": {
+            "name": "sanitizeAttributeEffect",
+            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "sanitizeAttributes",
+          "declaration": {
+            "name": "sanitizeAttributes",
+            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "getTemplatesSelector",
+          "declaration": {
+            "name": "getTemplatesSelector",
+            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "selectTemplates",
+          "declaration": {
+            "name": "selectTemplates",
+            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "getTemplateContainer",
+          "declaration": {
+            "name": "getTemplateContainer",
+            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "renderTemplate",
+          "declaration": {
+            "name": "renderTemplate",
+            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "getTemplateAttributes",
+          "declaration": {
+            "name": "getTemplateAttributes",
+            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "applyTemplateAttributes",
+          "declaration": {
+            "name": "applyTemplateAttributes",
+            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "applyTemplate",
+          "declaration": {
+            "name": "applyTemplate",
+            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "updateChildNode",
+          "declaration": {
+            "name": "updateChildNode",
+            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "initializeTemplateNodes",
+          "declaration": {
+            "name": "initializeTemplateNodes",
+            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/components/arpaNode/stories/testElement.js",
       "declarations": [
         {
           "kind": "class",
           "description": "",
-          "name": "TruncateText",
+          "name": "TestElement",
           "members": [
             {
               "kind": "method",
@@ -17375,10 +20530,10 @@
                   }
                 }
               ],
-              "description": "Returns the default component config.",
+              "description": "Sets the configuration for the element.",
               "return": {
                 "type": {
-                  "text": "TruncateTextConfigType"
+                  "text": "ArpaElementConfigType"
                 }
               },
               "inheritedFrom": {
@@ -17388,70 +20543,11 @@
             },
             {
               "kind": "method",
-              "name": "_initialize",
+              "name": "_getTemplate",
               "inheritedFrom": {
                 "name": "ArpaElement",
                 "module": "src/components/arpaElement/arpaElement.js"
               }
-            },
-            {
-              "kind": "method",
-              "name": "_observeContents"
-            },
-            {
-              "kind": "method",
-              "name": "_onConnected",
-              "description": "Called when the element is connected to the DOM.",
-              "inheritedFrom": {
-                "name": "ArpaElement",
-                "module": "src/components/arpaElement/arpaElement.js"
-              }
-            },
-            {
-              "kind": "method",
-              "name": "getMaxLength"
-            },
-            {
-              "kind": "method",
-              "name": "getThreshold"
-            },
-            {
-              "kind": "method",
-              "name": "hasReadMoreButton"
-            },
-            {
-              "kind": "method",
-              "name": "getButtonLabel"
-            },
-            {
-              "kind": "method",
-              "name": "toggleTruncate"
-            },
-            {
-              "kind": "method",
-              "name": "renderButton",
-              "parameters": [
-                {
-                  "name": "isTruncated",
-                  "default": "this.isTruncated"
-                }
-              ]
-            },
-            {
-              "kind": "method",
-              "name": "getButtonClasses"
-            },
-            {
-              "kind": "method",
-              "name": "truncateText"
-            },
-            {
-              "kind": "method",
-              "name": "shouldTruncate"
-            },
-            {
-              "kind": "method",
-              "name": "showFullContent"
             },
             {
               "kind": "field",
@@ -17553,7 +20649,7 @@
               "kind": "field",
               "name": "templateChildren",
               "type": {
-                "text": "Record<string, ArpaElementChildOptionsType>"
+                "text": "Record<string, ArpaNodeConfigType>"
               },
               "default": "{}",
               "inheritedFrom": {
@@ -17600,6 +20696,14 @@
             {
               "kind": "method",
               "name": "_preInitialize",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
+              "name": "_initialize",
               "inheritedFrom": {
                 "name": "ArpaElement",
                 "module": "src/components/arpaElement/arpaElement.js"
@@ -17834,6 +20938,12 @@
             {
               "kind": "method",
               "name": "getPayload",
+              "parameters": [
+                {
+                  "name": "templateVars",
+                  "default": "this.templateVars || this.getTemplateVars()"
+                }
+              ],
               "inheritedFrom": {
                 "name": "ArpaElement",
                 "module": "src/components/arpaElement/arpaElement.js"
@@ -17913,7 +21023,7 @@
               "description": "Gets a template child by name.",
               "return": {
                 "type": {
-                  "text": "ArpaElementChildOptionsType | undefined"
+                  "text": "ArpaNodeConfigType | undefined"
                 }
               },
               "inheritedFrom": {
@@ -18031,7 +21141,7 @@
                   "description": "The configuration object.",
                   "optional": true,
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -18055,7 +21165,7 @@
                   "name": "config",
                   "description": "The configuration object.",
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -18086,7 +21196,7 @@
                   "description": "The configuration object.",
                   "optional": true,
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -18115,7 +21225,7 @@
               "description": "Gets the configuration for a child element.",
               "return": {
                 "type": {
-                  "text": "Record<string, ArpaElementChildOptionsType> | undefined"
+                  "text": "Record<string, ArpaNodeConfigType> | undefined"
                 }
               },
               "inheritedFrom": {
@@ -18161,7 +21271,7 @@
                   "name": "config",
                   "default": "{}",
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -18177,7 +21287,7 @@
               "description": "Gets the configuration for a child element.",
               "return": {
                 "type": {
-                  "text": "ArpaElementChildOptionsType | undefined"
+                  "text": "ArpaNodeConfigType | undefined"
                 }
               },
               "inheritedFrom": {
@@ -18540,6 +21650,15 @@
             },
             {
               "kind": "method",
+              "name": "_onConnected",
+              "description": "Called when the element is connected to the DOM.",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
+              "kind": "method",
               "name": "_onAttributeChanged",
               "parameters": [
                 {
@@ -18742,7 +21861,7 @@
                   "name": "options",
                   "optional": true,
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 },
                 {
@@ -18791,14 +21910,6 @@
                   "text": "string"
                 }
               },
-              "inheritedFrom": {
-                "name": "ArpaElement",
-                "module": "src/components/arpaElement/arpaElement.js"
-              }
-            },
-            {
-              "kind": "method",
-              "name": "_getTemplate",
               "inheritedFrom": {
                 "name": "ArpaElement",
                 "module": "src/components/arpaElement/arpaElement.js"
@@ -18890,6 +22001,12 @@
               }
             }
           ],
+          "superclass": {
+            "name": "ArpaElement",
+            "module": "/src/components/arpaElement/arpaElement.js"
+          },
+          "tagName": "test-element",
+          "customElement": true,
           "attributes": [
             {
               "name": "attributes",
@@ -18898,7 +22015,7 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "optional": false,
+              "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
                 "module": "src/components/arpaElement/arpaElement.js"
@@ -18911,7 +22028,7 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "optional": false,
+              "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
                 "module": "src/components/arpaElement/arpaElement.js"
@@ -18924,7 +22041,7 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "optional": false,
+              "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
                 "module": "src/components/arpaElement/arpaElement.js"
@@ -18937,8 +22054,8 @@
                 "summary": "string",
                 "detail": "string | HTMLElement | HTMLCollection | (() => string | HTMLElement | HTMLCollection)"
               },
-              "serializedAs": "property-only",
-              "optional": false,
+              "serializedAs": "string",
+              "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
                 "module": "src/components/arpaElement/arpaElement.js"
@@ -18951,7 +22068,7 @@
                 "summary": "boolean"
               },
               "serializedAs": "boolean-attr",
-              "optional": false,
+              "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
                 "module": "src/components/arpaElement/arpaElement.js"
@@ -18964,7 +22081,7 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "optional": false,
+              "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
                 "module": "src/components/arpaElement/arpaElement.js"
@@ -18973,11 +22090,11 @@
             {
               "name": "template-children",
               "type": {
-                "text": "Record<string, ArpaElementChildOptionsType> | undefined",
+                "text": "Record<string, ArpaNodeConfigType> | undefined",
                 "summary": "string"
               },
               "serializedAs": "json",
-              "optional": false,
+              "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
                 "module": "src/components/arpaElement/arpaElement.js"
@@ -18990,7 +22107,7 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "optional": false,
+              "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
                 "module": "src/components/arpaElement/arpaElement.js"
@@ -19003,8 +22120,8 @@
                 "summary": "string",
                 "detail": "Record<TemplateContentMode, HTMLTemplateElement> | Record<string, never>"
               },
-              "serializedAs": "property-only",
-              "optional": false,
+              "serializedAs": "json",
+              "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
                 "module": "src/components/arpaElement/arpaElement.js"
@@ -19018,7 +22135,7 @@
                 "detail": "('add' | 'content' | 'prepend' | 'append' | 'list-item' | 'view')[]"
               },
               "serializedAs": "json",
-              "optional": false,
+              "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
                 "module": "src/components/arpaElement/arpaElement.js"
@@ -19031,7 +22148,7 @@
                 "summary": "string"
               },
               "serializedAs": "json",
-              "optional": false,
+              "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
                 "module": "src/components/arpaElement/arpaElement.js"
@@ -19044,7 +22161,7 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "optional": false,
+              "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
                 "module": "src/components/arpaElement/arpaElement.js"
@@ -19057,7 +22174,7 @@
                 "summary": "unknown"
               },
               "serializedAs": "property-only",
-              "optional": false,
+              "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
                 "module": "src/components/arpaElement/arpaElement.js"
@@ -19070,7 +22187,7 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "optional": false,
+              "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
                 "module": "src/components/arpaElement/arpaElement.js"
@@ -19083,91 +22200,13 @@
                 "summary": "string"
               },
               "serializedAs": "string",
-              "optional": false,
+              "optional": true,
               "inheritedFrom": {
                 "name": "ArpaElement",
                 "module": "src/components/arpaElement/arpaElement.js"
               }
-            },
-            {
-              "name": "max-length",
-              "type": {
-                "text": "number",
-                "summary": "number"
-              },
-              "serializedAs": "number",
-              "optional": true
-            },
-            {
-              "name": "threshold",
-              "type": {
-                "text": "number",
-                "summary": "number"
-              },
-              "serializedAs": "number",
-              "optional": true
-            },
-            {
-              "name": "ellipsis",
-              "type": {
-                "text": "string",
-                "summary": "string"
-              },
-              "serializedAs": "string",
-              "optional": true
-            },
-            {
-              "name": "read-more-label",
-              "type": {
-                "text": "string",
-                "summary": "string"
-              },
-              "serializedAs": "string",
-              "optional": true
-            },
-            {
-              "name": "read-less-label",
-              "type": {
-                "text": "string",
-                "summary": "string"
-              },
-              "serializedAs": "string",
-              "optional": true
-            },
-            {
-              "name": "button-classes",
-              "type": {
-                "text": "string[]",
-                "summary": "string"
-              },
-              "serializedAs": "json",
-              "optional": true
-            },
-            {
-              "name": "has-read-more-button",
-              "type": {
-                "text": "boolean",
-                "summary": "boolean"
-              },
-              "serializedAs": "boolean-attr",
-              "optional": true
-            },
-            {
-              "name": "content-class",
-              "type": {
-                "text": "string",
-                "summary": "string"
-              },
-              "serializedAs": "string",
-              "optional": true
             }
-          ],
-          "superclass": {
-            "name": "ArpaElement",
-            "module": "/src/components/arpaElement/arpaElement.js"
-          },
-          "tagName": "truncate-text",
-          "customElement": true
+          ]
         }
       ],
       "exports": [
@@ -19175,1054 +22214,8 @@
           "kind": "js",
           "name": "default",
           "declaration": {
-            "name": "TruncateText",
-            "module": "src/components/truncateText/truncateText.js"
-          }
-        }
-      ]
-    },
-    {
-      "kind": "javascript-module",
-      "path": "src/components/arpaElement/helper/arpaElement.helper.js",
-      "declarations": [
-        {
-          "kind": "function",
-          "name": "hasProperty",
-          "parameters": [
-            {
-              "name": "element",
-              "description": "The element to check.",
-              "type": {
-                "text": "ArpaElement"
-              }
-            },
-            {
-              "name": "name",
-              "type": {
-                "text": "string"
-              }
-            },
-            {
-              "name": "config",
-              "default": "element._config",
-              "description": "The configuration object.",
-              "optional": true,
-              "type": {
-                "text": "Record<string, unknown>"
-              }
-            }
-          ],
-          "description": "Checks if an element has a property as an attribute or defined in the configuration.",
-          "return": {
-            "type": {
-              "text": "unknown | undefined"
-            }
-          }
-        },
-        {
-          "kind": "function",
-          "name": "getProperty",
-          "parameters": [
-            {
-              "name": "element",
-              "description": "The element to get the property from.",
-              "type": {
-                "text": "ArpaElement"
-              }
-            },
-            {
-              "name": "name",
-              "type": {
-                "text": "string"
-              }
-            },
-            {
-              "name": "config",
-              "default": "element._config ?? {}",
-              "description": "The configuration object.",
-              "optional": true,
-              "type": {
-                "text": "Record<string, unknown>"
-              }
-            }
-          ],
-          "description": "Gets the value of a property from the element's configuration or attributes.",
-          "return": {
-            "type": {
-              "text": "string | unknown"
-            }
-          }
-        },
-        {
-          "kind": "function",
-          "name": "getArrayProperty",
-          "parameters": [
-            {
-              "name": "element",
-              "description": "The element to get the property from.",
-              "type": {
-                "text": "ArpaElement"
-              }
-            },
-            {
-              "name": "name",
-              "type": {
-                "text": "string"
-              }
-            },
-            {
-              "name": "config",
-              "default": "element._config",
-              "description": "The configuration object.",
-              "optional": true,
-              "type": {
-                "text": "Record<string, unknown>"
-              }
-            }
-          ],
-          "description": "Gets the value of a property from the element's configuration or attributes as an array.",
-          "return": {
-            "type": {
-              "text": "any[] | unknown"
-            }
-          }
-        },
-        {
-          "kind": "function",
-          "name": "processTemplateVariable",
-          "parameters": [
-            {
-              "name": "name",
-              "type": {
-                "text": "string"
-              }
-            },
-            {
-              "name": "value",
-              "type": {
-                "text": "unknown"
-              }
-            },
-            {
-              "name": "element",
-              "description": "Optional ArpaElement instance.",
-              "optional": true,
-              "type": {
-                "text": "ArpaElement"
-              }
-            }
-          ],
-          "description": "Processes a template variable.",
-          "return": {
-            "type": {
-              "text": "unknown"
-            }
-          }
-        },
-        {
-          "kind": "function",
-          "name": "processTemplate",
-          "parameters": [
-            {
-              "name": "template",
-              "description": "The template string.",
-              "type": {
-                "text": "string"
-              }
-            },
-            {
-              "name": "props",
-              "default": "{}",
-              "description": "The props to replace the placeholders with.",
-              "type": {
-                "text": "Record<string, unknown>"
-              }
-            },
-            {
-              "name": "element",
-              "description": "Optional ArpaElement instance.",
-              "optional": true,
-              "type": {
-                "text": "ArpaElement"
-              }
-            }
-          ],
-          "description": "Processes a template string and replaces the placeholders with the provided props.",
-          "return": {
-            "type": {
-              "text": "string"
-            }
-          }
-        },
-        {
-          "kind": "function",
-          "name": "onDestroy",
-          "parameters": [
-            {
-              "name": "element",
-              "description": "The component to destroy.",
-              "type": {
-                "text": "ArpaElement"
-              }
-            }
-          ],
-          "description": "Destroys the zones of a component."
-        },
-        {
-          "kind": "function",
-          "name": "getPropertyCallback",
-          "parameters": [
-            {
-              "name": "element",
-              "type": {
-                "text": "ArpaElement"
-              }
-            },
-            {
-              "name": "propertyName",
-              "type": {
-                "text": "string"
-              }
-            }
-          ],
-          "description": "Gets a callback property of a component defined as a string starting with ':'.",
-          "return": {
-            "type": {
-              "text": "(() => void) | undefined"
-            }
-          }
-        },
-        {
-          "kind": "function",
-          "name": "handleCallbackProperty",
-          "parameters": [
-            {
-              "name": "element",
-              "description": "The element to handle the callback for.",
-              "type": {
-                "text": "ArpaElement"
-              }
-            },
-            {
-              "name": "propertyName",
-              "description": "The name of the property to check.",
-              "type": {
-                "text": "string"
-              }
-            },
-            {
-              "name": "eventName",
-              "default": "''",
-              "description": "The name of the event to listen for.",
-              "type": {
-                "text": "string"
-              }
-            }
-          ],
-          "description": "Handles a callback property of a component defined as a string starting with ':'.\nThe callback method will be looked-up and called in the parent component.",
-          "return": {
-            "type": {
-              "text": "((...args: any[]) => void) | undefined"
-            }
-          }
-        },
-        {
-          "kind": "function",
-          "name": "hasContent",
-          "parameters": [
-            {
-              "name": "element",
-              "type": {
-                "text": "ArpaElement"
-              }
-            },
-            {
-              "name": "property",
-              "type": {
-                "text": "string"
-              }
-            },
-            {
-              "name": "config",
-              "default": "{}",
-              "description": "The configuration object.",
-              "optional": true,
-              "type": {
-                "text": "ArpaElementChildOptionsType"
-              }
-            }
-          ],
-          "description": "Checks if an element has content.",
-          "return": {
-            "type": {
-              "text": "boolean"
-            }
-          }
-        },
-        {
-          "kind": "function",
-          "name": "canRender",
-          "parameters": [
-            {
-              "name": "element",
-              "description": "The component to check.",
-              "type": {
-                "text": "ArpaElement"
-              }
-            },
-            {
-              "name": "timeout",
-              "default": "200",
-              "type": {
-                "text": "number"
-              }
-            }
-          ],
-          "description": "Checks if a component can render.",
-          "return": {
-            "type": {
-              "text": "boolean"
-            }
-          }
-        },
-        {
-          "kind": "function",
-          "name": "getUserConfig",
-          "parameters": [
-            {
-              "name": "element",
-              "type": {
-                "text": "ArpaElement"
-              }
-            },
-            {
-              "name": "_config",
-              "default": "element._config",
-              "type": {
-                "text": "Record<string, unknown>"
-              }
-            }
-          ],
-          "description": "Returns the user configuration for the component excluding default values.",
-          "return": {
-            "type": {
-              "text": "Record<string, unknown>"
-            }
-          }
-        },
-        {
-          "kind": "function",
-          "name": "sanitizeAttributeEffect",
-          "parameters": [
-            {
-              "name": "attr",
-              "type": {
-                "text": "Record<string, unknown>"
-              }
-            },
-            {
-              "name": "key",
-              "type": {
-                "text": "string"
-              }
-            }
-          ],
-          "description": "Sanitizes an element's attributes by removing any properties that should not be rendered as attributes.\nThis is necessary to prevent rendering internal configuration properties as HTML attributes, which could lead to unexpected behavior or security issues.",
-          "return": {
-            "type": {
-              "text": "Record<string, unknown> | void"
-            }
-          }
-        },
-        {
-          "kind": "function",
-          "name": "sanitizeAttributes",
-          "parameters": [
-            {
-              "name": "element",
-              "type": {
-                "text": "ArpaElement"
-              }
-            },
-            {
-              "name": "attributes",
-              "type": {
-                "text": "Record<string, unknown>"
-              }
-            }
-          ],
-          "description": "Sanitizes an element's config to be rendered as attributes.",
-          "return": {
-            "type": {
-              "text": "Record<string, unknown>"
-            }
-          }
-        },
-        {
-          "kind": "function",
-          "name": "getTemplatesSelector",
-          "parameters": [
-            {
-              "name": "element",
-              "type": {
-                "text": "ArpaElement"
-              }
-            }
-          ],
-          "description": "Returns the template selector.",
-          "return": {
-            "type": {
-              "text": "string | undefined"
-            }
-          }
-        },
-        {
-          "kind": "function",
-          "name": "selectTemplates",
-          "parameters": [
-            {
-              "name": "element",
-              "type": {
-                "text": "ArpaElement"
-              }
-            },
-            {
-              "name": "templateSelector",
-              "default": "getTemplatesSelector(element)",
-              "description": "The selector for the templates.",
-              "optional": true,
-              "type": {
-                "text": "string"
-              }
-            }
-          ],
-          "description": "Selects the templates for the element.",
-          "return": {
-            "type": {
-              "text": "HTMLTemplateElement[]"
-            }
-          }
-        },
-        {
-          "kind": "function",
-          "name": "getTemplateContainer",
-          "parameters": [
-            {
-              "name": "element",
-              "type": {
-                "text": "ArpaElement"
-              }
-            },
-            {
-              "name": "template",
-              "type": {
-                "text": "ArpaElementTemplateType"
-              }
-            }
-          ],
-          "description": "Returns HTML container for the template.",
-          "return": {
-            "type": {
-              "text": "HTMLElement | Element | DocumentFragment | null"
-            }
-          }
-        },
-        {
-          "kind": "function",
-          "name": "renderTemplate",
-          "parameters": [
-            {
-              "name": "component",
-              "description": "The component to render.",
-              "type": {
-                "text": "ArpaElement"
-              }
-            },
-            {
-              "name": "_template",
-              "description": "The template to render.",
-              "optional": true,
-              "type": {
-                "text": "string | null"
-              }
-            },
-            {
-              "name": "vars",
-              "default": "component.getTemplateVars()",
-              "description": "The variables to use in the template.",
-              "optional": true,
-              "type": {
-                "text": "Record<string, unknown>"
-              }
-            }
-          ],
-          "description": "Renders the template for the element.",
-          "return": {
-            "type": {
-              "text": "string"
-            }
-          }
-        },
-        {
-          "kind": "function",
-          "name": "getTemplateAttributes",
-          "parameters": [
-            {
-              "name": "template",
-              "type": {
-                "text": "HTMLTemplateElement"
-              }
-            },
-            {
-              "name": "prefix",
-              "default": "''",
-              "optional": true,
-              "type": {
-                "text": "string"
-              }
-            }
-          ],
-          "description": "Gets the attributes from the template.",
-          "return": {
-            "type": {
-              "text": "Record<string, string | boolean | number>"
-            }
-          }
-        },
-        {
-          "kind": "function",
-          "name": "applyTemplateAttributes",
-          "parameters": [
-            {
-              "name": "element",
-              "type": {
-                "text": "ArpaElement"
-              }
-            },
-            {
-              "name": "template",
-              "type": {
-                "text": "HTMLTemplateElement"
-              }
-            },
-            {
-              "name": "_payload",
-              "default": "{}",
-              "optional": true,
-              "type": {
-                "text": "Record<string, unknown>"
-              }
-            },
-            {
-              "name": "attributePrefix",
-              "default": "''",
-              "optional": true,
-              "type": {
-                "text": "string"
-              }
-            }
-          ],
-          "description": "Applies the template attributes to the element."
-        },
-        {
-          "kind": "function",
-          "name": "applyTemplate",
-          "parameters": [
-            {
-              "name": "element",
-              "type": {
-                "text": "T"
-              }
-            },
-            {
-              "name": "template",
-              "type": {
-                "text": "ArpaElementTemplateType"
-              }
-            },
-            {
-              "name": "payload",
-              "default": "{}",
-              "optional": true,
-              "type": {
-                "text": "ApplyTemplateConfigType"
-              }
-            }
-          ],
-          "description": "Sets the template for the element."
-        },
-        {
-          "kind": "function",
-          "name": "getChildClassName",
-          "parameters": [
-            {
-              "name": "element",
-              "description": "The component to check.",
-              "type": {
-                "text": "ArpaElement"
-              }
-            },
-            {
-              "name": "name",
-              "type": {
-                "text": "string"
-              }
-            }
-          ],
-          "description": "Computes the class name for a child element.",
-          "return": {
-            "type": {
-              "text": "string"
-            }
-          }
-        },
-        {
-          "kind": "function",
-          "name": "canRenderChild",
-          "parameters": [
-            {
-              "name": "element",
-              "description": "The component to check.",
-              "type": {
-                "text": "ArpaElement"
-              }
-            },
-            {
-              "name": "name",
-              "type": {
-                "text": "string"
-              }
-            },
-            {
-              "name": "config",
-              "default": "{}",
-              "description": "The configuration object.",
-              "optional": true,
-              "type": {
-                "text": "ArpaElementChildOptionsType"
-              }
-            }
-          ],
-          "description": "Renders a child element.",
-          "return": {
-            "type": {
-              "text": "boolean"
-            }
-          }
-        },
-        {
-          "kind": "function",
-          "name": "getDefaultChildConfig",
-          "parameters": [
-            {
-              "name": "element",
-              "description": "The component to check.",
-              "type": {
-                "text": "ArpaElement"
-              }
-            },
-            {
-              "name": "name",
-              "type": {
-                "text": "string"
-              }
-            }
-          ],
-          "description": "Gets the default configuration for a child element.",
-          "return": {
-            "type": {
-              "text": "ArpaElementChildOptionsType"
-            }
-          }
-        },
-        {
-          "kind": "function",
-          "name": "getChildAttributes",
-          "parameters": [
-            {
-              "name": "element",
-              "type": {
-                "text": "ArpaElement"
-              }
-            },
-            {
-              "name": "name",
-              "type": {
-                "text": "string"
-              }
-            },
-            {
-              "name": "config",
-              "default": "{}",
-              "description": "The configuration object.",
-              "optional": true,
-              "type": {
-                "text": "ArpaElementChildOptionsType"
-              }
-            },
-            {
-              "name": "attributes",
-              "default": "{}",
-              "description": "Additional attributes to add to the element.",
-              "optional": true,
-              "type": {
-                "text": "Record<string, unknown>"
-              }
-            }
-          ],
-          "description": "Gets the attributes for a child element.",
-          "return": {
-            "type": {
-              "text": "Record<string, string>"
-            }
-          }
-        },
-        {
-          "kind": "function",
-          "name": "getChildContent",
-          "parameters": [
-            {
-              "name": "element",
-              "description": "The component to check.",
-              "type": {
-                "text": "ArpaElement"
-              }
-            },
-            {
-              "name": "name",
-              "type": {
-                "text": "string"
-              }
-            },
-            {
-              "name": "config",
-              "default": "{}",
-              "description": "The configuration object.",
-              "optional": true,
-              "type": {
-                "text": "ArpaElementChildOptionsType"
-              }
-            }
-          ],
-          "description": "Gets the content for a child element.",
-          "return": {
-            "type": {
-              "text": "string"
-            }
-          }
-        },
-        {
-          "kind": "function",
-          "name": "renderChild",
-          "parameters": [
-            {
-              "name": "element",
-              "description": "The component to check.",
-              "type": {
-                "text": "ArpaElement"
-              }
-            },
-            {
-              "name": "name",
-              "type": {
-                "text": "string"
-              }
-            },
-            {
-              "name": "config",
-              "default": "{}",
-              "description": "The configuration object.",
-              "optional": true,
-              "type": {
-                "text": "ArpaElementChildOptionsType"
-              }
-            },
-            {
-              "name": "attributes",
-              "default": "{}",
-              "description": "Additional attributes to add to the element.",
-              "optional": true,
-              "type": {
-                "text": "Record<string, string>"
-              }
-            }
-          ],
-          "description": "Renders a child element.",
-          "return": {
-            "type": {
-              "text": "string"
-            }
-          }
-        },
-        {
-          "kind": "function",
-          "name": "updateChildNode",
-          "parameters": [
-            {
-              "name": "element",
-              "type": {
-                "text": "ArpaElement"
-              }
-            },
-            {
-              "name": "name",
-              "type": {
-                "text": "string"
-              }
-            },
-            {
-              "name": "config",
-              "description": "The configuration object.",
-              "type": {
-                "text": "ArpaElementChildOptionsType"
-              }
-            }
-          ],
-          "description": "Updates a child element.",
-          "return": {
-            "type": {
-              "text": "HTMLElement | Node | null"
-            }
-          }
-        },
-        {
-          "kind": "function",
-          "name": "initializeTemplateNodes",
-          "parameters": [
-            {
-              "name": "element",
-              "description": "The component to check.",
-              "type": {
-                "text": "ArpaElement"
-              }
-            }
-          ],
-          "description": "Initializes the template nodes for the element."
-        }
-      ],
-      "exports": [
-        {
-          "kind": "js",
-          "name": "hasProperty",
-          "declaration": {
-            "name": "hasProperty",
-            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "getProperty",
-          "declaration": {
-            "name": "getProperty",
-            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "getArrayProperty",
-          "declaration": {
-            "name": "getArrayProperty",
-            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "processTemplateVariable",
-          "declaration": {
-            "name": "processTemplateVariable",
-            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "processTemplate",
-          "declaration": {
-            "name": "processTemplate",
-            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "onDestroy",
-          "declaration": {
-            "name": "onDestroy",
-            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "getPropertyCallback",
-          "declaration": {
-            "name": "getPropertyCallback",
-            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "handleCallbackProperty",
-          "declaration": {
-            "name": "handleCallbackProperty",
-            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "hasContent",
-          "declaration": {
-            "name": "hasContent",
-            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "canRender",
-          "declaration": {
-            "name": "canRender",
-            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "getUserConfig",
-          "declaration": {
-            "name": "getUserConfig",
-            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "sanitizeAttributeEffect",
-          "declaration": {
-            "name": "sanitizeAttributeEffect",
-            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "sanitizeAttributes",
-          "declaration": {
-            "name": "sanitizeAttributes",
-            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "getTemplatesSelector",
-          "declaration": {
-            "name": "getTemplatesSelector",
-            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "selectTemplates",
-          "declaration": {
-            "name": "selectTemplates",
-            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "getTemplateContainer",
-          "declaration": {
-            "name": "getTemplateContainer",
-            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "renderTemplate",
-          "declaration": {
-            "name": "renderTemplate",
-            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "getTemplateAttributes",
-          "declaration": {
-            "name": "getTemplateAttributes",
-            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "applyTemplateAttributes",
-          "declaration": {
-            "name": "applyTemplateAttributes",
-            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "applyTemplate",
-          "declaration": {
-            "name": "applyTemplate",
-            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "getChildClassName",
-          "declaration": {
-            "name": "getChildClassName",
-            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "canRenderChild",
-          "declaration": {
-            "name": "canRenderChild",
-            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "getDefaultChildConfig",
-          "declaration": {
-            "name": "getDefaultChildConfig",
-            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "getChildAttributes",
-          "declaration": {
-            "name": "getChildAttributes",
-            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "getChildContent",
-          "declaration": {
-            "name": "getChildContent",
-            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "renderChild",
-          "declaration": {
-            "name": "renderChild",
-            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "updateChildNode",
-          "declaration": {
-            "name": "updateChildNode",
-            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
-          }
-        },
-        {
-          "kind": "js",
-          "name": "initializeTemplateNodes",
-          "declaration": {
-            "name": "initializeTemplateNodes",
-            "module": "src/components/arpaElement/helper/arpaElement.helper.js"
+            "name": "TestElement",
+            "module": "src/components/arpaNode/stories/testElement.js"
           }
         }
       ]
@@ -20682,7 +22675,7 @@
               "kind": "field",
               "name": "templateChildren",
               "type": {
-                "text": "Record<string, ArpaElementChildOptionsType>"
+                "text": "Record<string, ArpaNodeConfigType>"
               },
               "default": "{}",
               "inheritedFrom": {
@@ -20955,6 +22948,12 @@
             {
               "kind": "method",
               "name": "getPayload",
+              "parameters": [
+                {
+                  "name": "templateVars",
+                  "default": "this.templateVars || this.getTemplateVars()"
+                }
+              ],
               "inheritedFrom": {
                 "name": "ArpaElement",
                 "module": "src/components/arpaElement/arpaElement.js"
@@ -21020,7 +23019,7 @@
               "description": "Gets a template child by name.",
               "return": {
                 "type": {
-                  "text": "ArpaElementChildOptionsType | undefined"
+                  "text": "ArpaNodeConfigType | undefined"
                 }
               },
               "inheritedFrom": {
@@ -21138,7 +23137,7 @@
                   "description": "The configuration object.",
                   "optional": true,
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -21162,7 +23161,7 @@
                   "name": "config",
                   "description": "The configuration object.",
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -21193,7 +23192,7 @@
                   "description": "The configuration object.",
                   "optional": true,
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -21222,7 +23221,7 @@
               "description": "Gets the configuration for a child element.",
               "return": {
                 "type": {
-                  "text": "Record<string, ArpaElementChildOptionsType> | undefined"
+                  "text": "Record<string, ArpaNodeConfigType> | undefined"
                 }
               },
               "inheritedFrom": {
@@ -21268,7 +23267,7 @@
                   "name": "config",
                   "default": "{}",
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -21284,7 +23283,7 @@
               "description": "Gets the configuration for a child element.",
               "return": {
                 "type": {
-                  "text": "ArpaElementChildOptionsType | undefined"
+                  "text": "ArpaNodeConfigType | undefined"
                 }
               },
               "inheritedFrom": {
@@ -21804,7 +23803,7 @@
                   "name": "options",
                   "optional": true,
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 },
                 {
@@ -22027,7 +24026,7 @@
             {
               "name": "template-children",
               "type": {
-                "text": "Record<string, ArpaElementChildOptionsType> | undefined",
+                "text": "Record<string, ArpaNodeConfigType> | undefined",
                 "summary": "string"
               },
               "serializedAs": "json",
@@ -22840,7 +24839,7 @@
               "kind": "field",
               "name": "templateChildren",
               "type": {
-                "text": "Record<string, ArpaElementChildOptionsType>"
+                "text": "Record<string, ArpaNodeConfigType>"
               },
               "default": "{}",
               "inheritedFrom": {
@@ -23113,6 +25112,12 @@
             {
               "kind": "method",
               "name": "getPayload",
+              "parameters": [
+                {
+                  "name": "templateVars",
+                  "default": "this.templateVars || this.getTemplateVars()"
+                }
+              ],
               "inheritedFrom": {
                 "name": "ArpaElement",
                 "module": "src/components/arpaElement/arpaElement.js"
@@ -23178,7 +25183,7 @@
               "description": "Gets a template child by name.",
               "return": {
                 "type": {
-                  "text": "ArpaElementChildOptionsType | undefined"
+                  "text": "ArpaNodeConfigType | undefined"
                 }
               },
               "inheritedFrom": {
@@ -23296,7 +25301,7 @@
                   "description": "The configuration object.",
                   "optional": true,
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -23320,7 +25325,7 @@
                   "name": "config",
                   "description": "The configuration object.",
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -23351,7 +25356,7 @@
                   "description": "The configuration object.",
                   "optional": true,
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -23380,7 +25385,7 @@
               "description": "Gets the configuration for a child element.",
               "return": {
                 "type": {
-                  "text": "Record<string, ArpaElementChildOptionsType> | undefined"
+                  "text": "Record<string, ArpaNodeConfigType> | undefined"
                 }
               },
               "inheritedFrom": {
@@ -23426,7 +25431,7 @@
                   "name": "config",
                   "default": "{}",
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -23442,7 +25447,7 @@
               "description": "Gets the configuration for a child element.",
               "return": {
                 "type": {
-                  "text": "ArpaElementChildOptionsType | undefined"
+                  "text": "ArpaNodeConfigType | undefined"
                 }
               },
               "inheritedFrom": {
@@ -23962,7 +25967,7 @@
                   "name": "options",
                   "optional": true,
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 },
                 {
@@ -24185,7 +26190,7 @@
             {
               "name": "template-children",
               "type": {
-                "text": "Record<string, ArpaElementChildOptionsType> | undefined",
+                "text": "Record<string, ArpaNodeConfigType> | undefined",
                 "summary": "string"
               },
               "serializedAs": "json",
@@ -24875,7 +26880,7 @@
               "kind": "field",
               "name": "templateChildren",
               "type": {
-                "text": "Record<string, ArpaElementChildOptionsType>"
+                "text": "Record<string, ArpaNodeConfigType>"
               },
               "default": "{}",
               "inheritedFrom": {
@@ -25148,6 +27153,12 @@
             {
               "kind": "method",
               "name": "getPayload",
+              "parameters": [
+                {
+                  "name": "templateVars",
+                  "default": "this.templateVars || this.getTemplateVars()"
+                }
+              ],
               "inheritedFrom": {
                 "name": "ArpaElement",
                 "module": "src/components/arpaElement/arpaElement.js"
@@ -25213,7 +27224,7 @@
               "description": "Gets a template child by name.",
               "return": {
                 "type": {
-                  "text": "ArpaElementChildOptionsType | undefined"
+                  "text": "ArpaNodeConfigType | undefined"
                 }
               },
               "inheritedFrom": {
@@ -25331,7 +27342,7 @@
                   "description": "The configuration object.",
                   "optional": true,
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -25355,7 +27366,7 @@
                   "name": "config",
                   "description": "The configuration object.",
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -25386,7 +27397,7 @@
                   "description": "The configuration object.",
                   "optional": true,
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -25415,7 +27426,7 @@
               "description": "Gets the configuration for a child element.",
               "return": {
                 "type": {
-                  "text": "Record<string, ArpaElementChildOptionsType> | undefined"
+                  "text": "Record<string, ArpaNodeConfigType> | undefined"
                 }
               },
               "inheritedFrom": {
@@ -25461,7 +27472,7 @@
                   "name": "config",
                   "default": "{}",
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -25477,7 +27488,7 @@
               "description": "Gets the configuration for a child element.",
               "return": {
                 "type": {
-                  "text": "ArpaElementChildOptionsType | undefined"
+                  "text": "ArpaNodeConfigType | undefined"
                 }
               },
               "inheritedFrom": {
@@ -26005,7 +28016,7 @@
                   "name": "options",
                   "optional": true,
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 },
                 {
@@ -26228,7 +28239,7 @@
             {
               "name": "template-children",
               "type": {
-                "text": "Record<string, ArpaElementChildOptionsType> | undefined",
+                "text": "Record<string, ArpaNodeConfigType> | undefined",
                 "summary": "string"
               },
               "serializedAs": "json",
@@ -26748,7 +28759,7 @@
               "kind": "field",
               "name": "templateChildren",
               "type": {
-                "text": "Record<string, ArpaElementChildOptionsType>"
+                "text": "Record<string, ArpaNodeConfigType>"
               },
               "default": "{}",
               "inheritedFrom": {
@@ -27029,6 +29040,12 @@
             {
               "kind": "method",
               "name": "getPayload",
+              "parameters": [
+                {
+                  "name": "templateVars",
+                  "default": "this.templateVars || this.getTemplateVars()"
+                }
+              ],
               "inheritedFrom": {
                 "name": "ArpaElement",
                 "module": "src/components/arpaElement/arpaElement.js"
@@ -27108,7 +29125,7 @@
               "description": "Gets a template child by name.",
               "return": {
                 "type": {
-                  "text": "ArpaElementChildOptionsType | undefined"
+                  "text": "ArpaNodeConfigType | undefined"
                 }
               },
               "inheritedFrom": {
@@ -27226,7 +29243,7 @@
                   "description": "The configuration object.",
                   "optional": true,
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -27250,7 +29267,7 @@
                   "name": "config",
                   "description": "The configuration object.",
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -27281,7 +29298,7 @@
                   "description": "The configuration object.",
                   "optional": true,
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -27310,7 +29327,7 @@
               "description": "Gets the configuration for a child element.",
               "return": {
                 "type": {
-                  "text": "Record<string, ArpaElementChildOptionsType> | undefined"
+                  "text": "Record<string, ArpaNodeConfigType> | undefined"
                 }
               },
               "inheritedFrom": {
@@ -27356,7 +29373,7 @@
                   "name": "config",
                   "default": "{}",
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -27372,7 +29389,7 @@
               "description": "Gets the configuration for a child element.",
               "return": {
                 "type": {
-                  "text": "ArpaElementChildOptionsType | undefined"
+                  "text": "ArpaNodeConfigType | undefined"
                 }
               },
               "inheritedFrom": {
@@ -27946,7 +29963,7 @@
                   "name": "options",
                   "optional": true,
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 },
                 {
@@ -28177,7 +30194,7 @@
             {
               "name": "template-children",
               "type": {
-                "text": "Record<string, ArpaElementChildOptionsType> | undefined",
+                "text": "Record<string, ArpaNodeConfigType> | undefined",
                 "summary": "string"
               },
               "serializedAs": "json",
@@ -28363,6 +30380,18 @@
               }
             },
             {
+              "kind": "method",
+              "name": "_getTemplate2"
+            },
+            {
+              "kind": "method",
+              "name": "_getTemplate",
+              "inheritedFrom": {
+                "name": "ArpaElement",
+                "module": "src/components/arpaElement/arpaElement.js"
+              }
+            },
+            {
               "kind": "field",
               "name": "_bindings",
               "type": {
@@ -28462,7 +30491,7 @@
               "kind": "field",
               "name": "templateChildren",
               "type": {
-                "text": "Record<string, ArpaElementChildOptionsType>"
+                "text": "Record<string, ArpaNodeConfigType>"
               },
               "default": "{}",
               "inheritedFrom": {
@@ -28751,6 +30780,12 @@
             {
               "kind": "method",
               "name": "getPayload",
+              "parameters": [
+                {
+                  "name": "templateVars",
+                  "default": "this.templateVars || this.getTemplateVars()"
+                }
+              ],
               "inheritedFrom": {
                 "name": "ArpaElement",
                 "module": "src/components/arpaElement/arpaElement.js"
@@ -28830,7 +30865,7 @@
               "description": "Gets a template child by name.",
               "return": {
                 "type": {
-                  "text": "ArpaElementChildOptionsType | undefined"
+                  "text": "ArpaNodeConfigType | undefined"
                 }
               },
               "inheritedFrom": {
@@ -28948,7 +30983,7 @@
                   "description": "The configuration object.",
                   "optional": true,
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -28972,7 +31007,7 @@
                   "name": "config",
                   "description": "The configuration object.",
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -29003,7 +31038,7 @@
                   "description": "The configuration object.",
                   "optional": true,
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -29032,7 +31067,7 @@
               "description": "Gets the configuration for a child element.",
               "return": {
                 "type": {
-                  "text": "Record<string, ArpaElementChildOptionsType> | undefined"
+                  "text": "Record<string, ArpaNodeConfigType> | undefined"
                 }
               },
               "inheritedFrom": {
@@ -29078,7 +31113,7 @@
                   "name": "config",
                   "default": "{}",
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -29094,7 +31129,7 @@
               "description": "Gets the configuration for a child element.",
               "return": {
                 "type": {
-                  "text": "ArpaElementChildOptionsType | undefined"
+                  "text": "ArpaNodeConfigType | undefined"
                 }
               },
               "inheritedFrom": {
@@ -29668,7 +31703,7 @@
                   "name": "options",
                   "optional": true,
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 },
                 {
@@ -29717,14 +31752,6 @@
                   "text": "string"
                 }
               },
-              "inheritedFrom": {
-                "name": "ArpaElement",
-                "module": "src/components/arpaElement/arpaElement.js"
-              }
-            },
-            {
-              "kind": "method",
-              "name": "_getTemplate",
               "inheritedFrom": {
                 "name": "ArpaElement",
                 "module": "src/components/arpaElement/arpaElement.js"
@@ -29899,7 +31926,7 @@
             {
               "name": "template-children",
               "type": {
-                "text": "Record<string, ArpaElementChildOptionsType> | undefined",
+                "text": "Record<string, ArpaNodeConfigType> | undefined",
                 "summary": "string"
               },
               "serializedAs": "json",
@@ -30335,7 +32362,7 @@
               "kind": "field",
               "name": "templateChildren",
               "type": {
-                "text": "Record<string, ArpaElementChildOptionsType>"
+                "text": "Record<string, ArpaNodeConfigType>"
               },
               "default": "{}",
               "inheritedFrom": {
@@ -30624,6 +32651,12 @@
             {
               "kind": "method",
               "name": "getPayload",
+              "parameters": [
+                {
+                  "name": "templateVars",
+                  "default": "this.templateVars || this.getTemplateVars()"
+                }
+              ],
               "inheritedFrom": {
                 "name": "ArpaElement",
                 "module": "src/components/arpaElement/arpaElement.js"
@@ -30703,7 +32736,7 @@
               "description": "Gets a template child by name.",
               "return": {
                 "type": {
-                  "text": "ArpaElementChildOptionsType | undefined"
+                  "text": "ArpaNodeConfigType | undefined"
                 }
               },
               "inheritedFrom": {
@@ -30821,7 +32854,7 @@
                   "description": "The configuration object.",
                   "optional": true,
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -30845,7 +32878,7 @@
                   "name": "config",
                   "description": "The configuration object.",
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -30876,7 +32909,7 @@
                   "description": "The configuration object.",
                   "optional": true,
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -30905,7 +32938,7 @@
               "description": "Gets the configuration for a child element.",
               "return": {
                 "type": {
-                  "text": "Record<string, ArpaElementChildOptionsType> | undefined"
+                  "text": "Record<string, ArpaNodeConfigType> | undefined"
                 }
               },
               "inheritedFrom": {
@@ -30951,7 +32984,7 @@
                   "name": "config",
                   "default": "{}",
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 }
               ],
@@ -30967,7 +33000,7 @@
               "description": "Gets the configuration for a child element.",
               "return": {
                 "type": {
-                  "text": "ArpaElementChildOptionsType | undefined"
+                  "text": "ArpaNodeConfigType | undefined"
                 }
               },
               "inheritedFrom": {
@@ -31521,7 +33554,7 @@
                   "name": "options",
                   "optional": true,
                   "type": {
-                    "text": "ArpaElementChildOptionsType"
+                    "text": "ArpaNodeConfigType"
                   }
                 },
                 {
@@ -31752,7 +33785,7 @@
             {
               "name": "template-children",
               "type": {
-                "text": "Record<string, ArpaElementChildOptionsType> | undefined",
+                "text": "Record<string, ArpaNodeConfigType> | undefined",
                 "summary": "string"
               },
               "serializedAs": "json",

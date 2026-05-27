@@ -11,7 +11,7 @@ const html = String.raw;
 
 /** @type {Meta} */
 const ImageStory = {
-    title: 'UI/Components/Image',
+    title: 'UI/Image',
     tags: [],
     component: 'arpa-image',
     render: args => {

@@ -1,7 +1,7 @@
 /**
  * @typedef {import('./arpaElement.types').ArpaElementConfigType} ArpaElementConfigType
- * @typedef {import('./arpaElement.types').ArpaElementChildOptionsType} ArpaElementChildOptionsType
  * @typedef {import('./arpaElement.types').TemplateContentMode} TemplateContentMode
+ * @typedef {import('../arpaNode/arpaNode.types').ArpaNodeConfigType} ArpaNodeConfigType
  * @typedef {import('./arpaElement.types').TemplatesType} TemplatesType
  * @typedef {import('./arpaElement.types').ArpaElementTemplateType} ArpaElementTemplateType
  * @typedef {import('../../tools/zoneTool.types.js').ZoneToolPlaceZoneType} ZoneToolPlaceZoneType
@@ -12,9 +12,10 @@ import { defineCustomElement, attr, setNodes, bind, classNames } from '@arpadroi
 import { handleZones, zoneMixin, hasZone, getZone, extractZones } from '../../tools/zoneTool';
 import { hasProperty, getProperty, getArrayProperty, getPropertyCallback } from './helper/arpaElement.helper';
 import { onDestroy, handleCallbackProperty, sanitizeAttributes } from './helper/arpaElement.helper';
-import { canRender, renderChild, hasContent, renderTemplate } from './helper/arpaElement.helper';
-import { initializeTemplateNodes, updateChildNode, selectTemplates } from './helper/arpaElement.helper';
+import { canRender, hasContent, renderTemplate } from './helper/arpaElement.helper';
+import { updateChildNode, selectTemplates } from './helper/arpaElement.helper';
 import { I18nTool, I18n } from '@arpadroid/i18n';
+import { getChildClassName, renderChild } from '../arpaNode/arpaNode.helper';
 const { arpaElementI18n } = I18nTool;
 
 class ArpaElement extends HTMLElement {
@@ -34,7 +35,7 @@ class ArpaElement extends HTMLElement {
     _textContent = '';
     /** @type {TemplatesType} */
     templates = {};
-    /** @type {Record<string, ArpaElementChildOptionsType>} */
+    /** @type {Record<string, ArpaNodeConfigType>} */
     templateChildren = {};
     /** @type {Record<string, HTMLElement | Node>} */
     templateNodes = {};
@@ -231,8 +232,8 @@ class ArpaElement extends HTMLElement {
         return rv;
     }
 
-    getPayload() {
-        return mergeObjects(this._config, this.getTemplateVars());
+    getPayload(templateVars = this.templateVars || this.getTemplateVars()) {
+        return mergeObjects(this._config, templateVars);
     }
 
     /**
@@ -268,7 +269,7 @@ class ArpaElement extends HTMLElement {
     /**
      * Gets a template child by name.
      * @param {string} name
-     * @returns {ArpaElementChildOptionsType | undefined}
+     * @returns {ArpaNodeConfigType | undefined}
      */
     getTemplateChild(name) {
         return this._config?.templateChildren?.[name];
@@ -336,7 +337,7 @@ class ArpaElement extends HTMLElement {
     /**
      * Sets a child element.
      * @param {string} name
-     * @param {ArpaElementChildOptionsType} [config] - The configuration object.
+     * @param {ArpaNodeConfigType} [config] - The configuration object.
      */
     setChild(name, config = {}) {
         if (!name) return;
@@ -347,7 +348,7 @@ class ArpaElement extends HTMLElement {
     /**
      * Updates a child element.
      * @param {string} name
-     * @param {ArpaElementChildOptionsType} config - The configuration object.
+     * @param {ArpaNodeConfigType} config - The configuration object.
      * @returns {HTMLElement | Node | null}
      */
     updateChildNode(name, config) {
@@ -357,7 +358,7 @@ class ArpaElement extends HTMLElement {
     /**
      * Sets a child element.
      * @param {string} name
-     * @param {ArpaElementChildOptionsType} [config] - The configuration object.
+     * @param {ArpaNodeConfigType} [config] - The configuration object.
      * @returns {HTMLElement | Node | null}
      */
     editChild(name, config = {}) {
@@ -369,7 +370,7 @@ class ArpaElement extends HTMLElement {
     /**
      * Gets the configuration for a child element.
      * @param {string} childName
-     * @returns {Record<string, ArpaElementChildOptionsType> | undefined}
+     * @returns {Record<string, ArpaNodeConfigType> | undefined}
      */
     getChildConfig(childName) {
         return this._config?.templateChildren?.[childName];
@@ -387,7 +388,7 @@ class ArpaElement extends HTMLElement {
     /**
      * Sets the configuration for a child element.
      * @param {string} childName
-     * @param {ArpaElementChildOptionsType} config
+     * @param {ArpaNodeConfigType} config
      */
     setChildConfig(childName, config = {}) {
         this._config.templateChildren[childName] = config;
@@ -395,7 +396,7 @@ class ArpaElement extends HTMLElement {
 
     /**
      * Gets the configuration for a child element.
-     * @returns {ArpaElementChildOptionsType | undefined}
+     * @returns {ArpaNodeConfigType | undefined}
      */
     getChildrenConfig() {
         return this._config?.templateChildren;
@@ -668,13 +669,24 @@ class ArpaElement extends HTMLElement {
         const { attributes } = this._config;
         attributes && attr(this, attributes);
         await this.render();
-        initializeTemplateNodes(this);
+        this._initializeTemplateNodes();
         await this._initializeNodes();
         this._onRenderReadyCallbacks.forEach(callback => typeof callback === 'function' && callback());
         this._onRenderReadyCallbacks = [];
         this._handleZones();
         this._onDomReady();
         this._onRenderComplete();
+    }
+
+    _initializeTemplateNodes() {
+        const conf = this.getChildrenConfig();
+        if (!conf) return;
+        for (const name of Object.keys(conf)) {
+            const className = getChildClassName(this, name);
+            /** @type {HTMLElement | null} */
+            const node = this.querySelector(`.${className}`);
+            node && (this.templateNodes[name] = node);
+        }
     }
 
     async _initializeNodes() {
@@ -756,8 +768,8 @@ class ArpaElement extends HTMLElement {
     /**
      * Renders a child element.
      * @param {string} name
-     * @param {ArpaElementChildOptionsType} [options]
-     * @param {Record<string, string>} [attributes]
+     * @param {ArpaNodeConfigType} [options]
+     * @param {Record<string, string | boolean>} [attributes]
      * @returns {string}
      */
     renderChild(name, options, attributes = {}) {

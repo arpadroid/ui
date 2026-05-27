@@ -14,7 +14,7 @@ const ButtonStory = {
     title: 'UI/Buttons/Button',
     component: 'arpa-button',
     args: {
-        icon: 'task_alt',
+        icon: 'check_circle',
         tooltip: 'The button component ',
         tooltipPosition: 'bottom'
     }
@@ -25,7 +25,7 @@ export const Default = {
     name: 'Render',
     args: {
         content: html`Button`,
-        icon: 'task_alt',
+        icon: 'check_circle',
         tooltip: 'This is a tooltip.',
         tooltipPosition: 'top'
     }

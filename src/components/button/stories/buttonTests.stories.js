@@ -46,7 +46,7 @@ const setTooltipTest = async (/** @type {Button} */ buttonComponent) => {
 export const Test = {
     args: {
         content: 'Click me',
-        icon: 'task_alt',
+        icon: 'check_circle',
         rhsIcon: 'person',
         tooltip: 'If you click me something awesome will happen.',
         tooltipPosition: 'top'

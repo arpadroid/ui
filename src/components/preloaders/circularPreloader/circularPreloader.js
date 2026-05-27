@@ -13,30 +13,24 @@ class CircularPreloader extends ArpaElement {
         /** @type {CircularPreloaderConfigType} */
         const conf = {
             hasMask: false,
-            label: 'Loading...',
             className: 'circularPreloader',
             attributes: {
                 variant: 'default',
                 role: 'progressbar'
             },
-            content: '',
-            templateChildren: {
-                mask: {
-                    className: 'circularPreloader__mask',
-                    canRender: 'has-mask'
-                },
-                container: {
-                    className: 'circularPreloader__spinnerContainer',
-                    content: html`<span class="circularPreloader__spinner"></span>`
-                },
-                content: {
-                    isContent: true,
-                    className: 'circularPreloader__content',
-                    content: '{label}',
-                }
-            }
+            content: ''
         };
         return super.getDefaultConfig(conf);
+    }
+
+    _getTemplate() {
+        return html`
+            <arpa-node name="mask" can-render="hasMask"></arpa-node>
+            <arpa-node name="spinnerContainer" is-content>
+                <span class="circularPreloader__spinner"></span>
+                <arpa-node tag="span" name="label" can-render="label">{label}</arpa-node>
+            </arpa-node>
+        `;
     }
 }
 

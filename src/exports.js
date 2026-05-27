@@ -1,9 +1,14 @@
 /**
+ * Core.
+ */
+export { default as ArpaElement } from './components/arpaElement/arpaElement.js';
+export { default as ArpaNode } from './components/arpaNode/arpaNode.js';
+export { default as ArpaFragment } from './components/arpaFragment/arpaFragment.js';
+
+/**
  * Elements.
  */
 
-export { default as ArpaElement } from './components/arpaElement/arpaElement.js';
-export { default as ArpaFragment } from './components/arpaFragment/arpaFragment.js';
 export { default as Icon } from './components/icon/icon.js';
 export { default as Tooltip } from './components/tooltip/tooltip.js';
 export { default as Image } from './components/image/image.js';

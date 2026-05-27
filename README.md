@@ -881,7 +881,7 @@ button.textContent = I18n.getText('buttons.submit');
 type ArpaElementConfigType = {
     className?: string;
     variant?: string;
-    templateChildren?: Record<string, ArpaElementChildOptionsType>;
+    templateChildren?: Record<string, ArpaNodeConfigType>;
     // ... additional options
 };
 ```
