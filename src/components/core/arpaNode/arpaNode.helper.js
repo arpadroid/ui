@@ -125,9 +125,11 @@ export function renderChild(element, name, config = {}, attributes = {}) {
         typeof config.attr === 'function' && (config.attr = config.attr());
         const attr = getChildAttributes(element, name, config, attributes);
         const { tag } = config;
-        return html`<${tag} ${attrString(attr)}>
-            ${getChildContent(element, name, config)}
-        </${tag}>`;
+        const isFragment = tag === 'fragment';
+        let content = isFragment ? '' : html`<${tag} ${attrString(attr)}>`;
+        content += getChildContent(element, name, config);
+        content += isFragment ? '' : html`</${tag}>`;
+        return content;
     }
     return '';
 }

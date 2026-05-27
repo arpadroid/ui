@@ -4,12 +4,12 @@ import ArpaElement from '../../arpaElement/arpaElement.js';
 const html = String.raw;
 class TestElement extends ArpaElement {
     getDefaultConfig() {
-        return {
+        return super.getDefaultConfig({
             className: 'testElement',
             externalContent: 'External content',
             header: html`<span>Header -> Config</span>`,
             aside: '',
-        };
+        });
     }
     _getTemplate() {
         return html`

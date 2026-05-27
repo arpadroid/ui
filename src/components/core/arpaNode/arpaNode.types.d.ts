@@ -11,7 +11,7 @@ export type ArpaNodeConfigType = {
     id?: string;
     isContent?: boolean;
     name?: string;
-    tag?: string;
+    tag?: keyof HTMLElementTagNameMap | 'fragment' | string;
     zoneName?: string;
-    childNodes?: ChildNode[];
+    childNodes?: Node[];
 };

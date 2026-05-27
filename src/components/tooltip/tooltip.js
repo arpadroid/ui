@@ -1,6 +1,6 @@
 /**
  * @typedef {import('./tooltip.types.js').TooltipConfigType} TooltipConfigType
- * @typedef {import('../iconButton/iconButton.js').default} IconButton
+ * @typedef {import('../buttons/iconButton/iconButton.js').default} IconButton
  */
 import { defineCustomElement, listen, normalizeTouchEvent, resolveNode, style } from '@arpadroid/tools';
 import ArpaElement from '../core/arpaElement/arpaElement.js';

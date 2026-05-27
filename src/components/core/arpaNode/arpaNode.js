@@ -20,10 +20,13 @@ class ArpaNode extends HTMLElement {
     }
 
     _initializeContent() {
-        this.initialTextContent = this.textContent;
-        this.initialHTML = this.innerHTML.trim();
-        this._childNodes = [...this.childNodes];
-        this.fragment.append(...this._childNodes);
+        const html = this.innerHTML.trim();
+        if (html) {
+            this.initialHTML = html;
+            this.initialTextContent = this.textContent;
+        }
+        this.fragment.append(...this.childNodes);
+        this._childNodes = [...this.fragment.childNodes];
     }
 
     /**
@@ -112,15 +115,23 @@ class ArpaNode extends HTMLElement {
         if (!this.element) return;
         const name = this.getProperty('name');
         const config = this.getConfig();
+        const { tag } = config;
         const attr = this.getNodeAttributes();
         attr.canRender = config.canRender;
         const html = renderChild(this.element, name, config, attr);
+
+        if (tag === 'fragment') {
+            this.fragment.append(html);
+            return this.fragment;
+        }
+
         const node = /** @type {HTMLElement} */ (renderNode(html));
         node?.appendChild(this.fragment);
         return node;
     }
 
     async connectedCallback() {
+        this._initializeContent();
         const name = this.getProperty('name');
         if (!name) {
             throw new Error('An arpa-node must have a name attribute or configuration property defined.');
@@ -129,7 +140,7 @@ class ArpaNode extends HTMLElement {
         if (!this.element) {
             throw new Error('An arpa-node must have a parent arpa-element');
         }
-        /** @type {HTMLElement & {arpaNode?: ArpaNode}} */
+        /** @type {((HTMLElement | DocumentFragment) & {arpaNode?: ArpaNode})} */
         this.node = this.renderNode();
         if (this.node) {
             this.node.arpaNode = this;

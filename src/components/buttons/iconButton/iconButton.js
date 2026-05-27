@@ -1,5 +1,4 @@
 /**
- * @typedef {import('../tooltip/tooltip').default} Tooltip
  * @typedef {import('./iconButton.types').IconButtonConfigType} IconButtonConfigType
  */
 import { mergeObjects } from '@arpadroid/tools';

@@ -1,23 +1,24 @@
-import { getAttributes, attrString, defineCustomElement } from '@arpadroid/tools';
+/**
+ * @typedef {import('./arpaFragment.types.js').ArpaFragmentConfigType} ArpaFragmentConfigType
+ */
+import { defineCustomElement } from '@arpadroid/tools';
+import ArpaNode from '../arpaNode/arpaNode.js';
 
-class ArpaFragment extends HTMLElement {
-    constructor() {
-        super();
-        this._childNodes = [...this.childNodes];
-    }
-
-    getAttributes() {
-        return attrString(getAttributes(this));
-    }
-
-    connectedCallback() {
-        while (this.firstChild) {
-            this.parentNode?.insertBefore(this.firstChild, this);
-        }
-        this.parentNode?.removeChild(this);
+class ArpaFragment extends ArpaNode {
+    /** @type {ArpaFragmentConfigType} */
+    _config = this._config;
+    /**
+     * Returns the default configuration for the ArpaFragment component.
+     * @returns {ArpaFragmentConfigType}
+     */
+    getDefaultConfig() {
+        return {
+            ...super.getDefaultConfig(),
+            tag: 'fragment'
+        };
     }
 }
 
-defineCustomElement('arpa-fragment', ArpaFragment);
+defineCustomElement('arpa-frag', ArpaFragment);
 
 export default ArpaFragment;

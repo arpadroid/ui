@@ -7,6 +7,7 @@
 
 import { expect, waitFor } from 'storybook/test';
 import './testElement.js';
+import '../arpaNode.js';
 
 const html = String.raw;
 
