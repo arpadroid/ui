@@ -22,6 +22,7 @@
         "t": "npm run test -- --slim",
         "test:jest": "../module/node_modules/.bin/jest",
         "build:manifest": "arpadroid-manifest",
+        "build:manifest:storybook": "arpadroid-manifest --mode=storybook",
         "check:types": "arpadroid-check-types"
     },
     "repository": {
