@@ -1,4 +1,4 @@
-.testElement {
+.testNode {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
@@ -12,8 +12,8 @@
     header,
     main,
     footer,
-    .testElement__aside,
-    .testElement__content {
+    .testNode__aside,
+    .testNode__content {
         padding: 1rem;
         border: 2px solid var(--grey-300);
         border-radius: 0.75rem;
@@ -22,7 +22,7 @@
         flex-direction: column;
         gap: .75rem;
 
-        text-align: centre;
+        text-align: center;
         justify-content: center;
         align-items: center;
 
@@ -37,7 +37,7 @@
         border-color: var(--red);
     }
 
-    .testElement__aside {
+    .testNode__aside {
         border-color: var(--orange);
     }
 
@@ -45,7 +45,7 @@
         border-color: var(--purple);
     }
 
-    .testElement__content {
+    .testNode__content {
         border-color: var(--yellow);
     }
 

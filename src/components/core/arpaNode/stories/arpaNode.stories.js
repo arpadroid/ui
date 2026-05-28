@@ -6,8 +6,6 @@
  */
 
 import { expect, waitFor } from 'storybook/test';
-import './testElement.js';
-import '../arpaNode.js';
 
 const html = String.raw;
 
@@ -26,24 +24,24 @@ export default ArpaNodeStory;
 function renderWithZones() {
     return html`
         <style>
-            test-element,
-            test-element main {
+            test-node,
+            test-node main {
                 display: flex;
                 flex-direction: column;
                 gap: 1rem;
             }
         </style>
-        <test-element external-content="Custom content" aside="Aside -> Attribute">
-            <zone name="header">
+        <test-node external-content="Custom content" aside="Aside -> Attribute">
+            <arpa-zone name="header">
                 <span>Header -> Zone</span>
-            </zone>
-            <zone name="content">
+            </arpa-zone>
+            <arpa-zone name="content">
                 <span>Content -> Zone</span>
-            </zone>
-            <zone name="aside">
+            </arpa-zone>
+            <arpa-zone name="aside">
                 <span>Aside -> Zone</span>
-            </zone>
-        </test-element>
+            </arpa-zone>
+        </test-node>
     `;
 }
 
@@ -58,7 +56,7 @@ export const Default = {
  * @returns {Promise<void>}
  */
 async function playSetup() {
-    await customElements.whenDefined('test-element');
+    await customElements.whenDefined('test-node');
     await customElements.whenDefined('arpa-node');
 }
 
@@ -118,14 +116,14 @@ export const NoZones = {
     render: () => {
         return html`
             <style>
-                test-element,
-                test-element main {
+                test-node,
+                test-node main {
                     display: flex;
                     flex-direction: column;
                     gap: 1rem;
                 }
             </style>
-            <test-element external-content="Custom content"></test-element>
+            <test-node external-content="Custom content"></test-node>
         `;
     },
     play: async ({ canvasElement, step }) => {

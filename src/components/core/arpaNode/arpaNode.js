@@ -3,8 +3,7 @@
  * @typedef {import('./arpaNode.types').ArpaNodeAttributesType} ArpaNodeAttributesType
  */
 import { defineCustomElement, getAttributes, mergeObjects, renderNode } from '@arpadroid/tools';
-import { getProperty } from '../arpaElement/helper/arpaElement.helper';
-import ArpaElement from '../arpaElement/arpaElement.js';
+import { getArpaElement, getProperty } from '../arpaElement/helper/arpaElement.helper';
 import { renderChild } from './arpaNode.helper';
 
 class ArpaNode extends HTMLElement {
@@ -55,22 +54,6 @@ class ArpaNode extends HTMLElement {
         };
 
         return config;
-    }
-
-    /**
-     * Returns the parent ArpaElement of the node.
-     * @returns {ArpaElement | null}
-     */
-    getElement() {
-        let node = this.parentElement;
-        while (node) {
-            // @ts-ignore
-            if (node?.isArpaElement) {
-                return /** @type {ArpaElement} */ (node);
-            }
-            node = node.parentElement;
-        }
-        return null;
     }
 
     getNodeAttributes() {
@@ -134,11 +117,13 @@ class ArpaNode extends HTMLElement {
         this._initializeContent();
         const name = this.getProperty('name');
         if (!name) {
-            throw new Error('An arpa-node must have a name attribute or configuration property defined.');
+            console.error('An arpa-node must have a name attribute or configuration property defined.');
+            return;
         }
-        this.element = this.getElement();
+        this.element = getArpaElement(this);
         if (!this.element) {
-            throw new Error('An arpa-node must have a parent arpa-element');
+            console.error('An arpa-node must have a parent arpa-element');
+            return;
         }
         /** @type {((HTMLElement | DocumentFragment) & {arpaNode?: ArpaNode})} */
         this.node = this.renderNode();

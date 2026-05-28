@@ -2,6 +2,7 @@
  * @typedef {import('../../arpaNode/arpaNode.types').ArpaNodeConfigType} ArpaNodeConfigType
  * @typedef {import("../arpaElement").default} ArpaElement
  * @typedef {import("../../arpaNode/arpaNode").default} ArpaNode
+ * @typedef {import("../../arpaZone/arpaZone").default} ArpaZone
  */
 
 import { attr, dashedToCamel, getAttributes, getAttributesWithPrefix } from '@arpadroid/tools';
@@ -11,6 +12,41 @@ import { destroyComponentZones, findNodeComponent } from '../../../../tools/zone
 import { getChildContent, renderChild } from '../../arpaNode/arpaNode.helper';
 
 const FORBIDDEN_ATTRIBUTES = ['template', 'content', 'classNames', 'className'];
+
+////////////////////////////////
+// #region Global Helpers
+////////////////////////////////
+
+/**
+ * Returns the parent ArpaElement of the node.
+ * @param {HTMLElement} element
+ * @returns {ArpaElement | null}
+ */
+export function getArpaElement(element) {
+    let node = element.parentElement;
+    while (node) {
+        // @ts-ignore
+        if (node?.isArpaElement) {
+            return /** @type {ArpaElement} */ (node);
+        }
+        node = node.parentElement;
+    }
+    return null;
+}
+
+/**
+ * Destroys the zones of a component.
+ * @param {ArpaElement} element - The component to destroy.
+ */
+export function onDestroy(element) {
+    destroyComponentZones(element);
+}
+
+// #endregion Global Helpers
+
+/////////////////////////////////////
+// #region Properties & Attributes
+////////////////////////////////////
 
 /**
  * Checks if an element has a property as an attribute or defined in the configuration.
@@ -34,7 +70,7 @@ export function hasProperty(element, name, config = element._config) {
 
 /**
  * Gets the value of a property from the element's configuration or attributes.
- * @param {ArpaElement | ArpaNode} element
+ * @param {ArpaElement | ArpaNode | ArpaZone} element
  * @param {string} name
  * @param {Record<string, unknown>} [config]
  * @returns {string | unknown}
@@ -62,78 +98,6 @@ export function getArrayProperty(element, name, config = element._config) {
         return value.split(',').map(item => item.trim());
     }
     return value;
-}
-
-/**
- * Processes a template variable.
- * @param {string} name
- * @param {unknown} value
- * @param {ArpaElement} [element] - Optional ArpaElement instance.
- * @returns {unknown} The processed value.
- */
-export function processTemplateVariable(name, value, element) {
-    if (!value && typeof element?.getTemplateChild === 'function') {
-        const child = element?.getTemplateChild(name);
-        if (child) {
-            value = renderChild(element, name, child);
-        }
-    }
-    return value || '';
-}
-
-/**
- * Checks if a template string contains variables.
- * @param {string} content
- * @param {Record<string, unknown>} variables
- * @returns {boolean}
- */
-export function hasTemplateVariables(content, variables) {
-    if (!content || !variables) {
-        return false;
-    }
-    for (const key in variables) {
-        if (content.includes(`{${key}}`)) {
-            return true;
-        }
-    }
-    return false;
-}
-
-/**
- * Processes a template string and replaces the placeholders with the provided props.
- * @param {string} template
- * @param {Record<string, unknown>} props
- * @param {ArpaElement} [element]
- * @returns {string}
- */
-export function processTemplate(template, props = {}, element) {
-    if (!template) {
-        return '';
-    }
-    const result = [];
-    let startIndex = 0;
-    let matchIndex = 0;
-    while ((matchIndex = template.indexOf('{', startIndex)) !== -1) {
-        result.push(template.slice(startIndex, matchIndex));
-        const endIndex = template.indexOf('}', matchIndex);
-        if (endIndex === -1) {
-            break;
-        }
-        const placeholder = template.slice(matchIndex + 1, endIndex);
-        const val = processTemplateVariable(placeholder, props[placeholder], element);
-        result.push(val);
-        startIndex = endIndex + 1;
-    }
-    result.push(template.slice(startIndex));
-    return result.join('');
-}
-
-/**
- * Destroys the zones of a component.
- * @param {ArpaElement} element - The component to destroy.
- */
-export function onDestroy(element) {
-    destroyComponentZones(element);
 }
 
 /**
@@ -169,9 +133,162 @@ export function handleCallbackProperty(element, propertyName, eventName = '') {
     return method;
 }
 
-/////////////////////////////////////
-// #region Rendering =>
-/////////////////////////////////////
+/**
+ * Sanitizes an element's attributes by removing any properties that should not be rendered as attributes.
+ * This is necessary to prevent rendering internal configuration properties as HTML attributes, which could lead to unexpected behavior or security issues.
+ * @param {Record<string, unknown>} attr
+ * @param {string} key
+ * @returns {Record<string, unknown> | void}
+ */
+export function sanitizeAttributeEffect(attr, key) {
+    if (key === 'attributes' && attr[key] && typeof attr[key] === 'object') {
+        const _attr = /** @type {Record<string, unknown>} */ (attr[key]);
+        Object.keys(_attr).forEach(attrKey => (attr[attrKey] = _attr[attrKey]));
+        delete attr[key];
+        return;
+    }
+    if (FORBIDDEN_ATTRIBUTES.includes(key)) {
+        delete attr[key];
+        return;
+    }
+    if (Array.isArray(attr[key])) {
+        if (attr[key].length === 0) {
+            delete attr[key];
+            return;
+        }
+        attr[key] = attr[key].join(', ');
+    }
+    if (!Array.isArray(attr[key]) && ['object', 'function'].includes(typeof attr[key])) {
+        delete attr[key];
+    }
+}
+
+/**
+ * Returns the user configuration for the component excluding default values.
+ * @param {ArpaElement} element
+ * @param {Record<string, unknown>} _config
+ * @returns {Record<string, unknown>}
+ */
+export function getUserConfig(element, _config = element._config) {
+    /** @type {Record<string, unknown>} */
+    const config = { ..._config };
+    /** @type {Record<string, unknown>} */
+    const defaultConfig = element.getDefaultConfig();
+    Object.keys(config).forEach(key => {
+        if (
+            config[key] === defaultConfig[key] ||
+            (Array.isArray(defaultConfig[key]) &&
+                JSON.stringify(String(config[key]).split(',')) === JSON.stringify(defaultConfig[key]))
+        ) {
+            delete config[key];
+        }
+    });
+    return config;
+}
+
+/**
+ * Sanitizes an element's config to be rendered as attributes.
+ * @param {ArpaElement} element
+ * @param {Record<string, unknown>} attributes
+ * @returns {Record<string, unknown>}
+ */
+export function sanitizeAttributes(element, attributes) {
+    const attr = getUserConfig(element, attributes);
+    Object.keys(attr).forEach(key => sanitizeAttributeEffect(attr, key));
+    return sortKeys(attr);
+}
+
+// #endregion Properties
+
+/////////////////////////////////
+// #region Template Rendering
+///////////////////////////////
+
+/**
+ * Checks if a template string contains variables.
+ * @param {string} content
+ * @param {Record<string, unknown>} variables
+ * @returns {boolean}
+ */
+export function hasTemplateVariables(content, variables) {
+    if (!content || !variables) {
+        return false;
+    }
+    for (const key in variables) {
+        if (content.includes(`{${key}}`)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
+ * Processes a template variable.
+ * @param {string} name
+ * @param {unknown} value
+ * @param {ArpaElement} [element] - Optional ArpaElement instance.
+ * @returns {unknown} The processed value.
+ */
+export function processTemplateVariable(name, value, element) {
+    if (!value && typeof element?.getTemplateChild === 'function') {
+        const child = element?.getTemplateChild(name);
+        if (child) {
+            value = renderChild(element, name, child);
+        }
+    }
+    return value || '';
+}
+
+/**
+ * Processes a template string and replaces the placeholders with the provided props.
+ * @param {string} template
+ * @param {Record<string, unknown>} props
+ * @param {ArpaElement} [element]
+ * @returns {string}
+ */
+export function processTemplate(template, props = {}, element) {
+    if (!template) {
+        return '';
+    }
+    const result = [];
+    let startIndex = 0;
+    let matchIndex = 0;
+    while ((matchIndex = template.indexOf('{', startIndex)) !== -1) {
+        result.push(template.slice(startIndex, matchIndex));
+        const endIndex = template.indexOf('}', matchIndex);
+        if (endIndex === -1) {
+            break;
+        }
+        const placeholder = template.slice(matchIndex + 1, endIndex);
+        const val = processTemplateVariable(placeholder, props[placeholder], element);
+        result.push(val);
+        startIndex = endIndex + 1;
+    }
+    result.push(template.slice(startIndex));
+    return result.join('');
+}
+
+/**
+ * Renders the template for the element.
+ * @param {ArpaElement} component
+ * @param {string | null} [_template]
+ * @param {Record<string, unknown>} [vars]
+ * @returns {string}
+ */
+export function renderTemplate(component, _template, vars = component.getTemplateVars()) {
+    const templateContent = component.templates?.content?.innerHTML.trim();
+    const template = _template || templateContent || component._getTemplate();
+    for (const tplVar of Object.keys(vars)) {
+        if (typeof vars[tplVar] === 'function') {
+            vars[tplVar] = vars[tplVar](component);
+        }
+        if (typeof vars[tplVar] === 'string') {
+            vars[tplVar] = processTemplate(vars[tplVar], vars, component);
+        }
+    }
+    const result = template && processTemplate(template, vars, component);
+    return typeof result === 'string' ? result : '';
+}
 
 /**
  * Checks if an element has content.
@@ -206,73 +323,11 @@ export function canRender(element, timeout = 200) {
     return true;
 }
 
-/**
- * Returns the user configuration for the component excluding default values.
- * @param {ArpaElement} element
- * @param {Record<string, unknown>} _config
- * @returns {Record<string, unknown>}
- */
-export function getUserConfig(element, _config = element._config) {
-    /** @type {Record<string, unknown>} */
-    const config = { ..._config };
-    /** @type {Record<string, unknown>} */
-    const defaultConfig = element.getDefaultConfig();
-    Object.keys(config).forEach(key => {
-        if (
-            config[key] === defaultConfig[key] ||
-            (Array.isArray(defaultConfig[key]) &&
-                JSON.stringify(String(config[key]).split(',')) === JSON.stringify(defaultConfig[key]))
-        ) {
-            delete config[key];
-        }
-    });
-    return config;
-}
-
-/**
- * Sanitizes an element's attributes by removing any properties that should not be rendered as attributes.
- * This is necessary to prevent rendering internal configuration properties as HTML attributes, which could lead to unexpected behavior or security issues.
- * @param {Record<string, unknown>} attr
- * @param {string} key
- * @returns {Record<string, unknown> | void}
- */
-export function sanitizeAttributeEffect(attr, key) {
-    if (key === 'attributes' && attr[key] && typeof attr[key] === 'object') {
-        const _attr = /** @type {Record<string, unknown>} */ (attr[key]);
-        Object.keys(_attr).forEach(attrKey => (attr[attrKey] = _attr[attrKey]));
-        delete attr[key];
-        return;
-    }
-    if (FORBIDDEN_ATTRIBUTES.includes(key)) {
-        delete attr[key];
-        return;
-    }
-    if (Array.isArray(attr[key])) {
-        if (attr[key].length === 0) {
-            delete attr[key];
-            return;
-        }
-        attr[key] = attr[key].join(', ');
-    }
-    if (!Array.isArray(attr[key]) && ['object', 'function'].includes(typeof attr[key])) {
-        delete attr[key];
-    }
-}
-/**
- * Sanitizes an element's config to be rendered as attributes.
- * @param {ArpaElement} element
- * @param {Record<string, unknown>} attributes
- * @returns {Record<string, unknown>}
- */
-export function sanitizeAttributes(element, attributes) {
-    const attr = getUserConfig(element, attributes);
-    Object.keys(attr).forEach(key => sanitizeAttributeEffect(attr, key));
-    return sortKeys(attr);
-}
+// #endregion Template Rendering
 
 ///////////////////////////////
-// #region Template Content
-///////////////////////////////
+// #region Template Nodes
+//////////////////////////////
 
 /**
  * Returns the template selector.
@@ -313,28 +368,6 @@ export function getTemplateContainer(element, template) {
 }
 
 /**
- * Renders the template for the element.
- * @param {ArpaElement} component
- * @param {string | null} [_template]
- * @param {Record<string, unknown>} [vars]
- * @returns {string}
- */
-export function renderTemplate(component, _template, vars = component.getTemplateVars()) {
-    const templateContent = component.templates?.content?.innerHTML.trim();
-    const template = _template || templateContent || component._getTemplate();
-    for (const tplVar of Object.keys(vars)) {
-        if (typeof vars[tplVar] === 'function') {
-            vars[tplVar] = vars[tplVar](component);
-        }
-        if (typeof vars[tplVar] === 'string') {
-            vars[tplVar] = processTemplate(vars[tplVar], vars, component);
-        }
-    }
-    const result = template && processTemplate(template, vars, component);
-    return typeof result === 'string' ? result : '';
-}
-
-/**
  * Gets the attributes from the template.
  * @param {HTMLTemplateElement} template
  * @param {string} [prefix]
@@ -350,6 +383,7 @@ export function getTemplateAttributes(template, prefix = '') {
     delete attr['template-container'];
     return attr;
 }
+
 /**
  * Applies the template attributes to the element.
  * @param {ArpaElement} element
@@ -390,12 +424,6 @@ export async function applyTemplate(element, template, payload = {}) {
         }
     }
 }
-
-// #endregion Template Content
-
-///////////////////////////////
-// #region Template Children
-//////////////////////////////
 
 /**
  * Updates a child element.

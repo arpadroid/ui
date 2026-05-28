@@ -2,15 +2,16 @@ import { defineCustomElement } from '@arpadroid/tools';
 import ArpaElement from '../../arpaElement/arpaElement.js';
 
 const html = String.raw;
-class TestElement extends ArpaElement {
+class TestNode extends ArpaElement {
     getDefaultConfig() {
         return super.getDefaultConfig({
-            className: 'testElement',
+            className: 'testNode',
             externalContent: 'External content',
             header: html`<span>Header -> Config</span>`,
-            aside: '',
+            aside: ''
         });
     }
+
     _getTemplate() {
         return html`
             <arpa-node tag="header" name="header">
@@ -32,6 +33,6 @@ class TestElement extends ArpaElement {
     }
 }
 
-defineCustomElement('test-element', TestElement);
+defineCustomElement('test-node', TestNode);
 
-export default TestElement;
+export default TestNode;

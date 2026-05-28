@@ -5,8 +5,6 @@
  * @typedef {import('@storybook/web-components-vite').StoryObj<ArpaFragmentConfigType>} Story
  */
 import { expect, waitFor } from 'storybook/test';
-import '../arpaNode/stories/testElement.js';
-import './arpaFragment.js';
 
 const html = String.raw;
 
@@ -24,11 +22,11 @@ export default ArpaFragmentStory;
  */
 function renderFragment() {
     return html`
-        <test-element>
+        <test-node>
             <template template-type="content">
                 <arpa-frag name="my-fragment">Fragment Content</arpa-frag>
             </template>
-        </test-element>
+        </test-node>
     `;
 }
 
@@ -41,7 +39,7 @@ export const Render = {
 export const Test = {
     render: renderFragment,
     play: async ({ step, canvas, canvasElement }) => {
-        await customElements.whenDefined('test-element');
+        await customElements.whenDefined('test-node');
         await step('Renders the fragment', async () => {
             await waitFor(() => {
                 expect(canvas.getByText('Fragment Content')).toBeInTheDocument();
@@ -53,7 +51,7 @@ export const Test = {
         });
 
         await step('Checks wrapper component only has fragment content', async () => {
-            const wrapper = canvasElement.querySelector('test-element');
+            const wrapper = canvasElement.querySelector('test-node');
             expect(wrapper).toBeInTheDocument();
             expect(wrapper?.textContent).toBe('Fragment Content');
             expect(wrapper?.innerHTML).toBe('Fragment Content');
@@ -64,7 +62,7 @@ export const Test = {
 /** @type {Story} */
 export const TestMultiple = {
     render: () => html`
-        <test-element>
+        <test-node>
             <template template-type="content">
                 <arpa-frag name="my-fragment">
                     <h2>Fragment 1</h2>
@@ -76,34 +74,34 @@ export const TestMultiple = {
                     <p>content 2</p>
                 </arpa-frag>
             </template>
-        </test-element>
+        </test-node>
     `,
     play: async ({ step, canvas, canvasElement }) => {
-        await customElements.whenDefined('test-element');
-        const testElement = canvasElement.querySelector('test-element');
+        await customElements.whenDefined('test-node');
+        const testNode = canvasElement.querySelector('test-node');
         await step('Renders multiple items in the fragments', async () => {
             await waitFor(() => {
                 const heading1 = canvas.getByRole('heading', { name: 'Fragment 1' });
                 expect(heading1).toBeInTheDocument();
                 expect(heading1.nextElementSibling?.textContent).toBe('content 1');
-                expect(heading1.parentElement).toBe(testElement);
+                expect(heading1.parentElement).toBe(testNode);
 
                 const content1 = canvas.getByText('content 1');
                 expect(content1).toBeInTheDocument();
                 expect(content1.previousElementSibling?.textContent).toBe('Fragment 1');
                 expect(content1.nextElementSibling?.textContent).toBe('Fragment 2');
 
-                expect(content1.parentElement).toBe(testElement);
+                expect(content1.parentElement).toBe(testNode);
 
                 const heading2 = canvas.getByRole('heading', { name: 'Fragment 2' });
                 expect(heading2).toBeInTheDocument();
                 expect(heading2.nextElementSibling?.textContent).toBe('content 2');
-                expect(heading2.parentElement).toBe(testElement);
+                expect(heading2.parentElement).toBe(testNode);
 
                 const content2 = canvas.getByText('content 2');
                 expect(content2).toBeInTheDocument();
                 expect(content2.previousElementSibling?.textContent).toBe('Fragment 2');
-                expect(content2.parentElement).toBe(testElement);
+                expect(content2.parentElement).toBe(testNode);
             });
         });
     }

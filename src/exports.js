@@ -4,6 +4,14 @@
 export { default as ArpaElement } from './components/core/arpaElement/arpaElement.js';
 export { default as ArpaNode } from './components/core/arpaNode/arpaNode.js';
 export { default as ArpaFragment } from './components/core/arpaFragment/arpaFragment.js';
+export { default as ArpaZone } from './components/core/arpaZone/arpaZone.js';
+
+/**
+ * Test.
+ */
+
+export { default as TestNode } from './components/core/arpaNode/stories/testNode.js';
+export { TestElement } from './components/core/arpaElement/stories/arpaElement.stories.util.js';
 
 /**
  * Elements.
