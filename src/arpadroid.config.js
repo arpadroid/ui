@@ -2,8 +2,8 @@
 const config = {
     buildType: 'uiComponent',
     buildTypes: true,
-    storybook_port: 6001,
     buildManifest: true,
+    storybook_port: 6001,
     storybook: {
         managerCache: false,
         preview: {
