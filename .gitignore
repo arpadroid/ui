@@ -12,4 +12,5 @@ src/i18n/
 stats.html
 .tsbuildinfo
 tsconfig.tsbuildinfo
+custom-elements.json
 .tmp/
