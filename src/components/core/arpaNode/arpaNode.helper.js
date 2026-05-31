@@ -46,7 +46,7 @@ export function getDefaultChildConfig(element, name) {
  * @param {string} name
  * @param {ArpaNodeConfigType} [config] - The configuration object.
  * @param {Record<string, boolean | string>} [attributes] - Additional attributes to add to the element.
- * @returns {boolean}
+ * @returns {boolean | string}
  */
 export function canRenderChild(element, name, config = {}, attributes = {}) {
     const { canRender = true } = config;

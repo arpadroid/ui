@@ -5,7 +5,7 @@ export type ArpaNodeAttributesType = Record<string, unknown> | (() => Record<str
 export type ArpaNodeConfigType = {
     attr?: ArpaNodeAttributesType;
     className?: string;
-    canRender?: ((component: unknown) => boolean) | boolean | string;
+    canRender?: boolean | string | ((component: unknown) => boolean | string);
     content?: ArpaElementContentType;
     hasZone?: boolean;
     id?: string;
