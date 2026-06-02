@@ -37,7 +37,6 @@ class TruncateText extends ArpaElement {
     _getTemplate() {
         const buttonClasses = this.getProperty('buttonClasses').join(' ');
         const canTruncate = this.canTruncate();
-        const hasButton = this.getProperty('hasButton');
         return html`
             <arpa-node tag="span" name="wrapper">
                 <arpa-node tag="span" name="content" is-content></arpa-node>
