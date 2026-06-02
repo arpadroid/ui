@@ -16,5 +16,6 @@ export async function playSetup(canvasElement, tagName = 'delete-dialog') {
     await customElements.whenDefined('arpa-dialogs');
     const dialogsNode = /** @type {Dialogs} */ (document.querySelector('arpa-dialogs'));
     const dialogNode = /** @type {DeleteDialog} */ (document.querySelector(tagName));
+    await dialogNode?.promise;
     return { canvas, dialogNode, dialogsNode };
 }

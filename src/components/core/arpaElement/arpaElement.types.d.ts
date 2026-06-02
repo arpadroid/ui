@@ -6,6 +6,7 @@ export type ArpaElementConfigType = {
     className?: string;
     classNames?: string[];
     content?: ArpaElementContentType;
+    contentPosition?: 'prepend' | 'append';
     handleContent?: boolean;
     template?: string;
     templateChildren?: Record<string, ArpaNodeConfigType> | undefined;

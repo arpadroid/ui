@@ -346,13 +346,13 @@ Enhanced image component with lazy loading, responsive sizing, drag-and-drop upl
     width="800"
     height="600"
     quality="80"
-    has-preloader="true"
-    has-preview="true"
-    has-drop-area="true"
-    has-thumbnail="true"
-    is-draggable="true"
-    lazy-load="true"
-    prevent-upscale="true"
+    has-preloader
+    has-preview
+    has-drop-area
+    has-thumbnail
+    is-draggable
+    lazy-load
+    prevent-upscale
     preview-title="Product Gallery"
     icon="crop_original"
     default-size="medium"
@@ -407,7 +407,7 @@ Text truncation with expand/collapse functionality and smart content detection.
 <truncate-text
     max-length="150"
     threshold="20"
-    has-read-more-button="true"
+    has-button
     read-more-label="Show more"
     read-less-label="Show less"
     ellipsis="..."
@@ -419,7 +419,7 @@ Text truncation with expand/collapse functionality and smart content detection.
 </truncate-text>
 
 <!-- Rich HTML content truncation -->
-<truncate-text max-length="200" has-read-more-button="true">
+<truncate-text max-length="200" has-button>
     <p>This component can handle <strong>rich HTML content</strong> including:</p>
     <ul>
         <li>Bold and <em>italic</em> text</li>
@@ -432,9 +432,8 @@ Text truncation with expand/collapse functionality and smart content detection.
 <!-- Custom styling -->
 <truncate-text
     max-length="80"
-    has-read-more-button="true"
+    has-button
     button-classes="btn btn-link text-primary"
-    content-class="text-muted"
 >
     Custom styled truncated text with different button and content classes applied for better integration with
     your design system.

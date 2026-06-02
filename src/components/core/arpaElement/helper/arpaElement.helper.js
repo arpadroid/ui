@@ -56,6 +56,7 @@ export function onDestroy(element) {
  * @returns {unknown | undefined}
  */
 export function hasProperty(element, name, config = element._config) {
+    name = camelToDashed(name);
     const attrVal = element.getAttribute(name);
     if (attrVal === 'false') {
         return false;
@@ -298,7 +299,7 @@ export function renderTemplate(component, _template, vars = component.getTemplat
  * @returns {boolean}
  */
 export function hasContent(element, property, config = {}) {
-    if (config.content) return true;
+    if (config.content || config?.childNodes?.length) return true;
     if (typeof element?.getProperty === 'function') {
         const rv = element?.getProperty(property);
         if (typeof rv === 'string' && rv.length) {

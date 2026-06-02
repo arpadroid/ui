@@ -1,23 +1,23 @@
 :root {
     /* Greys */
-    --grey-1000: #000000;
+    --grey-1000: #000;
     --grey-950: #0d0d0d;
     --grey-900: #1a1a1a;
     --grey-850: #262626;
-    --grey-800: #333333;
+    --grey-800: #333;
     --grey-750: #404040;
     --grey-700: #4d4d4d;
     --grey-650: #595959;
-    --grey-600: #666666;
+    --grey-600: #666;
     --grey-550: #737373;
     --grey-500: #808080;
     --grey-450: #8c8c8c;
-    --grey-400: #999999;
+    --grey-400: #999;
     --grey-350: #a6a6a6;
     --grey-300: #b3b3b3;
     --grey-250: #bfbfbf;
     --grey-225: #c6c6c6;
-    --grey-200: #cccccc;
+    --grey-200: #ccc;
     --grey-175: #d2d2d2;
     --grey-150: #d9d9d9;
     --grey-125: #dfdfdf;
@@ -28,19 +28,17 @@
     --grey-30: #f7f7f7;
     --grey-20: #fafafa;
     --grey-10: #fcfcfc;
-    --grey-0: #ffffff;
+    --grey-0: #fff;
 
     /* Blues */
     --blue-navy-dark: #10234b;
     --blue-navy: #204595;
     --blue-navy-light: #96ace4;
     --blue-navy-lightest: #cbdcf0;
-
     --blue-dark: #00008b;
     --blue-medium: #4169e1;
     --blue-light: #cae6ff;
     --blue-lightest: #d8f1ff;
-
     --blue: #0266c8;
     --blue-deep: #0000cd;
     --blue-royal: #4169e1;
@@ -49,33 +47,27 @@
     --blue-pale: #afeeee;
     --blue-sky: #87ceeb;
     --blue-steel: #4682b4;
-
     --blue-neon-darkest: #252359;
     --blue-neon-dark: #27248c;
     --blue-neon: #5e57ea;
     --blue-neon-medium: #3d3998;
     --blue-neon-light: #8883e2;
     --blue-neon-lightest: #b7b5e4;
-
     --deep-ocean-dark: #08415c;
     --deep-ocean: #0f87be;
     --deep-ocean-light: #89c0da;
     --deep-ocean-lightest: #a2ddfa;
-
     --cyan: #007dc3;
     --cyan-light: #00afef;
     --blue-teal: #008080;
-
     --blue-turquoise: #40e0d0;
-    --blue-aqua: #00ffff;
+    --blue-aqua: #0ff;
     --blue-green: #00ff7f;
-
     --purple-dark: #4b0082;
     --purple: #6100ac;
-    --purple-light: #a046e6;
     --purple-lightest: #c085ec;
     --purple-dark-violet: #9400d3;
-    --purple-deep: #663399;
+    --purple-deep: #639;
     --purple-medium: #9370db;
     --purple-light: #dec9ee;
     --purple-pale: #d8bfd8;
@@ -84,24 +76,21 @@
     --lavender-light: #f1f1ff;
     --lilac: #c8a2c8;
     --mauve: #e0b0ff;
-    --amethyst: #9966cc;
-
+    --amethyst: #96c;
     --violet: #ee82ee;
     --violet-dark: #9400d3;
     --violet-deep: #8a2be2;
     --violet-medium: #ba55d3;
-    --violet-: #da70d6;
     --violet-pale: #db7093;
     --violet-lavender: #e6e6fa;
     --violet-lilac: #c8a2c8;
     --violet-mauve: #e0b0ff;
-    --violet-amethyst: #9966cc;
+    --violet-amethyst: #96c;
     --violet-plum: #dda0dd;
     --violet-orchid: #da70d6;
     --violet-thistle: #d8bfd8;
     --violet-mulberry: #c54b8c;
     --violet-eggplant: #614051;
-
     --pink: #ff69b4;
     --pink-dark: #c71585;
     --pink-medium: #ff1493;
@@ -122,7 +111,7 @@
     --brown-tan: #d2b48c;
     --brown-sand: #c2b280;
     --brown-beige: #f5f5dc;
-    --brown-caramel: #ffdd99;
+    --brown-caramel: #fd9;
     --brown-ginger: #b06500;
     --brown-bronze: #cd7f32;
 
@@ -145,17 +134,17 @@
     /** 
      * Oranges 
      */
-    --orange: #ff8800;
+    --orange: #f80;
     --orange-dark: #9b5300;
-    --orange-tangerine: #ff6600;
-    --orange-pumpkin: #ff8800;
-    --orange-carrot: #ff9900;
-    --orange-mango: #ffaa00;
-    --orange-nectarine: #ffbb00;
-    --orange-amber: #ffcc00;
-    --orange-honey: #ffdd00;
-    --orange-sunrise: #ffee00;
-    --orange-sunflower: #ffff00;
+    --orange-tangerine: #f60;
+    --orange-pumpkin: #f80;
+    --orange-carrot: #f90;
+    --orange-mango: #fa0;
+    --orange-nectarine: #fb0;
+    --orange-amber: #fc0;
+    --orange-honey: #fd0;
+    --orange-sunrise: #fe0;
+    --orange-sunflower: #ff0;
     --orange-goldenrod: #ffea00;
     --orange-apricot: #ffd500;
     --orange-cantaloupe: #ffc000;
@@ -190,7 +179,7 @@
     --green: #008000;
     --green-dark: #006400;
     --green-forest: #228b22;
-    --green-lime: #00ff00;
+    --green-lime: #0f0;
     --green-light: #90ee90;
     --green-pale: #98fb98;
     --green-sea: #2e8b57;
@@ -198,11 +187,9 @@
     --green-sea-dark: #8fbc8f;
     --green-spring: #00ff7f;
     --green-spring-medium: #00fa9a;
-
     --color-olive: #808000;
     --color-dark-olive-green: #556b2f;
     --color-chartreuse: #7fff00;
-
     --yellow-green: #cfc20e;
     --yellow-green-dark: #9b8b1c;
     --yellow-green-light: #e0d86b;

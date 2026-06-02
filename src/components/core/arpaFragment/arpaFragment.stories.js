@@ -53,8 +53,8 @@ export const Test = {
         await step('Checks wrapper component only has fragment content', async () => {
             const wrapper = canvasElement.querySelector('test-node');
             expect(wrapper).toBeInTheDocument();
-            expect(wrapper?.textContent).toBe('Fragment Content');
-            expect(wrapper?.innerHTML).toBe('Fragment Content');
+            expect(wrapper?.textContent.trim()).toBe('Fragment Content');
+            expect(wrapper?.innerHTML.trim()).toBe('Fragment Content');
         });
     }
 };

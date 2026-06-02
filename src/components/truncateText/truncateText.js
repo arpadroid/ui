@@ -1,163 +1,172 @@
-import ArpaElement from '../core/arpaElement/arpaElement.js';
-import { appendNodes, defineCustomElement } from '@arpadroid/tools';
 /**
  * @typedef {import('./truncateText.types').TruncateTextConfigType } TruncateTextConfigType
  */
+import ArpaElement from '../core/arpaElement/arpaElement.js';
+import { defineCustomElement, listen } from '@arpadroid/tools';
+
 const html = String.raw;
 class TruncateText extends ArpaElement {
-    //////////////////////////////
-    // #region INITIALIZATION
-    /////////////////////////////
     /**
      * Returns the default component config.
      * @returns {TruncateTextConfigType}
      */
     getDefaultConfig() {
-        return {
+        /** @type {TruncateTextConfigType} */
+        const config = {
+            className: 'truncateText',
             maxLength: 50,
-            threshold: 20,
             ellipsis: '...',
-            readMoreLabel: 'Read more',
-            readLessLabel: 'Read less',
-            buttonClasses: ['truncateText__readMoreButton', 'button--link'],
-            hasReadMoreButton: false
+            readMoreLabel: 'read more',
+            readLessLabel: 'read less',
+            buttonClasses: ['button--link'],
+            hasButton: false,
+            isTruncated: true
         };
+        return super.getDefaultConfig(config);
     }
 
     async _initialize() {
-        this.fullContent = this.textContent?.trim();
-        this.truncateText = this.truncateText.bind(this);
         this.toggleTruncate = this.toggleTruncate.bind(this);
-        this.renderButton();
         this._observeContents();
     }
 
-    ///////////////////////////////
-    // #endregion INITIALIZATION
-    //////////////////////////////
+    ////////////////////////////
+    // #region Rendering
+    ////////////////////////////
+
+    _getTemplate() {
+        const buttonClasses = this.getProperty('buttonClasses').join(' ');
+        const canTruncate = this.canTruncate();
+        const hasButton = this.getProperty('hasButton');
+        return html`
+            <arpa-node tag="span" name="wrapper">
+                <arpa-node tag="span" name="content" is-content></arpa-node>
+                <arpa-node tag="span" name="ellipsis" can-render="ellipsis"></arpa-node>
+            </arpa-node>
+            ${canTruncate
+                ? html`<arpa-node
+                      name="button"
+                      tag="button"
+                      can-render="hasButton"
+                      type="button"
+                      class="${buttonClasses}"
+                  >
+                      ${this.getProperty('readMoreLabel')}
+                  </arpa-node>`
+                : ''}
+        `;
+    }
+
+    // #endregion Rendering
 
     ////////////////////////////
     // #region LIFECYCLE
     ////////////////////////////
 
     _observeContents() {
-        const observer = new MutationObserver(() => {
+        const observer = new MutationObserver(async () => {
+            await this.promise;
             const textNode = this.querySelector('.truncateText__content');
-            const content = this.textContent?.trim();
-            if (!this.isTruncated && !textNode && content !== this.fullContent) {
+
+            if (!this.canTruncate()) {
+                this.button?.isConnected && this.button.remove();
+                this.ellipsisNode?.isConnected && this.ellipsisNode.remove();
+            }
+            const content = textNode?.textContent?.trim() || '';
+            const contentHasChanged = content?.trim() !== this._textContent?.trim();
+            if (!this.isTruncated() && !textNode && contentHasChanged) {
+                console.log('observer triggered rerender');
+
                 this._childNodes = [...this.childNodes];
-                this._nodes = [...this.childNodes];
                 this._content = this.innerHTML;
-                this.fullContent = this.textContent?.trim();
-                this.truncateText();
+                this._textContent = this.textContent?.trim();
+                this.reRender();
             }
         });
         observer.observe(this, { childList: true });
     }
 
-    _onConnected() {
-        this.truncateText();
+    /**
+     * Handles attribute changes for the component.
+     * @param {string} name
+     * @param {string} oldValue
+     * @param {string} newValue
+     */
+    attributeChangedCallback(name, oldValue, newValue) {
+        if (name === 'is-truncated') {
+            newValue === null ? this.showFullContent() : this.truncateText();
+        }
     }
 
-    //////////////////////////
+    static get observedAttributes() {
+        return ['is-truncated'];
+    }
+
+    async _initializeNodes() {
+        await super._initializeNodes();
+        this.button = /** @type {HTMLElement } */ (this.templateNodes.button);
+        this.ellipsisNode = /** @type {HTMLElement} */ (this.templateNodes.ellipsis);
+        this.ellipsisNode.remove();
+        this.button && listen(this.button, 'click', this.toggleTruncate);
+        this.contentNode = /** @type {HTMLElement} */ (this.templateNodes.content);
+        this.wrapperNode = /** @type {HTMLElement} */ (this.templateNodes.wrapper);
+        return true;
+    }
+
+    _onComplete() {
+        if (this.hasProperty('isTruncated')) {
+            this.setAttribute('is-truncated', '');
+            this.truncateText();
+        }
+    }
+
     // #endregion LIFECYCLE
-    //////////////////////////
 
-    //////////////////////////
-    // #region ACCESSORS
-    /////////////////////////
+    //////////////////////////////
+    // #region Truncation
+    /////////////////////////////
 
-    getMaxLength() {
-        return parseFloat(this.getProperty('max-length'));
+    canTruncate() {
+        const maxLength = parseFloat(this.getProperty('maxLength'));
+        const content = (this._textContent || this.textContent || '').trim();
+        return content.length > maxLength;
     }
 
-    getThreshold() {
-        return parseFloat(this.getProperty('threshold'));
+    isTruncated() {
+        return this.truncatedNode?.isConnected;
     }
 
-    hasReadMoreButton() {
-        return this.hasProperty('has-read-more-button') && this.shouldTruncate();
-    }
-
-    getButtonLabel() {
-        return this.isTruncated ? this.getProperty('read-more-label') : this.getProperty('read-less-label');
-    }
-
-    toggleTruncate() {
-        this.isTruncated ? this.showFullContent() : this.truncateText();
-    }
-
-    // #endregion
-
-    ////////////////////
-    // #region RENDERING
-    ////////////////////
-
-    renderButton(isTruncated = this.isTruncated) {
-        if (this.hasReadMoreButton()) {
-            if (!this.button) {
-                const button = document.createElement('button');
-                button.type = 'button';
-                button.classList.add(...this.getButtonClasses());
-                button.addEventListener('click', this.toggleTruncate);
-                this.button = button;
-            }
-            this.button.textContent = this.getButtonLabel();
-            this.button.setAttribute('aria-expanded', String(!isTruncated));
-            this.append(this.button);
-        } else if (this.button) {
-            this.button.remove();
-        }
-    }
-
-    getButtonClasses() {
-        let classes = this.getProperty('button-classes');
-        if (typeof classes === 'string') {
-            classes = classes.trim().split(' ');
-        }
-        if (!Array.isArray(classes)) {
-            classes = this.getDefaultConfig().buttonClasses;
-        }
-        return classes;
-    }
-
-    truncateText() {
-        const maxLength = this.getMaxLength();
-        if (!maxLength || !this.innerHTML.trim().length || this.showingFullContent) {
-            return;
-        }
-        const text = this.textContent?.trim();
-        const ellipsis = this.getProperty('ellipsis');
-        if (this.shouldTruncate()) {
-            this.isTruncated = true;
-            const ellipsisHTML = html`<span class="truncateText__ellipsis">${ellipsis}</span>`;
+    async truncateText() {
+        await new Promise(resolve => setTimeout(resolve, 0));
+        const maxLength = parseFloat(this.getProperty('maxLength'));
+        this.originalText = this.contentNode?.textContent?.trim();
+        if (!maxLength || !this.originalText?.length || this.originalText?.length <= maxLength) return;
+        const text = this.contentNode?.textContent?.trim();
+        if (!this.truncatedNode) {
+            this.truncatedNode = this.contentNode?.cloneNode();
             const content = text?.slice(0, maxLength);
-            const _html = html`<span class="truncateText__content">${content}${ellipsisHTML}</span>`;
-            this.innerHTML = _html;
-            this.textNode = this.querySelector('.truncateText__content');
-            this.renderButton();
+            this.truncatedNode.textContent = content;
         }
-    }
-
-    shouldTruncate() {
-        return this.fullContent && this.fullContent.length > this.getMaxLength() + this.getThreshold();
+        this.contentNode?.replaceWith(this.truncatedNode);
+        this.ellipsisNode && this.wrapperNode?.appendChild(this.ellipsisNode);
+        if (this.button) {
+            this.button.textContent = this.getProperty('readMoreLabel');
+        }
     }
 
     showFullContent() {
-        this.showingFullContent = true;
-        this.innerHTML = html`<span class="truncateText__content"></div>`;
-        this.textNode = this.querySelector('.truncateText__content');
-
-        this.isTruncated = false;
-        this.textNode && appendNodes(this.textNode, this._childNodes);
-        this.renderButton(false);
-        this.button && this.appendChild(this.button);
-        setTimeout(() => {
-            this.showingFullContent = false;
-        }, 100);
+        this.truncatedNode?.replaceWith(this.contentNode);
+        this.ellipsisNode?.remove();
+        if (this.button) {
+            this.button.textContent = this.getProperty('readLessLabel');
+        }
     }
 
-    // #endregion
+    toggleTruncate() {
+        this.isTruncated() ? this.removeAttribute('is-truncated') : this.setAttribute('is-truncated', '');
+    }
+
+    // #endregion Truncation
 }
 
 defineCustomElement('truncate-text', TruncateText);

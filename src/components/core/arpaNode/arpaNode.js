@@ -1,6 +1,7 @@
 /**
  * @typedef {import('./arpaNode.types').ArpaNodeConfigType} ArpaNodeConfigType
  * @typedef {import('./arpaNode.types').ArpaNodeAttributesType} ArpaNodeAttributesType
+ * @typedef {import('../arpaElement/arpaElement.js').default} ArpaElement
  */
 import { defineCustomElement, getAttributes, mergeObjects, renderNode } from '@arpadroid/tools';
 import { getArpaElement, getProperty } from '../arpaElement/helper/arpaElement.helper';
@@ -102,7 +103,6 @@ class ArpaNode extends HTMLElement {
         const attr = this.getNodeAttributes();
         attr.canRender = config.canRender;
         const html = renderChild(this.element, name, config, attr);
-
         if (tag === 'fragment') {
             this.fragment.append(html);
             return this.fragment;
@@ -117,16 +117,21 @@ class ArpaNode extends HTMLElement {
         this._initializeContent();
         const name = this.getProperty('name');
         if (!name) {
-            console.error('An arpa-node must have a name attribute or configuration property defined.');
+            console.error('An arpa-node must have a name attribute or configuration property defined.', this);
             return;
         }
+        /** @type {ArpaElement | null}  */
         this.element = getArpaElement(this);
         if (!this.element) {
             console.error('An arpa-node must have a parent arpa-element');
             return;
         }
-        /** @type {((HTMLElement | DocumentFragment) & {arpaNode?: ArpaNode})} */
+
+        /** @type {((HTMLElement | DocumentFragment | Node) & {arpaNode?: ArpaNode})} */
         this.node = this.renderNode();
+        if (this.node) {
+            this.element.templateNodes[name] = this.node;
+        }
         if (this.node) {
             this.node.arpaNode = this;
             this.replaceWith(this.node);

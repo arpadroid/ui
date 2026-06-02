@@ -6,6 +6,7 @@
  * @typedef {import('./arpaElement.types').ArpaElementTemplateType} ArpaElementTemplateType
  * @typedef {import('../../../tools/zoneTool.types.js').ZoneToolPlaceZoneType} ZoneToolPlaceZoneType
  * @typedef {import('../../../tools/zoneTool.types.js').ZoneType} ZoneType
+ * @typedef {import('../arpaNode/arpaNode').default} ArpaNode
  */
 import { attrString, dashedToCamel, getStringBetween, mergeObjects, renderNode } from '@arpadroid/tools';
 import { defineCustomElement, attr, setNodes, bind, classNames } from '@arpadroid/tools';
@@ -37,7 +38,7 @@ class ArpaElement extends HTMLElement {
     templates = {};
     /** @type {Record<string, ArpaNodeConfigType>} */
     templateChildren = {};
-    /** @type {Record<string, HTMLElement | Node>} */
+    /** @type {Record<string, (HTMLElement | Node | DocumentFragment) & {arpaNode?: ArpaNode }>} */
     templateNodes = {};
     /** @type {Record<string, unknown>} */
     templateVars = {};
@@ -127,7 +128,8 @@ class ArpaElement extends HTMLElement {
             variant: undefined,
             templateContainer: this,
             handleContent: true,
-            templateTypes: ['content']
+            templateTypes: ['content'],
+            contentPosition: 'append'
         };
         return mergeObjects(defaultConfig, config);
     }
@@ -263,7 +265,10 @@ class ArpaElement extends HTMLElement {
     }
 
     hasTemplateChildren() {
-        return Object.keys(this.getTemplateChildren()).length > 0;
+        return (
+            Object.keys(this.templateNodes || {}).length > 0 ||
+            Object.keys(this.getTemplateChildren()).length > 0
+        );
     }
 
     /**
@@ -708,8 +713,8 @@ class ArpaElement extends HTMLElement {
     async _onRenderComplete() {
         this._hasRendered = true;
         this._onRenderedCallbacks.forEach(callback => callback());
-        await this._resolveRender();
         this.handleContent();
+        await this._resolveRender();
         this._onComplete();
     }
 
@@ -719,9 +724,8 @@ class ArpaElement extends HTMLElement {
         }
         this.contentNode = (this.contentNode?.isConnected && this.contentNode) || this.getContentNode();
         if (!this.contentNode) return;
-        for (const child of this._childNodes || []) {
-            this.contentNode?.appendChild(child);
-        }
+        const position = this.getProperty('contentPosition') || 'append';
+        this.contentNode?.[position](...(this._childNodes || []));
     }
 
     async _resolveRender() {

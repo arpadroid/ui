@@ -5,7 +5,6 @@
 
 import { attrString, dashedToCamel, mergeObjects } from '@arpadroid/tools';
 import { hasContent, processTemplate } from '../arpaElement/helper/arpaElement.helper';
-const html = String.raw;
 
 /**
  * Computes the class name for a child element.
@@ -57,12 +56,14 @@ export function canRenderChild(element, name, config = {}, attributes = {}) {
     if (typeof canRender === 'function') {
         return canRender(element);
     }
-    if (config.isContent || config?.childNodes?.length) {
-        return true;
-    }
     if (typeof canRender === 'string' && typeof element?.hasProperty === 'function') {
         return Boolean(element.hasProperty(canRender));
     }
+
+    if (config.isContent || attributes.isContent || config?.childNodes?.length) {
+        return true;
+    }
+
     return hasContent(element, name, config);
 }
 
@@ -76,10 +77,13 @@ export function canRenderChild(element, name, config = {}, attributes = {}) {
  */
 export function getChildAttributes(element, name, config = {}, attributes = {}) {
     const { className, id, hasZone, zoneName, isContent = false } = config;
-    attributes.isContent = isContent;
+    !attributes.isContent && (attributes.isContent = isContent);
     const attr = mergeObjects(config.attr || {}, attributes);
-    className && (attr.class = className);
+
     id && (attr.id = id);
+    className && (attr.class = `${attr.class || ''} ${className}`.trim());
+
+    attr.canRender && delete attr.canRender;
     hasZone && (attr.zone = zoneName);
     for (const key in attr) {
         if (!attr[key]) continue;
@@ -121,14 +125,15 @@ export function getChildContent(element, name, config = {}) {
 export function renderChild(element, name, config = {}, attributes = {}) {
     const defaults = getDefaultChildConfig(element, name);
     config = mergeObjects(defaults, config);
-    if (canRenderChild(element, name, config, attributes)) {
+    const canRender = canRenderChild(element, name, config, attributes);
+    if (canRender) {
         typeof config.attr === 'function' && (config.attr = config.attr());
         const attr = getChildAttributes(element, name, config, attributes);
         const { tag } = config;
         const isFragment = tag === 'fragment';
-        let content = isFragment ? '' : html`<${tag} ${attrString(attr)}>`;
+        let content = isFragment ? '' : `<${tag} ${attrString(attr)}>`;
         content += getChildContent(element, name, config);
-        content += isFragment ? '' : html`</${tag}>`;
+        content += isFragment ? '' : `</${tag}>`;
         return content;
     }
     return '';
