@@ -233,11 +233,10 @@ export function hasTemplateVariables(content, variables) {
 export function processTemplateVariable(name, value, element) {
     if (!value && typeof element?.getTemplateChild === 'function') {
         const child = element?.getTemplateChild(name);
-        if (child) {
-            value = renderChild(element, name, child);
-        }
+        child && (value = renderChild(element, name, child));
     }
-    return value || '';
+    if (value) return value;
+    return element?.getProperty(name) || '';
 }
 
 /**
@@ -279,6 +278,7 @@ export function processTemplate(template, props = {}, element) {
 export function renderTemplate(component, _template, vars = component.getTemplateVars()) {
     const templateContent = component.templates?.content?.innerHTML.trim();
     const template = _template || templateContent || component._getTemplate();
+
     for (const tplVar of Object.keys(vars)) {
         if (typeof vars[tplVar] === 'function') {
             vars[tplVar] = vars[tplVar](component);

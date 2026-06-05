@@ -59,7 +59,7 @@ class ArpaElement extends HTMLElement {
         /** @type {(() => unknown)[]} */
         this._preRenderCallbacks = [];
         this._zones = new Set();
-        this.i18nKey = 'arpaElement';
+        this.i18nKey = dashedToCamel(this.tagName.toLowerCase());
         this._preInitialize();
         this.setConfig(config);
         this._preInitializeContent();
@@ -176,7 +176,15 @@ class ArpaElement extends HTMLElement {
      * @returns {any} The value of the property.
      */
     getProperty(name) {
-        return getProperty(this, name);
+        const rv = getProperty(this, name);
+        if (typeof rv === 'string' && rv.startsWith('{i18n:')) {
+            const key = getStringBetween(rv, '{i18n:', '}');
+            const text = key && this.i18nText(key);
+            if (text) {
+                return this.i18n(key);
+            }
+        }
+        return rv;
     }
 
     /**

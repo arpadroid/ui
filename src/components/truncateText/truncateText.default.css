@@ -4,15 +4,14 @@ truncate-text {
     gap: 0.25rem;
 
     .truncateText__button {
-        display: inline-block;
-        align-self: flex-start;
         font-size: 0.9rem;
         font-weight: 600;
         color: var(--grey-800);
+    }
 
-        &:hover {
-            color: var(--color-primary);
+    &[inline-layout] {
+        arpa-button {
+            display: inline-flex;
         }
     }
 }
-

@@ -5,9 +5,11 @@ export type TruncateTextConfigType = ArpaElementConfigType & {
     contentClass?: string;
     ellipsis?: string;
     hasButton?: boolean;
+    icon?: string;
+    iconHide?: string;
+    inlineLayout?: boolean;
     isTruncated?: boolean;
+    lblHide?: string;
+    lblShow?: string;
     maxLength?: number;
-    readLessLabel?: string;
-    readMoreLabel?: string;
-    threshold?: number;
 };

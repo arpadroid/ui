@@ -22,7 +22,6 @@
         --button-icon-color: var(--button-variant-text-color);
         --button-color: var(--button-variant-text-color);
         --button-bg-color: var(--button-variant-color);
-
         --button-border: 2px solid var(--button-variant-color);
         --button-outline: 2px solid var(--button-variant-color);
         --button-underline-color: var(--button-variant-light-color);
@@ -57,6 +56,7 @@
         --button-icon-color-active: var(--button-variant-color);
         --button-variant-text-color: var(--button-variant-color);
     }
+
     &[variant='primary'] &[variant='primary-outlined'] {
         --button-variant-color: var(--color-primary);
         --button-variant-light-color: var(--color-primary-light);
@@ -96,5 +96,52 @@
         --button-variant-color: var(--color-highlight);
         --button-variant-light-color: var(--color-highlight-light);
         --button-variant-lightest-color: var(--color-highlight-lightest);
+    }
+}
+
+.arpaButton__button[variant='minimal'] {
+    --button-border: none;
+    --button-bg-color: transparent;
+    --button-box-shadow: none;
+    --button-gap: 0.25rem;
+    --button-color: var(--grey-750);
+    --button-icon-color: var(--grey-750);
+    --button-height: auto;
+    --button-outline: none;
+    --button-padding: 0;
+    --button-underline-color: var(--grey-125);
+    --button-underline-thickness: 2px;
+    --button-underline-offset: 6px;
+    --button-weight: 800;
+    --button-width: auto;
+
+    &.arpaButton__button {
+        padding-left: 0;
+    }
+
+    .arpaButton__content {
+        font-size: 0.9rem;
+        line-height: inherit;
+    }
+
+    arpa-icon {
+        --icon-size: 1.2rem;
+
+        line-height: inherit;
+    }
+
+    &:hover,
+    &:focus {
+        --button-underline-color: var(--grey-125);
+        --button-color: var(--color-primary);
+        --button-icon-color: var(--color-primary);
+        --button-weight: 700;
+
+        .arpaButton__content {
+            text-decoration: underline;
+            text-decoration-thickness: var(--button-underline-thickness);
+            text-decoration-color: var(--grey-400);
+            text-underline-offset: 4px;
+        }
     }
 }

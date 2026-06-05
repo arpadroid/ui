@@ -50,6 +50,9 @@ export function getDefaultChildConfig(element, name) {
 export function canRenderChild(element, name, config = {}, attributes = {}) {
     const { canRender = true } = config;
     const { canRender: attrCanRender = true } = attributes;
+    if (attributes.canRender === true) {
+        return true;
+    }
     if (Boolean(attrCanRender) === false || Boolean(canRender) === false) {
         return false;
     }

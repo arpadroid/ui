@@ -27,4 +27,5 @@ export type ButtonConfigType = ArpaElementConfigType & {
         | 'submit-outlined'
         | 'highlight'
         | 'highlight-outlined'
+        | 'minimal';
 };
