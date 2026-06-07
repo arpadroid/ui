@@ -28,7 +28,7 @@ const ArpaElementStory = {
                     <i18n-text key="ui.arpaElement.docs.description.component"> </i18n-text>
                 </p>
             </legend>
-            {wrapper}{header}{body}{footer}{testVar2}{content}
+            {wrapper}{header}{body}{footer}{testVar2}
         </fieldset>`,
         templateVars: {
             testVar: () => 'Test Variable 1'

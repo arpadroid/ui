@@ -14,6 +14,7 @@ class ArpaNode extends HTMLElement {
      */
     constructor(config) {
         super();
+        this.canRender = this.getAttribute('can-render');
         this.fragment = document.createDocumentFragment();
         this._initializeContent();
         this.setConfig(config);

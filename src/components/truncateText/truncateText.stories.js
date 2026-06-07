@@ -190,7 +190,6 @@ export const DynamicUpdates = {
     parameters: testParams,
     play: async ({ canvasElement, step, canvas }) => {
         const { truncateTextNode } = await playSetup(canvasElement);
-        console.log('truncateTextNode', truncateTextNode);
         await step('Dynamically updates the text content and re-applies truncation.', async () => {
             truncateTextNode.setContent(
                 'New dynamic text that exceeds the maximum length and should be truncated.'
@@ -220,7 +219,7 @@ export const DynamicUpdates = {
             async () => {
                 truncateTextNode.setContent('Short dynamic text.');
                 await waitFor(() => {
-                    expect(truncateTextNode.textContent).toBe('Short dynamic text.');
+                    expect(truncateTextNode.textContent.trim()).toBe('Short dynamic text.');
                     expect(canvas.queryByText('...')).not.toBeInTheDocument();
                     expect(canvas.queryByRole('button', { name: /read more/i })).not.toBeInTheDocument();
                     expect(canvas.queryByRole('button', { name: /read less/i })).not.toBeInTheDocument();

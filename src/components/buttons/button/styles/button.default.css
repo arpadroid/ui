@@ -33,20 +33,21 @@
 .arpaButton__button {
     --icon-size: 1.2rem;
     --theme-transition-speed: 0.1s;
-    align-items: center;
-    background-color: var(--button-bg-color);
-    border-radius: var(--button-radius);
-    border: var(--button-border);
-    box-shadow: var(--button-box-shadow);
-    cursor: pointer;
+
+    position: relative;
     display: flex;
     gap: var(--button-gap);
-    height: var(--button-height);
-    outline: var(--button-outline);
-    padding: var(--button-padding);
-    position: relative;
-    transition: var(--theme-transition);
+    align-items: center;
     width: var(--button-width);
+    height: var(--button-height);
+    padding: var(--button-padding);
+    cursor: pointer;
+    outline: var(--button-outline);
+    background-color: var(--button-bg-color);
+    border: var(--button-border);
+    border-radius: var(--button-radius);
+    box-shadow: var(--button-box-shadow);
+    transition: var(--theme-transition);
 
     &:has(.arpaButton__lhsIcon) {
         padding-left: 0.5rem;
@@ -58,70 +59,26 @@
     }
 
     arpa-icon {
-        transition: var(--theme-transition);
         color: var(--button-icon-color);
+        transition: var(--theme-transition);
+
         --icon-size: 1.4rem;
     }
 }
 
-/**
-* Hover / Focus
-*/
-
-.arpaButton__button:not(:disabled):not([data-invalid]):not([variant='minimal']) {
-    &:hover,
-    &:focus {
-        .arpaButton__content {
-            text-decoration: underline;
-            text-decoration-thickness: var(--button-underline-thickness);
-            text-decoration-color: var(--button-underline-color);
-            text-underline-offset: var(--button-underline-offset);
-        }
-    }
-
-    &:hover {
-        border: var(--button-border-hover);
-        outline: var(--button-outline-hover);
-
-        .arpaButton__content {
-            color: var(--button-color-hover);
-        }
-
-        arpa-icon {
-            color: var(--button-icon-color-hover);
-        }
-    }
-
-    &:focus {
-        box-shadow: var(--button-box-shadow-hover);
-        border: var(--button-border-active);
-        outline: var(--button-outline-active);
-        box-shadow: inset 1px 1px 3px rgba(61, 61, 61, 0.5);
-
-        .arpaButton__content {
-            font-weight: var(--button-weight-active);
-            color: var(--button-color-active);
-        }
-
-        .icon {
-            color: var(--button-icon-color-active);
-        }
-    }
-}
-
 .arpaButton__content {
-    flex: 1 1 auto;
-    max-height: 100%;
-    height: auto;
     display: block;
-    white-space: nowrap;
-    font-weight: var(--button-weight);
-    font-size: 1rem;
-    letter-spacing: normal;
-    color: var(--button-color);
-    text-underline-offset: 4px;
+    flex: 1 1 auto;
+    height: auto;
+    max-height: 100%;
     font-family: var(--primary-font);
+    font-size: 1rem;
+    font-weight: var(--button-weight);
+    color: var(--button-color);
+    letter-spacing: normal;
     letter-spacing: 0.2px;
+    white-space: nowrap;
+    text-underline-offset: 4px;
     background-color: var(--button-bg-color);
 }
 
@@ -137,30 +94,78 @@ arpa-button button arpa-tooltip.tooltip {
     pointer-events: none;
 }
 
+.button--link {
+    height: auto;
+    padding: 0;
+    color: var(--color-primary);
+    cursor: pointer;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+.button--link:hover {
+    text-decoration: underline;
+}
+
 /* Disabled */
 .arpaButton__button:disabled,
 .arpaButton__button[data-invalid] {
     --button-box-shadow: none;
+
     cursor: not-allowed;
+
     arpa-icon {
         color: var(--grey-150);
     }
+
     .arpaButton__content {
         color: var(--grey-300);
         text-decoration: line-through;
     }
 }
 
-.button--link {
-    background-color: transparent;
-    border: none;
-    box-shadow: none;
-    height: auto;
-    padding: 0px 0px;
-    color: var(--color-primary);
-    cursor: pointer;
-}
+/**
+* Hover / Focus
+*/
 
-.button--link:hover {
-    text-decoration: underline;
+.arpaButton__button:not(:disabled, [data-invalid], [variant='minimal']) {
+    &:hover,
+    &:focus {
+        .arpaButton__content {
+            text-decoration: underline;
+            text-decoration-thickness: var(--button-underline-thickness);
+            text-decoration-color: var(--button-underline-color);
+            text-underline-offset: var(--button-underline-offset);
+        }
+    }
+
+    &:hover {
+        outline: var(--button-outline-hover);
+        border: var(--button-border-hover);
+
+        .arpaButton__content {
+            color: var(--button-color-hover);
+        }
+
+        arpa-icon {
+            color: var(--button-icon-color-hover);
+        }
+    }
+
+    &:focus {
+        outline: var(--button-outline-active);
+        border: var(--button-border-active);
+        box-shadow: var(--button-box-shadow-hover);
+        box-shadow: inset 1px 1px 3px rgb(61 61 61 / 50%);
+
+        .arpaButton__content {
+            font-weight: var(--button-weight-active);
+            color: var(--button-color-active);
+        }
+
+        .icon {
+            color: var(--button-icon-color-active);
+        }
+    }
 }

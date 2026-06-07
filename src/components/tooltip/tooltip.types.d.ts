@@ -6,7 +6,6 @@ export type TooltipConfigType = ArpaElementConfigType & {
     cursorPositionAxis?: 'x' | 'y';
     hasCursorPosition?: boolean;
     cursorTooltipPosition?: 'top' | 'bottom' | 'left' | 'right';
-    text?: string;
     icon?: string;
     label?: string;
     onMouseTargetUpdate?: (target: HTMLElement, event: MouseEvent | TouchEvent) => void;

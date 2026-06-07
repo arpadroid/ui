@@ -332,7 +332,7 @@ class ArpaElement extends HTMLElement {
      * @param {string | HTMLElement} content - The content to set.
      * @param {HTMLElement | null} [contentContainer] - The container for the content.
      */
-    setContent(content, contentContainer = this) {
+    setContent(content, contentContainer = this.contentNode || this.getContentNode()) {
         if (typeof content === 'string') {
             this._content = content;
             const node = renderNode(content);
@@ -345,7 +345,10 @@ class ArpaElement extends HTMLElement {
             const childElements = /** @type {Element[]} */ (this.getChildElements());
             setNodes(contentContainer, childElements);
         }
+        this.$onContentSet();
     }
+
+    $onContentSet() {}
 
     /**
      * Sets a child element.

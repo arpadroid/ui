@@ -59,8 +59,24 @@ export function canRenderChild(element, name, config = {}, attributes = {}) {
     if (typeof canRender === 'function') {
         return canRender(element);
     }
-    if (typeof canRender === 'string' && typeof element?.hasProperty === 'function') {
-        return Boolean(element.hasProperty(canRender));
+
+    let canRenderStr = (typeof attrCanRender === 'string' && attrCanRender) || '';
+    !canRenderStr && typeof canRender === 'string' && (canRenderStr = canRender);
+    if (canRenderStr && typeof element?.hasProperty === 'function') {
+        const isNegation = canRenderStr.startsWith('!');
+        const propName = isNegation ? canRenderStr.slice(1) : canRenderStr;
+        if (propName.endsWith('()')) {
+            const methodName = propName.slice(0, -2);
+            // @ts-ignore
+            const method = /** @type {() => boolean} */ (element[methodName]);
+            if (typeof method === 'function') {
+                return isNegation ? Boolean(!method.call(element)) : Boolean(method.call(element));
+            }
+            return false;
+        }
+
+        const hasProp = Boolean(element.hasProperty(propName));
+        return isNegation ? Boolean(!hasProp) : Boolean(hasProp);
     }
 
     if (config.isContent || attributes.isContent || config?.childNodes?.length) {
