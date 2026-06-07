@@ -62,7 +62,7 @@ export function canRenderChild(element, name, config = {}, attributes = {}) {
 
     let canRenderStr = (typeof attrCanRender === 'string' && attrCanRender) || '';
     !canRenderStr && typeof canRender === 'string' && (canRenderStr = canRender);
-    if (canRenderStr && typeof element?.hasProperty === 'function') {
+    if (canRenderStr && typeof element?.hasProp === 'function') {
         const isNegation = canRenderStr.startsWith('!');
         const propName = isNegation ? canRenderStr.slice(1) : canRenderStr;
         if (propName.endsWith('()')) {
@@ -75,7 +75,7 @@ export function canRenderChild(element, name, config = {}, attributes = {}) {
             return false;
         }
 
-        const hasProp = Boolean(element.hasProperty(propName));
+        const hasProp = Boolean(element.hasProp(propName));
         return isNegation ? Boolean(!hasProp) : Boolean(hasProp);
     }
 
@@ -124,7 +124,7 @@ export function getChildAttributes(element, name, config = {}, attributes = {}) 
  * @returns {string}
  */
 export function getChildContent(element, name, config = {}) {
-    let content = config.content || (name && element?.getProperty(name)) || '';
+    let content = config.content || (name && element?.getProp(name)) || '';
     typeof content === 'function' && (content = content());
     return processTemplate(
         /** @type {string} **/ (content),

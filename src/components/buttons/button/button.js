@@ -49,7 +49,7 @@ class Button extends ArpaElement {
     /////////////////////////
 
     getLabel() {
-        return this.getProperty('label') || '';
+        return this.getProp('label') || '';
     }
 
     /**
@@ -57,11 +57,11 @@ class Button extends ArpaElement {
      * @returns {string}
      */
     getVariant() {
-        return this.variant || this.getProperty('variant');
+        return this.variant || this.getProp('variant');
     }
 
     getTooltipPosition() {
-        return this.getProperty('tooltip-position') || 'left';
+        return this.getProp('tooltip-position') || 'left';
     }
 
     /**
@@ -156,11 +156,11 @@ class Button extends ArpaElement {
         return html`<button
             ${attrString({
                 ariaLabel: this.getAriaLabel(),
-                class: this.getProperty('button-class'),
-                type: this.getProperty('type'),
+                class: this.getProp('button-class'),
+                type: this.getProp('type'),
                 variant: this.variant,
                 disabled: this.disabled,
-                zone: this.getProperty('button-zone')
+                zone: this.getProp('button-zone')
             })}
         >
             {icon}{content}{rhsIcon}{tooltip}

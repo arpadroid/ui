@@ -11,8 +11,9 @@
 import { attrString, dashedToCamel, getStringBetween, mergeObjects, renderNode } from '@arpadroid/tools';
 import { defineCustomElement, attr, setNodes, bind, classNames } from '@arpadroid/tools';
 import { handleZones, zoneMixin, hasZone, getZone, extractZones } from '../../../tools/zoneTool';
-import { hasProperty, getProperty, getArrayProperty, getPropertyCallback } from './helper/arpaElement.helper';
-import { onDestroy, handleCallbackProperty, sanitizeAttributes } from './helper/arpaElement.helper';
+import { getCallbackProp, handleCallbackProp } from '../../../helpers/props.helper.js';
+import { hasProp, getProp, getArrayProp } from '../../../helpers/props.helper.js';
+import { onDestroy, sanitizeAttributes } from './helper/arpaElement.helper';
 import { canRender, hasContent, renderTemplate } from './helper/arpaElement.helper';
 import { updateChildNode, selectTemplates } from './helper/arpaElement.helper';
 import { I18nTool, I18n } from '@arpadroid/i18n';
@@ -68,7 +69,7 @@ class ArpaElement extends HTMLElement {
         this._initializeContent();
         this._initialize();
         this.promise = this.getPromise();
-        handleCallbackProperty(this, 'on-click', 'click');
+        handleCallbackProp(this, 'on-click', 'click');
     }
 
     _preInitialize() {
@@ -151,7 +152,7 @@ class ArpaElement extends HTMLElement {
     }
 
     getVariant() {
-        return this.getProperty('variant');
+        return this.getProp('variant');
     }
 
     /**
@@ -175,8 +176,8 @@ class ArpaElement extends HTMLElement {
      * @param {string} name
      * @returns {any} The value of the property.
      */
-    getProperty(name) {
-        const rv = getProperty(this, name);
+    getProp(name) {
+        const rv = getProp(this, name);
         if (typeof rv === 'string' && rv.startsWith('{i18n:')) {
             const key = getStringBetween(rv, '{i18n:', '}');
             const text = key && this.i18nText(key);
@@ -192,8 +193,8 @@ class ArpaElement extends HTMLElement {
      * @param {string} name
      * @returns {any[]} The value of the property.
      */
-    getArrayProperty(name) {
-        return /** @type {any[]} */ (getArrayProperty(this, name));
+    getArrayProp(name) {
+        return /** @type {any[]} */ (getArrayProp(this, name));
     }
 
     /**
@@ -209,7 +210,7 @@ class ArpaElement extends HTMLElement {
          * @returns {Record<string, unknown>} The object of property values.
          */
         const reduce = (acc, name) => {
-            acc[name] = this.getProperty(name);
+            acc[name] = this.getProp(name);
             return acc;
         };
         return names.reduce(reduce, {});
@@ -317,8 +318,8 @@ class ArpaElement extends HTMLElement {
      * @param {string} name
      * @returns {boolean | unknown} True if the element has a property with the specified name; otherwise, false.
      */
-    hasProperty(name) {
-        return hasProperty(this, name);
+    hasProp(name) {
+        return hasProp(this, name);
     }
 
     // #endregion Has
@@ -450,7 +451,7 @@ class ArpaElement extends HTMLElement {
      */
     callCallback(callbackName, ...args) {
         const cb = /** @type {((...args: any[]) => void) | undefined} */ (
-            getPropertyCallback(this, callbackName)
+            getCallbackProp(this, callbackName)
         );
         if (typeof cb === 'function') {
             cb.apply(this, args);
@@ -601,7 +602,7 @@ class ArpaElement extends HTMLElement {
     _onPlaceZone(_payload) {}
 
     _addClassNames() {
-        const _classes = /** @type {string[]} */ (getArrayProperty(this, 'classNames')) || [];
+        const _classes = /** @type {string[]} */ (getArrayProp(this, 'classNames')) || [];
         const classes = classNames(
             this._config?.className || '',
             ..._classes,
@@ -735,7 +736,7 @@ class ArpaElement extends HTMLElement {
         }
         this.contentNode = (this.contentNode?.isConnected && this.contentNode) || this.getContentNode();
         if (!this.contentNode) return;
-        const position = this.getProperty('contentPosition') || 'append';
+        const position = this.getProp('contentPosition') || 'append';
         this.contentNode?.[position](...(this._childNodes || []));
     }
 

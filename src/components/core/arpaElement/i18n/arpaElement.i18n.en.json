@@ -46,8 +46,8 @@
             },
             "properties": {
                 "overview": "ArpaElement provides a unified property system that abstracts over HTML attributes and the JavaScript config object. Properties are accessed by name, with automatic conversion between dashed-attribute-case and camelCase config keys.",
-                "resolution": "When you call getProperty(name), the system first checks the element's HTML attributes for a matching dashed-case attribute, then falls back to the camelCase equivalent in the config object. This allows properties to be set declaratively in HTML or programmatically in JavaScript with the same access pattern.",
-                "methods": "getProperty(name) returns a single property value. hasProperty(name) checks if a property exists in attributes or config. getArrayProperty(name) returns the value as an array, splitting comma-separated attribute strings. getProperties(...names) returns an object of multiple property values. deleteProperty(name) removes a property from both the config and the attribute. deleteProperties(...names) removes multiple properties at once.",
+                "resolution": "When you call getProp(name), the system first checks the element's HTML attributes for a matching dashed-case attribute, then falls back to the camelCase equivalent in the config object. This allows properties to be set declaratively in HTML or programmatically in JavaScript with the same access pattern.",
+                "methods": "getProp(name) returns a single property value. hasProp(name) checks if a property exists in attributes or config. getArrayProp(name) returns the value as an array, splitting comma-separated attribute strings. getProperties(...names) returns an object of multiple property values. deleteProperty(name) removes a property from both the config and the attribute. deleteProperties(...names) removes multiple properties at once.",
                 "hasContent": "The hasContent(property) method checks whether a named property has meaningful content by verifying the property exists, has a non-empty value, or has a corresponding zone defined."
             },
             "i18n": {
@@ -71,7 +71,7 @@
             "callbacks": {
                 "overview": "ArpaElement supports a callback property system that enables parent-child method binding through string references, allowing parent components to pass behavior to children declaratively.",
                 "callbackReferences": "A property value starting with a colon (e.g. ':handleClick') is treated as a callback reference. The system walks up the DOM to find the nearest ArpaElement ancestor and resolves the named method on it.",
-                "handleCallbackProperty": "handleCallbackProperty(element, propertyName, eventName) reads a callback reference from the named property, resolves it to a function on the parent component, and binds it as a DOM event listener for the specified event. ArpaElement automatically calls this for the on-click property during construction.",
+                "handleCallbackProp": "handleCallbackProp(element, propertyName, eventName) reads a callback reference from the named property, resolves it to a function on the parent component, and binds it as a DOM event listener for the specified event. ArpaElement automatically calls this for the on-click property during construction.",
                 "callCallback": "callCallback(callbackName, ...args) retrieves a callback property by name and invokes it with the provided arguments, enabling programmatic invocation of parent-defined behavior."
             },
             "rendering": {

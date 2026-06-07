@@ -61,8 +61,8 @@ class DropArea extends ArpaElement {
 
     getTemplateVars() {
         return {
-            label: !this.hasZone('label') && this.getProperty('label'),
-            icon: this.getProperty('icon'),
+            label: !this.hasZone('label') && this.getProp('label'),
+            icon: this.getProp('icon'),
             input: render(this.hasInput(), this._config.inputTemplate)
         };
     }
@@ -74,7 +74,7 @@ class DropArea extends ArpaElement {
     /////////////////////
 
     hasInput() {
-        return this.hasProperty('has-input');
+        return this.hasProp('has-input');
     }
 
     /**
@@ -82,12 +82,12 @@ class DropArea extends ArpaElement {
      * @returns {HTMLElement | null}
      */
     getInput() {
-        const inputId = this.getProperty('input-id');
+        const inputId = this.getProp('input-id');
         if (typeof inputId === 'string') {
             const input = document.getElementById(inputId);
             if (input) return input;
         }
-        const input = /** @type {unknown} */ (this.getProperty('input'));
+        const input = /** @type {unknown} */ (this.getProp('input'));
         if (input instanceof HTMLInputElement) return input;
         return this.querySelector('input[type="file"]');
     }

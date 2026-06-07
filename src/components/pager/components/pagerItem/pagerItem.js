@@ -37,7 +37,7 @@ class PagerItem extends ArpaElement {
     ///////////////////////////////
 
     getPage() {
-        return Number(this.getProperty('page'));
+        return Number(this.getProp('page'));
     }
 
     /**
@@ -64,17 +64,17 @@ class PagerItem extends ArpaElement {
      * @returns {string}
      */
     getUrlParam() {
-        return this.pagerComponent?.getUrlParam() || this.getProperty('url-param');
+        return this.pagerComponent?.getUrlParam() || this.getProp('url-param');
     }
 
     isActive() {
-        return this.pagerComponent?.getCurrentPage() == this.getPage() || this.hasProperty('is-active');
+        return this.pagerComponent?.getCurrentPage() == this.getPage() || this.hasProp('is-active');
     }
 
     hasInput() {
         return (
-            this.pagerComponent?.hasProperty('has-input') ??
-            (this.hasProperty('has-input') &&
+            this.pagerComponent?.hasProp('has-input') ??
+            (this.hasProp('has-input') &&
                 !this.classList.contains('pager__next') &&
                 !this.classList.contains('pager__prev'))
         );
@@ -151,7 +151,7 @@ class PagerItem extends ArpaElement {
      * @returns {HTMLElement | Node | null}
      */
     renderPage(page) {
-        const ariaLabel = this.getProperty('aria-label');
+        const ariaLabel = this.getProp('aria-label');
         this.removeAttribute('aria-label');
 
         const linkNode = renderNode(

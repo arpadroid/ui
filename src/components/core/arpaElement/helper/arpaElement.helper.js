@@ -5,10 +5,10 @@
  * @typedef {import("../../arpaZone/arpaZone").default} ArpaZone
  */
 
-import { attr, dashedToCamel, getAttributes, getAttributesWithPrefix } from '@arpadroid/tools';
-import { camelToDashed, listen, mergeObjects, renderNode, resolveNode, sortKeys } from '@arpadroid/tools';
+import { attr, getAttributes, getAttributesWithPrefix } from '@arpadroid/tools';
+import { mergeObjects, renderNode, resolveNode, sortKeys } from '@arpadroid/tools';
 import { hasZone } from '../../../../tools/zoneTool';
-import { destroyComponentZones, findNodeComponent } from '../../../../tools/zoneTool';
+import { destroyComponentZones } from '../../../../tools/zoneTool';
 import { getChildContent, renderChild } from '../../arpaNode/arpaNode.helper';
 
 const FORBIDDEN_ATTRIBUTES = ['template', 'content', 'classNames', 'className'];
@@ -47,92 +47,6 @@ export function onDestroy(element) {
 /////////////////////////////////////
 // #region Properties & Attributes
 ////////////////////////////////////
-
-/**
- * Checks if an element has a property as an attribute or defined in the configuration.
- * @param {ArpaElement} element
- * @param {string} name
- * @param {Record<string, unknown>} [config]
- * @returns {unknown | undefined}
- */
-export function hasProperty(element, name, config = element._config) {
-    name = camelToDashed(name);
-    const attrVal = element.getAttribute(name);
-    if (attrVal === 'false') {
-        return false;
-    }
-    if (element.hasAttribute(name)) {
-        return true;
-    }
-    if (typeof config[dashedToCamel(name)] !== 'undefined') {
-        return config[dashedToCamel(name)];
-    }
-}
-
-/**
- * Gets the value of a property from the element's configuration or attributes.
- * @param {ArpaElement | ArpaNode | ArpaZone} element
- * @param {string} name
- * @param {Record<string, unknown>} [config]
- * @returns {string | unknown}
- */
-export function getProperty(element, name, config = element._config ?? {}) {
-    const configName = dashedToCamel(name);
-    let rv;
-    rv = element.getAttribute(camelToDashed(name)) || config[configName];
-    if (rv === 'undefined') {
-        rv = undefined;
-    }
-    return rv;
-}
-
-/**
- * Gets the value of a property from the element's configuration or attributes as an array.
- * @param {ArpaElement | ArpaNode} element
- * @param {string} name
- * @param {Record<string, unknown>} [config]
- * @returns {any[] | unknown}
- */
-export function getArrayProperty(element, name, config = element._config) {
-    const value = getProperty(element, name, config);
-    if (typeof value === 'string') {
-        return value.split(',').map(item => item.trim());
-    }
-    return value;
-}
-
-/**
- * Gets a callback property of a component defined as a string starting with ':'.
- * @param {ArpaElement} element
- * @param {string} propertyName
- * @returns {(() => void) | undefined}
- */
-export function getPropertyCallback(element, propertyName) {
-    const val = getProperty(element, propertyName);
-    if (typeof val === 'string' && val?.[0] === ':') {
-        const methodName = val.slice(1);
-        const parentComponent = findNodeComponent(/** @type {ArpaElement} */ (element.parentNode));
-        // @ts-ignore
-        const method = parentComponent?.[methodName];
-        return method?.bind(parentComponent);
-    }
-}
-
-/**
- * Handles a callback property of a component defined as a string starting with ':'.
- * The callback method will be looked-up and called in the parent component.
- * @param {ArpaElement} element
- * @param {string} propertyName
- * @param {string} eventName
- * @returns {((...args: any[]) => void) | undefined}
- */
-export function handleCallbackProperty(element, propertyName, eventName = '') {
-    const method = getPropertyCallback(element, propertyName);
-    if (typeof method === 'function' && eventName) {
-        listen(element, eventName, method);
-    }
-    return method;
-}
 
 /**
  * Sanitizes an element's attributes by removing any properties that should not be rendered as attributes.
@@ -236,7 +150,7 @@ export function processTemplateVariable(name, value, element) {
         child && (value = renderChild(element, name, child));
     }
     if (value) return value;
-    return element?.getProperty(name) || '';
+    return element?.getProp(name) || '';
 }
 
 /**
@@ -300,8 +214,8 @@ export function renderTemplate(component, _template, vars = component.getTemplat
  */
 export function hasContent(element, property, config = {}) {
     if (config.content || config?.childNodes?.length) return true;
-    if (typeof element?.getProperty === 'function') {
-        const rv = element?.getProperty(property);
+    if (typeof element?.getProp === 'function') {
+        const rv = element?.getProp(property);
         if (typeof rv === 'string' && rv.length) {
             return true;
         }
@@ -336,7 +250,7 @@ export function canRender(element, timeout = 200) {
  * @returns {string | undefined}
  */
 export function getTemplatesSelector(element) {
-    const templateTypes = element.getArrayProperty('template-types');
+    const templateTypes = element.getArrayProp('template-types');
     if (!templateTypes?.length) return;
     return templateTypes.map(type => `:scope > template[template-type="${type}"]`).join(', ');
 }
@@ -358,7 +272,7 @@ export function selectTemplates(element, templateSelector = getTemplatesSelector
  * @returns {HTMLElement | Element | DocumentFragment | null}
  */
 export function getTemplateContainer(element, template) {
-    let container = template.getAttribute('container') || element.getProperty('container');
+    let container = template.getAttribute('container') || element.getProp('container');
     typeof container === 'function' && (container = container());
     const resolved = resolveNode(container);
     if (!(resolved instanceof HTMLElement)) {

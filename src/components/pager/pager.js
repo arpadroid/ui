@@ -73,7 +73,7 @@ class Pager extends ArpaElement {
     ////////////////////
 
     getId() {
-        return this.getProperty('id') || 'pager';
+        return this.getProp('id') || 'pager';
     }
 
     /**
@@ -82,7 +82,7 @@ class Pager extends ArpaElement {
      */
     getCurrentPage() {
         const urlParam = this.getUrlParam();
-        const currentPage = this.getProperty('current-page');
+        const currentPage = this.getProp('current-page');
         return parseFloat(getURLParam(urlParam) ?? currentPage);
     }
 
@@ -91,7 +91,7 @@ class Pager extends ArpaElement {
      * @returns {string}
      */
     getUrlParam() {
-        return this.getProperty('url-param') ?? 'page';
+        return this.getProp('url-param') ?? 'page';
     }
 
     /**
@@ -99,7 +99,7 @@ class Pager extends ArpaElement {
      * @returns {number}
      */
     getTotalPages() {
-        return parseFloat(this.getProperty('total-pages'));
+        return parseFloat(this.getProp('total-pages'));
     }
 
     /**
@@ -107,7 +107,7 @@ class Pager extends ArpaElement {
      * @returns {number}
      */
     getMaxNodes() {
-        return parseFloat(this.getProperty('max-nodes'));
+        return parseFloat(this.getProp('max-nodes'));
     }
 
     /**
@@ -135,7 +135,7 @@ class Pager extends ArpaElement {
     }
 
     getItemComponent() {
-        return this.getProperty('item-component') || 'pager-item';
+        return this.getProp('item-component') || 'pager-item';
     }
 
     /**
@@ -152,7 +152,7 @@ class Pager extends ArpaElement {
      * @returns {boolean}
      */
     hasArrowControls() {
-        return Boolean(this.hasProperty('has-arrow-controls'));
+        return Boolean(this.hasProp('has-arrow-controls'));
     }
 
     // #region Get

@@ -54,7 +54,7 @@ export function filterZones(zones, component, filter = component._config?.zoneFi
  * @returns {string} The zone selector.
  */
 export function getSelector(component) {
-    return /** @type {string} */ (component?.getProperty('zone-selector') || ZONE_SELECTOR);
+    return /** @type {string} */ (component?.getProp('zone-selector') || ZONE_SELECTOR);
 }
 
 /**
@@ -241,7 +241,7 @@ export function _onZonesLoaded() {
  */
 export function getResolverSelector(component, zoneName) {
     let selector = '[zone="{zoneName}"]';
-    const prop = component?.getProperty('zone-resolver-selector');
+    const prop = component?.getProp('zone-resolver-selector');
     prop && (selector = prop);
     return (zoneName && selector.replace(/{zoneName}/gi, zoneName)) || selector;
 }

@@ -4,9 +4,9 @@
  * @typedef {import('../arpaElement/arpaElement.js').default} ArpaElement
  */
 import { defineCustomElement, getAttributes, mergeObjects, renderNode } from '@arpadroid/tools';
-import { getArpaElement, getProperty } from '../arpaElement/helper/arpaElement.helper';
+import { getArpaElement } from '../arpaElement/helper/arpaElement.helper';
 import { renderChild } from './arpaNode.helper';
-
+import { getProp } from '../../../helpers/props.helper.js';
 class ArpaNode extends HTMLElement {
     /**
      * Creates an instance of ArpaNode.
@@ -92,13 +92,13 @@ class ArpaNode extends HTMLElement {
      * @param {string} name
      * @returns {any}
      */
-    getProperty(name) {
-        return getProperty(this, name);
+    getProp(name) {
+        return getProp(this, name);
     }
 
     renderNode() {
         if (!this.element) return;
-        const name = this.getProperty('name');
+        const name = this.getProp('name');
         const config = this.getConfig();
         const { tag } = config;
         const attr = this.getNodeAttributes();
@@ -116,7 +116,7 @@ class ArpaNode extends HTMLElement {
 
     async connectedCallback() {
         this._initializeContent();
-        const name = this.getProperty('name');
+        const name = this.getProp('name');
         if (!name) {
             console.error('An arpa-node must have a name attribute or configuration property defined.', this);
             return;

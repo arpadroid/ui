@@ -1,4 +1,10 @@
 /**
+ * Helpers.
+ */
+
+export * from './helpers/props.helper.js';
+
+/**
  * Core.
  */
 export { default as ArpaElement } from './components/core/arpaElement/arpaElement.js';
@@ -39,7 +45,27 @@ export { default as InputCombo } from './components/inputCombo/inputCombo.js';
  */
 export { default as CircularPreloader } from './components/preloaders/circularPreloader/circularPreloader.js';
 
-export * from './components/core/arpaElement/helper/arpaElement.helper.js';
+export {
+    applyTemplate,
+    applyTemplateAttributes,
+    canRender,
+    getArpaElement,
+    getTemplateAttributes,
+    getTemplateContainer,
+    getTemplatesSelector,
+    getUserConfig,
+    hasContent,
+    hasTemplateVariables,
+    onDestroy,
+    processTemplate,
+    processTemplateVariable,
+    renderTemplate,
+    sanitizeAttributeEffect,
+    sanitizeAttributes,
+    selectTemplates,
+    updateChildNode
+} from './components/core/arpaElement/helper/arpaElement.helper.js';
+
 export * from './tools/zoneTool.js';
 
 /**

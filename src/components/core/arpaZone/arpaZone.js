@@ -3,8 +3,8 @@
  * @typedef {import('../arpaElement/arpaElement.js').default} ArpaElement
  */
 import { defineCustomElement, mergeObjects } from '@arpadroid/tools';
-import { getArpaElement, getProperty } from '../arpaElement/helper/arpaElement.helper';
-
+import { getArpaElement } from '../arpaElement/helper/arpaElement.helper';
+import { getProp } from '../../../helpers/props.helper.js';
 class ArpaZone extends HTMLElement {
     /**
      * Creates an instance of ArpaZone.
@@ -26,7 +26,7 @@ class ArpaZone extends HTMLElement {
     _initializeZone() {
         /** @type {ArpaElement | null} */
         this.element = this.element || getArpaElement(this);
-        this.element?.zonesByName?.add(this.getProperty('name'));
+        this.element?.zonesByName?.add(this.getProp('name'));
     }
 
     /**
@@ -56,14 +56,14 @@ class ArpaZone extends HTMLElement {
      * @param {string} name
      * @returns {any}
      */
-    getProperty(name) {
-        return getProperty(this, name);
+    getProp(name) {
+        return getProp(this, name);
     }
 
     async connectedCallback() {
         this._initializeZone();
 
-        const name = this.getProperty('name');
+        const name = this.getProp('name');
         if (!name) {
             console.error('An arpa-zone must have a name attribute or configuration property defined.');
             return;
@@ -73,7 +73,7 @@ class ArpaZone extends HTMLElement {
             return;
         }
         await this.element.promise;
-        const zoneName = this.getProperty('name');
+        const zoneName = this.getProp('name');
         const zoneElement = this.element.querySelector(`[zone="${zoneName}"]`);
         zoneElement?.append(this.fragment);
     }

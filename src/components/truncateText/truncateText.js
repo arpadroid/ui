@@ -45,24 +45,24 @@ class TruncateText extends ArpaElement {
     }
 
     renderButton() {
-        const buttonClasses = this.getProperty('buttonClasses').join(' ');
+        const buttonClasses = this.getProp('buttonClasses').join(' ');
         const canTruncate = this.canTruncate();
         return canTruncate
             ? html`<arpa-node
                   name="button"
                   tag="arpa-button"
                   can-render="hasButton"
-                  rhs-icon="${this.getProperty('icon')}"
+                  rhs-icon="${this.getProp('icon')}"
                   variant="minimal"
                   button-class="${buttonClasses}"
               >
-                  ${this.getProperty('lblShow')}
+                  ${this.getProp('lblShow')}
               </arpa-node>`
             : '';
     }
 
     _getTemplate() {
-        const isInline = this.hasProperty('inlineLayout');
+        const isInline = this.hasProp('inlineLayout');
         return html`
             <arpa-node tag="span" name="wrapper">
                 <arpa-node tag="span" name="content" is-content></arpa-node>
@@ -115,7 +115,7 @@ class TruncateText extends ArpaElement {
     }
 
     _onComplete() {
-        if (this.hasProperty('isTruncated')) {
+        if (this.hasProp('isTruncated')) {
             this.setAttribute('is-truncated', '');
             this.truncateText();
         }
@@ -128,7 +128,7 @@ class TruncateText extends ArpaElement {
     /////////////////////////////
 
     getMaxLength() {
-        return parseFloat(this.getProperty('maxLength'));
+        return parseFloat(this.getProp('maxLength'));
     }
 
     canTruncate() {
@@ -152,15 +152,15 @@ class TruncateText extends ArpaElement {
         this.truncatedNode.textContent = content;
         this.contentNode?.replaceWith(this.truncatedNode);
         this.ellipsisNode && this.truncatedNode?.after(this.ellipsisNode);
-        this.buttonComponent?.setContent(this.getProperty('lblShow'));
-        this.buttonComponent?.setIconRight(this.getProperty('icon'));
+        this.buttonComponent?.setContent(this.getProp('lblShow'));
+        this.buttonComponent?.setIconRight(this.getProp('icon'));
     }
 
     showFullContent() {
         this.truncatedNode?.replaceWith(this.contentNode);
         this.ellipsisNode?.remove();
-        this.buttonComponent?.setContent(this.getProperty('lblHide'));
-        this.buttonComponent?.setIconRight(this.getProperty('iconHide'));
+        this.buttonComponent?.setContent(this.getProp('lblHide'));
+        this.buttonComponent?.setIconRight(this.getProp('iconHide'));
     }
 
     toggleTruncate() {

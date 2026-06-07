@@ -85,9 +85,9 @@ class ConfirmDialog extends Dialog {
      * @returns {string}
      */
     renderFooter(
-        confirmIcon = this.getProperty('confirm-icon'),
+        confirmIcon = this.getProp('confirm-icon'),
         lblConfirm = this.i18n('lblConfirm'),
-        cancelIcon = this.getProperty('cancel-icon'),
+        cancelIcon = this.getProp('cancel-icon'),
         lblCancel = this.i18n('lblCancel')
     ) {
         const content = html`<div class="dialog__controls">

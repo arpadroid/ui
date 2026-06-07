@@ -146,7 +146,7 @@ class CustomComponent extends ArpaElement {
     getTemplateVars() {
         return {
             myVar: 'Some dynamic content',
-            buttonText: this.getProperty('buttonText')
+            buttonText: this.getProp('buttonText')
         };
     }
 
@@ -987,8 +987,8 @@ class CustomElement extends ArpaElement {
 
 ```javascript
 // Property management
-element.getProperty('propertyName');
-element.hasProperty('propertyName');
+element.getProp('propertyName');
+element.hasProp('propertyName');
 element.setProperty('propertyName', value);
 
 // Zone management
@@ -1073,7 +1073,7 @@ class MyComponent extends ArpaElement {
                 header: {
                     tag: 'h3',
                     className: 'myComponent__title',
-                    canRender: () => !!this.getProperty('title')
+                    canRender: () => !!this.getProp('title')
                 },
                 content: {
                     tag: 'div',
@@ -1097,7 +1097,7 @@ class MyComponent extends ArpaElement {
 
     getTemplateVars() {
         return {
-            title: this.getProperty('title') || ''
+            title: this.getProp('title') || ''
         };
     }
 
@@ -1151,14 +1151,14 @@ class InteractiveComponent extends ArpaElement {
 class AdvancedComponent extends ArpaElement {
     getTemplateVars() {
         return {
-            title: this.getProperty('title'),
+            title: this.getProp('title'),
             items: this.renderItems(),
             actions: this.hasActions() ? this.renderActions() : ''
         };
     }
 
     renderItems() {
-        const items = this.getProperty('items') || [];
+        const items = this.getProp('items') || [];
         return items
             .map(
                 item => `

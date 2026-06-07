@@ -75,7 +75,7 @@ class Dialog extends ArpaElement {
         /** @type {Dialogs | null} */
         this.dialogs = this.dialogs || this.closest(dialogsTagName);
         if (this.dialogs) return;
-        const dialogsId = this.getProperty('dialogs-id') || dialogsTagName;
+        const dialogsId = this.getProp('dialogs-id') || dialogsTagName;
 
         this.dialogs = /** @type {Dialogs | null} */ (document.getElementById(dialogsId));
         if (this.dialogs) {
@@ -123,11 +123,11 @@ class Dialog extends ArpaElement {
     ////////////////////////////
 
     canClose() {
-        return this.getProperty('can-close');
+        return this.getProp('can-close');
     }
 
     isPersist() {
-        return this.getProperty('persist');
+        return this.getProp('persist');
     }
 
     open() {
@@ -145,7 +145,7 @@ class Dialog extends ArpaElement {
     }
 
     isOpen() {
-        return this.hasProperty('open');
+        return this.hasProp('open');
     }
 
     toggle() {
@@ -235,7 +235,7 @@ class Dialog extends ArpaElement {
     }
 
     renderContent() {
-        const content = this.getProperty('content') || '';
+        const content = this.getProp('content') || '';
         return html`
             ${(this.hasContent('content-top') &&
                 html`<div class="dialog__contentTop" zone="content-top"></div>`) ||

@@ -13,7 +13,7 @@ class IconButton extends Button {
             templateChildren: {
                 content: { canRender: false },
                 tooltip: {
-                    content: this.getProperty('label')
+                    content: this.getProp('label')
                 }
             }
         };

@@ -27,7 +27,7 @@ class Tooltip extends ArpaElement {
     }
 
     getPosition() {
-        return this.getProperty('position')?.trim() ?? 'top';
+        return this.getProp('position')?.trim() ?? 'top';
     }
 
     /**
@@ -41,7 +41,7 @@ class Tooltip extends ArpaElement {
     }
 
     hasCursorPosition() {
-        return this.hasProperty('has-cursor-position');
+        return this.hasProp('has-cursor-position');
     }
 
     /**
@@ -52,7 +52,7 @@ class Tooltip extends ArpaElement {
         if (this.handler instanceof HTMLElement) {
             return this.handler;
         }
-        let handler = this.getProperty('handler');
+        let handler = this.getProp('handler');
         if (handler && typeof handler === 'string') {
             handler = resolveNode(handler);
         }
@@ -204,11 +204,11 @@ class Tooltip extends ArpaElement {
         const handler = this.handler;
         if (!content) return;
 
-        const position = this.getProperty('cursor-tooltip-position');
+        const position = this.getProp('cursor-tooltip-position');
         const rect = handler?.getBoundingClientRect();
         if (!rect) return;
 
-        const axis = this.getProperty('cursor-position-axis') || 'x';
+        const axis = this.getProp('cursor-position-axis') || 'x';
         if (axis === 'x') {
             /** @type {string | number} */
             let top = rect.top - content.clientHeight - offset;
@@ -245,7 +245,7 @@ class Tooltip extends ArpaElement {
     _initializeCursorPosition() {
         const positions = ['top', 'bottom', 'left', 'right'];
         positions.forEach(position => this?.classList?.remove(`tooltip--${position}`));
-        const cursorTooltipPosition = this.getProperty('cursor-tooltip-position');
+        const cursorTooltipPosition = this.getProp('cursor-tooltip-position');
         cursorTooltipPosition && this?.classList?.add(`tooltip--${cursorTooltipPosition}`);
     }
 
