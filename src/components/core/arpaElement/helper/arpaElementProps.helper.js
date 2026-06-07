@@ -1,11 +1,11 @@
 /**
- * @typedef {import('../components/core/arpaNode/arpaNode.types').ArpaNodeConfigType} ArpaNodeConfigType
- * @typedef {import("../components/core/arpaElement/arpaElement").default} ArpaElement
- * @typedef {import("../components/core/arpaNode/arpaNode").default} ArpaNode
- * @typedef {import("../components/core/arpaZone/arpaZone").default} ArpaZone
+ * @typedef {import('../../arpaNode/arpaNode.types').ArpaNodeConfigType} ArpaNodeConfigType
+ * @typedef {import("../arpaElement").default} ArpaElement
+ * @typedef {import("../../arpaNode/arpaNode").default} ArpaNode
+ * @typedef {import("../../arpaZone/arpaZone").default} ArpaZone
  */
 import { camelToDashed, listen, dashedToCamel } from '@arpadroid/tools';
-import { findNodeComponent } from '../tools/zoneTool';
+import { findNodeComponent } from '../../../../tools/zoneTool';
 
 /**
  * Checks if an element has a property as an attribute or defined in the configuration.
@@ -91,4 +91,27 @@ export function handleCallbackProp(element, propertyName, eventName = '') {
         listen(element, eventName, method);
     }
     return method;
+}
+
+/**
+ * Processes a condition string for template rendering. It supports negation with '!' and method calls with '()'.
+ * @param {ArpaElement} element
+ * @param {string} condition
+ * @returns {boolean}
+ */
+export function processAttributeCondition(element, condition) {
+    const isNegation = condition.startsWith('!');
+    const propName = isNegation ? condition.slice(1) : condition;
+    if (propName.endsWith('()')) {
+        const methodName = propName.slice(0, -2);
+        // @ts-ignore
+        const method = /** @type {() => boolean} */ (element[methodName]);
+        if (typeof method === 'function') {
+            return isNegation ? Boolean(!method.call(element)) : Boolean(method.call(element));
+        }
+        return false;
+    }
+
+    const hasProp = Boolean(element.hasProp(propName));
+    return isNegation ? Boolean(!hasProp) : Boolean(hasProp);
 }

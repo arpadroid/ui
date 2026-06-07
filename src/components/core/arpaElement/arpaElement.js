@@ -11,13 +11,13 @@
 import { attrString, dashedToCamel, getStringBetween, mergeObjects, renderNode } from '@arpadroid/tools';
 import { defineCustomElement, attr, setNodes, bind, classNames } from '@arpadroid/tools';
 import { handleZones, zoneMixin, hasZone, getZone, extractZones } from '../../../tools/zoneTool';
-import { getCallbackProp, handleCallbackProp } from '../../../helpers/props.helper.js';
-import { hasProp, getProp, getArrayProp } from '../../../helpers/props.helper.js';
+import { getCallbackProp, handleCallbackProp } from './helper/arpaElementProps.helper.js';
+import { hasProp, getProp, getArrayProp } from './helper/arpaElementProps.helper.js';
 import { onDestroy, sanitizeAttributes } from './helper/arpaElement.helper';
-import { canRender, hasContent, renderTemplate } from './helper/arpaElement.helper';
-import { updateChildNode, selectTemplates } from './helper/arpaElement.helper';
+import { canRender, hasContent } from './helper/arpaElement.helper';
+import { renderTemplate, getChildClassName, renderChild } from './helper/arpaElementTemplate.helper';
+import { selectTemplates, updateChildNode } from './helper/arpaElementTemplate.helper';
 import { I18nTool, I18n } from '@arpadroid/i18n';
-import { getChildClassName, renderChild } from '../arpaNode/arpaNode.helper';
 const { arpaElementI18n } = I18nTool;
 
 class ArpaElement extends HTMLElement {

@@ -6,7 +6,7 @@
 import ArpaElement from '../../core/arpaElement/arpaElement.js';
 import { observerMixin, renderNode } from '@arpadroid/tools';
 import { attrString, dummySignal, defineCustomElement, listen } from '@arpadroid/tools';
-import { processTemplate } from '../../core/arpaElement/helper/arpaElement.helper.js';
+import { processTemplate } from '../../core/arpaElement/helper/arpaElementTemplate.helper.js';
 
 const html = String.raw;
 class Dialog extends ArpaElement {

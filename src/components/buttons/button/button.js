@@ -6,7 +6,7 @@
 import { renderNode, listen } from '@arpadroid/tools';
 import { appendNodes, attrString, defineCustomElement } from '@arpadroid/tools';
 import ArpaElement from '../../core/arpaElement/arpaElement';
-import { renderChild } from '../../core/arpaNode/arpaNode.helper';
+import { renderChild } from '../../core/arpaElement/helper/arpaElementTemplate.helper';
 
 const html = String.raw;
 class Button extends ArpaElement {

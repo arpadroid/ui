@@ -4,7 +4,7 @@
  */
 import { defineCustomElement, mergeObjects } from '@arpadroid/tools';
 import { getArpaElement } from '../arpaElement/helper/arpaElement.helper';
-import { getProp } from '../../../helpers/props.helper.js';
+import { getProp } from '../arpaElement/helper/arpaElementProps.helper.js';
 class ArpaZone extends HTMLElement {
     /**
      * Creates an instance of ArpaZone.

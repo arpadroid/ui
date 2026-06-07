@@ -1,4 +1,4 @@
-import { processTemplate } from './arpaElement.helper';
+import { processTemplate } from './arpaElementTemplate.helper';
 
 describe('ArpaElement Helper', () => {
     test('processTemplate', () => {

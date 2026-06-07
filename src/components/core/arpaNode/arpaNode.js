@@ -5,8 +5,8 @@
  */
 import { defineCustomElement, getAttributes, mergeObjects, renderNode } from '@arpadroid/tools';
 import { getArpaElement } from '../arpaElement/helper/arpaElement.helper';
-import { renderChild } from './arpaNode.helper';
-import { getProp } from '../../../helpers/props.helper.js';
+import { renderChild } from '../arpaElement/helper/arpaElementTemplate.helper';
+import { getProp } from '../arpaElement/helper/arpaElementProps.helper.js';
 class ArpaNode extends HTMLElement {
     /**
      * Creates an instance of ArpaNode.
