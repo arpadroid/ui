@@ -99,7 +99,7 @@ export function handleCallbackProp(element, propertyName, eventName = '') {
  * @param {string} condition
  * @returns {boolean}
  */
-export function processAttributeCondition(element, condition) {
+export function evaluatePropToken(element, condition) {
     const isNegation = condition.startsWith('!');
     const propName = isNegation ? condition.slice(1) : condition;
     if (propName.endsWith('()')) {
@@ -114,4 +114,16 @@ export function processAttributeCondition(element, condition) {
 
     const hasProp = Boolean(element.hasProp(propName));
     return isNegation ? Boolean(!hasProp) : Boolean(hasProp);
+}
+
+/**
+ * Evaluates a boolean expression string containing multiple condition tokens joined by '||' and '&&' operators.
+ * @param {ArpaElement} element
+ * @param {string} expression
+ * @returns {boolean}
+ */
+export function evaluateProp(element, expression) {
+    return expression
+        .split('||')
+        .some(andGroup => andGroup.split('&&').every(token => evaluatePropToken(element, token.trim())));
 }

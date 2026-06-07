@@ -8,7 +8,7 @@
 import { attr, getAttributes, getAttributesWithPrefix } from '@arpadroid/tools';
 import { mergeObjects, renderNode, attrString, dashedToCamel } from '@arpadroid/tools';
 import { hasContent } from '../helper/arpaElement.helper';
-import { processAttributeCondition } from './arpaElementProps.helper';
+import { evaluateProp } from './arpaElementProps.helper';
 
 //////////////////////////////////
 // #region Template Processing
@@ -164,7 +164,7 @@ export function canRenderChild(element, name, config = {}, attributes = {}) {
     let canRenderStr = (typeof attrCanRender === 'string' && attrCanRender) || '';
     !canRenderStr && typeof canRender === 'string' && (canRenderStr = canRender);
     if (canRenderStr && typeof element?.hasProp === 'function') {
-        return processAttributeCondition(element, canRenderStr);
+        return evaluateProp(element, canRenderStr);
     }
 
     if (config.isContent || attributes.isContent || config?.childNodes?.length) {
