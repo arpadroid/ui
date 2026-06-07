@@ -152,7 +152,7 @@ class Button extends ArpaElement {
         };
     }
 
-    _getTemplate() {
+    $renderTemplate() {
         return html`<button
             ${attrString({
                 ariaLabel: this.getAriaLabel(),
@@ -180,8 +180,8 @@ class Button extends ArpaElement {
         }
     }
 
-    async _initializeNodes() {
-        await super._initializeNodes();
+    async $initializeNodes() {
+        await super.$initializeNodes();
 
         this.tooltip = /** @type {Tooltip | null} */ (this.querySelector('arpa-tooltip'));
         /** @type {Icon | null} */

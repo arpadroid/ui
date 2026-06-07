@@ -10,7 +10,7 @@ class Tooltip extends ArpaElement {
     /** @type {TooltipConfigType} */
     _config = this._config;
 
-    _preInitialize() {
+    $preInitialize() {
         this.handler = this.querySelector('.tooltip__handler, input, button, a');
         if (this.handler) {
             this.handler.remove();
@@ -99,7 +99,7 @@ class Tooltip extends ArpaElement {
         return super.getDefaultConfig(config);
     }
 
-    _getTemplate() {
+    $renderTemplate() {
         return html`
             <arpa-node
                 name="handler"
@@ -120,8 +120,8 @@ class Tooltip extends ArpaElement {
         `;
     }
 
-    async _initializeNodes() {
-        await super._initializeNodes();
+    async $initializeNodes() {
+        await super.$initializeNodes();
         this.classList.add(`tooltip--${this.getPosition()}`);
         this.setHandler(this.getHandler());
         if (this.handler && !this.handler.isConnected) {

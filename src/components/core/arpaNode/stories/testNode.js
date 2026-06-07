@@ -12,7 +12,7 @@ class TestNode extends ArpaElement {
         });
     }
 
-    _getTemplate() {
+    $renderTemplate() {
         return html`
             <arpa-node tag="header" name="header">
                 <span>Header -> Static</span>

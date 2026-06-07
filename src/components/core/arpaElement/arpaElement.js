@@ -61,26 +61,22 @@ class ArpaElement extends HTMLElement {
         this._preRenderCallbacks = [];
         this._zones = new Set();
         this.i18nKey = dashedToCamel(this.tagName.toLowerCase());
-        this._preInitialize();
+        this.$preInitialize();
         this.setConfig(config);
         this._preInitializeContent();
         this._initializeTemplates();
         this._initializeZones();
         this._initializeContent();
-        this._initialize();
+        this.$initialize();
         this.promise = this.getPromise();
         handleCallbackProp(this, 'on-click', 'click');
     }
 
-    _preInitialize() {
+    $preInitialize() {
         // abstract method
     }
 
-    _initialize() {
-        // abstract method
-    }
-
-    _initializeProperties() {
+    $initialize() {
         // abstract method
     }
 
@@ -97,8 +93,6 @@ class ArpaElement extends HTMLElement {
         attr(this, sanitizeAttributes(this, this._config));
     }
 
-    _initializeAttributes() {}
-
     _initializeContent() {
         this._content = this.innerHTML;
         this._textContent = this.textContent;
@@ -113,7 +107,7 @@ class ArpaElement extends HTMLElement {
         });
     }
 
-    initializeProperties() {
+    $initializeProperties() {
         return true;
     }
 
@@ -578,11 +572,11 @@ class ArpaElement extends HTMLElement {
         if (!this.isConnected) {
             this._unsubscribes?.forEach(unsubscribe => typeof unsubscribe === 'function' && unsubscribe());
             this._unsubscribes = [];
-            this._onDestroy();
+            this.$onDestroy();
         }
     }
 
-    _onDestroy() {
+    $onDestroy() {
         onDestroy(this);
     }
 
@@ -619,17 +613,17 @@ class ArpaElement extends HTMLElement {
      */
     attributeChangedCallback(att, oldValue, newValue) {
         this.update();
-        this._onAttributeChanged(att, oldValue, newValue);
+        this.$onAttributeChanged(att, oldValue, newValue);
     }
 
-    _onInitialized() {
+    $onInitialized() {
         // abstract method
     }
 
     /**
      * Called when the element is connected to the DOM.
      */
-    _onConnected() {
+    $onConnected() {
         // abstract method
     }
 
@@ -640,7 +634,7 @@ class ArpaElement extends HTMLElement {
      * @param {string} newValue
      */
     // eslint-disable-next-line no-unused-vars
-    _onAttributeChanged(att, oldValue, newValue) {
+    $onAttributeChanged(att, oldValue, newValue) {
         // abstract method
     }
 
@@ -659,13 +653,13 @@ class ArpaElement extends HTMLElement {
         this._addClassNames();
         this._isReady = true;
         if (!this._hasInitialized) {
-            this._hasInitialized = this.initializeProperties();
-            this._hasInitialized && this._onInitialized();
+            this._hasInitialized = this.$initializeProperties();
+            this._hasInitialized && this.$onInitialized();
         }
 
         if (forceRender || this.isConnected) {
             !this._hasRendered && this._render();
-            await this._onConnected();
+            await this.$onConnected();
             this.update();
         }
     }
@@ -687,11 +681,11 @@ class ArpaElement extends HTMLElement {
         attributes && attr(this, attributes);
         await this.render();
         this._initializeTemplateNodes();
-        await this._initializeNodes();
+        await this.$initializeNodes();
         this._onRenderReadyCallbacks.forEach(callback => typeof callback === 'function' && callback());
         this._onRenderReadyCallbacks = [];
         this._handleZones();
-        this._onDomReady();
+        this.$onDomReady();
         this._onRenderComplete();
     }
 
@@ -706,7 +700,7 @@ class ArpaElement extends HTMLElement {
         }
     }
 
-    async _initializeNodes() {
+    async $initializeNodes() {
         return true;
     }
 
@@ -718,7 +712,7 @@ class ArpaElement extends HTMLElement {
         handleZones();
     }
 
-    _onDomReady() {
+    $onDomReady() {
         // abstract method
     }
 
@@ -727,7 +721,7 @@ class ArpaElement extends HTMLElement {
         this._onRenderedCallbacks.forEach(callback => callback());
         this.handleContent();
         await this._resolveRender();
-        this._onComplete();
+        this.$onComplete();
     }
 
     handleContent() {
@@ -744,7 +738,7 @@ class ArpaElement extends HTMLElement {
         return this.resolvePromise?.(true);
     }
 
-    _onComplete() {
+    $onComplete() {
         // abstract method
     }
 
@@ -803,7 +797,7 @@ class ArpaElement extends HTMLElement {
         return renderTemplate(this, template, vars);
     }
 
-    _getTemplate() {
+    $renderTemplate() {
         const { getTemplate } = this._config;
         let template = typeof getTemplate === 'function' ? getTemplate(this) : this._config?.template;
         if (!template && this._config?.templateChildren) {

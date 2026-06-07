@@ -36,7 +36,7 @@ class Dialog extends ArpaElement {
         return /** @type {DialogConfigType} */ (super.getDefaultConfig(config));
     }
 
-    _preInitialize() {
+    $preInitialize() {
         this.originalParent = /** @type {HTMLElement & { dialog?: Dialog }} */ (
             this.parentNode instanceof HTMLElement ? this.parentNode : null
         );
@@ -193,7 +193,7 @@ class Dialog extends ArpaElement {
         variant && this.classList.add(`dialog--${variant}`);
     }
 
-    _getTemplate() {
+    $renderTemplate() {
         return html`<div class="dialog__wrapper">{header}{content}{footer}</div>`;
     }
 
@@ -257,7 +257,7 @@ class Dialog extends ArpaElement {
         );
     }
 
-    async _initializeNodes() {
+    async $initializeNodes() {
         this.wrapperNode = this.querySelector('.dialog__wrapper');
         this.headerNode = this.querySelector('.dialog__header');
         this.contentNode = this.querySelector('.dialog__content');

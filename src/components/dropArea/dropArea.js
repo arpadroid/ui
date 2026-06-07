@@ -98,8 +98,8 @@ class DropArea extends ArpaElement {
     // #region LIFECYCLE
     ////////////////////
 
-    _onConnected() {
-        super._onConnected();
+    $onConnected() {
+        super.$onConnected();
         this.classList.add('dropArea');
         if (this.hasInput()) {
             this.classList.add('dropArea--hasInput');

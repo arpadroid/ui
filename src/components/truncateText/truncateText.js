@@ -29,7 +29,7 @@ class TruncateText extends ArpaElement {
         return super.getDefaultConfig(config);
     }
 
-    async _initialize() {
+    async $initialize() {
         this.toggleTruncate = this.toggleTruncate.bind(this);
     }
 
@@ -61,7 +61,7 @@ class TruncateText extends ArpaElement {
             : '';
     }
 
-    _getTemplate() {
+    $renderTemplate() {
         const isInline = this.hasProp('inlineLayout');
         return html`
             <arpa-node tag="span" name="wrapper">
@@ -100,8 +100,8 @@ class TruncateText extends ArpaElement {
         this.reRender();
     }
 
-    async _initializeNodes() {
-        await super._initializeNodes();
+    async $initializeNodes() {
+        await super.$initializeNodes();
         this.buttonComponent = /** @type {ArpaButton} */ (this.templateNodes.button);
         this.buttonComponent?.promise.then(() => {
             this.button = this.buttonComponent?.button;
@@ -114,7 +114,7 @@ class TruncateText extends ArpaElement {
         return true;
     }
 
-    _onComplete() {
+    $onComplete() {
         if (this.hasProp('isTruncated')) {
             this.setAttribute('is-truncated', '');
             this.truncateText();

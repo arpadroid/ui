@@ -191,7 +191,7 @@ export function processTemplate(template, props = {}, element) {
  */
 export function renderTemplate(component, _template, vars = component.getTemplateVars()) {
     const templateContent = component.templates?.content?.innerHTML.trim();
-    const template = _template || templateContent || component._getTemplate();
+    const template = _template || templateContent || component.$renderTemplate();
 
     for (const tplVar of Object.keys(vars)) {
         if (typeof vars[tplVar] === 'function') {

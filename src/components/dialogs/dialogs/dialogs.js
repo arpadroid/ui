@@ -21,7 +21,7 @@ class Dialogs extends ArpaElement {
         });
     }
 
-    _initialize() {
+    $initialize() {
         this.bind('_onKeyUp');
         document.addEventListener('keyup', this._onKeyUp);
     }

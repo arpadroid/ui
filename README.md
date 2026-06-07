@@ -150,7 +150,7 @@ class CustomComponent extends ArpaElement {
         };
     }
 
-    _initialize() {
+    $initialize() {
         // Pre-bind event listeners
         this.bind('dataLoaded');
         // Apply observer mixin for reactive properties
@@ -187,10 +187,10 @@ class CustomComponent extends ArpaElement {
         `;
     }
 
-    async _initializeNodes() {
+    async $initializeNodes() {
         // Custom initialization logic here
         this.button = this.querySelector('.customComponent__button');
-        return super._initializeNodes();
+        return super.$initializeNodes();
     }
 }
 
@@ -720,7 +720,7 @@ class CustomElement extends ArpaElement {
         };
     }
 
-    _getTemplate() {
+    $renderTemplate() {
         return html`
             <div class="custom-element">
                 {header}
@@ -897,11 +897,11 @@ class CustomElement extends ArpaElement {
         /* Return default configuration - REQUIRED */
     }
 
-    _preInitialize() {
+    $preInitialize() {
         /* Called first in constructor - ABSTRACT */
     }
 
-    _initialize() {
+    $initialize() {
         /* Called during construction for setup - ABSTRACT */
     }
 
@@ -909,7 +909,7 @@ class CustomElement extends ArpaElement {
         /* Return variables for template rendering */
     }
 
-    _getTemplate() {
+    $renderTemplate() {
         /* Return your template string - PREFERRED over render() */
     }
 
@@ -917,7 +917,7 @@ class CustomElement extends ArpaElement {
         /* Called to set up properties - ABSTRACT */
     }
 
-    _onInitialized() {
+    $onInitialized() {
         /* Called after initialization is complete - ABSTRACT */
     }
 
@@ -925,7 +925,7 @@ class CustomElement extends ArpaElement {
         /* Called when element needs to update - ABSTRACT */
     }
 
-    _onAttributeChanged(name, oldValue, newValue) {
+    $onAttributeChanged(name, oldValue, newValue) {
         /* Custom attribute change handler - ABSTRACT */
     }
 
@@ -933,7 +933,7 @@ class CustomElement extends ArpaElement {
         /* Called before rendering begins - ABSTRACT */
     }
 
-    _onDestroy() {
+    $onDestroy() {
         /* Called during cleanup */
     }
 
@@ -945,7 +945,7 @@ class CustomElement extends ArpaElement {
         /* Called when zones are lost */
     }
 
-    _getTemplate() {
+    $renderTemplate() {
         /* Get the template to render */
     }
 
@@ -957,15 +957,15 @@ class CustomElement extends ArpaElement {
         /* Force re-render of the element */
     }
 
-    _onConnected() {
+    $onConnected() {
         /* Called after element is connected and rendered - ABSTRACT */
     }
 
-    async _initializeNodes() {
+    async $initializeNodes() {
         /* Called after render to initialize nodes */
     }
 
-    _onComplete() {
+    $onComplete() {
         /* Called at the very end of rendering - ABSTRACT */
     }
 
@@ -1108,7 +1108,7 @@ class MyComponent extends ArpaElement {
     // }
 
     // React to attribute changes via framework hook
-    _onAttributeChanged(name, _oldValue, newValue) {
+    $onAttributeChanged(name, _oldValue, newValue) {
         if (name === 'title') {
             this.editChild('header', { content: newValue });
         }
@@ -1131,7 +1131,7 @@ class InteractiveComponent extends ArpaElement {
         observerMixin(this);
     }
 
-    initializeProperties() {
+    $initializeProperties() {
         // Listen for custom events
         this.on('itemSelected', this.handleItemSelected.bind(this));
 

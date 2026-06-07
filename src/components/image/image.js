@@ -346,7 +346,7 @@ class ArpaImage extends ArpaElement {
         super.reRender();
     }
 
-    _getTemplate() {
+    $renderTemplate() {
         this.initializeStyles();
         this.isLoading() && this.classList.add(this.getLoadingClass());
         const hasCaption = this.hasContent('caption');
@@ -573,14 +573,14 @@ class ArpaImage extends ArpaElement {
     // #region - Lifecycle
     ///////////////////////
 
-    async _initializeNodes() {
-        await super._initializeNodes();
+    async $initializeNodes() {
+        await super.$initializeNodes();
         const imagePosition = this.getProp('image-position');
         this.image && imagePosition && (this.image.style.objectPosition = imagePosition);
         return true;
     }
 
-    async _onConnected() {
+    async $onConnected() {
         /** @type {HTMLImageElement | null} */
         this.image = this.querySelector('img');
         /** @type {Tooltip | null} */
@@ -596,8 +596,8 @@ class ArpaImage extends ArpaElement {
             lazyLoader(this.image, Number(batchSize));
     }
 
-    _onDestroy() {
-        super._onDestroy();
+    $onDestroy() {
+        super.$onDestroy();
         this._hasRendered = false;
         this._hasLoaded = false;
         this._hasError = false;

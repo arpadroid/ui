@@ -35,8 +35,8 @@ class ConfirmDialog extends Dialog {
         };
     }
 
-    async _initializeNodes() {
-        await super._initializeNodes();
+    async $initializeNodes() {
+        await super.$initializeNodes();
         this.confirmBtn = this.querySelector('.confirmDialog__confirmBtn');
         this.confirmBtn?.addEventListener('click', this.confirm);
         /** @type {Button | null} */
@@ -97,8 +97,8 @@ class ConfirmDialog extends Dialog {
         return super.renderFooter(content);
     }
 
-    _onDestroy() {
-        super._onDestroy();
+    $onDestroy() {
+        super.$onDestroy();
         this.confirmBtn?.removeEventListener('click', this.confirm);
         this.cancelBtn?.removeEventListener('click', this.cancel);
     }

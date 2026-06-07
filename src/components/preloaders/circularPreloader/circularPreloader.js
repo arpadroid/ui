@@ -23,7 +23,7 @@ class CircularPreloader extends ArpaElement {
         return super.getDefaultConfig(conf);
     }
 
-    _getTemplate() {
+    $renderTemplate() {
         return html`
             <arpa-node name="mask" can-render="hasMask"></arpa-node>
             <arpa-node name="spinnerContainer" is-content>

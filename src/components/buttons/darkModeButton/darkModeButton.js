@@ -1,8 +1,8 @@
 import { defineCustomElement, mergeObjects } from '@arpadroid/tools';
 import IconButton from '../iconButton/iconButton.js';
 class DarkModeButton extends IconButton {
-    _initialize() {
-        super._initialize();
+    $initialize() {
+        super.$initialize();
         this.bind('_onClick');
     }
 
