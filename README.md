@@ -657,10 +657,10 @@ Loading indicators with customizable appearance.
 
 ```html
 <!-- Basic preloader -->
-<circular-preloader></circular-preloader>
+<circular-spinner></circular-spinner>
 
 <!-- With text and mask -->
-<circular-preloader text="Loading data..." has-mask="true" variant="large"> </circular-preloader>
+<circular-spinner text="Loading data..." has-mask="true" variant="large"> </circular-spinner>
 ```
 
 ## Zone System

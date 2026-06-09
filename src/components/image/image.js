@@ -312,7 +312,7 @@ class ArpaImage extends ArpaElement {
      */
     stopPreloading(addClass = this.getLoadedClass()) {
         !this.classList.contains(addClass) && this.classList.add(addClass);
-        setTimeout(() => this.querySelector('circular-preloader')?.remove(), 1000);
+        setTimeout(() => this.querySelector('circular-spinner')?.remove(), 1000);
     }
 
     /**
@@ -441,10 +441,10 @@ class ArpaImage extends ArpaElement {
 
     renderPreloader() {
         if (!this.hasPreloader()) return '';
-        return html`<circular-preloader
+        return html`<circular-spinner
             aria-label="${this.getText('lblLoadingImage')}"
             variant="small"
-        ></circular-preloader>`;
+        ></circular-spinner>`;
     }
 
     renderThumbnail(text = this.hasError() ? this.getProp('errLoad') : this.getProp('txtNoImage')) {

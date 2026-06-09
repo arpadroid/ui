@@ -242,7 +242,7 @@ class Dialog extends ArpaElement {
             ''}
             <div class="dialog__body" zone="content-wrapper">
                 ${(this.hasPreloader() &&
-                    html`<circular-preloader class="dialog__preloader"></circular-preloader>`) ||
+                    html`<circular-spinner class="dialog__preloader"></circular-spinner>`) ||
                 ''}
                 <div class="dialog__content" zone="content">${content}</div>
             </div>

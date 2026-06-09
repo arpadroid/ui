@@ -101,11 +101,11 @@ arpa-image {
         }
     }
 
-    circular-preloader {
+    circular-spinner {
         transition: opacity 1s ease;
     }
 
-    .circularPreloader__mask {
+    .circularSpinner__mask {
         background-color: transparent;
     }
 
@@ -129,7 +129,7 @@ arpa-image {
             z-index: 0;
             position: relative;
         }
-        circular-preloader {
+        circular-spinner {
             opacity: 0;
             z-index: 0;
         }
@@ -145,7 +145,7 @@ arpa-image {
     * Error
     */
     &.image--error {
-        circular-preloader {
+        circular-spinner {
             display: none;
         }
         .image__thumbnail.image__thumbnail arpa-icon {

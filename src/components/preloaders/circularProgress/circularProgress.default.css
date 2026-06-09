@@ -1,0 +1,76 @@
+.circularProgress__wrapper {
+    --preloader-thickness: 3px;
+    --preloader-border-width: var(--preloader-thickness);
+    --preloader-outline-width: var(--preloader-thickness);
+
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--preloader-size);
+    height: var(--preloader-size);
+}
+
+.circularProgress__svg {
+    width: var(--preloader-size);
+    height: var(--preloader-size);
+    overflow: visible;
+    transform: rotate(-90deg);
+}
+
+.circularProgress__track {
+    fill: none;
+    stroke: #d9d9d9;
+    stroke-width: var(--preloader-border-width, 2px);
+}
+
+.circularProgress__fill {
+    fill: none;
+    stroke: var(--preloader-color);
+    stroke-width: var(--preloader-outline-width, 2px);
+    stroke-linecap: round;
+    stroke-dasharray: 0 100;
+    transition: stroke-dasharray 0.4s ease;
+}
+
+.circularProgress__percentage {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: calc(var(--preloader-size) / 4);
+    font-weight: 700;
+    color: var(--preloader-color);
+    pointer-events: none;
+}
+
+.circularProgress[size='mini'],
+.circularProgress[size='small'] {
+    .circularProgress__wrapper {
+        --preloader-thickness: 6px;
+
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        width: auto;
+        height: auto;
+    }
+
+    .circularProgress__percentage {
+        position: relative;
+        font-size: inherit;
+    }
+}
+
+
+
+@keyframes maskFadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}

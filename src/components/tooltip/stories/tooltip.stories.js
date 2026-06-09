@@ -125,6 +125,18 @@ export const CustomHandler = {
                 class to it.
             </arpa-tooltip>
         `;
+    },
+    play: async ({ canvasElement, step, canvas }) => {
+        await playSetup(canvasElement);
+        const contentNode = await waitFor(() =>
+            canvas.getByText('You can declare an existing element', { exact: false })
+        );
+        await step('renders the tooltip', async () => {
+            const handler = canvas.getByRole('textbox');
+            expect(handler).toBeInTheDocument();
+            handler.focus();
+            expect(contentNode).toBeVisible();
+        });
     }
 };
 

@@ -90,15 +90,15 @@ export const Zones = {
             testVar2: 'Test Variable 2'
         },
         content: html`
-            <zone name="header" prepend>
+            <arpa-zone name="header" prepend>
                 <h3>Header Content</h3>
-            </zone>
-            <zone name="body" prepend>
+            </arpa-zone>
+            <arpa-zone name="body" prepend>
                 <h3>Body Content</h3>
-            </zone>
-            <zone name="footer">
+            </arpa-zone>
+            <arpa-zone name="footer">
                 <h3>Footer Content</h3>
-            </zone>
+            </arpa-zone>
         `
     },
     play: async ({ step, canvas, canvasElement }) => {
@@ -153,9 +153,9 @@ export const CustomTemplate = {
             <!-- Any content in the global scope will be rendered in the body template child since it's marked as isContent -->
             <h3>Body Content</h3>
             <!-- You can also explicitly target the body zone using a zone element -->
-            <zone name="header">
+            <arpa-zone name="header">
                 <i18n-text key="ui.arpaElement.docs.description.component"></i18n-text>
-            </zone>
+            </arpa-zone>
         </test-element>`;
     },
     play: async ({ canvas, canvasElement, step }) => {

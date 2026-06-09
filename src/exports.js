@@ -61,7 +61,8 @@ export { default as InputCombo } from './components/inputCombo/inputCombo.js';
 /**
  * Preloaders.
  */
-export { default as CircularPreloader } from './components/preloaders/circularPreloader/circularPreloader.js';
+export { default as CircularSpinner } from './components/preloaders/circularSpinner/circularSpinner.js';
+export { default as CircularProgress } from './components/preloaders/circularProgress/circularProgress.js';
 
 /**
  * Inputs.

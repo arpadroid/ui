@@ -11,19 +11,9 @@ class Tooltip extends ArpaElement {
     _config = this._config;
 
     $preInitialize() {
-        this.handler = this.querySelector('.tooltip__handler, input, button, a');
-        if (this.handler) {
-            this.handler.remove();
-        }
-    }
-
-    /**
-     * Creates an instance of Tooltip.
-     * @param {TooltipConfigType} config - The configuration object.
-     */
-    constructor(config) {
-        super(config);
         this.bind('_onMouseMove', '_onMouseEnter', '_onMouseLeave');
+        this.handler = this.querySelector('.tooltip__handler, input, button, a');
+        this.handler?.remove();
     }
 
     getPosition() {
@@ -49,20 +39,13 @@ class Tooltip extends ArpaElement {
      * @returns {HTMLElement | null} The tooltip handler element, or null if not found.
      */
     findHandler() {
-        if (this.handler instanceof HTMLElement) {
-            return this.handler;
-        }
+        if (this.handler instanceof HTMLElement) return this.handler;
         let handler = this.getProp('handler');
-        if (handler && typeof handler === 'string') {
-            handler = resolveNode(handler);
-        }
+        handler && typeof handler === 'string' && (handler = resolveNode(handler));
         if (!(handler instanceof HTMLElement)) {
             handler = this.closest('.tooltip__handler, button, a');
-            if (handler instanceof HTMLElement) {
-                this.classList.add('tooltip--contained');
-            }
+            handler instanceof HTMLElement && this.classList.add('tooltip--contained');
         }
-
         return handler;
     }
 
@@ -88,9 +71,7 @@ class Tooltip extends ArpaElement {
     getDefaultConfig() {
         /** @type {TooltipConfigType} */
         const config = {
-            handler: '',
             icon: 'info',
-            label: '',
             className: 'tooltip',
             cursorPositionAxis: 'x',
             cursorTooltipPosition: 'top',
