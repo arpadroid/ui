@@ -26,12 +26,22 @@ class CircularSpinner extends ArpaElement {
         return html`
             <arpa-node name="mask" can-render="hasMask"></arpa-node>
             <arpa-node name="content" is-content>
-                <arpa-node name="spinnerContainer">
-                    <span class="circularSpinner__spinner"></span>
-                </arpa-node>
+                <arpa-node name="spinnerContainer">{$spinner}</arpa-node>
                 <arpa-node tag="span" name="label"></arpa-node>
             </arpa-node>
         `;
+    }
+
+    $spinner() {
+        return html`<svg
+            class="circularSpinner__spinner"
+            viewBox="0 0 36 36"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+        >
+            <circle class="circularSpinner__track" cx="18" cy="18" r="15.9155" />
+            <circle class="circularSpinner__fill" cx="18" cy="18" r="15.9155" />
+        </svg>`;
     }
 }
 

@@ -97,17 +97,8 @@ export const Empty = {
 export const Complete = {
     name: 'Complete',
     args: {
-        progress: 100
-    }
-};
-
-/** @type {StoryObj} */
-export const WithMask = {
-    name: 'With Mask',
-    args: {
-        progress: 60,
-        hasMask: true,
-        label: 'Loading...'
+        progress: 100,
+        size: 'large'
     }
 };
 

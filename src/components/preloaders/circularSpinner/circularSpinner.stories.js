@@ -84,14 +84,14 @@ export const WithMask = {
 /** @type {StoryObj} */
 export const CustomContent = {
     args: {
-        size: 'large',
+        size: 'x-large',
         thickness: 'thin',
     },
     parameters: testParams,
     render: args => {
         return html`<circular-spinner ${attrString(args)}>
             <arpa-zone name="spinnerContainer">
-                <arpa-icon>hourglass_empty</arpa-icon>
+                <arpa-icon>rocket_launch</arpa-icon>
             </arpa-zone>
             <arpa-zone name="label">Please wait.</arpa-zone>
         </circular-spinner>`;
@@ -100,7 +100,7 @@ export const CustomContent = {
         await customElements.whenDefined('circular-spinner');
         await step('renders the circular preloader with mask', async () => {
             expect(canvas.getByText('Please wait.')).toBeInTheDocument();
-            expect(canvas.getByText('hourglass_empty')).toBeInTheDocument();
+            expect(canvas.getByText('rocket_launch')).toBeInTheDocument();
         });
     }
 };

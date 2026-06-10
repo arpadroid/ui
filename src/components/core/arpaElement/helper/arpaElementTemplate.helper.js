@@ -42,8 +42,14 @@ export function hasTemplateVariables(content, variables) {
 export function processTemplateVariable(name, value, element) {
     if (!value && typeof element?.getTemplateChild === 'function') {
         const child = element?.getTemplateChild(name);
-        // eslint-disable-next-line no-use-before-define
         child && (value = renderChild(element, name, child));
+    }
+    if (!value) {
+        const methodName = dashedToCamel(name); // @ts-ignore
+        const method = element?.[methodName]?.bind(element);
+        if (methodName.startsWith('$') && typeof method === 'function') {
+            value = method();
+        }
     }
     if (value) return value;
     return element?.getProp(name) || '';

@@ -51,7 +51,7 @@ class CircularProgress extends CircularSpinner {
     updateProgress(value = this.getProgress()) {
         const clamped = Math.min(100, Math.max(0, value));
         /** @type {SVGCircleElement | null} */
-        const fill = this.querySelector('.circularProgress__fill');
+        const fill = this.querySelector('.circularSpinner__fill');
         const percentage = this.querySelector('.circularProgress__percentage');
         if (fill) {
             fill.style.strokeDasharray = `${clamped} 100`;
@@ -62,25 +62,8 @@ class CircularProgress extends CircularSpinner {
         this.setAttribute('aria-valuenow', String(clamped));
     }
 
-    $renderTemplate() {
-        return html`
-            <arpa-node name="mask" can-render="hasMask"></arpa-node>
-            <arpa-node name="content" is-content>
-                <div class="circularProgress__wrapper">
-                    <svg
-                        class="circularProgress__svg"
-                        viewBox="0 0 36 36"
-                        xmlns="http://www.w3.org/2000/svg"
-                        aria-hidden="true"
-                    >
-                        <circle class="circularProgress__track" cx="18" cy="18" r="15.9155" />
-                        <circle class="circularProgress__fill" cx="18" cy="18" r="15.9155" />
-                    </svg>
-                    <span class="circularProgress__percentage">0%</span>
-                </div>
-                <arpa-node tag="span" name="label" can-render="label"></arpa-node>
-            </arpa-node>
-        `;
+    $spinner() {
+        return html`${super.$spinner()}<span class="circularProgress__percentage">0%</span>`;
     }
 
     ///////////////////////////////

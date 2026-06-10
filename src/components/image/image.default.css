@@ -9,7 +9,7 @@
 }
 
 arpa-image {
-    --preloader-size: 60px;
+    --spinner-size: 60px;
     position: relative;
     display: flex;
     flex-direction: column;
@@ -202,24 +202,24 @@ arpa-image {
 }
 
 .image--size-big.image--size-big {
-    --preloader-size: 80px;
-    --preloader-border-width: 2px;
+    --spinner-size: 80px;
+    --spinner-thickness: 2px;
 }
 
 .image--size-small.image--size-small {
-    --preloader-size: 60px;
-    --preloader-border-width: 2px;
+    --spinner-size: 60px;
+    --spinner-thickness: 2px;
 }
 
 .image--size-x_small {
-    --preloader-size: 48px;
-    --preloader-border-width: 1.5px;
+    --spinner-size: 48px;
+    --spinner-thickness: 1.5px;
     --preloader-outline-width: 1.5px;
 }
 
 .image--size-xx_small {
-    --preloader-size: 1rem;
-    --preloader-border-width: 1.5px;
+    --spinner-size: 1rem;
+    --spinner-thickness: 1.5px;
     --preloader-outline-width: 1.5px;
     .image__thumbnail arpa-icon {
         font-size: 1.8rem;
