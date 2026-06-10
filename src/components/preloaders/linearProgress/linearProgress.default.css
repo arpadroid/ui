@@ -1,0 +1,47 @@
+.linearProgress {
+    --linear-progress-height: 0.4rem;
+    --linear-progress-width: 100%;
+    --linear-progress-radius: 999px;
+
+    display: flex;
+    width: 100%;
+    min-width: 100px;
+}
+
+.linearProgress__content {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+}
+
+.linearProgress__loaderContainer {
+    position: relative;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    justify-content: center;
+}
+
+.linearProgress__track {
+    position: relative;
+    width: 100%;
+    height: var(--linear-progress-height);
+    overflow: hidden;
+    background-color: var(--preloader-track-color);
+    border-radius: var(--linear-progress-radius);
+}
+
+.linearProgress__fill {
+    width: 0;
+    height: 100%;
+    background-color: var(--preloader-color);
+    border-radius: inherit;
+    transition: width 0.4s ease;
+}
+
+.linearProgress__percentage {
+    align-self: flex-end;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--preloader-color);
+}

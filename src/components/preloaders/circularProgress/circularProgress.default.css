@@ -1,11 +1,13 @@
 .circularProgress {
+    --spinner-size: 3.5rem;
+
     .circularSpinner__spinner {
         animation: none;
     }
 
     .circularSpinner__fill {
         stroke-dasharray: inherit;
-        transition: inherit;
+        transition: 0.1s var(--easeOutExpo);
     }
 }
 
@@ -15,20 +17,21 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: calc(var(--spinner-size) / 4);
-    font-weight: 700;
-    color: var(--spinner-color);
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: var(--preloader-color);
     pointer-events: none;
 }
 
 .circularProgress[size='mini'],
 .circularProgress[size='small'] {
-    .circularSpinner__spinnerContainer {
+    .circularSpinner__loaderContainer {
         --spinner-thickness: 6px;
 
         display: flex;
         gap: 0.5rem;
         align-items: center;
+        width: 3.5rem;
     }
 
     .circularSpinner__spinner {
@@ -38,15 +41,5 @@
     .circularProgress__percentage {
         position: relative;
         font-size: inherit;
-    }
-}
-
-@keyframes maskFadeIn {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
     }
 }

@@ -14,8 +14,9 @@ class CircularSpinner extends ArpaElement {
         const conf = {
             hasMask: false,
             className: 'circularSpinner',
+            classNames: ['base-preloader'],
+            variant: 'primary',
             attributes: {
-                variant: 'default',
                 role: 'progressbar'
             }
         };
@@ -26,13 +27,13 @@ class CircularSpinner extends ArpaElement {
         return html`
             <arpa-node name="mask" can-render="hasMask"></arpa-node>
             <arpa-node name="content" is-content>
-                <arpa-node name="spinnerContainer">{$spinner}</arpa-node>
+                <arpa-node name="loaderContainer">{$loader}</arpa-node>
                 <arpa-node tag="span" name="label"></arpa-node>
             </arpa-node>
         `;
     }
 
-    $spinner() {
+    $loader() {
         return html`<svg
             class="circularSpinner__spinner"
             viewBox="0 0 36 36"

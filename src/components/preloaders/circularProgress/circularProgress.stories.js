@@ -53,20 +53,17 @@ export const Test = {
         label: 'Uploading...'
     },
     parameters: testParams,
-    play: async ({ canvasElement, step }) => {
+    play: async ({ canvas, step }) => {
         await customElements.whenDefined('circular-progress');
-        const component = /** @type {CircularProgress | null} */ (
-            canvasElement.querySelector('circular-progress')
-        );
+        /** @type {CircularProgress | null} */
+        const component = canvas.getByRole('progressbar');
 
         await step('renders the circular progress component', async () => {
             expect(component).toBeInTheDocument();
         });
 
         await step('displays the correct percentage', async () => {
-            const percentage = component?.querySelector('.circularProgress__percentage');
-            expect(percentage).toBeInTheDocument();
-            expect(percentage?.textContent).toBe('50%');
+            expect(canvas.getByText('50%')).toBeInTheDocument();
         });
 
         await step('has the correct aria attributes', async () => {
@@ -78,9 +75,32 @@ export const Test = {
 
         await step('updates progress when setProgress is called', async () => {
             component?.setProgress(80);
-            const percentage = component?.querySelector('.circularProgress__percentage');
-            expect(percentage?.textContent).toBe('80%');
+            expect(canvas.getByText('80%')).toBeInTheDocument();
             expect(component?.getAttribute('aria-valuenow')).toBe('80');
+        });
+    }
+};
+
+/** @type {StoryObj} */
+export const SimulateProgress = {
+    args: {
+        progress: 0,
+        label: 'Uploading...'
+    },
+    parameters: testParams,
+    play: async ({ canvas, step }) => {
+        await customElements.whenDefined('circular-progress');
+        /** @type {CircularProgress | null} */
+        const component = canvas.getByRole('progressbar');
+        await step('simulates progress updates over time', async () => {
+            expect(component).toBeInTheDocument();
+            expect(canvas.getByText('0%')).toBeInTheDocument();
+            for (let i = 10; i <= 100; i += 10) {
+                await new Promise(resolve => setTimeout(resolve, 50));
+                component?.setProgress(i);
+                expect(canvas.getByText(`${i}%`)).toBeInTheDocument();
+                expect(component?.getAttribute('aria-valuenow')).toBe(String(i));
+            }
         });
     }
 };
@@ -88,8 +108,20 @@ export const Test = {
 /** @type {StoryObj} */
 export const Empty = {
     name: 'No Progress',
+    parameters: testParams,
     args: {
         progress: 0
+    },
+    play: async ({ canvas, step }) => {
+        await customElements.whenDefined('circular-progress');
+        /** @type {CircularProgress | null} */
+        const component = canvas.getByRole('progressbar');
+
+        await step('renders the circular progress component with 0% progress', async () => {
+            expect(component).toBeInTheDocument();
+            expect(canvas.getByText('0%')).toBeInTheDocument();
+            expect(component?.getAttribute('aria-valuenow')).toBe('0');
+        });
     }
 };
 
@@ -99,6 +131,18 @@ export const Complete = {
     args: {
         progress: 100,
         size: 'large'
+    },
+    parameters: testParams,
+    play: async ({ canvas, step }) => {
+        await customElements.whenDefined('circular-progress');
+        /** @type {CircularProgress | null} */
+        const component = canvas.getByRole('progressbar');
+
+        await step('renders the circular progress component with 100% progress', async () => {
+            expect(component).toBeInTheDocument();
+            expect(canvas.getByText('100%')).toBeInTheDocument();
+            expect(component?.getAttribute('aria-valuenow')).toBe('100');
+        });
     }
 };
 

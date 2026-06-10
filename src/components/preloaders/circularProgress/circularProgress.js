@@ -18,7 +18,7 @@ class CircularProgress extends CircularSpinner {
         /** @type {CircularProgressConfigType} */
         const config = {
             className: 'circularSpinner',
-            classNames: ['circularProgress'],
+            classNames: ['circularProgress', 'base-preloader'],
             progress: 0,
             attributes: {
                 role: 'progressbar',
@@ -62,8 +62,12 @@ class CircularProgress extends CircularSpinner {
         this.setAttribute('aria-valuenow', String(clamped));
     }
 
-    $spinner() {
-        return html`${super.$spinner()}<span class="circularProgress__percentage">0%</span>`;
+    $progress() {
+        return html`<span class="circularProgress__percentage">0%</span>`;
+    }
+
+    $loader() {
+        return html`${super.$loader()}${this.$progress()}`;
     }
 
     ///////////////////////////////

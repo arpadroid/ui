@@ -6,7 +6,7 @@
  */
 import { defaultParams, testParams } from '@arpadroid/module/storybook/helper';
 import { attrString } from '@arpadroid/tools';
-import { expect } from 'storybook/test';
+import { expect, waitFor } from 'storybook/test';
 
 const html = String.raw;
 /** @type {Meta} */
@@ -17,8 +17,7 @@ const CircularSpinnerStory = {
 };
 
 /** @type {StoryObj} */
-export const Default = {
-    name: 'Render',
+export const Render = {
     parameters: defaultParams
 };
 
@@ -46,14 +45,14 @@ export const Test = {
         label: 'Loading...'
     },
     parameters: testParams,
-    play: async ({ canvasElement, step }) => {
+    play: async ({ canvas, canvasElement, step }) => {
         await customElements.whenDefined('circular-spinner');
         const preloader = /** @type {CircularSpinner | null} */ (
             canvasElement.querySelector('circular-spinner')
         );
-        await step('renders the circular preloader text', async () => {
+        await step('renders the circular preloader', async () => {
             expect(preloader).toBeInTheDocument();
-
+            expect(canvas.getByText('Loading...')).toBeInTheDocument();
             const mask = preloader?.querySelector('.circularSpinner__mask');
             expect(mask).not.toBeInTheDocument();
         });
@@ -65,11 +64,10 @@ export const WithMask = {
     name: 'With Mask',
     parameters: testParams,
     args: {
-        ...Default.args,
         hasMask: true,
         label: 'Loading with mask...'
     },
-    play: async ({ canvasElement, step }) => {
+    play: async ({ canvasElement, step, canvas }) => {
         await customElements.whenDefined('circular-spinner');
         /** @type {CircularSpinner | null} */
         const preloader = canvasElement.querySelector('circular-spinner');
@@ -77,6 +75,7 @@ export const WithMask = {
             expect(preloader).toBeInTheDocument();
             const mask = preloader?.querySelector('.circularSpinner__mask');
             expect(mask).toBeInTheDocument();
+            expect(canvas.getByText('Loading with mask...')).toBeInTheDocument();
         });
     }
 };
@@ -85,12 +84,12 @@ export const WithMask = {
 export const CustomContent = {
     args: {
         size: 'x-large',
-        thickness: 'thin',
+        thickness: 'thin'
     },
     parameters: testParams,
     render: args => {
         return html`<circular-spinner ${attrString(args)}>
-            <arpa-zone name="spinnerContainer">
+            <arpa-zone name="loaderContainer">
                 <arpa-icon>rocket_launch</arpa-icon>
             </arpa-zone>
             <arpa-zone name="label">Please wait.</arpa-zone>
@@ -99,8 +98,10 @@ export const CustomContent = {
     play: async ({ canvas, step }) => {
         await customElements.whenDefined('circular-spinner');
         await step('renders the circular preloader with mask', async () => {
-            expect(canvas.getByText('Please wait.')).toBeInTheDocument();
-            expect(canvas.getByText('rocket_launch')).toBeInTheDocument();
+            await waitFor(() => {
+                expect(canvas.getByText('Please wait.')).toBeInTheDocument();
+                expect(canvas.getByText('rocket_launch')).toBeInTheDocument();
+            });
         });
     }
 };

@@ -15,7 +15,7 @@ import { getCallbackProp, handleCallbackProp } from './helper/arpaElementProps.h
 import { hasProp, getProp, getArrayProp } from './helper/arpaElementProps.helper.js';
 import { onDestroy, sanitizeAttributes } from './helper/arpaElement.helper';
 import { canRender, hasContent } from './helper/arpaElement.helper';
-import { renderTemplate, getChildClassName, renderChild } from './helper/arpaElementTemplate.helper';
+import { renderTemplate, getClass, renderChild } from './helper/arpaElementTemplate.helper';
 import { selectTemplates, updateChildNode } from './helper/arpaElementTemplate.helper';
 import { I18nTool, I18n } from '@arpadroid/i18n';
 const { arpaElementI18n } = I18nTool;
@@ -693,7 +693,7 @@ class ArpaElement extends HTMLElement {
         const conf = this.getChildrenConfig();
         if (!conf) return;
         for (const name of Object.keys(conf)) {
-            const className = getChildClassName(this, name);
+            const className = getClass(this, name);
             /** @type {HTMLElement | null} */
             const node = this.querySelector(`.${className}`);
             node && (this.templateNodes[name] = node);

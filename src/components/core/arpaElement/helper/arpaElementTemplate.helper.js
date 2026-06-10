@@ -42,12 +42,15 @@ export function hasTemplateVariables(content, variables) {
 export function processTemplateVariable(name, value, element) {
     if (!value && typeof element?.getTemplateChild === 'function') {
         const child = element?.getTemplateChild(name);
+        // eslint-disable-next-line no-use-before-define
         child && (value = renderChild(element, name, child));
     }
     if (!value) {
-        const methodName = dashedToCamel(name); // @ts-ignore
-        const method = element?.[methodName]?.bind(element);
+        const methodName = dashedToCamel(name);
+        // @ts-ignore
+        let method = element?.[methodName];
         if (methodName.startsWith('$') && typeof method === 'function') {
+            method = method?.bind(element);
             value = method();
         }
     }
@@ -119,7 +122,7 @@ export function renderTemplate(component, _template, vars = component.getTemplat
  * @param {string} name
  * @returns {string}
  */
-export function getChildClassName(element, name) {
+export function getClass(element, name) {
     let className = '';
     const baseClass = element?.getClassName() || '';
     baseClass && (className += `${baseClass}__`);
@@ -140,7 +143,7 @@ export function getDefaultChildConfig(element, name) {
             hasZone: true,
             zoneName: name,
             propName: name,
-            className: getChildClassName(element, name)
+            className: getClass(element, name)
         },
         element?.getChildConfig(name) || {}
     );
@@ -157,9 +160,7 @@ export function getDefaultChildConfig(element, name) {
 export function canRenderChild(element, name, config = {}, attributes = {}) {
     const { canRender = true } = config;
     const { canRender: attrCanRender = true } = attributes;
-    if (attributes.canRender === true) {
-        return true;
-    }
+    // if (attributes.canRender === true) return true;
     if (Boolean(attrCanRender) === false || Boolean(canRender) === false) {
         return false;
     }

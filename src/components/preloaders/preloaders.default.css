@@ -1,0 +1,20 @@
+.base-preloader {
+    --preloader-color: var(--color-primary);
+    --preloader-track-color: #c2c2c2;
+
+    &[variant='secondary'] {
+        --preloader-color: var(--color-secondary);
+    }
+
+    &[variant='tertiary'] {
+        --preloader-color: var(--color-tertiary);
+    }
+
+    &[variant='success'] {
+        --preloader-color: var(--color-success);
+    }
+
+    &[variant='error'] {
+        --preloader-color: var(--color-error);
+    }
+}
