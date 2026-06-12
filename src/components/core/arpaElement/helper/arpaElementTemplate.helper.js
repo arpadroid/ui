@@ -40,8 +40,8 @@ export function hasTemplateVariables(content, variables) {
  * @returns {unknown} The processed value.
  */
 export function processTemplateVariable(name, value, element) {
-    if (!value && typeof element?.getTemplateChild === 'function') {
-        const child = element?.getTemplateChild(name);
+    if (!value && typeof element?.getNodeConfig === 'function') {
+        const child = element?.getNodeConfig(name);
         // eslint-disable-next-line no-use-before-define
         child && (value = renderChild(element, name, child));
     }
@@ -145,7 +145,7 @@ export function getDefaultChildConfig(element, name) {
             propName: name,
             className: getClass(element, name)
         },
-        element?.getChildConfig(name) || {}
+        element?.getNodeConfig(name) || {}
     );
 }
 
@@ -157,10 +157,9 @@ export function getDefaultChildConfig(element, name) {
  * @param {Record<string, boolean | string>} [attributes] - Additional attributes to add to the element.
  * @returns {boolean | string}
  */
-export function canRenderChild(element, name, config = {}, attributes = {}) {
+export function canRenderNode(element, name, config = {}, attributes = {}) {
     const { canRender = true } = config;
     const { canRender: attrCanRender = true } = attributes;
-    // if (attributes.canRender === true) return true;
     if (Boolean(attrCanRender) === false || Boolean(canRender) === false) {
         return false;
     }
@@ -239,7 +238,7 @@ export function getChildContent(element, name, config = {}) {
 export function renderChild(element, name, config = {}, attributes = {}) {
     const defaults = getDefaultChildConfig(element, name);
     config = mergeObjects(defaults, config);
-    const canRender = canRenderChild(element, name, config, attributes);
+    const canRender = canRenderNode(element, name, config, attributes);
     if (canRender) {
         typeof config.attr === 'function' && (config.attr = config.attr());
         const attr = getChildAttributes(element, name, config, attributes);
@@ -260,7 +259,7 @@ export function renderChild(element, name, config = {}, attributes = {}) {
  * @param {ArpaNodeConfigType} config
  * @returns {HTMLElement | Node | null}
  */
-export function updateChildNode(element, name, config) {
+export function updateNode(element, name, config) {
     let node = element.templateNodes[name];
     if (node) {
         if (node instanceof HTMLElement) {
@@ -273,7 +272,7 @@ export function updateChildNode(element, name, config) {
             }
         }
     } else {
-        const conf = mergeObjects(element.getChildConfig(name) || {}, config);
+        const conf = mergeObjects(element.getNodeConfig(name) || {}, config);
         const renderedNode = renderNode(renderChild(element, name, conf));
         if (renderedNode) {
             element.templateNodes[name] = renderedNode;

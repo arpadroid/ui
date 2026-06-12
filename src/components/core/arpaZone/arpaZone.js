@@ -62,7 +62,6 @@ class ArpaZone extends HTMLElement {
 
     async connectedCallback() {
         this._initializeZone();
-
         const name = this.getProp('name');
         if (!name) {
             console.error('An arpa-zone must have a name attribute or configuration property defined.');
@@ -74,7 +73,15 @@ class ArpaZone extends HTMLElement {
         }
         await this.element.promise;
         const zoneName = this.getProp('name');
-        const zoneElement = this.element.querySelector(`[zone="${zoneName}"]`);
+        /** @type { ArpaElement | null} */
+        let zoneElement = this.element.querySelector(`[zone="${zoneName}"]`);
+        const zoneTarget = zoneElement?.getAttribute('zone-target');
+        if (zoneTarget) {
+            zoneElement?.promise && (await zoneElement?.promise);
+            const zoneTargetNode = zoneElement?.querySelector(zoneTarget);
+            // @ts-ignore
+            zoneTargetNode && (zoneElement = zoneTargetNode);
+        }
         zoneElement?.append(this.fragment);
     }
 }

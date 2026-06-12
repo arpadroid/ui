@@ -3,10 +3,9 @@
  * @typedef {import('../../tooltip/tooltip').default} Tooltip
  * @typedef {import('../../icon/icon').default} Icon
  */
-import { renderNode, listen } from '@arpadroid/tools';
-import { appendNodes, attrString, defineCustomElement } from '@arpadroid/tools';
-import ArpaElement from '../../core/arpaElement/arpaElement';
+import { renderNode, listen, $attr, classNames, defineCustomElement } from '@arpadroid/tools';
 import { renderChild } from '../../core/arpaElement/helper/arpaElementTemplate.helper';
+import ArpaElement from '../../core/arpaElement/arpaElement';
 
 const html = String.raw;
 class Button extends ArpaElement {
@@ -18,28 +17,14 @@ class Button extends ArpaElement {
      * @returns {ButtonConfigType}
      */
     getDefaultConfig() {
-        this.bind('_onClick', 'getTooltipPosition');
+        this.bind('_onClick');
         /** @type {ButtonConfigType} */
         const config = {
             className: 'arpaButton',
             type: 'button',
             buttonClass: 'arpaButton__button',
-            variant: 'default',
-            templateChildren: {
-                content: {
-                    tag: 'span',
-                    canRender: true,
-                    content: '{label}'
-                },
-                icon: { tag: 'arpa-icon' },
-                rhsIcon: { tag: 'arpa-icon' },
-                tooltip: {
-                    tag: 'arpa-tooltip',
-                    attr: {
-                        position: this.getTooltipPosition
-                    }
-                }
-            }
+            tooltipPosition: 'left',
+            variant: 'default'
         };
         return /** @type {ButtonConfigType} */ (super.getDefaultConfig(config));
     }
@@ -48,20 +33,12 @@ class Button extends ArpaElement {
     // #region Get
     /////////////////////////
 
-    getLabel() {
-        return this.getProp('label') || '';
-    }
-
     /**
      * Returns the variant of the button.
      * @returns {string}
      */
     getVariant() {
         return this.variant || this.getProp('variant');
-    }
-
-    getTooltipPosition() {
-        return this.getProp('tooltip-position') || 'left';
     }
 
     /**
@@ -85,7 +62,7 @@ class Button extends ArpaElement {
      * @param {string} icon - The string defining the icon to display.
      */
     setIcon(icon) {
-        const node = this.editChild('icon', { content: icon });
+        const node = this.editNode('icon', { content: icon });
         node && !node?.isConnected && this.button?.prepend(node);
     }
 
@@ -94,7 +71,7 @@ class Button extends ArpaElement {
      * @param {string} icon - The string defining the icon to display.
      */
     setIconRight(icon) {
-        const node = this.editChild('rhsIcon', { content: icon });
+        const node = this.editNode('rhsIcon', { content: icon });
         node && !node?.isConnected && this.button?.append(node);
     }
 
@@ -125,8 +102,8 @@ class Button extends ArpaElement {
      */
     async setTooltip(content) {
         await this.promise;
-        this.tooltip = /** @type {Tooltip} */ (this.templateNodes.tooltip || this.createTooltip(''));
-        if (!this.tooltip?.isConnected) {
+        this.tooltip = /** @type {Tooltip | null} */ (this.templateNodes.tooltip || this.createTooltip(''));
+        if (this.tooltip && !this.tooltip?.isConnected) {
             this.button?.appendChild(this.tooltip);
         }
         this.tooltip?.setContent(content);
@@ -145,25 +122,27 @@ class Button extends ArpaElement {
         this.removeAttribute('variant');
     }
 
-    getTemplateVars() {
-        return {
-            ...super.getTemplateVars(),
-            label: this.getLabel()
-        };
-    }
-
     $renderTemplate() {
         return html`<button
-            ${attrString({
+            ${$attr({
                 ariaLabel: this.getAriaLabel(),
-                class: this.getProp('button-class'),
+                class: classNames(this.getProp('buttonClass'), this.variant === 'delete' && 'button--delete'),
                 type: this.getProp('type'),
                 variant: this.variant,
                 disabled: this.disabled,
-                zone: this.getProp('button-zone')
+                zone: this.getProp('buttonZone')
             })}
         >
-            {icon}{content}{rhsIcon}{tooltip}
+            <arpa-node tag="arpa-icon" name="icon"></arpa-node>
+            <arpa-node tag="span" is-content name="content">{label}</arpa-node>
+            <arpa-node tag="arpa-icon" name="rhsIcon"></arpa-node>
+
+            <arpa-node
+                tag="arpa-tooltip"
+                name="tooltip"
+                zone-target=".tooltip__content"
+                position="{tooltipPosition}"
+            ></arpa-node>
         </button>`;
     }
 
@@ -182,14 +161,13 @@ class Button extends ArpaElement {
 
     async $initializeNodes() {
         await super.$initializeNodes();
-
         this.tooltip = /** @type {Tooltip | null} */ (this.querySelector('arpa-tooltip'));
+        this.tooltip && (await this.tooltip.promise);
+
         /** @type {Icon | null} */
         this.icon = this.querySelector('.arpaButton__icon');
         this.contentNode = this.querySelector('.arpaButton__content');
 
-        const contentNodes = this.getContentNodes();
-        this.contentNode && appendNodes(this.contentNode, contentNodes);
         this._initializeButton();
         this.handleVariant();
         return true;
@@ -204,10 +182,6 @@ class Button extends ArpaElement {
         this.button = button;
     }
 
-    getContentNodes() {
-        return this._childNodes;
-    }
-
     handleVariant() {
         const variant = this.getVariant();
         const icon = this.icon?.getIcon();
@@ -218,19 +192,6 @@ class Button extends ArpaElement {
                 this.setIcon('check_circle');
                 this.button?.setAttribute('type', 'submit');
             }
-        }
-    }
-
-    /**
-     * Handles a lost zone.
-     * @param {import('../../../tools/zoneTool.types.js').ZoneToolPlaceZoneType} event - The event object.
-     * @returns {boolean | undefined} Whether the zone was handled.
-     */
-    _onLostZone({ zoneName, zone }) {
-        if (!zone || !zoneName) return;
-        if (['tooltip', 'tooltip-content'].includes(zoneName)) {
-            this.setTooltip(zone.childNodes);
-            return true;
         }
     }
 

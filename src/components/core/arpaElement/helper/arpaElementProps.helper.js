@@ -29,7 +29,7 @@ export function hasProp(element, name, config = element._config) {
 }
 
 /**
- * Gets the value of a property from the element's configuration or attributes.
+ * Returns a component property's value, either from attributes or config.
  * @param {ArpaElement | ArpaNode | ArpaZone} element
  * @param {string} name
  * @param {Record<string, unknown>} [config]
@@ -126,4 +126,28 @@ export function evaluateProp(element, expression) {
     return expression
         .split('||')
         .some(andGroup => andGroup.split('&&').every(token => evaluatePropToken(element, token.trim())));
+}
+
+/**
+ * Returns a component property's value, either from attributes or config.
+ * @param {ArpaElement | ArpaNode | ArpaZone} element
+ * @param {string} name
+ * @param {unknown} value
+ */
+export function setProp(element, name, value) {
+    name = dashedToCamel(name);
+    element.setConfig({ [dashedToCamel(name)]: value });
+    if (typeof value === 'string' || typeof value === 'number') {
+        element.setAttribute(camelToDashed(name), String(value));
+    } else if (typeof value === 'boolean') {
+        if (value) {
+            element.setAttribute(camelToDashed(name), '');
+        } else {
+            element.removeAttribute(camelToDashed(name));
+        }
+    } else if (Array.isArray(value)) {
+        element.setAttribute(camelToDashed(name), value.join(','));
+    } else if (value == null) {
+        element.removeAttribute(camelToDashed(name));
+    }
 }

@@ -1110,7 +1110,7 @@ class MyComponent extends ArpaElement {
     // React to attribute changes via framework hook
     $onAttributeChanged(name, _oldValue, newValue) {
         if (name === 'title') {
-            this.editChild('header', { content: newValue });
+            this.editNode('header', { content: newValue });
         }
     }
 }

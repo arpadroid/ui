@@ -6,6 +6,8 @@
  */
 import { playSetup } from './button.stories.util';
 import { waitFor, expect } from 'storybook/test';
+import { defaultParams } from '@arpadroid/module/storybook/helper';
+import { $attr } from '@arpadroid/tools';
 
 const html = String.raw;
 
@@ -22,6 +24,7 @@ const ButtonStory = {
 
 /** @type {Story} */
 export const Default = {
+    parameters: defaultParams,
     name: 'Render',
     args: {
         content: html`Button`,
@@ -35,11 +38,17 @@ export const Default = {
 export const Zones = {
     name: 'Zones',
     args: {
-        tooltip: '',
-        content: html`<zone name="content">Button with zones</zone>
-            <zone name="tooltip-content">
-                This zone can be used to define <strong>custom tooltip content</strong> with any html.
-            </zone>`
+        tooltip: ''
+    },
+    render: ({ ...args }) => {
+        return html`
+            <arpa-button ${$attr(args)}>
+                <arpa-zone name="content">Zones</arpa-zone>
+                <arpa-zone name="tooltip">
+                    This zone can be used to define <strong>custom tooltip content</strong> with any html.
+                </arpa-zone>
+            </arpa-button>
+        `;
     },
     play: async ({ canvasElement, canvas, step }) => {
         await playSetup(canvasElement);

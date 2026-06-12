@@ -12,11 +12,11 @@ import { attrString, dashedToCamel, getStringBetween, mergeObjects, renderNode }
 import { defineCustomElement, attr, setNodes, bind, classNames } from '@arpadroid/tools';
 import { handleZones, zoneMixin, hasZone, getZone, extractZones } from '../../../tools/zoneTool';
 import { getCallbackProp, handleCallbackProp } from './helper/arpaElementProps.helper.js';
-import { hasProp, getProp, getArrayProp } from './helper/arpaElementProps.helper.js';
+import { hasProp, getProp, setProp, getArrayProp } from './helper/arpaElementProps.helper.js';
 import { onDestroy, sanitizeAttributes } from './helper/arpaElement.helper';
 import { canRender, hasContent } from './helper/arpaElement.helper';
 import { renderTemplate, getClass, renderChild } from './helper/arpaElementTemplate.helper';
-import { selectTemplates, updateChildNode } from './helper/arpaElementTemplate.helper';
+import { selectTemplates, updateNode } from './helper/arpaElementTemplate.helper';
 import { I18nTool, I18n } from '@arpadroid/i18n';
 const { arpaElementI18n } = I18nTool;
 
@@ -124,7 +124,8 @@ class ArpaElement extends HTMLElement {
             templateContainer: this,
             handleContent: true,
             templateTypes: ['content'],
-            contentPosition: 'append'
+            contentPosition: 'append',
+            templateChildren: {}
         };
         return mergeObjects(defaultConfig, config);
     }
@@ -175,11 +176,20 @@ class ArpaElement extends HTMLElement {
         if (typeof rv === 'string' && rv.startsWith('{i18n:')) {
             const key = getStringBetween(rv, '{i18n:', '}');
             const text = key && this.i18nText(key);
-            if (text) {
-                return this.i18n(key);
-            }
+            if (text) return this.i18n(key);
         }
         return rv;
+    }
+
+    /**
+     * Sets the value of a property in the element's configuration and updates the corresponding attribute.
+     * @param {string} name
+     * @param {any} value
+     * @returns {this}
+     */
+    setProp(name, value) {
+        setProp(this, name, value);
+        return this;
     }
 
     /**
@@ -274,15 +284,6 @@ class ArpaElement extends HTMLElement {
         );
     }
 
-    /**
-     * Gets a template child by name.
-     * @param {string} name
-     * @returns {ArpaNodeConfigType | undefined}
-     */
-    getTemplateChild(name) {
-        return this._config?.templateChildren?.[name];
-    }
-
     // #endregion get
 
     //////////////////////
@@ -350,10 +351,10 @@ class ArpaElement extends HTMLElement {
      * @param {string} name
      * @param {ArpaNodeConfigType} [config] - The configuration object.
      */
-    setChild(name, config = {}) {
+    setNode(name, config = {}) {
         if (!name) return;
-        this.setChildConfig(name, config);
-        this.updateChildNode(name, config);
+        this.setNodeConfig(name, config);
+        this.updateNode(name, config);
     }
 
     /**
@@ -362,47 +363,47 @@ class ArpaElement extends HTMLElement {
      * @param {ArpaNodeConfigType} config - The configuration object.
      * @returns {HTMLElement | Node | null}
      */
-    updateChildNode(name, config) {
-        return updateChildNode(this, name, config);
+    updateNode(name, config) {
+        return updateNode(this, name, config);
     }
 
     /**
-     * Sets a child element.
+     * Edits a node element, spawns it if not connected.
      * @param {string} name
-     * @param {ArpaNodeConfigType} [config] - The configuration object.
+     * @param {ArpaNodeConfigType} [config]
      * @returns {HTMLElement | Node | null}
      */
-    editChild(name, config = {}) {
+    editNode(name, config = {}) {
         if (!name) return null;
-        this.setChildConfig(name, mergeObjects(this.getChildConfig(name) || {}, config));
-        return this.updateChildNode(name, config);
+        this.setNodeConfig(name, mergeObjects(this.getNodeConfig(name) || {}, config));
+        return this.updateNode(name, config);
     }
 
     /**
-     * Gets the configuration for a child element.
-     * @param {string} childName
-     * @returns {Record<string, ArpaNodeConfigType> | undefined}
+     * Returns the configuration for a node element.
+     * @param {string} nodeName
+     * @returns { ArpaNodeConfigType | undefined}
      */
-    getChildConfig(childName) {
-        return this._config?.templateChildren?.[childName];
+    getNodeConfig(nodeName) {
+        return this._config?.templateChildren?.[nodeName];
     }
 
     /**
-     * Returns the child node with the specified name.
-     * @param {string} name - The name of the child node to retrieve.
+     * Returns the node element with the specified name.
+     * @param {string} name
      * @returns {HTMLElement | null}
      */
-    getChild(name = '') {
+    getNode(name = '') {
         return /** @type {HTMLElement | null} */ (this.templateNodes?.[name] || null);
     }
 
     /**
      * Sets the configuration for a child element.
-     * @param {string} childName
+     * @param {string} nodeName
      * @param {ArpaNodeConfigType} config
      */
-    setChildConfig(childName, config = {}) {
-        this._config.templateChildren[childName] = config;
+    setNodeConfig(nodeName, config = {}) {
+        this._config.templateChildren[nodeName] = config;
     }
 
     /**
@@ -729,7 +730,7 @@ class ArpaElement extends HTMLElement {
             return;
         }
         this.contentNode = (this.contentNode?.isConnected && this.contentNode) || this.getContentNode();
-        if (!this.contentNode) return;
+        if (!this.contentNode || this.contentNode.innerHTML.trim()) return;
         const position = this.getProp('contentPosition') || 'append';
         this.contentNode?.[position](...(this._childNodes || []));
     }

@@ -25,7 +25,7 @@ export {
     processTemplateVariable,
     renderTemplate,
     selectTemplates,
-    updateChildNode
+    updateNode
 } from './components/core/arpaElement/helper/arpaElementTemplate.helper.js';
 
 /**

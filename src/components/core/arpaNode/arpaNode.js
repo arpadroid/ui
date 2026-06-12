@@ -99,11 +99,18 @@ class ArpaNode extends HTMLElement {
     renderNode() {
         if (!this.element) return;
         const name = this.getProp('name');
+        const elementNodeConfig = this.element.getNodeConfig(name);
+        if (elementNodeConfig && elementNodeConfig?.canRender === false) {
+            return;
+        }
         const config = this.getConfig();
         const { tag } = config;
         const attr = this.getNodeAttributes();
         attr.canRender = config.canRender;
         const html = renderChild(this.element, name, config, attr);
+        // Register the node configuration with the parent element's template nodes in case we need to spawn it later.
+        this.element.setNodeConfig(name, { ...config, childNodes: this._childNodes });
+
         if (tag === 'fragment') {
             this.fragment.append(html);
             return this.fragment;
@@ -118,24 +125,27 @@ class ArpaNode extends HTMLElement {
         this._initializeContent();
         const name = this.getProp('name');
         if (!name) {
-            console.error('An arpa-node must have a name attribute or configuration property defined.', this);
-            return;
+            const msg = 'An arpa-node must have a name attribute or configuration property defined.';
+            console.error(msg, this);
+            return Promise.reject(new Error(msg));
         }
         /** @type {ArpaElement | null}  */
         this.element = getArpaElement(this);
         if (!this.element) {
-            console.error('An arpa-node must have a parent arpa-element');
-            return;
+            const msg = 'An arpa-node must have a parent arpa-element';
+            console.error(msg, this);
+            return Promise.reject(new Error(msg));
+        }
+        if (!this.node) {
+            /** @type {((HTMLElement | DocumentFragment | Node) & {arpaNode?: ArpaNode})} */
+            this.node = this.renderNode();
         }
 
-        /** @type {((HTMLElement | DocumentFragment | Node) & {arpaNode?: ArpaNode})} */
-        this.node = this.renderNode();
         if (this.node) {
             this.element.templateNodes[name] = this.node;
-        }
-        if (this.node) {
             this.node.arpaNode = this;
             this.replaceWith(this.node);
+            this.remove();
         } else {
             this.remove();
         }

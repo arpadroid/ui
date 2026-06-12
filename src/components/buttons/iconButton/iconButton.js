@@ -13,7 +13,9 @@ class IconButton extends Button {
             templateChildren: {
                 content: { canRender: false },
                 tooltip: {
-                    content: this.getProp('label')
+                    content: () => {
+                        return this.getProp('tooltip') || this.getProp('label') || '{label}';
+                    }
                 }
             }
         };

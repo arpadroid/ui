@@ -105,7 +105,7 @@ class Tooltip extends ArpaElement {
         await super.$initializeNodes();
         this.classList.add(`tooltip--${this.getPosition()}`);
         this.setHandler(this.getHandler());
-        if (this.handler && !this.handler.isConnected) {
+        if (this.handler && !this.handler.isConnected && !this.handler.contains(this)) {
             this.appendChild(this.handler);
         }
         return true;

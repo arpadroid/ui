@@ -4,8 +4,9 @@ export type ArpaNodeAttributesType = Record<string, unknown> | (() => Record<str
 
 export type ArpaNodeConfigType = {
     attr?: ArpaNodeAttributesType;
-    className?: string;
     canRender?: boolean | string | ((component: unknown) => boolean | string);
+    childNodes?: Node[];
+    className?: string;
     content?: ArpaElementContentType;
     hasZone?: boolean;
     id?: string;
@@ -13,5 +14,5 @@ export type ArpaNodeConfigType = {
     name?: string;
     tag?: keyof HTMLElementTagNameMap | 'fragment' | string;
     zoneName?: string;
-    childNodes?: Node[];
+    zoneTarget?: string;
 };

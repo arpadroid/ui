@@ -8,6 +8,7 @@
 import { waitFor, expect } from 'storybook/test';
 import { playSetup } from './button.stories.util';
 import ButtonStory from './button.stories';
+import { testParams } from '@arpadroid/module/storybook/helper';
 
 /** @type {Meta} */
 const ButtonTestsStory = {
@@ -51,6 +52,7 @@ export const Test = {
         tooltip: 'If you click me something awesome will happen.',
         tooltipPosition: 'top'
     },
+    parameters: testParams,
     play: async ({ canvasElement, step, canvas }) => {
         const setup = await playSetup(canvasElement);
         const { buttonNode, buttonComponent } = setup;
@@ -69,7 +71,7 @@ export const Test = {
         await step('Sets a new icon', async () => setNewIconTest(buttonComponent));
         await step('Sets a new right icon', async () => setRightIconTest(buttonComponent));
         await step('Sets new content', async () => setContentTest(buttonComponent));
-        await step('sets a new tooltip', async () => setTooltipTest(buttonComponent));
+        await step('Sets a new tooltip', async () => setTooltipTest(buttonComponent));
     }
 };
 
@@ -82,6 +84,7 @@ export const DynamicRender = {
         tooltip: '',
         tooltipPosition: undefined
     },
+    parameters: testParams,
     play: async ({ canvasElement, step }) => {
         const setup = await playSetup(canvasElement);
         const { buttonComponent } = setup;

@@ -18,6 +18,7 @@ export const dialogText =
 export const playSetup = async () => {
     await customElements.whenDefined('arpa-dialog');
     await customElements.whenDefined('arpa-dialogs');
+    await new Promise(resolve => setTimeout(resolve, 50)); // Wait for the dialog to be rendered
     const dialogsNode = /** @type {Dialogs} */ (document.querySelector('arpa-dialogs'));
     const dialogNode = /** @type {Dialog} */ (document.querySelector('arpa-dialog'));
     return { dialogNode, dialogsNode };
