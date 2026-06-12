@@ -55,8 +55,7 @@ export const Test = {
     parameters: testParams,
     play: async ({ canvas, step }) => {
         await customElements.whenDefined('circular-progress');
-        /** @type {CircularProgress | null} */
-        const component = canvas.getByRole('progressbar');
+        const component = /** @type {CircularProgress | null} */ (canvas.getByRole('progressbar'));
 
         await step('renders the circular progress component', async () => {
             expect(component).toBeInTheDocument();
@@ -90,8 +89,7 @@ export const SimulateProgress = {
     parameters: testParams,
     play: async ({ canvas, step }) => {
         await customElements.whenDefined('circular-progress');
-        /** @type {CircularProgress | null} */
-        const component = canvas.getByRole('progressbar');
+        const component = /** @type {CircularProgress | null} */ (canvas.getByRole('progressbar'));
         await step('simulates progress updates over time', async () => {
             expect(component).toBeInTheDocument();
             expect(canvas.getByText('0%')).toBeInTheDocument();
@@ -114,8 +112,7 @@ export const Empty = {
     },
     play: async ({ canvas, step }) => {
         await customElements.whenDefined('circular-progress');
-        /** @type {CircularProgress | null} */
-        const component = canvas.getByRole('progressbar');
+        const component = /** @type {CircularProgress | null} */ (canvas.getByRole('progressbar'));
 
         await step('renders the circular progress component with 0% progress', async () => {
             expect(component).toBeInTheDocument();
@@ -135,8 +132,7 @@ export const Complete = {
     parameters: testParams,
     play: async ({ canvas, step }) => {
         await customElements.whenDefined('circular-progress');
-        /** @type {CircularProgress | null} */
-        const component = canvas.getByRole('progressbar');
+        const component = /** @type {CircularProgress | null} */ (canvas.getByRole('progressbar'));
 
         await step('renders the circular progress component with 100% progress', async () => {
             expect(component).toBeInTheDocument();

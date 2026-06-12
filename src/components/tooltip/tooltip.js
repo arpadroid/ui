@@ -10,6 +10,14 @@ class Tooltip extends ArpaElement {
     /** @type {TooltipConfigType} */
     _config = this._config;
 
+    /**
+     * Creates a new Tooltip instance.
+     * @param {TooltipConfigType} [config] - The configuration object for the tooltip.
+     */
+    constructor(config = {}) {
+        super(config);
+    }
+
     $preInitialize() {
         this.bind('_onMouseMove', '_onMouseEnter', '_onMouseLeave');
         this.handler = this.querySelector('.tooltip__handler, input, button, a');
