@@ -120,7 +120,6 @@ class ArpaElement extends HTMLElement {
         /** @type {ArpaElementConfigType} */
         const defaultConfig = {
             className: '',
-            variant: undefined,
             templateContainer: this,
             handleContent: true,
             templateTypes: ['content'],
