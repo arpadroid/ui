@@ -34,7 +34,7 @@ class Tooltip extends ArpaElement {
      */
     getHandler() {
         return /** @type {HTMLElement | null} */ (
-            this.handler || this.templateNodes?.handler || this.findHandler() || null
+            this.handler || this.nodes?.handler || this.findHandler() || null
         );
     }
 

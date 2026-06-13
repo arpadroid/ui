@@ -38,9 +38,9 @@ class ArpaElement extends HTMLElement {
     /** @type {TemplatesType} */
     templates = {};
     /** @type {Record<string, ArpaNodeConfigType>} */
-    templateChildren = {};
+    nodesConfig = {};
     /** @type {Record<string, (HTMLElement | Node | DocumentFragment | ArpaElement) & {arpaNode?: ArpaNode }>} */
-    templateNodes = {};
+    nodes = {};
     /** @type {Record<string, unknown>} */
     templateVars = {};
     isArpaElement = true;
@@ -124,7 +124,7 @@ class ArpaElement extends HTMLElement {
             handleContent: true,
             templateTypes: ['content'],
             contentPosition: 'append',
-            templateChildren: {}
+            nodesConfig: {}
         };
         return mergeObjects(defaultConfig, config);
     }
@@ -273,12 +273,12 @@ class ArpaElement extends HTMLElement {
     }
 
     getTemplateChildren() {
-        return this?.templateChildren || {};
+        return this?.nodesConfig || {};
     }
 
     hasTemplateChildren() {
         return (
-            Object.keys(this.templateNodes || {}).length > 0 ||
+            Object.keys(this.nodes || {}).length > 0 ||
             Object.keys(this.getTemplateChildren()).length > 0
         );
     }
@@ -372,7 +372,7 @@ class ArpaElement extends HTMLElement {
      * @param {HTMLElement | Node | DocumentFragment | ArpaElement} node
      */
     attachNode(node, name) {
-        const locator = this.templateChildren?.[name]?.locator;
+        const locator = this.nodesConfig?.[name]?.locator;
         const { previousSibling, parentNode, nextSibling } = locator || {};
         if (previousSibling?.isConnected) {
             previousSibling.parentNode?.insertBefore(node, previousSibling.nextSibling);
@@ -407,7 +407,7 @@ class ArpaElement extends HTMLElement {
      * @returns { ArpaNodeConfigType | undefined}
      */
     getNodeConfig(nodeName) {
-        return this.templateChildren?.[nodeName];
+        return this.nodesConfig?.[nodeName];
     }
 
     /**
@@ -416,7 +416,7 @@ class ArpaElement extends HTMLElement {
      * @returns {HTMLElement | null}
      */
     getNode(name = '') {
-        return /** @type {HTMLElement | null} */ (this.templateNodes?.[name] || null);
+        return /** @type {HTMLElement | null} */ (this.nodes?.[name] || null);
     }
 
     /**
@@ -425,7 +425,7 @@ class ArpaElement extends HTMLElement {
      * @param {ArpaNodeConfigType} config
      */
     setNodeConfig(nodeName, config = {}) {
-        this.templateChildren[nodeName] = config;
+        this.nodesConfig[nodeName] = config;
     }
 
     /**
@@ -433,7 +433,7 @@ class ArpaElement extends HTMLElement {
      * @returns {ArpaNodeConfigType | undefined}
      */
     getChildrenConfig() {
-        return this.templateChildren;
+        return this.nodesConfig;
     }
 
     // #endregion Set
@@ -545,7 +545,7 @@ class ArpaElement extends HTMLElement {
     }
 
     syncTemplateChildren() {
-        this.templateChildren = mergeObjects(this.templateChildren, this._config.templateChildren || {});
+        this.nodesConfig = mergeObjects(this.nodesConfig, this._config.nodesConfig || {});
     }
 
     /**
@@ -725,7 +725,7 @@ class ArpaElement extends HTMLElement {
             const className = getClass(this, name);
             /** @type {HTMLElement | null} */
             const node = this.querySelector(`.${className}`);
-            node && (this.templateNodes[name] = node);
+            node && (this.nodes[name] = node);
         }
     }
 
@@ -829,9 +829,9 @@ class ArpaElement extends HTMLElement {
     $renderTemplate() {
         const { getTemplate } = this._config;
         let template = typeof getTemplate === 'function' ? getTemplate(this) : this._config?.template;
-        if (!template && this.templateChildren) {
+        if (!template && this.nodesConfig) {
             template = '';
-            for (const key of Object.keys(this.templateChildren)) {
+            for (const key of Object.keys(this.nodesConfig)) {
                 template += `{${key}}`;
             }
         }

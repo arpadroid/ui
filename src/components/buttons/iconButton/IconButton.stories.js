@@ -2,12 +2,12 @@
  * @typedef {import('./iconButton.types.js').IconButtonConfigType} IconButtonConfigType
  * @typedef {import('../button/button').default} Button
  * @typedef {import('../button/button.types.js').ButtonConfigType} ButtonConfigType
- * @typedef {import('@storybook/web-components-vite').Meta} Meta
- * @typedef {import('@storybook/web-components-vite').StoryObj} StoryObj
+ * @typedef {import('@storybook/web-components-vite').Meta<IconButtonConfigType>} Meta
+ * @typedef {import('@storybook/web-components-vite').StoryObj<IconButtonConfigType>} Story
  */
 
+import { defaultParams, testParams } from '@arpadroid/module/storybook/helper';
 import { expect, fn, userEvent } from 'storybook/test';
-import { playSetup } from './IconButton.stories.util';
 
 const onClickAction = fn(() => {});
 
@@ -24,24 +24,19 @@ const ButtonStory = {
     }
 };
 
-/** @type {StoryObj} */
+/** @type {Story} */
 export const Default = {
     name: 'Render',
-    play: async ({ canvasElement, canvas, step }) => {
-        await playSetup(canvasElement);
-        const button = canvas.getByRole('button', { name: /play/i });
-        await step('renders the icon button', async () => {
-            expect(button).toBeInTheDocument();
-        });
-    }
+    parameters: defaultParams
 };
 
-/** @type {StoryObj} */
+/** @type {Story} */
 export const Test = {
     args: {
         tooltip: 'Test tooltip',
         icon: 'labs'
     },
+    parameters: testParams,
     play: async ({ canvas, step }) => {
         const button = canvas.getByRole('button', { name: /test/i });
 
@@ -53,12 +48,13 @@ export const Test = {
     }
 };
 
-/** @type {StoryObj} */
+/** @type {Story} */
 export const Disabled = {
     args: {
         variant: 'disabled',
         tooltip: 'Disabled Button'
     },
+    parameters: testParams,
     play: async ({ canvas, step }) => {
         const button = canvas.getByRole('button', { name: /Disabled Button/i });
         await step('renders the disabled icon button', async () => {

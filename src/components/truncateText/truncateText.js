@@ -3,7 +3,7 @@
  * @typedef {import('../buttons/button/button.js').default} ArpaButton
  */
 import ArpaElement from '../core/arpaElement/arpaElement.js';
-import { defineCustomElement, listen } from '@arpadroid/tools';
+import { classNames, defineCustomElement, listen } from '@arpadroid/tools';
 
 const html = String.raw;
 class TruncateText extends ArpaElement {
@@ -45,20 +45,16 @@ class TruncateText extends ArpaElement {
     }
 
     renderButton() {
-        const buttonClasses = this.getProp('buttonClasses').join(' ');
-        const canTruncate = this.canTruncate();
-        return canTruncate
-            ? html`<arpa-node
-                  name="button"
-                  tag="arpa-button"
-                  can-render="hasButton"
-                  rhs-icon="${this.getProp('icon')}"
-                  variant="minimal"
-                  button-class="${buttonClasses}"
-              >
-                  ${this.getProp('lblShow')}
-              </arpa-node>`
-            : '';
+        return html`<arpa-node
+            name="button"
+            tag="arpa-button"
+            can-render="hasButton && canTruncate()"
+            rhs-icon="{icon}"
+            variant="minimal"
+            button-class="${classNames(this.getProp('buttonClasses'))}"
+        >
+            {lblShow}
+        </arpa-node>`;
     }
 
     $renderTemplate() {
@@ -67,68 +63,13 @@ class TruncateText extends ArpaElement {
             <arpa-node tag="span" name="wrapper">
                 <arpa-node tag="span" name="content" is-content></arpa-node>
                 <arpa-node tag="span" name="ellipsis" can-render="ellipsis"></arpa-node>
-                ${isInline ? '{button}' : ''}
+                ${isInline ? this.renderButton() : ''}
             </arpa-node>
-            ${!isInline ? '{button}' : ''}
+            ${!isInline ? this.renderButton() : ''}
         `;
     }
 
     // #endregion Rendering
-
-    ////////////////////////////
-    // #region LIFECYCLE
-    ////////////////////////////
-
-    static get observedAttributes() {
-        return ['is-truncated'];
-    }
-
-    /**
-     * Handles attribute changes for the component.
-     * @param {string} name
-     * @param {string} oldValue
-     * @param {string} newValue
-     */
-    attributeChangedCallback(name, oldValue, newValue) {
-        if (name === 'is-truncated') {
-            newValue === null ? this.showFullContent() : this.truncateText();
-        }
-    }
-
-    $onContentSet() {
-        this._textContent = this.contentNode?.textContent;
-        
-        this.reRender();
-    }
-
-    async $initializeNodes() {
-        await super.$initializeNodes();
-        this.buttonComponent = /** @type {ArpaButton} */ (this.templateNodes.button);
-        this.buttonComponent?.promise.then(() => {
-            this.button = this.buttonComponent?.button;
-            this.button && listen(this.button, 'click', this.toggleTruncate);
-        });
-        this.ellipsisNode = /** @type {HTMLElement} */ (this.templateNodes.ellipsis);
-        this.ellipsisNode.remove();
-        this.contentNode = /** @type {HTMLElement} */ (this.templateNodes.content);
-        this.wrapperNode = /** @type {HTMLElement} */ (this.templateNodes.wrapper);
-        return true;
-    }
-
-    $onComplete() {
-        if (!this.canTruncate()) {
-            const button = this.querySelector('.truncateText__button');
-            button?.remove();
-        }
-        if (this.hasProp('isTruncated')) {
-            this.setAttribute('is-truncated', '');
-            this.truncateText();
-        } else {
-            this.showFullContent();
-        }
-    }
-
-    // #endregion LIFECYCLE
 
     //////////////////////////////
     // #region Truncation
@@ -175,6 +116,58 @@ class TruncateText extends ArpaElement {
     }
 
     // #endregion Truncation
+
+    ////////////////////////////
+    // #region LIFECYCLE
+    ////////////////////////////
+
+    static get observedAttributes() {
+        return ['is-truncated'];
+    }
+
+    /**
+     * Handles attribute changes for the component.
+     * @param {string} name
+     * @param {string} oldValue
+     * @param {string} newValue
+     */
+    attributeChangedCallback(name, oldValue, newValue) {
+        if (name === 'is-truncated') {
+            newValue === null ? this.showFullContent() : this.truncateText();
+        }
+    }
+
+    $onContentSet() {
+        this._textContent = this.contentNode?.textContent;
+        this.reRender();
+    }
+
+    async $initializeNodes() {
+        await super.$initializeNodes();
+        this.buttonComponent = /** @type {ArpaButton} */ (this.nodes.button);
+        this.buttonComponent?.promise.then(() => {
+            this.button = this.buttonComponent?.button;
+            this.button && listen(this.button, 'click', this.toggleTruncate);
+        });
+        this.ellipsisNode = /** @type {HTMLElement} */ (this.nodes.ellipsis);
+        this.ellipsisNode.remove();
+        return true;
+    }
+
+    $onComplete() {
+        if (!this.canTruncate()) {
+            const button = this.querySelector('.truncateText__button');
+            button?.remove();
+        }
+        if (this.hasProp('isTruncated')) {
+            this.setAttribute('is-truncated', '');
+            this.truncateText();
+        } else {
+            this.showFullContent();
+        }
+    }
+
+    // #endregion LIFECYCLE
 }
 
 defineCustomElement('truncate-text', TruncateText);

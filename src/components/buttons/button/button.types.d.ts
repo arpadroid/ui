@@ -15,6 +15,7 @@ export type ButtonConfigType = ArpaElementConfigType & {
     type?: 'button' | 'submit' | 'reset';
     variant?:
         | 'default'
+        | 'disabled'
         | 'primary'
         | 'primary-outlined'
         | 'secondary'

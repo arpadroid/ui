@@ -56,8 +56,8 @@ export function processTemplateVariable(name, value, element) {
         }
     }
 
-    if (value) return value;
-    return element?.getProp(name) || '';
+    value = value || element?.getProp(name) || '';
+    return value;
 }
 
 /**
@@ -248,7 +248,7 @@ export function getClass(element, name) {
  * @param {string} name
  * @returns {ArpaNodeConfigType}
  */
-export function getDefaultChildConfig(element, name) {
+export function getDefaultNodeConfig(element, name) {
     return mergeObjects(
         {
             tag: 'div',
@@ -300,7 +300,7 @@ export function canRenderNode(element, name, config = {}, attributes = {}) {
  * @param {Record<string, unknown>} [attributes] - Additional attributes to add to the element.
  * @returns {Record<string, string>}
  */
-export function getChildAttributes(element, name, config = {}, attributes = {}) {
+export function getNodeAttributes(element, name, config = {}, attributes = {}) {
     const { className, id, hasZone, zoneName, isContent = false } = config;
     !attributes.isContent && (attributes.isContent = isContent);
     const attr = mergeObjects(config.attr || {}, attributes);
@@ -329,7 +329,7 @@ export function getChildAttributes(element, name, config = {}, attributes = {}) 
  * @param {ArpaNodeConfigType} [config] - The configuration object.
  * @returns {string}
  */
-export function getChildContent(element, name, config = {}) {
+export function getNodeContent(element, name, config = {}) {
     let content = config.content || (name && element?.getProp(name)) || '';
     typeof content === 'function' && (content = content());
     return processTemplate(
@@ -364,16 +364,16 @@ export function setNodeContent(node, content) {
  * @returns {string}
  */
 export function renderChild(element, name, config = {}, attributes = {}) {
-    const defaults = getDefaultChildConfig(element, name);
+    const defaults = getDefaultNodeConfig(element, name);
     config = mergeObjects(defaults, config);
     const canRender = canRenderNode(element, name, config, attributes);
     if (canRender) {
         typeof config.attr === 'function' && (config.attr = config.attr());
-        const attr = getChildAttributes(element, name, config, attributes);
+        const attr = getNodeAttributes(element, name, config, attributes);
         const { tag } = config;
         const isFragment = tag === 'fragment';
         let content = isFragment ? '' : `<${tag} ${attrString(attr)}>`;
-        content += getChildContent(element, name, config);
+        content += getNodeContent(element, name, config);
         content += isFragment ? '' : `</${tag}>`;
         return content;
     }
@@ -388,18 +388,18 @@ export function renderChild(element, name, config = {}, attributes = {}) {
  * @returns {ArpaElement | HTMLElement | Node | null}
  */
 export function spawnNode(element, name, config) {
-    let node = element.templateNodes[name];
+    let node = element.nodes[name];
     if (node instanceof HTMLElement) {
         if (typeof config.attr === 'object') {
             attr(node, config.attr);
         }
         // @ts-ignore
-        setNodeContent(node, getChildContent(element, name, config));
+        setNodeContent(node, getNodeContent(element, name, config));
     } else {
         const conf = mergeObjects(element.getNodeConfig(name) || {}, config);
         const renderedNode = renderNode(renderChild(element, name, conf));
         if (renderedNode) {
-            element.templateNodes[name] = renderedNode;
+            element.nodes[name] = renderedNode;
             node = renderedNode;
         }
     }

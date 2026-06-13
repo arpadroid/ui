@@ -99,13 +99,13 @@ npm install @arpadroid/ui
         <arpa-button id="open-dialog-button" variant="secondary">
             Open Dialog
             <arpa-dialog id="custom-dialog" title="Custom Dialog" variant="large">
-                <zone name="content">
+                <arpa-zone name="content">
                     <p>Dialog content goes here</p>
-                </zone>
-                <zone name="actions">
+                </arpa-zone>
+                <arpa-zone name="actions">
                     <arpa-button variant="secondary">Cancel</arpa-button>
                     <arpa-button variant="primary">Confirm</arpa-button>
-                </zone>
+                </arpa-zone>
             </arpa-dialog>
         </arpa-button>
     </body>
@@ -136,7 +136,7 @@ class CustomComponent extends ArpaElement {
         return super.getDefaultConfig({
             className: 'customComponent',
             buttonText: 'Default Button Text',
-            templateChildren: {
+            nodesConfig: {
                 content: { tag: 'span' },
                 actions: { tag: 'span' }
             }
@@ -199,9 +199,9 @@ defineCustomElement('custom-component', CustomComponent);
 
 ```html
 <custom-component>
-    <zone name="main"> Main content goes here </zone>
-    <zone name="actions"> Action buttons here </zone>
-    <zone name="secondary"> Overridden Secondary content </zone>
+    <arpa-zone name="main"> Main content goes here </arpa-zone>
+    <arpa-zone name="actions"> Action buttons here </arpa-zone>
+    <arpa-zone name="secondary"> Overridden Secondary content </arpa-zone>
     main content
 </custom-component>
 ```
@@ -574,13 +574,13 @@ Modal dialogs with flexible content and actions.
 
 ```html
 <arpa-dialog id="customDialog" title="Custom Dialog" variant="large">
-    <zone name="content">
+    <arpa-zone name="content">
         <p>Dialog content goes here</p>
-    </zone>
-    <zone name="actions">
+    </arpa-zone>
+    <arpa-zone name="actions">
         <arpa-button variant="secondary">Cancel</arpa-button>
         <arpa-button variant="primary">Confirm</arpa-button>
-    </zone>
+    </arpa-zone>
 </arpa-dialog>
 ```
 
@@ -671,9 +671,9 @@ The zone system is a powerful templating feature that allows flexible content pl
 
 ```html
 <arpa-element>
-    <zone name="header">Header content</zone>
-    <zone name="content">Main content</zone>
-    <zone name="footer">Footer content</zone>
+    <arpa-zone name="header">Header content</arpa-zone>
+    <arpa-zone name="content">Main content</arpa-zone>
+    <arpa-zone name="footer">Footer content</arpa-zone>
 </arpa-element>
 ```
 
@@ -700,7 +700,7 @@ const zones = zoneTool.extractZones(templateString);
 class CustomElement extends ArpaElement {
     getDefaultConfig() {
         return {
-            templateChildren: {
+            nodesConfig: {
                 header: {
                     tag: 'header',
                     zoneName: 'header',
@@ -724,14 +724,14 @@ class CustomElement extends ArpaElement {
         return html`
             <div class="custom-element">
                 {header}
-                <!-- The {header} token and others as such will be replaced with the corresponding elements defined in templateChildren configuration.  
+                <!-- The {header} token and others as such will be replaced with the corresponding elements defined in nodesConfig configuration.  
                 Note that getTemplateVars also defines template variables for dynamic content rendering.
                 -->
                 <div class="custom-element__body">
                     {content}
-                    <zone name="extra-content">
+                    <arpa-zone name="extra-content">
                         <!-- Additional content can be placed here -->
-                    </zone>
+                    </arpa-zone>
                 </div>
                 {actions}
             </div>
@@ -880,7 +880,7 @@ button.textContent = I18n.getText('buttons.submit');
 type ArpaElementConfigType = {
     className?: string;
     variant?: string;
-    templateChildren?: Record<string, ArpaNodeConfigType>;
+    nodesConfig?: Record<string, ArpaNodeConfigType>;
     // ... additional options
 };
 ```
@@ -1069,7 +1069,7 @@ class MyComponent extends ArpaElement {
     getDefaultConfig() {
         return {
             className: 'myComponent',
-            templateChildren: {
+            nodesConfig: {
                 header: {
                     tag: 'h3',
                     className: 'myComponent__title',
@@ -1241,12 +1241,12 @@ dropArea.on('drop', (event, files) => {
 
 // Use zone system for flexible content placement
 <arpa-element>
-    <zone name="content">
+    <arpa-zone name="content">
         <!-- Your content here -->
-    </zone>
-    <zone name="actions">
+    </arpa-zone>
+    <arpa-zone name="actions">
         <!-- Action buttons here -->
-    </zone>
+    </arpa-zone>
 </arpa-element>
 
 // Include Material Symbols for icons

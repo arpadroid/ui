@@ -33,7 +33,7 @@ const ArpaElementStory = {
         templateVars: {
             testVar: () => 'Test Variable 1'
         },
-        templateChildren: {
+        nodesConfig: {
             header: {
                 tag: 'header',
                 content: html`<p>{testVar}</p>`
@@ -146,7 +146,7 @@ export const CustomTemplate = {
                     </legend>
                     {wrapper}{header}{body}{footer}{content}
                     <!-- Variable tokens wrapped in curly braces map to internal component template children and variables. -->
-                    <!-- These are defined in the component's getTemplateVars method and templateChildren configuration. -->
+                    <!-- These are defined in the component's getTemplateVars method and nodesConfig configuration. -->
                     <!-- Template children provide zone functionality by default, allowing you to target them with zone elements in the story content. -->
                 </fieldset>
             </template>

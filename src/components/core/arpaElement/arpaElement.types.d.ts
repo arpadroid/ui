@@ -9,7 +9,7 @@ export type ArpaElementConfigType = {
     contentPosition?: 'prepend' | 'append' | 'top' | 'replace' | 'bottom';
     handleContent?: boolean;
     template?: string;
-    templateChildren?: Record<string, ArpaNodeConfigType> | undefined;
+    nodesConfig?: Record<string, ArpaNodeConfigType> | undefined;
     templateContainer?: HTMLElement | string;
     templates?: TemplatesType;
     templateTypes?: TemplateContentMode[];

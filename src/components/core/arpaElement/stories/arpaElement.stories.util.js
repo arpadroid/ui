@@ -11,7 +11,7 @@ export class TestElement extends ArpaElement {
                 testContent: 'Top Content'
             },
             className: 'testComponent',
-            templateChildren: {
+            nodesConfig: {
                 header: {
                     tag: 'header',
                     content: html`<p>{testVar}</p>`

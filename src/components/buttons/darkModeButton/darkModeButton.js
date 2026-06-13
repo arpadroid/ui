@@ -1,21 +1,32 @@
+/**
+ * @typedef {import('./darkModeButton.types').DarkModeButtonConfigType} DarkModeButtonConfigType
+ */
 import { defineCustomElement, mergeObjects } from '@arpadroid/tools';
 import IconButton from '../iconButton/iconButton.js';
 class DarkModeButton extends IconButton {
+    /** @type {DarkModeButtonConfigType} */
+    _config = this._config;
+
     $initialize() {
         super.$initialize();
         this.bind('_onClick');
     }
 
+    /**
+     * Returns the default configuration.
+     * @returns {DarkModeButtonConfigType}
+     */
     getDefaultConfig() {
         this.i18nKey = 'ui.darkModeButton';
+        /** @type {DarkModeButtonConfigType} */
         const config = {
             icon: 'dark_mode',
             iconLight: 'light_mode',
-            labelText: this.i18nText('lblDarkMode'),
-            label: this.i18n('lblDarkMode'),
-            tooltip: this.i18nText('lblDarkMode'),
-            labelLight: this.i18n('lblLightMode'),
-            templateChildren: {
+            labelText: '{i18n:lblDarkMode}',
+            label: '{i18n:lblDarkMode}',
+            tooltip: '{i18n:lblDarkMode}',
+            labelLight: '{i18n:lblLightMode}',
+            nodesConfig: {
                 content: { canRender: false }
             }
         };
@@ -34,29 +45,13 @@ class DarkModeButton extends IconButton {
         }
         if (styleNode.disabled) {
             styleNode.removeAttribute('disabled');
-            this.setProp('icon', this.getIconLight());
-            this.setProp('tooltip', this.getLabelLight());
+            this.setProp('icon', this.getProp('iconLight'));
+            this.setProp('tooltip', this.getProp('labelLight'));
         } else {
             styleNode.disabled = true;
             this.setProp('icon', this.getProp('icon'));
             this.setProp('tooltip', this.getProp('label').toString());
         }
-    }
-
-    /**
-     * Returns the label for light mode.
-     * @returns {string}
-     */
-    getLabelLight() {
-        return this.getProp('label-light');
-    }
-
-    /**
-     * Returns the icon for light mode.
-     * @returns {string}
-     */
-    getIconLight() {
-        return this.getProp('icon-light');
     }
 }
 

@@ -86,7 +86,7 @@ class Button extends ArpaElement {
 
     handleVariant() {
         const variant = this.getProp('variant');
-        const icon = this.templateNodes.icon || this.querySelector('arpa-icon');
+        const icon = this.nodes.icon || this.querySelector('arpa-icon');
         if (!icon) {
             if (['delete', 'delete-outlined'].includes(variant)) {
                 this.setProp('icon', 'delete');

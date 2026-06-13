@@ -6,11 +6,16 @@ import { defineCustomElement } from '@arpadroid/tools';
 import Button from '../button/button.js';
 
 class IconButton extends Button {
+    /** 
+     * Returns the default configuration.
+     * @returns {IconButtonConfigType}
+     */
     getDefaultConfig() {
+        /** @type {IconButtonConfigType} */
         const config = {
             buttonClass: 'iconButton__button',
             className: 'iconButton',
-            templateChildren: {
+            nodesConfig: {
                 content: { canRender: false },
                 tooltip: {
                     content: () => {

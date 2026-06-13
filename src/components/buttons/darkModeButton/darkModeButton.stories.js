@@ -1,23 +1,10 @@
 /**
- * @typedef {import('@storybook/web-components-vite').Meta} Meta
- * @typedef {import('@storybook/web-components-vite').StoryObj} StoryObj
+ * @typedef {import('./darkModeButton.types').DarkModeButtonConfigType} DarkModeButtonConfigType
+ * @typedef {import('@storybook/web-components-vite').Meta<DarkModeButtonConfigType>} Meta
+ * @typedef {import('@storybook/web-components-vite').StoryObj<DarkModeButtonConfigType>} Story
  * @typedef {import('./darkModeButton').default} DarkModeButton
  */
-import { waitFor, expect, within } from 'storybook/test';
-
-/**
- * Sets up the testing environment.
- * @param {HTMLElement} canvasElement
- * @returns {Promise<{canvas: any, buttonNode?: HTMLButtonElement | null, buttonComponent?: DarkModeButton | null}>}
- */
-async function playSetup(canvasElement) {
-    const canvas = within(canvasElement);
-    await customElements.whenDefined('dark-mode-button');
-    /** @type {DarkModeButton | null} */
-    const buttonComponent = canvasElement.querySelector('dark-mode-button');
-    await buttonComponent?.promise;
-    return { canvas, buttonNode: buttonComponent?.button, buttonComponent };
-}
+import { expect, userEvent } from 'storybook/test';
 
 /** @type {Meta} */
 const DarkModeButtonStory = {
@@ -26,44 +13,43 @@ const DarkModeButtonStory = {
     component: 'dark-mode-button'
 };
 
-/** @type {StoryObj} */
+/** @type {Story} */
 export const Default = {
     name: 'Render'
 };
 
-/** @type {StoryObj} */
+/** @type {Story} */
 export const Test = {
     name: 'Test',
-    play: async ({ canvasElement, step }) => {
-        const setup = await playSetup(canvasElement);
-        const { buttonNode, canvas } = setup;
+    play: async ({ canvasElement, step, canvas }) => {
+        await customElements.whenDefined('dark-mode-button');
+
+        const buttonComponent = /** @type {DarkModeButton} */ (
+            canvasElement.querySelector('dark-mode-button')
+        );
+        await buttonComponent?.promise;
+        const button = /** @type {HTMLButtonElement} */ (buttonComponent?.button);
         await step('renders the button', async () => {
-            await waitFor(() => expect(buttonNode).not.toBeNull());
+            expect(button).toBeInTheDocument();
         });
 
-        await step('Focuses the button and expects tooltip', async () => {
-            buttonNode?.focus();
-            await waitFor(() => {
-                expect(canvas.getByText('Dark Mode')).toBeVisible();
-            });
+        await step('Focuses the button and expects tooltip', () => {
+            button?.focus();
+            expect(canvas.getByText('Dark Mode')).toBeVisible();
         });
 
         await step('Clicks the button and expects dark mode', async () => {
-            buttonNode?.click();
+            await userEvent.click(button);
             const darkStyles = document.getElementById('dark-styles');
-            await waitFor(() => {
-                expect(darkStyles).not.toHaveAttribute('disabled');
-                expect(canvas.getByText('Light Mode')).toBeVisible();
-            });
+            expect(darkStyles).not.toHaveAttribute('disabled');
+            expect(canvas.getByText('Light Mode')).toBeVisible();
         });
 
         await step('Clicks the button again and expects light mode', async () => {
-            buttonNode?.click();
+            await userEvent.click(button);
             const darkStyles = document.getElementById('dark-styles');
-            await waitFor(() => {
-                expect(darkStyles).toHaveAttribute('disabled');
-                expect(canvas.getByText('Dark Mode')).toBeVisible();
-            });
+            expect(darkStyles).toHaveAttribute('disabled');
+            expect(canvas.getByText('Dark Mode')).toBeVisible();
         });
     }
 };
