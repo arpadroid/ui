@@ -276,11 +276,8 @@ class ArpaElement extends HTMLElement {
         return this?.nodesConfig || {};
     }
 
-    hasTemplateChildren() {
-        return (
-            Object.keys(this.nodes || {}).length > 0 ||
-            Object.keys(this.getNodesConfig()).length > 0
-        );
+    hasNodesConfig() {
+        return Object.keys(this.nodes || {}).length > 0 || Object.keys(this.getNodesConfig()).length > 0;
     }
 
     // #endregion get
@@ -368,8 +365,8 @@ class ArpaElement extends HTMLElement {
 
     /**
      * Attaches a node to the element based on the locator information in the node configuration.
-     * @param {string} name
      * @param {HTMLElement | Node | DocumentFragment | ArpaElement} node
+     * @param {string} name
      */
     attachNode(node, name) {
         const locator = this.nodesConfig?.[name]?.locator;
@@ -528,7 +525,7 @@ class ArpaElement extends HTMLElement {
     setConfig(config = {}) {
         const defaultConfig = this.getDefaultConfig();
         this._config = mergeObjects(defaultConfig, config);
-        this.syncTemplateChildren();
+        this.syncNodesConfig();
     }
 
     /**
@@ -541,10 +538,10 @@ class ArpaElement extends HTMLElement {
 
     addConfig(config = {}) {
         this._config = mergeObjects(this._config, config);
-        this.syncTemplateChildren();
+        this.syncNodesConfig();
     }
 
-    syncTemplateChildren() {
+    syncNodesConfig() {
         this.nodesConfig = mergeObjects(this.nodesConfig, this._config.nodesConfig || {});
     }
 
@@ -754,7 +751,7 @@ class ArpaElement extends HTMLElement {
     }
 
     handleContent() {
-        if (!this.hasTemplateChildren() || !this._config.handleContent) {
+        if (!this.hasNodesConfig() || !this._config.handleContent) {
             return;
         }
         this.contentNode = (this.contentNode?.isConnected && this.contentNode) || this.getContentNode();
