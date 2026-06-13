@@ -62,12 +62,12 @@ class CircularProgress extends CircularSpinner {
         this.setAttribute('aria-valuenow', String(clamped));
     }
 
-    $progress() {
+    renderProgress() {
         return html`<span class="circularProgress__percentage">0%</span>`;
     }
 
-    $loader() {
-        return html`${super.$loader()}${this.$progress()}`;
+    renderLoader() {
+        return html`${super.renderLoader()}${this.renderProgress()}`;
     }
 
     ///////////////////////////////

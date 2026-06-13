@@ -45,17 +45,117 @@ export function processTemplateVariable(name, value, element) {
         // eslint-disable-next-line no-use-before-define
         child && (value = renderChild(element, name, child));
     }
-    if (!value) {
-        const methodName = dashedToCamel(name);
+
+    if (!value && name.endsWith('()')) {
+        const methodName = dashedToCamel(name.slice(0, -2));
         // @ts-ignore
         let method = element?.[methodName];
-        if (methodName.startsWith('$') && typeof method === 'function') {
-            method = method?.bind(element);
+        if (typeof method === 'function') {
+            method = method.bind(element);
             value = method();
         }
     }
+
     if (value) return value;
     return element?.getProp(name) || '';
+}
+
+/**
+ * Checks whether a character should be treated as template whitespace.
+ * @param {string} value
+ * @returns {boolean}
+ */
+function isTemplateWhitespace(value) {
+    return /\s/.test(value || '');
+}
+
+/**
+ * Parses an attribute whose value may be a single template placeholder.
+ * @param {string} template
+ * @param {number} lastIndex
+ * @param {number} equalsIndex
+ * @returns {{ attrName: string, nextIndex: number, propName: string, spacing: string, spacingStart: number } | null}
+ * @todo - This is an AI solution, must be reviewed accordingly.
+ */
+function getTemplateAttributeMatch(template, lastIndex, equalsIndex) {
+    let valueStart = equalsIndex + 1;
+    while (isTemplateWhitespace(template[valueStart] || '')) {
+        valueStart += 1;
+    }
+
+    const quote = template[valueStart];
+    if ((quote !== '"' && quote !== "'") || template[valueStart + 1] !== '{') {
+        return null;
+    }
+
+    const placeholderEnd = template.indexOf('}', valueStart + 2);
+    if (placeholderEnd === -1 || template[placeholderEnd + 1] !== quote) {
+        return null;
+    }
+
+    let attrEnd = equalsIndex - 1;
+    while (attrEnd >= lastIndex && isTemplateWhitespace(template[attrEnd] || '')) {
+        attrEnd -= 1;
+    }
+
+    let attrStart = attrEnd;
+    while (attrStart >= lastIndex && !/\s|<|>|\//.test(template[attrStart] || '')) {
+        attrStart -= 1;
+    }
+    attrStart += 1;
+    if (attrStart > attrEnd) {
+        return null;
+    }
+
+    let spacingStart = attrStart;
+    while (spacingStart > lastIndex && isTemplateWhitespace(template[spacingStart - 1] || '')) {
+        spacingStart -= 1;
+    }
+
+    return {
+        attrName: template.slice(attrStart, attrEnd + 1),
+        nextIndex: placeholderEnd + 2,
+        propName: template.slice(valueStart + 2, placeholderEnd),
+        spacing: template.slice(spacingStart, attrStart),
+        spacingStart
+    };
+}
+
+/**
+ * Processes a template attribute token.
+ * @param {string} template
+ * @param {Record<string, unknown>} props
+ * @param {ArpaElement} [element]
+ * @returns {string}
+ */
+export function processTemplateAttributes(template, props = {}, element) {
+    if (!template) {
+        return '';
+    }
+
+    const result = [];
+    let lastIndex = 0;
+    let searchIndex = 0;
+
+    while ((searchIndex = template.indexOf('=', searchIndex)) !== -1) {
+        const match = getTemplateAttributeMatch(template, lastIndex, searchIndex);
+        if (!match) {
+            searchIndex += 1;
+            continue;
+        }
+
+        const value = processTemplateVariable(match.propName, props[match.propName], element);
+        const renderedAttribute = attrString({ [match.attrName]: value });
+
+        result.push(template.slice(lastIndex, match.spacingStart));
+        renderedAttribute && result.push(`${match.spacing}${renderedAttribute}`);
+
+        lastIndex = match.nextIndex;
+        searchIndex = lastIndex;
+    }
+
+    result.push(template.slice(lastIndex));
+    return result.join('');
 }
 
 /**
@@ -65,7 +165,7 @@ export function processTemplateVariable(name, value, element) {
  * @param {ArpaElement} [element]
  * @returns {string}
  */
-export function processTemplate(template, props = {}, element) {
+export function _processTemplate(template, props = {}, element) {
     if (!template) {
         return '';
     }
@@ -85,6 +185,18 @@ export function processTemplate(template, props = {}, element) {
     }
     result.push(template.slice(startIndex));
     return result.join('');
+}
+
+/**
+ * Processes a template string and replaces the placeholders with the provided props.
+ * @param {string} template
+ * @param {Record<string, unknown>} props
+ * @param {ArpaElement} [element]
+ * @returns {string}
+ */
+export function processTemplate(template, props = {}, element) {
+    template = processTemplateAttributes(template, props, element);
+    return _processTemplate(template, props, element);
 }
 
 /**

@@ -41,7 +41,7 @@ class LinearProgress extends CircularProgress {
         this.setAttribute('aria-valuenow', String(clamped));
     }
 
-    $loader() {
+    renderLoader() {
         return html`
             <div class="linearProgress__track" aria-hidden="true">
                 <div class="linearProgress__fill"></div>

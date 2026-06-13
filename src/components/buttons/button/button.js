@@ -3,7 +3,7 @@
  * @typedef {import('../../tooltip/tooltip').default} Tooltip
  * @typedef {import('../../icon/icon').default} Icon
  */
-import { listen, $attr, classNames, defineCustomElement } from '@arpadroid/tools';
+import { listen, defineCustomElement } from '@arpadroid/tools';
 import ArpaElement from '../../core/arpaElement/arpaElement';
 
 const html = String.raw;
@@ -24,6 +24,7 @@ class Button extends ArpaElement {
             buttonClass: 'arpaButton__button',
             tooltipPosition: 'left'
         };
+
         return /** @type {ButtonConfigType} */ (super.getDefaultConfig(config));
     }
 
@@ -32,6 +33,7 @@ class Button extends ArpaElement {
      * @returns {string} The resolved aria-label for the button.
      */
     getAriaLabel() {
+        if (this.hasContent('content')) return '';
         const { ariaLabel, label, tooltip } = this.getProperties('ariaLabel', 'label', 'tooltip');
         const aria = ariaLabel || label || tooltip || '';
         return this.resolveAriaLabel(aria) || '';
@@ -39,26 +41,22 @@ class Button extends ArpaElement {
 
     _preRender() {
         super._preRender();
-        this.disabled = this.hasAttribute('disabled') || this.getProp('variant') === 'disabled';
+        this._config.disabled = this.hasAttribute('disabled') || this.getProp('variant') === 'disabled';
         this.removeAttribute('disabled');
     }
 
     $renderTemplate() {
-        const variant = this.getProp('variant');
         return html`<button
-            ${$attr({
-                ariaLabel: this.getAriaLabel(),
-                class: classNames(this.getProp('buttonClass')),
-                type: this.getProp('type'),
-                variant,
-                disabled: this.disabled,
-                zone: this.getProp('buttonZone')
-            })}
+            aria-label="{getAriaLabel()}"
+            class="{buttonClass}"
+            type="{type}"
+            variant="{variant}"
+            zone="{buttonZone}"
+            disabled="{disabled}"
         >
             <arpa-node tag="arpa-icon" name="icon"></arpa-node>
             <arpa-node tag="span" is-content name="content">{label}</arpa-node>
             <arpa-node tag="arpa-icon" name="rhsIcon"></arpa-node>
-
             <arpa-node
                 tag="arpa-tooltip"
                 name="tooltip"
