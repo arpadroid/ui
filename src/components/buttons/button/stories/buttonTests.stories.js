@@ -17,32 +17,6 @@ const ButtonTestsStory = {
     title: 'UI/Buttons/Button/Tests'
 };
 
-const setNewIconTest = (/** @type {Button} */ buttonComponent) => {
-    buttonComponent.setIcon('labs');
-    const iconNode = buttonComponent.querySelector('.arpaButton__icon');
-    expect(iconNode).toHaveTextContent('labs');
-};
-
-const setRightIconTest = (/** @type {Button} */ buttonComponent) => {
-    buttonComponent.setIconRight('person');
-    const iconNode = buttonComponent.querySelector('.arpaButton__rhsIcon');
-    expect(iconNode).toHaveTextContent('person');
-};
-
-const setContentTest = (/** @type {Button} */ buttonComponent) => {
-    buttonComponent.setContent('Test button');
-    const contentNode = buttonComponent.querySelector('.arpaButton__content');
-    expect(contentNode).toHaveTextContent('Test button');
-};
-
-const setTooltipTest = async (/** @type {Button} */ buttonComponent) => {
-    buttonComponent.setTooltip('New tooltip');
-    await waitFor(() => {
-        const tooltip = buttonComponent.querySelector('arpa-tooltip');
-        expect(tooltip).toHaveTextContent('New tooltip');
-    });
-};
-
 /** @type {Story} */
 export const Test = {
     args: {
@@ -68,10 +42,28 @@ export const Test = {
             expect(tooltip).toBeVisible();
         });
 
-        await step('Sets a new icon', async () => setNewIconTest(buttonComponent));
-        await step('Sets a new right icon', async () => setRightIconTest(buttonComponent));
-        await step('Sets new content', async () => setContentTest(buttonComponent));
-        await step('Sets a new tooltip', async () => setTooltipTest(buttonComponent));
+        await step('Sets a new icon', async () => {
+            buttonComponent.setProp('icon', 'labs');
+            const iconNode = buttonComponent.querySelector('.arpaButton__icon');
+            await waitFor(() => expect(iconNode).toHaveTextContent('labs'));
+        });
+
+        await step('Sets a new right icon', async () => {
+            buttonComponent.setProp('rhsIcon', 'person');
+            const iconNode = buttonComponent.querySelector('.arpaButton__rhsIcon');
+            await waitFor(() => expect(iconNode).toHaveTextContent('person'));
+        });
+
+        await step('Sets new content', async () => {
+            buttonComponent.setProp('content', 'Test button');
+            const contentNode = buttonComponent.querySelector('.arpaButton__content');
+            await waitFor(() => expect(contentNode).toHaveTextContent('Test button'));
+        });
+
+        await step('Sets a new tooltip', async () => {
+            buttonComponent.setProp('tooltip', 'New tooltip');
+            await waitFor(() => expect(canvas.getByText('New tooltip')).toBeInTheDocument());
+        });
     }
 };
 
@@ -89,10 +81,48 @@ export const DynamicRender = {
         const setup = await playSetup(canvasElement);
         const { buttonComponent } = setup;
 
-        await step('Sets a new icon', async () => setNewIconTest(buttonComponent));
-        await step('Sets a new right icon', async () => setRightIconTest(buttonComponent));
-        await step('Sets new content', async () => setContentTest(buttonComponent));
-        await step('sets a new tooltip', async () => setTooltipTest(buttonComponent));
+        await step('Sets an RHS icon', async () => {
+            buttonComponent.setProp('rhsIcon', 'person');
+            await waitFor(() => {
+                const iconNode = buttonComponent.querySelector('.arpaButton__rhsIcon');
+                expect(iconNode).toHaveTextContent('person');
+            });
+        });
+
+        await step('Sets an icon', async () => {
+            buttonComponent.setProp('icon', 'labs');
+            await waitFor(() => {
+                const iconNode = buttonComponent.querySelector('.arpaButton__icon');
+                expect(iconNode).toHaveTextContent('labs');
+            });
+        });
+
+        await step('Sets content', async () => {
+            buttonComponent.setProp('content', 'Test button');
+            await waitFor(() => {
+                const contentNode = buttonComponent.querySelector('.arpaButton__content');
+                expect(contentNode).toHaveTextContent('Test button');
+            });
+        });
+
+        await step('Sets a tooltip', async () => {
+            buttonComponent.setProp('tooltip', 'New tooltip');
+            await waitFor(() => {
+                const tooltip = buttonComponent.querySelector('arpa-tooltip');
+                expect(tooltip).toHaveTextContent('New tooltip');
+            });
+        });
+
+        await step('Verifies elements are rendered in the right position', async () => {
+            const button = buttonComponent.querySelector('button');
+            const iconNode = buttonComponent.querySelector('.arpaButton__icon');
+            const rhsIconNode = buttonComponent.querySelector('.arpaButton__rhsIcon');
+            const contentNode = buttonComponent.querySelector('.arpaButton__content');
+
+            expect(button?.firstElementChild).toBe(iconNode);
+            expect(rhsIconNode?.previousElementSibling).toBe(contentNode);
+            expect(contentNode?.previousElementSibling).toBe(iconNode);
+        });
     }
 };
 

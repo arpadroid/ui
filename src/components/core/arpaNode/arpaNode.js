@@ -96,32 +96,50 @@ class ArpaNode extends HTMLElement {
         return getProp(this, name);
     }
 
+    /**
+     * Register the node configuration with the parent element's template nodes in case we need to spawn it later.
+     * @param {ArpaNodeConfigType} config
+     * @param {ArpaNodeAttributesType} attr
+     */
+    registerNodeConfig(config, attr) {
+        const elementPayload = {
+            ...config,
+            attr,
+            childNodes: this._childNodes,
+            locator: {
+                parentNode: this.parentNode,
+                nextSibling: this.nextSibling,
+                previousSibling: this.previousSibling
+            }
+        };
+        this.element?.setNodeConfig(this.getProp('name'), elementPayload);
+    }
+
     renderNode() {
         if (!this.element) return;
         const name = this.getProp('name');
         const elementNodeConfig = this.element.getNodeConfig(name);
-        if (elementNodeConfig && elementNodeConfig?.canRender === false) {
-            return;
-        }
         const config = this.getConfig();
         const { tag } = config;
         const attr = this.getNodeAttributes();
         attr.canRender = config.canRender;
-        const html = renderChild(this.element, name, config, attr);
-        // Register the node configuration with the parent element's template nodes in case we need to spawn it later.
-        this.element.setNodeConfig(name, { ...config, childNodes: this._childNodes });
 
+        this.registerNodeConfig(config, attr);
+        if (elementNodeConfig && elementNodeConfig?.canRender === false) {
+            return;
+        }
+
+        const html = renderChild(this.element, name, config, attr);
         if (tag === 'fragment') {
             this.fragment.append(html);
             return this.fragment;
         }
-
         const node = /** @type {HTMLElement} */ (renderNode(html));
         node?.appendChild(this.fragment);
         return node;
     }
 
-    async connectedCallback() {
+    connectedCallback() {
         this._initializeContent();
         const name = this.getProp('name');
         if (!name) {

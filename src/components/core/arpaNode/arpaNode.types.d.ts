@@ -15,4 +15,9 @@ export type ArpaNodeConfigType = {
     tag?: keyof HTMLElementTagNameMap | 'fragment' | string;
     zoneName?: string;
     zoneTarget?: string;
+    locator?: {
+        parentNode: Node | null;
+        previousSibling: Node | null;
+        nextSibling: Node | null;
+    };
 };

@@ -16,7 +16,7 @@ import { hasProp, getProp, setProp, getArrayProp } from './helper/arpaElementPro
 import { onDestroy, sanitizeAttributes } from './helper/arpaElement.helper';
 import { canRender, hasContent } from './helper/arpaElement.helper';
 import { renderTemplate, getClass, renderChild } from './helper/arpaElementTemplate.helper';
-import { selectTemplates, updateNode } from './helper/arpaElementTemplate.helper';
+import { selectTemplates, spawnNode } from './helper/arpaElementTemplate.helper';
 import { I18nTool, I18n } from '@arpadroid/i18n';
 const { arpaElementI18n } = I18nTool;
 
@@ -39,7 +39,7 @@ class ArpaElement extends HTMLElement {
     templates = {};
     /** @type {Record<string, ArpaNodeConfigType>} */
     templateChildren = {};
-    /** @type {Record<string, (HTMLElement | Node | DocumentFragment) & {arpaNode?: ArpaNode }>} */
+    /** @type {Record<string, (HTMLElement | Node | DocumentFragment | ArpaElement) & {arpaNode?: ArpaNode }>} */
     templateNodes = {};
     /** @type {Record<string, unknown>} */
     templateVars = {};
@@ -274,7 +274,7 @@ class ArpaElement extends HTMLElement {
     }
 
     getTemplateChildren() {
-        return this._config?.templateChildren || {};
+        return this?.templateChildren || {};
     }
 
     hasTemplateChildren() {
@@ -354,7 +354,7 @@ class ArpaElement extends HTMLElement {
     setNode(name, config = {}) {
         if (!name) return;
         this.setNodeConfig(name, config);
-        this.updateNode(name, config);
+        this.spawnNode(name, config);
     }
 
     /**
@@ -363,8 +363,27 @@ class ArpaElement extends HTMLElement {
      * @param {ArpaNodeConfigType} config - The configuration object.
      * @returns {HTMLElement | Node | null}
      */
-    updateNode(name, config) {
-        return updateNode(this, name, config);
+    spawnNode(name, config) {
+        return spawnNode(this, name, config);
+    }
+
+    /**
+     * Attaches a node to the element based on the locator information in the node configuration.
+     * @param {string} name
+     * @param {HTMLElement | Node | DocumentFragment | ArpaElement} node
+     */
+    attachNode(node, name) {
+        const locator = this.templateChildren?.[name]?.locator;
+        const { previousSibling, parentNode, nextSibling } = locator || {};
+        if (previousSibling?.isConnected) {
+            previousSibling.parentNode?.insertBefore(node, previousSibling.nextSibling);
+        } else if (nextSibling?.isConnected) {
+            nextSibling.parentNode?.insertBefore(node, nextSibling);
+        } else if (parentNode?.isConnected) {
+            parentNode.appendChild(node);
+        } else {
+            this.appendChild(node);
+        }
     }
 
     /**
@@ -376,7 +395,11 @@ class ArpaElement extends HTMLElement {
     editNode(name, config = {}) {
         if (!name) return null;
         this.setNodeConfig(name, mergeObjects(this.getNodeConfig(name) || {}, config));
-        return this.updateNode(name, config);
+        const node = this.spawnNode(name, config);
+        if (node && !node?.isConnected) {
+            this.attachNode(node, name);
+        }
+        return node;
     }
 
     /**
@@ -385,7 +408,7 @@ class ArpaElement extends HTMLElement {
      * @returns { ArpaNodeConfigType | undefined}
      */
     getNodeConfig(nodeName) {
-        return this._config?.templateChildren?.[nodeName];
+        return this.templateChildren?.[nodeName];
     }
 
     /**
@@ -403,7 +426,7 @@ class ArpaElement extends HTMLElement {
      * @param {ArpaNodeConfigType} config
      */
     setNodeConfig(nodeName, config = {}) {
-        this._config.templateChildren[nodeName] = config;
+        this.templateChildren[nodeName] = config;
     }
 
     /**
@@ -411,7 +434,7 @@ class ArpaElement extends HTMLElement {
      * @returns {ArpaNodeConfigType | undefined}
      */
     getChildrenConfig() {
-        return this._config?.templateChildren;
+        return this.templateChildren;
     }
 
     // #endregion Set
@@ -506,6 +529,7 @@ class ArpaElement extends HTMLElement {
     setConfig(config = {}) {
         const defaultConfig = this.getDefaultConfig();
         this._config = mergeObjects(defaultConfig, config);
+        this.syncTemplateChildren();
     }
 
     /**
@@ -518,6 +542,11 @@ class ArpaElement extends HTMLElement {
 
     addConfig(config = {}) {
         this._config = mergeObjects(this._config, config);
+        this.syncTemplateChildren();
+    }
+
+    syncTemplateChildren() {
+        this.templateChildren = mergeObjects(this.templateChildren, this._config.templateChildren || {});
     }
 
     /**
@@ -801,9 +830,9 @@ class ArpaElement extends HTMLElement {
     $renderTemplate() {
         const { getTemplate } = this._config;
         let template = typeof getTemplate === 'function' ? getTemplate(this) : this._config?.template;
-        if (!template && this._config?.templateChildren) {
+        if (!template && this.templateChildren) {
             template = '';
-            for (const key of Object.keys(this._config.templateChildren)) {
+            for (const key of Object.keys(this.templateChildren)) {
                 template += `{${key}}`;
             }
         }

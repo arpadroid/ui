@@ -127,16 +127,14 @@ export function evaluateProp(element, expression) {
         .split('||')
         .some(andGroup => andGroup.split('&&').every(token => evaluatePropToken(element, token.trim())));
 }
-
 /**
  * Returns a component property's value, either from attributes or config.
- * @param {ArpaElement | ArpaNode | ArpaZone} element
+ * @param {ArpaElement} element
  * @param {string} name
  * @param {unknown} value
  */
-export function setProp(element, name, value) {
+export function setAttribute(element, name, value) {
     name = dashedToCamel(name);
-    element.setConfig({ [dashedToCamel(name)]: value });
     if (typeof value === 'string' || typeof value === 'number') {
         element.setAttribute(camelToDashed(name), String(value));
     } else if (typeof value === 'boolean') {
@@ -149,5 +147,22 @@ export function setProp(element, name, value) {
         element.setAttribute(camelToDashed(name), value.join(','));
     } else if (value == null) {
         element.removeAttribute(camelToDashed(name));
+    }
+}
+
+/**
+ * Returns a component property's value, either from attributes or config.
+ * @param {ArpaElement} element
+ * @param {string} name
+ * @param {import('../arpaElement.types').ArpaElementContentType} value
+ */
+export async function setProp(element, name, value) {
+    name = dashedToCamel(name);
+    element.setConfig({ [name]: value });
+    setAttribute(element, name, value);
+    element?.promise && (await element.promise);
+    const nodeConfig = element.getNodeConfig(name);
+    if (value && nodeConfig) {
+        element.editNode(name, { content: value });
     }
 }

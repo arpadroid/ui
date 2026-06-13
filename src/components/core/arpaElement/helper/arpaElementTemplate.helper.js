@@ -228,6 +228,22 @@ export function getChildContent(element, name, config = {}) {
 }
 
 /**
+ * Sets the content for a child element.
+ * @param {ArpaElement} node
+ * @param {string} content
+ */
+export function setNodeContent(node, content) {
+    if (typeof content !== 'string') return;
+    if (typeof node?.setContent === 'function') {
+        node.setContent(content);
+    } else if (node.contentNode instanceof HTMLElement) {
+        node.contentNode.innerHTML = content;
+    } else {
+        node.innerHTML = content;
+    }
+}
+
+/**
  * Renders a child element.
  * @param {ArpaElement} element
  * @param {string} name
@@ -253,24 +269,20 @@ export function renderChild(element, name, config = {}, attributes = {}) {
 }
 
 /**
- * Updates a child element.
+ * Updates or creates a child element with the specified configuration.
  * @param {ArpaElement} element
  * @param {string} name
  * @param {ArpaNodeConfigType} config
- * @returns {HTMLElement | Node | null}
+ * @returns {ArpaElement | HTMLElement | Node | null}
  */
-export function updateNode(element, name, config) {
+export function spawnNode(element, name, config) {
     let node = element.templateNodes[name];
-    if (node) {
-        if (node instanceof HTMLElement) {
-            if (typeof config.attr === 'object') {
-                attr(node, config.attr);
-            }
-            if (config.content) {
-                const content = getChildContent(element, name, config);
-                node.innerHTML = content;
-            }
+    if (node instanceof HTMLElement) {
+        if (typeof config.attr === 'object') {
+            attr(node, config.attr);
         }
+        // @ts-ignore
+        setNodeContent(node, getChildContent(element, name, config));
     } else {
         const conf = mergeObjects(element.getNodeConfig(name) || {}, config);
         const renderedNode = renderNode(renderChild(element, name, conf));

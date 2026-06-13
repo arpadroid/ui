@@ -97,6 +97,7 @@ class TruncateText extends ArpaElement {
 
     $onContentSet() {
         this._textContent = this.contentNode?.textContent;
+        
         this.reRender();
     }
 
@@ -115,9 +116,15 @@ class TruncateText extends ArpaElement {
     }
 
     $onComplete() {
+        if (!this.canTruncate()) {
+            const button = this.querySelector('.truncateText__button');
+            button?.remove();
+        }
         if (this.hasProp('isTruncated')) {
             this.setAttribute('is-truncated', '');
             this.truncateText();
+        } else {
+            this.showFullContent();
         }
     }
 
@@ -152,15 +159,15 @@ class TruncateText extends ArpaElement {
         this.truncatedNode.textContent = content;
         this.contentNode?.replaceWith(this.truncatedNode);
         this.ellipsisNode && this.truncatedNode?.after(this.ellipsisNode);
-        this.buttonComponent?.setContent(this.getProp('lblShow'));
-        this.buttonComponent?.setIconRight(this.getProp('icon'));
+        this.buttonComponent?.setProp('content', this.getProp('lblShow'));
+        this.buttonComponent?.setProp('rhsIcon', this.getProp('icon'));
     }
 
     showFullContent() {
         this.truncatedNode?.replaceWith(this.contentNode);
         this.ellipsisNode?.remove();
-        this.buttonComponent?.setContent(this.getProp('lblHide'));
-        this.buttonComponent?.setIconRight(this.getProp('iconHide'));
+        this.buttonComponent?.setProp('content', this.getProp('lblHide'));
+        this.buttonComponent?.setProp('rhsIcon', this.getProp('iconHide'));
     }
 
     toggleTruncate() {

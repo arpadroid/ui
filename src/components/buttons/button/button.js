@@ -187,9 +187,9 @@ class Button extends ArpaElement {
         const icon = this.icon?.getIcon();
         if (!icon) {
             if (['delete', 'delete-outlined'].includes(variant)) {
-                this.setIcon('delete');
+                this.setProp('icon', 'delete');
             } else if (['submit', 'submit-outlined'].includes(variant)) {
-                this.setIcon('check_circle');
+                this.setProp('icon', 'check_circle');
                 this.button?.setAttribute('type', 'submit');
             }
         }
