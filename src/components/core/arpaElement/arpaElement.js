@@ -272,14 +272,14 @@ class ArpaElement extends HTMLElement {
         return templateVars || {};
     }
 
-    getTemplateChildren() {
+    getNodesConfig() {
         return this?.nodesConfig || {};
     }
 
     hasTemplateChildren() {
         return (
             Object.keys(this.nodes || {}).length > 0 ||
-            Object.keys(this.getTemplateChildren()).length > 0
+            Object.keys(this.getNodesConfig()).length > 0
         );
     }
 
