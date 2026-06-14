@@ -12,6 +12,7 @@
     .icon {
         color: var(--grey-600);
     }
+
     &:hover,
     &:focus {
         .icon {

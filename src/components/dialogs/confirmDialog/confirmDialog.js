@@ -78,15 +78,13 @@ class ConfirmDialog extends Dialog {
         /** @type {Button | null} */
         this.confirmBtn = this.querySelector('.confirmDialog__confirmBtn');
         this.confirmBtn?.promise?.then(() => {
-            listen(this.confirmBtn, 'click', this.confirm);
+            listen(this.confirmBtn?.button, 'click', this.confirm);
         });
         /** @type {Button | null} */
-        this.cancelBtnComponent = this.querySelector('.confirmDialog__cancelBtn');
-        this.cancelBtnComponent?.promise?.then(() => {
-            this.cancelBtn = this.cancelBtnComponent?.button;
-            this.cancelBtn?.focus();
-            listen(this.cancelBtn, 'click', this.cancel);
-            this.cancelBtn?.addEventListener('click', this.cancel);
+        this.cancelBtn = this.querySelector('.confirmDialog__cancelBtn');
+        this.cancelBtn?.promise?.then(() => {
+            this.cancelBtn?.button?.focus();
+            listen(this.cancelBtn?.button, 'click', this.cancel);
         });
     }
 }
