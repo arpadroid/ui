@@ -3,12 +3,14 @@
  * @typedef {import('@storybook/web-components-vite').Meta<DeleteDialogConfigType>} Meta
  * @typedef {import('@storybook/web-components-vite').StoryObj<DeleteDialogConfigType>} Story
  * @typedef {import('@storybook/web-components-vite').StoryContext} StoryContext
+ * @typedef {import('./deleteDialog').default} DeleteDialog
+ * @typedef {import('../dialogs/dialogs').default} Dialogs
  */
 
 import { expect, within, waitFor } from 'storybook/test';
 import { renderDialog } from '../dialog/dialogStoryUtil';
 import ConfirmDialogStory from '../confirmDialog/confirmDialog.stories';
-import { playSetup } from './deleteDialog.stories.util';
+import { defaultParams, testParams } from '@arpadroid/module/storybook/helper';
 
 const dialogText = 'Are you sure you want to delete this item?';
 const tagName = 'delete-dialog';
@@ -31,18 +33,25 @@ const DeleteDialogStory = {
 
 /** @type {Story} */
 export const Default = {
-    name: 'Render'
+    name: 'Render',
+    parameters: defaultParams
 };
 
 /** @type {Story} */
 export const Test = {
-    parameters: {},
+    parameters: testParams,
     args: {
         id: 'delete-test'
     },
     play: async context => {
-        const { canvasElement, step, args } = context;
-        const { dialogNode, dialogsNode } = await playSetup(canvasElement);
+        const { step, args } = context;
+
+        await customElements.whenDefined(tagName);
+        await customElements.whenDefined('arpa-dialogs');
+        const dialogsNode = /** @type {Dialogs} */ (document.querySelector('arpa-dialogs'));
+        const dialogNode = /** @type {DeleteDialog} */ (document.querySelector(tagName));
+        await dialogNode?.promise;
+
         const dialog = within(dialogNode);
         dialogNode.on('confirm', args['@onConfirm']);
         dialogNode.on('cancel', args['@onCancel']);
@@ -78,7 +87,7 @@ export const Test = {
             });
         });
 
-        dialogNode.open();
+        await dialogNode.open();
     }
 };
 

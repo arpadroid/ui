@@ -40,9 +40,9 @@ export const renderDialog = (args, dialogType = 'arpa-dialog') => {
     return html`
         <arpa-dialogs>
             <${dialogType} ${attrString(args)}>
-                <zone name="title">${zoneTitle || ''}</zone>
-                <zone name="content">${zoneContent || ''}</zone>
-                <zone name="footer">${zoneFooter || ''}</zone>
+                <arpa-zone name="title">${zoneTitle || ''}</arpa-zone>
+                <arpa-zone name="content">${zoneContent || ''}</arpa-zone>
+                <arpa-zone name="footer">${zoneFooter || ''}</arpa-zone>
             </${dialogType}>
         </arpa-dialogs>
     `;

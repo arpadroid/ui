@@ -1,9 +1,7 @@
-/* eslint-disable sonarjs/no-duplicate-string */
 /**
  * @typedef {import('./confirmDialog.types.js').ConfirmDialogConfigType} ConfirmDialogConfigType
  * @typedef {import('@storybook/web-components-vite').Meta<ConfirmDialogConfigType & {zoneContent?: string}>} Meta
  * @typedef {import('@storybook/web-components-vite').StoryObj<ConfirmDialogConfigType>} Story
- * @typedef {import('@storybook/web-components-vite').StoryContext<ConfirmDialogConfigType>} StoryContext
  * @typedef {import('../dialogs/dialogs').default} Dialogs
  * @typedef {import('../dialog/dialog').default} Dialog
  * @typedef {import('./confirmDialog').default} ConfirmDialog
@@ -11,6 +9,7 @@
 import { waitFor, expect, within, fn } from 'storybook/test';
 import DialogStory from '../dialog/dialog.stories';
 import { renderDialog } from '../dialog/dialogStoryUtil';
+import { defaultParams, testParams } from '@arpadroid/module/storybook/helper';
 
 const dialogText = 'Are you sure you want to proceed?';
 
@@ -33,7 +32,7 @@ const playSetup = async canvasElement => {
 /** @type {Meta} */
 const ConfirmDialogStory = {
     ...DialogStory,
-    title: 'UI/Dialogs/Confirm',
+    title: 'UI/Dialogs/Confirm Dialog',
     component: 'confirm-dialog',
     args: {
         ...DialogStory.args,
@@ -48,20 +47,13 @@ const ConfirmDialogStory = {
 };
 
 /** @type {Story} */
-export const Default = {
-    name: 'Render',
-    parameters: {},
-    args: {},
-    play: async ({ canvasElement, args }) => {
-        const { dialogNode } = await playSetup(canvasElement);
-        dialogNode?.on('confirm', args['@onConfirm']);
-        dialogNode?.on('cancel', args['@onCancel']);
-    }
+export const Render = {
+    parameters: defaultParams
 };
 
 /** @type {Story} */
 export const Test = {
-    parameters: {},
+    parameters: testParams,
     args: {
         id: 'confirm-test',
         title: 'Confirm Action'

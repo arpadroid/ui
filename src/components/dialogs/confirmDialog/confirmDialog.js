@@ -2,16 +2,13 @@
  * @typedef {import('./confirmDialog.types.js').ConfirmDialogConfigType} ConfirmDialogConfigType
  * @typedef {import('../../buttons/button/button.js').default} Button
  */
-import { defineCustomElement } from '@arpadroid/tools';
+import { defineCustomElement, mergeObjects, listen } from '@arpadroid/tools';
 import Dialog from '../dialog/dialog.js';
 
 const html = String.raw;
 class ConfirmDialog extends Dialog {
     /** @type {ConfirmDialogConfigType} */
     _config = this._config;
-    ////////////////////////////
-    // #region Initialization
-    ////////////////////////////
 
     /**
      * Returns the default component config.
@@ -20,39 +17,23 @@ class ConfirmDialog extends Dialog {
     getDefaultConfig() {
         this.bind('confirm', 'cancel', 'open', 'close');
         this.i18nKey = 'ui.confirmDialog';
-        return {
-            id: 'confirm-dialog',
-            icon: 'warning',
-            canClose: false,
-            payload: undefined,
-            confirmIcon: 'check_circle',
-            cancelIcon: 'cancel',
+        /** @type {ConfirmDialogConfigType} */
+        const config = {
             attributes: {
                 variant: 'confirm',
                 role: 'alertdialog',
                 size: 'small'
-            }
+            },
+            cancelIcon: 'cancel',
+            canClose: false,
+            confirmIcon: 'check_circle',
+            icon: 'warning',
+            id: 'confirm-dialog',
+            lblCancel: '{i18n:lblCancel}',
+            lblConfirm: '{i18n:lblConfirm}',
+            payload: undefined
         };
-    }
-
-    async $initializeNodes() {
-        await super.$initializeNodes();
-        this.confirmBtn = this.querySelector('.confirmDialog__confirmBtn');
-        this.confirmBtn?.addEventListener('click', this.confirm);
-        /** @type {Button | null} */
-        this.cancelBtnComponent = this.querySelector('.confirmDialog__cancelBtn');
-        this._initializeCancelBtn();
-        return true;
-    }
-
-    async _initializeCancelBtn() {
-        await customElements.whenDefined('arpa-button');
-        await this.cancelBtnComponent?.promise;
-        this.cancelBtn = this.cancelBtnComponent?.button;
-        if (this.cancelBtn instanceof HTMLButtonElement) {
-            this.cancelBtn?.focus();
-            this.cancelBtn.addEventListener('click', this.cancel);
-        }
+        return mergeObjects(super.getDefaultConfig(), config);
     }
 
     /**
@@ -76,31 +57,37 @@ class ConfirmDialog extends Dialog {
         this.close();
     }
 
-    /**
-     * Renders the dialog footer.
-     * @param {string} [confirmIcon]
-     * @param {string} [lblConfirm]
-     * @param {string} [cancelIcon]
-     * @param {string} [lblCancel]
-     * @returns {string}
-     */
-    renderFooter(
-        confirmIcon = this.getProp('confirm-icon'),
-        lblConfirm = this.i18n('lblConfirm'),
-        cancelIcon = this.getProp('cancel-icon'),
-        lblCancel = this.i18n('lblCancel')
-    ) {
-        const content = html`<div class="dialog__controls">
-            <arpa-button class="confirmDialog__cancelBtn" icon="${cancelIcon}"> ${lblCancel} </arpa-button>
-            <arpa-button class="confirmDialog__confirmBtn" icon="${confirmIcon}"> ${lblConfirm} </arpa-button>
-        </div>`;
-        return super.renderFooter(content);
+    $renderTemplate() {
+        return html`
+            ${super.$renderTemplate()}
+            <arpa-zone name="footer">
+                <div class="dialog__controls">
+                    <arpa-button class="confirmDialog__cancelBtn" icon="{cancelIcon}">
+                        {lblCancel}
+                    </arpa-button>
+                    <arpa-button class="confirmDialog__confirmBtn" icon="{confirmIcon}">
+                        {lblConfirm}
+                    </arpa-button>
+                </div>
+            </arpa-zone>
+        `;
     }
 
-    $onDestroy() {
-        super.$onDestroy();
-        this.confirmBtn?.removeEventListener('click', this.confirm);
-        this.cancelBtn?.removeEventListener('click', this.cancel);
+    async $onComplete() {
+        super.$onComplete();
+        /** @type {Button | null} */
+        this.confirmBtn = this.querySelector('.confirmDialog__confirmBtn');
+        this.confirmBtn?.promise?.then(() => {
+            listen(this.confirmBtn, 'click', this.confirm);
+        });
+        /** @type {Button | null} */
+        this.cancelBtnComponent = this.querySelector('.confirmDialog__cancelBtn');
+        this.cancelBtnComponent?.promise?.then(() => {
+            this.cancelBtn = this.cancelBtnComponent?.button;
+            this.cancelBtn?.focus();
+            listen(this.cancelBtn, 'click', this.cancel);
+            this.cancelBtn?.addEventListener('click', this.cancel);
+        });
     }
 }
 

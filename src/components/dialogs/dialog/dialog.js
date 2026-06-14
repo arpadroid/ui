@@ -6,7 +6,6 @@
 import ArpaElement from '../../core/arpaElement/arpaElement.js';
 import { observerMixin, renderNode } from '@arpadroid/tools';
 import { attrString, dummySignal, defineCustomElement, listen } from '@arpadroid/tools';
-import { processTemplate } from '../../core/arpaElement/helper/arpaElementTemplate.helper.js';
 
 const html = String.raw;
 class Dialog extends ArpaElement {
@@ -26,6 +25,7 @@ class Dialog extends ArpaElement {
         /** @type {DialogConfigType} */
         const config = {
             open: false,
+            className: 'dialog',
             persist: false,
             variant: 'default',
             canClose: true,
@@ -98,10 +98,6 @@ class Dialog extends ArpaElement {
         }
     }
 
-    getTagName() {
-        return 'arpa-dialog';
-    }
-
     async _initializeButton() {
         const button = await this.getButton();
         button && listen(button, 'click', this.open);
@@ -156,10 +152,6 @@ class Dialog extends ArpaElement {
         return this.hasContent('title');
     }
 
-    hasFooter() {
-        return this.hasContent('footer');
-    }
-
     hasHeader() {
         return this.hasTitle() || this.canClose() || this.hasContent('header');
     }
@@ -177,84 +169,39 @@ class Dialog extends ArpaElement {
     // #region Rendering
     ////////////////////////////
 
-    getTemplateVars() {
-        return {
-            header: this.renderHeader(),
-            content: this.renderContent(),
-            footer: this.renderFooter(),
-            headerContent: this.renderHeaderContent()
-        };
-    }
-
     _preRender() {
         super._preRender();
         const { variant } = this.getProperties('variant');
-        this.classList.add('dialog');
         variant && this.classList.add(`dialog--${variant}`);
     }
 
     $renderTemplate() {
-        return html`<div class="dialog__wrapper">{header}{content}{footer}</div>`;
-    }
-
-    renderTitle() {
-        const { title, icon } = this.getProperties('title', 'icon');
-        if (!this.hasTitle()) return '';
-        return html`<h2 class="dialog__title" zone="title">
-            ${icon ? html`<arpa-icon class="dialog__icon">${icon}</arpa-icon>` : ''}
-            <span class="dialog__titleText" zone="title-text">${title || ''}</span>
-        </h2>`;
-    }
-
-    renderHeaderContent() {
-        if (!this.hasTitle() && !this.hasContent('icon')) return '';
-        return processTemplate(
-            html`<div class="dialog__headerContent" zone="header">${this.renderTitle() || ''}</div>`,
-            this.templateVars,
-            this
-        );
-    }
-
-    renderHeader() {
-        if (!this.hasHeader()) return '';
-
-        return html`
-            <header class="dialog__header">
-                {headerContent}
-                <div class="dialog__headerActions" zone="header-actions">
-                    ${(this.canClose() &&
-                        html`<icon-button
-                            variant="minimal"
-                            class="dialog__close iconButton--mini"
-                            icon="close"
-                        ></icon-button>`) ||
-                    ''}
-                </div>
-            </header>
-        `;
-    }
-
-    renderContent() {
-        const content = this.getProp('content') || '';
-        return html`
-            ${(this.hasContent('content-top') &&
-                html`<div class="dialog__contentTop" zone="content-top"></div>`) ||
-            ''}
+        return html`<div class="dialog__wrapper">
+            <arpa-node tag="header" name="header" can-render="hasHeader()">
+                <arpa-node can-render="hasTitle() || icon" name="headerContent" zone="header">
+                    <h2 class="dialog__title" zone="title">
+                        <arpa-node name="icon" tag="arpa-icon"></arpa-node>
+                        <arpa-node name="titleText" zone="title-text">{title}</arpa-node>
+                    </h2>
+                </arpa-node>
+                <arpa-node name="headerActions">
+                    <arpa-node
+                        tag="icon-button"
+                        can-render="canClose"
+                        variant="minimal"
+                        name="close"
+                        class="dialog__close iconButton--mini"
+                        icon="close"
+                    ></arpa-node>
+                </arpa-node>
+            </arpa-node>
+            <arpa-node name="contentTop"></arpa-node>
             <div class="dialog__body" zone="content-wrapper">
-                ${(this.hasPreloader() &&
-                    html`<circular-spinner class="dialog__preloader"></circular-spinner>`) ||
-                ''}
-                <div class="dialog__content" zone="content">${content}</div>
+                <arpa-node tag="circular-spinner" name="preloader" can-render="hasPreloader()"></arpa-node>
+                <arpa-node name="content" is-content></arpa-node>
             </div>
-        `;
-    }
-
-    renderFooter(content = this._config?.footer || '') {
-        return (
-            ((this.hasFooter() || content) &&
-                html`<footer class="dialog__footer" zone="footer">${content || ''}</footer>`) ||
-            ''
-        );
+            <arpa-node tag="footer" name="footer"> </arpa-node>
+        </div>`;
     }
 
     async $initializeNodes() {

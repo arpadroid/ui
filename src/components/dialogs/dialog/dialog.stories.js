@@ -86,18 +86,20 @@ export const ButtonDialog = {
         title: undefined
     },
     render: args => {
-        return html`<arpa-dialogs id="button-dialogs"></arpa-dialogs>
+        return html`
+            <arpa-dialogs id="button-dialogs"> </arpa-dialogs>
             <arpa-button variant="primary" id="openDialog">
                 Open Dialog
                 <arpa-dialog dialogs-id="button-dialogs" ${attrString(args)}>
-                    <zone name="title"> Button Dialog </zone>
-                    <zone name="content">
+                    <arpa-zone name="title"> Button Dialog </arpa-zone>
+                    <arpa-zone name="content">
                         Adding a dialog inside a button will automatically open the dialog when the button is
                         clicked. The dialog doesn't physically exist inside the button, but it is appended to
                         the dialogs component. <br />See the usage panel for more information.
-                    </zone>
+                    </arpa-zone>
                 </arpa-dialog>
-            </arpa-button>`;
+            </arpa-button>
+        `;
     }
 };
 

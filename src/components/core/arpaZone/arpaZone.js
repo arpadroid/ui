@@ -60,6 +60,31 @@ class ArpaZone extends HTMLElement {
         return getProp(this, name);
     }
 
+    async findZoneElement(element = this.element) {
+        const containers = /** @type {(HTMLElement)[]} */ [...Object.values(element?.nodes || {})];
+        for (const container of containers) {
+            if (!container || !(container instanceof HTMLElement)) continue;
+            if (container instanceof HTMLElement && 'promise' in container) {
+                await container.promise;
+            }
+            // @ts-ignore
+            const zoneElement = this.getZoneElement(container);
+            if (zoneElement) {
+                return zoneElement;
+            }
+        }
+    }
+
+    /**
+     * Returns the zone container element for this zone.
+     * @param {ArpaElement | null} [container]
+     * @returns {HTMLElement | null | undefined}
+     */
+    getZoneElement(container = this.element) {
+        const zoneName = this.getProp('name');
+        return container?.querySelector(`[zone="${zoneName}"]`);
+    }
+
     async connectedCallback() {
         this._initializeZone();
         const name = this.getProp('name');
@@ -72,17 +97,21 @@ class ArpaZone extends HTMLElement {
             return;
         }
         await this.element.promise;
-        const zoneName = this.getProp('name');
-        /** @type { ArpaElement | null} */
-        let zoneElement = this.element.querySelector(`[zone="${zoneName}"]`);
+        let zoneElement = /** @type { ArpaElement | null } */ (
+            this.getZoneElement() || (await this.findZoneElement())
+        );
+
         const zoneTarget = zoneElement?.getAttribute('zone-target');
-        if (zoneTarget) {
+        if (zoneElement && zoneTarget) {
             zoneElement?.promise && (await zoneElement?.promise);
             const zoneTargetNode = zoneElement?.querySelector(zoneTarget);
             // @ts-ignore
             zoneTargetNode && (zoneElement = zoneTargetNode);
         }
         zoneElement?.append(this.fragment);
+        if (!zoneElement) {
+            console.error(`No zone element found for zone "${name}". `, zoneElement, zoneTarget);
+        }
     }
 }
 
