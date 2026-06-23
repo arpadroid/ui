@@ -5,7 +5,7 @@
  * @typedef {import('../tooltip/tooltip.js').default} Tooltip
  * @typedef {import('../icon/icon.js').default} Icon
  */
-import { attrString, classNames, attr, defineCustomElement, listen } from '@arpadroid/tools';
+import { classNames, attr, defineCustomElement, listen, $attr } from '@arpadroid/tools';
 import { lazyLoad as lazyLoader, clearLazyImage, hasLoadedSource, editURL, mapHTML } from '@arpadroid/tools';
 import { eventContainsFiles, addCssRule, observerMixin } from '@arpadroid/tools';
 import { dummySignal, dummyListener, dummyOff } from '@arpadroid/tools';
@@ -56,14 +56,12 @@ class ArpaImage extends ArpaElement {
             highResSrc: '',
             icon: 'crop_original',
             iconBroken: 'broken_image',
-            imageAttr: {},
             lazyLoad: false,
             lazyLoaderBatchSize: 5,
             hasNativeLazy: false,
             isDraggable: false,
             loadedClass: 'image--loaded',
             onError: undefined,
-            //onInput: undefined,
             onLoad: undefined,
             preventUpscale: false,
             previewTitle: '',
@@ -84,42 +82,29 @@ class ArpaImage extends ArpaElement {
                 adaptive: '100%'
             },
             // i18n
-            errLoad: this.i18n('errLoad'),
-            lblLoadingImage: this.i18n('lblLoadingImage'),
-            txtNoImage: this.i18n('txtNoImage'),
-            txtUploadImage: this.i18n('txtUploadImage')
+            errLoad: '{i18n:errLoad}',
+            lblLoadingImage: '{i18n:lblLoadingImage}',
+            txtNoImage: '{i18n:txtNoImage}',
+            txtUploadImage: '{i18n:txtUploadImage}'
         };
-        return /** @type {ImageConfigType} */ (super.getDefaultConfig(config));
+        return super.getDefaultConfig(config);
     }
 
     // #endregion - INITIALIZATION
-
-    ///////////////////////
-    // #region - Get
-    ///////////////////////
-
-    getLoadedClass() {
-        return this.getProp('loaded-class');
-    }
-
-    getLoadingClass() {
-        return this.getProp('loading-class');
-    }
-
-    getErrorClass() {
-        return this.getProp('error-class');
-    }
-
     /**
      * Sets the source of the image.
      * @param {string} src - The source URL of the image.
      */
-    setSource(src) {
+    setSource(src = '') {
         this.src = src;
         if (this.image instanceof HTMLImageElement) {
             this.image.src = src;
         }
     }
+
+    ///////////////////////
+    // #region - Get
+    ///////////////////////
 
     // #region - - Size
 
@@ -129,7 +114,7 @@ class ArpaImage extends ArpaElement {
      */
     getDefaultSize() {
         const sizes = this.getArrayProp('sizes');
-        const defaultSize = this.getProp('default-size');
+        const defaultSize = this.getProp('defaultSize');
         const sizeMap = this._config?.sizeMap;
         // @ts-ignore
         const size = Number(sizeMap?.[defaultSize]);
@@ -181,7 +166,7 @@ class ArpaImage extends ArpaElement {
         }
         this._hasLoaded = false;
         this.removeSizeClass();
-        this.classList.remove(this.getLoadedClass());
+        this.classList.remove(this.getProp('loadedClass'));
         width && (this._config.width = width);
         height && (this._config.height = height);
         this.setAttribute('size', String(width));
@@ -255,29 +240,19 @@ class ArpaImage extends ArpaElement {
     }
 
     hasPreloader() {
-        return this.getProp('has-preloader') && this.isLoading() && !this.hasError();
+        return this.getProp('hasPreloader') && this.isLoading() && !this.hasError();
     }
 
     hasLoaded() {
         return this._hasLoaded;
     }
 
-    hasDropArea() {
-        return this.hasProp('has-drop-area');
-    }
-
     hasThumbnail() {
-        return (
-            this.hasProp('has-thumbnail') && (!this.hasLoaded() || !this.getSource() || this.hasError())
-        );
+        return this.hasProp('hasThumbnail') && (!this.hasLoaded() || !this.getSource() || this.hasError());
     }
 
     hasLazyLoad() {
-        return this.hasProp('lazy-load') && !hasLoadedSource(this.getImageURL());
-    }
-
-    hasNativeLazy() {
-        return this.hasProp('has-native-lazy');
+        return this.hasProp('lazyLoad') && !hasLoadedSource(this.getImageURL());
     }
 
     /**
@@ -285,7 +260,7 @@ class ArpaImage extends ArpaElement {
      * @returns {boolean} - True if the component has a high-resolution preview image; otherwise, false.
      */
     hasPreview() {
-        return Boolean(this._config?.highResSrc || this.hasProp('has-preview'));
+        return Boolean(this.getProp('highResSrc') || this.hasProp('hasPreview'));
     }
 
     // #endregion - Has
@@ -298,21 +273,12 @@ class ArpaImage extends ArpaElement {
     }
 
     /**
-     * Preloads the component.
-     */
-    preload() {
-        this.src = null;
-        this.isUploading = true;
-        this.update();
-    }
-
-    /**
      * Stops preloading the component.
      * @param {string} addClass - The class to add to the component.
      */
-    stopPreloading(addClass = this.getLoadedClass()) {
+    stopPreloading(addClass = this.getProp('loadedClass')) {
         !this.classList.contains(addClass) && this.classList.add(addClass);
-        setTimeout(() => this.querySelector('circular-spinner')?.remove(), 1000);
+        setTimeout(() => this.querySelector('circular-spinner')?.remove(), 30);
     }
 
     /**
@@ -348,75 +314,73 @@ class ArpaImage extends ArpaElement {
 
     $renderTemplate() {
         this.initializeStyles();
-        this.isLoading() && this.classList.add(this.getLoadingClass());
+        this.isLoading() && this.classList.add(this.getProp('loadingClass'));
         const hasCaption = this.hasContent('caption');
+        const previewSrc = this.getProp('highResSrc') || this.getImageURL(2400, 1600, 80);
         const hasPreview = this.hasPreview();
+        const src = this.getImageURL();
         if (hasPreview) {
             this._config.hasThumbnail = false;
         }
-        const openButton = (hasPreview && '<button class="image__previewButton" type="button">') || '';
-        const closeButton = (hasPreview && html`</button>`) || '';
-        const openCaption = (hasCaption && '<figure>') || '';
-        const closeCaption = (hasCaption && '</figure>') || '';
-        return html`${openButton}${openCaption}{picture}{caption}{preview}${closeCaption}${closeButton}`;
-    }
+        return html`
+            <!-- Open Button -->
+            ${hasPreview ? '<button class="image__previewButton" type="button">' : ''}
+            <!-- Open Figure -->
+            ${hasCaption ? '<figure>' : ''}
+            <picture>
+                <arpa-node
+                    tag="arpa-tooltip"
+                    name="thumbnail"
+                    class="image__thumbnail"
+                    icon="{icon}"
+                    can-render="hasPreview() || hasThumbnail()"
+                >
+                    ${this.hasError() ? '{errLoad}' : '{txtNoImage}'}
+                </arpa-node>
+                <arpa-node
+                    tag="circular-spinner"
+                    name="preloader"
+                    aria-label="${this.getText('lblLoadingImage')}"
+                    can-render="hasPreloader()"
+                ></arpa-node>
 
-    getTemplateVars() {
-        return {
-            preloader: this.renderPreloader(),
-            picture: this.renderPicture(),
-            thumbnail: this.renderThumbnail(),
-            dropArea: this.renderDropArea(),
-            src: this.getProp('src'),
-            alt: this.getProp('alt'),
-            icon: this.getProp('icon'),
-            sources: this.renderSources(),
-            image: this.renderImage(),
-            caption: this.renderCaption(),
-            preview: this.renderPreview()
-        };
-    }
-
-    getPreviewTitle() {
-        return this.getProp('preview-title') || '';
-    }
-
-    renderPreview() {
-        if (!this.hasPreview()) return '';
-        const src = this.getProp('high-res-src') || this.getImageURL(2400, 1600, 80);
-        return html`<image-preview
-            ${attrString({
-                image: src,
-                title: this.getPreviewTitle()
-            })}
-        ></image-preview>`;
-    }
-
-    renderCaption() {
-        const caption = this.getProp('caption') || '';
-        return this.hasContent('caption') ? html`<figcaption zone="caption">${caption}</figcaption>` : '';
-    }
-
-    renderPicture() {
-        return html`<picture>{thumbnail}{preloader}{sources}{image}{dropArea}</picture>`;
+                {renderSources()}
+                ${src
+                    ? html`<img alt="{alt}" draggable="{isDraggable}" ${$attr(this.getImageAttributes())} />`
+                    : ''}
+                <arpa-node
+                    tag="drop-area"
+                    name="dropArea"
+                    label="${this.getText('txtUploadImage')}"
+                    can-render="hasDropArea"
+                >
+                </arpa-node>
+            </picture>
+            <arpa-node tag="figcaption" name="caption" can-render="caption"></arpa-node>
+            <arpa-node
+                tag="image-preview"
+                name="preview"
+                title="{previewTitle}"
+                image="${previewSrc}"
+                can-render="hasPreview()"
+            ></arpa-node>
+            ${hasCaption ? html`</figure>` : ''}
+            <!-- Close Button -->
+            ${hasPreview ? html`</button>` : ''}
+        `;
     }
 
     getImageAttributes() {
         const src = this.getImageURL();
         const lazyLoad = this.hasLazyLoad();
-        const hasNativeLazy = this.hasNativeLazy();
+        const hasNativeLazy = this.getProp('hasNativeLazy');
         return {
-            alt: this.getProp('alt'),
             class: classNames({ 'image--lazy': Boolean(lazyLoad) ? 'image--lazy' : false }),
             'data-src': lazyLoad && !hasNativeLazy ? src : '',
             lazyLoad: lazyLoad && !hasNativeLazy,
             loading: (lazyLoad && hasNativeLazy && 'lazy') || undefined,
             src: lazyLoad && !hasNativeLazy ? '' : src
         };
-    }
-
-    renderImage(attr = this.getImageAttributes(), src = this.getImageURL()) {
-        return src ? html`<img draggable="${this.getProp('is-draggable')}" ${attrString(attr)} />` : '';
     }
 
     renderSources() {
@@ -439,33 +403,11 @@ class ArpaImage extends ArpaElement {
         return mapHTML(sizes, size => render(sizes, size));
     }
 
-    renderPreloader() {
-        if (!this.hasPreloader()) return '';
-        return html`<circular-spinner
-            aria-label="${this.getText('lblLoadingImage')}"
-            variant="small"
-        ></circular-spinner>`;
-    }
-
-    renderThumbnail(text = this.hasError() ? this.getProp('errLoad') : this.getProp('txtNoImage')) {
-        if (!this.hasThumbnail() && !this.hasPreview()) return '';
-        return html`<arpa-tooltip class="image__thumbnail" icon="${this.getProp('icon')}">
-            <zone name="tooltip-content">${text}</zone>
-        </arpa-tooltip>`;
-    }
-
     // #endregion - Rendering
 
     //////////////////////////
     // #region - Drop Area
     //////////////////////////
-
-    renderDropArea() {
-        if (!this.hasDropArea()) return '';
-        return html`<drop-area>
-            <zone name="label">${this.getProp('txtUploadImage')}</zone>
-        </drop-area>`;
-    }
 
     /**
      * Initializes the drop area for the component.
@@ -475,8 +417,8 @@ class ArpaImage extends ArpaElement {
         this.dropArea = this.querySelector('drop-area');
         if (!this.dropArea) return;
         this.dropArea.addConfig({
-            hasInput: this.getProp('has-drop-area-input'),
-            handler: this.getProp('drop-area-handler') || this
+            hasInput: this.getProp('hasDropAreaInput'),
+            handler: this.getProp('dropAreaHandler') || this
         });
         await this.dropArea?.promise;
         this.dropArea?.on('drop', this._onInput);
@@ -575,7 +517,7 @@ class ArpaImage extends ArpaElement {
 
     async $initializeNodes() {
         await super.$initializeNodes();
-        const imagePosition = this.getProp('image-position');
+        const imagePosition = this.getProp('imagePosition');
         this.image && imagePosition && (this.image.style.objectPosition = imagePosition);
         return true;
     }
@@ -587,11 +529,11 @@ class ArpaImage extends ArpaElement {
         this.thumbnail = this.querySelector('.image__thumbnail');
         /** @type {HTMLPictureElement | null} */
         this.picture = this.querySelector('picture');
-        this.hasDropArea() && this.initializeDropArea();
+        this.hasProp('hasDropArea') && this.initializeDropArea();
         this.initializeImage();
-        const batchSize = this.getProp('lazy-loader-batch-size');
+        const batchSize = this.getProp('lazyLoaderBatchSize');
         this.hasLazyLoad() &&
-            !this.hasNativeLazy() &&
+            !this.getProp('hasNativeLazy') &&
             this.image &&
             lazyLoader(this.image, Number(batchSize));
     }
@@ -601,7 +543,7 @@ class ArpaImage extends ArpaElement {
         this._hasRendered = false;
         this._hasLoaded = false;
         this._hasError = false;
-        const hasNativeLazy = this.hasNativeLazy();
+        const hasNativeLazy = this.getProp('hasNativeLazy');
         this.image?.removeEventListener('load', this._onLoad);
         this.image?.removeEventListener('error', this._onError);
         if (this.hasLazyLoad() && this.image instanceof HTMLImageElement) {
@@ -647,21 +589,13 @@ class ArpaImage extends ArpaElement {
         typeof onLoad === 'function' && onLoad(event, this);
         this._hasLoaded = true;
         this.stopPreloading();
-        this.classList.remove(this.getLoadingClass());
-        this.classList.remove(this.getErrorClass());
-        if (
-            this.picture &&
-            this.image &&
-            this.hasProp('prevent-upscale') &&
-            this.image?.naturalWidth > 0
-        ) {
+        this.classList.remove(this.getProp('loadingClass'));
+        this.classList.remove(this.getProp('errorClass'));
+        if (this.picture && this.image && this.hasProp('preventUpscale') && this.image?.naturalWidth > 0) {
             this.picture.style.maxWidth = this.image.naturalWidth + 'px';
             this.picture.style.maxHeight = this.image.naturalHeight + 'px';
         }
-        this.signal('load', {
-            image: this.image,
-            event
-        });
+        this.signal('load', { image: this.image, event });
     }
 
     /**
@@ -673,13 +607,9 @@ class ArpaImage extends ArpaElement {
         this._hasLoaded = true;
         const { onError } = this._config;
         typeof onError === 'function' && onError(event, this);
-        this.stopPreloading(this.getErrorClass());
-        this.classList.remove(this.getLoadingClass());
-
-        this.signal('error', {
-            image: this.image,
-            event
-        });
+        this.stopPreloading(this.getProp('errorClass'));
+        this.classList.remove(this.getProp('loadingClass'));
+        this.signal('error', { image: this.image, event });
         const message = this.getProp('errLoad');
         this.thumbnail?.setContent(message);
         /** @type {Icon | null | undefined} */

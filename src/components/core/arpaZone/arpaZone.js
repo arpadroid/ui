@@ -5,6 +5,9 @@
 import { defineCustomElement, mergeObjects } from '@arpadroid/tools';
 import { getArpaElement } from '../arpaElement/helper/arpaElement.helper';
 import { getProp } from '../arpaElement/helper/arpaElementProps.helper.js';
+
+export const LOST_ZONES = new Set();
+
 class ArpaZone extends HTMLElement {
     /**
      * Creates an instance of ArpaZone.
@@ -109,8 +112,16 @@ class ArpaZone extends HTMLElement {
             zoneTargetNode && (zoneElement = zoneTargetNode);
         }
         zoneElement?.append(this.fragment);
+
         if (!zoneElement) {
-            console.error(`No zone element found for zone "${name}". `, zoneElement, zoneTarget);
+            LOST_ZONES.add(name);
+            console.error(`No zone element found for zone "${name}". `, {
+                zoneElement,
+                zoneTarget,
+                element: this.element,
+                html: this.fragment?.textContent,
+                parent: this.parentNode
+            });
         }
     }
 }
