@@ -2,7 +2,6 @@
  * @typedef {import('./deleteDialog.types').DeleteDialogConfigType} DeleteDialogConfigType
  * @typedef {import('@storybook/web-components-vite').Meta<DeleteDialogConfigType>} Meta
  * @typedef {import('@storybook/web-components-vite').StoryObj<DeleteDialogConfigType>} Story
- * @typedef {import('@storybook/web-components-vite').StoryContext} StoryContext
  * @typedef {import('./deleteDialog').default} DeleteDialog
  * @typedef {import('../dialogs/dialogs').default} Dialogs
  */

@@ -6,9 +6,10 @@
 import { expect, waitFor } from 'storybook/test';
 import ArpaElement from '../arpaElement';
 import Usage from './arpaElement.default.usage';
-import { TestElement } from './arpaElement.stories.util';
+import TestElement from './testElement.js';
 
 const html = String.raw;
+
 /** @type {ArpaElementMetaType} */
 const ArpaElementStory = {
     title: 'UI/Core/ArpaElement',

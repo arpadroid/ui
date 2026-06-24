@@ -52,8 +52,13 @@ class DropArea extends ArpaElement {
                     <arpa-icon class="dropArea__icon">{icon}</arpa-icon>
                     <p class="dropArea__label" zone="label">{label}</p>
                 </div>
-                <arpa-node can-render="hasInput" tag="input" name="input" accept="image/*" type="file">
-                </arpa-node>
+                <arpa-node
+                    can-render="hasInput"
+                    tag="input"
+                    name="input"
+                    accept="image/*"
+                    type="file"
+                ></arpa-node>
             </button>
         `;
     }

@@ -4,7 +4,7 @@
  * @typedef {import('./components/pagerItem/pagerItem.js').default} PagerItem
  * @typedef {import('../pager/components/pagerItem/pagerItem.types').PagerItemConfigType} PagerItemConfigType
  */
-import { getURLParam, observerMixin, attrString, renderNode, editURL } from '@arpadroid/tools';
+import { getURLParam, observerMixin, attrString, renderNode, editURL, listen } from '@arpadroid/tools';
 import { defineCustomElement, dummySignal, dummyListener, dummyOff } from '@arpadroid/tools';
 import ArpaElement from '../core/arpaElement/arpaElement.js';
 
@@ -58,7 +58,7 @@ class Pager extends ArpaElement {
             currentPage: 1,
             totalPages: 1,
             maxNodes: 7,
-            hasArrowControls: true,
+            hasArrowControls: false,
             urlParam: 'page',
             itemComponent: 'pager-item',
             adjustSelectedPosition: true,
@@ -103,7 +103,7 @@ class Pager extends ArpaElement {
     }
 
     /**
-     * Gets the maximum number of links that the pager should display.
+     * Returns the maximum number of links that the pager should display.
      * @returns {number}
      */
     getMaxNodes() {
@@ -111,7 +111,7 @@ class Pager extends ArpaElement {
     }
 
     /**
-     * Gets the next page.
+     * Returns the next page.
      * @returns {number}
      */
     getNextPage() {
@@ -123,7 +123,7 @@ class Pager extends ArpaElement {
     }
 
     /**
-     * Gets the previous page.
+     * Returns the previous page.
      * @returns {number}
      */
     getPrevPage() {
@@ -139,7 +139,7 @@ class Pager extends ArpaElement {
     }
 
     /**
-     * Gets the pager items by page number.
+     * Returns the pager items by page number.
      * @param {number | string} page - The page number.
      * @returns {PagerItem | null} Returns the pager item for the specified page.
      */
@@ -152,7 +152,7 @@ class Pager extends ArpaElement {
      * @returns {boolean}
      */
     hasArrowControls() {
-        return Boolean(this.hasProp('has-arrow-controls'));
+        return Boolean(this.hasProp('hasArrowControls'));
     }
 
     // #region Get
@@ -198,8 +198,9 @@ class Pager extends ArpaElement {
 
     render() {
         this.setAttribute('role', 'navigation');
-        if (this._config.ariaLabel && !this.hasAttribute('aria-label')) {
-            this.setAttribute('aria-label', this._config.ariaLabel);
+        const { ariaLabel } = this._config;
+        if (ariaLabel && !this.hasAttribute('aria-label')) {
+            this.setAttribute('aria-label', ariaLabel);
         }
         super.render();
         this.renderPager();
@@ -416,23 +417,27 @@ class Pager extends ArpaElement {
         await this.promise;
         node.promise && (await node.promise);
         const clickHandlers = node.querySelectorAll('a.pagerItem__content, button.pagerItem__content');
-        clickHandlers.forEach(
-            handler => handler instanceof HTMLElement && handler.addEventListener('click', this.onLinkClick)
-        );
+        listen(clickHandlers, 'click', this.onLinkClick);
     }
 
     /**
      * Handles the click event on the pager item link.
-     * @param {MouseEvent} event
+     * @param {Event} event
+     * @param {number | string} [page] - The page number.
      */
-    onLinkClick(event) {
+    onLinkClick(event, page) {
         const { onClick } = this._config;
         /** @type {PagerItem | null} */
         const pagerItem =
             (event?.target instanceof HTMLElement && event?.target?.closest(this.getItemComponent())) || null;
 
+        page = Number(page || pagerItem?.getAttribute('page'));
+        const totalPages = this.getTotalPages();
+        if (page > totalPages) {
+            page = totalPages;
+        }
         const payload = {
-            page: Number(pagerItem?.getAttribute('page')),
+            page,
             node: pagerItem,
             event
         };
@@ -444,10 +449,14 @@ class Pager extends ArpaElement {
         }
 
         requestAnimationFrame(() => {
-            /** @type {HTMLElement | null | undefined} */
-            const focusable = pagerItem?.querySelector('a, button');
-            typeof focusable?.focus === 'function' && focusable?.focus();
+            this.focusInput();
         });
+    }
+
+    focusInput() {
+        /** @type {HTMLElement | null | undefined} */
+        const focusable = this?.querySelector('input[type="number"]');
+        typeof focusable?.focus === 'function' && focusable?.focus();
     }
 
     // #endregion EVENTS

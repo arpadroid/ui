@@ -4,7 +4,6 @@
  * @typedef {import('@storybook/web-components-vite').Meta<ButtonConfigType>} Meta
  * @typedef {import('@storybook/web-components-vite').StoryObj<ButtonConfigType>} Story
  */
-import { playSetup } from './button.stories.util';
 import { waitFor, expect } from 'storybook/test';
 import { defaultParams } from '@arpadroid/module/storybook/helper';
 import { $attr } from '@arpadroid/tools';
@@ -51,8 +50,8 @@ export const Zones = {
         `;
     },
     play: async ({ canvasElement, canvas, step }) => {
-        await playSetup(canvasElement);
         step('shows the tooltip on focus', async () => {
+            await customElements.whenDefined('arpa-button');
             const buttonNode = canvas.getByRole('button');
             expect(buttonNode).toBeInTheDocument();
             buttonNode.focus();

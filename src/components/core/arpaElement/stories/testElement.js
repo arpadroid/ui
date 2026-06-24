@@ -3,7 +3,7 @@ import ArpaElement from '../arpaElement';
 
 const html = String.raw;
 
-export class TestElement extends ArpaElement {
+export default class TestElement extends ArpaElement {
     getDefaultConfig() {
         return super.getDefaultConfig({
             templateVars: {
@@ -31,4 +31,3 @@ export class TestElement extends ArpaElement {
 }
 
 defineCustomElement('test-element', TestElement);
-

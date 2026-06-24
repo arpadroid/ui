@@ -318,7 +318,6 @@ class ArpaImage extends ArpaElement {
         const hasCaption = this.hasContent('caption');
         const previewSrc = this.getProp('highResSrc') || this.getImageURL(2400, 1600, 80);
         const hasPreview = this.hasPreview();
-        const src = this.getImageURL();
         if (hasPreview) {
             this._config.hasThumbnail = false;
         }
@@ -337,6 +336,7 @@ class ArpaImage extends ArpaElement {
                 >
                     ${this.hasError() ? '{errLoad}' : '{txtNoImage}'}
                 </arpa-node>
+
                 <arpa-node
                     tag="circular-spinner"
                     name="preloader"
@@ -345,18 +345,24 @@ class ArpaImage extends ArpaElement {
                 ></arpa-node>
 
                 {renderSources()}
-                ${src
-                    ? html`<img alt="{alt}" draggable="{isDraggable}" ${$attr(this.getImageAttributes())} />`
-                    : ''}
+
+                <arpa-node
+                    tag="img"
+                    name="image"
+                    ${$attr(this.getImageAttributes())}
+                    can-render="getImageURL()"
+                ></arpa-node>
+
                 <arpa-node
                     tag="drop-area"
                     name="dropArea"
                     label="${this.getText('txtUploadImage')}"
                     can-render="hasDropArea"
-                >
-                </arpa-node>
+                ></arpa-node>
             </picture>
+
             <arpa-node tag="figcaption" name="caption" can-render="caption"></arpa-node>
+
             <arpa-node
                 tag="image-preview"
                 name="preview"
@@ -364,6 +370,7 @@ class ArpaImage extends ArpaElement {
                 image="${previewSrc}"
                 can-render="hasPreview()"
             ></arpa-node>
+
             ${hasCaption ? html`</figure>` : ''}
             <!-- Close Button -->
             ${hasPreview ? html`</button>` : ''}
@@ -375,6 +382,8 @@ class ArpaImage extends ArpaElement {
         const lazyLoad = this.hasLazyLoad();
         const hasNativeLazy = this.getProp('hasNativeLazy');
         return {
+            alt: this.getProp('alt'),
+            draggable: this.getProp('isDraggable'),
             class: classNames({ 'image--lazy': Boolean(lazyLoad) ? 'image--lazy' : false }),
             'data-src': lazyLoad && !hasNativeLazy ? src : '',
             lazyLoad: lazyLoad && !hasNativeLazy,

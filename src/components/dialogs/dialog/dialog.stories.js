@@ -2,8 +2,6 @@
  * @typedef {import('./dialog.types').DialogConfigType} DialogConfigType
  * @typedef {import('@storybook/web-components-vite').Meta<DialogConfigType>} Meta
  * @typedef {import('@storybook/web-components-vite').StoryObj<DialogConfigType & {zoneFooter?: string}>} StoryObj
- * @typedef {import('@storybook/web-components-vite').StoryContext} StoryContext
- * @typedef {import('@storybook/web-components-vite').Args} Args
  * @typedef {import('../dialogs/dialogs').default} Dialogs
  * @typedef {import('../dialog/dialog').default} Dialog
  */

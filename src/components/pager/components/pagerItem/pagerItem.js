@@ -159,7 +159,7 @@ class PagerItem extends ArpaElement {
                 ${attrString({
                     'data-page': page,
                     href: this.getLink(),
-                    class: 'pagerItem__content',
+                    class: 'pagerItem__content pagerItem__page',
                     ariaLabel
                 })}
             ></a>`
@@ -188,10 +188,7 @@ class PagerItem extends ArpaElement {
         if (typeof this._config.onClick === 'function') {
             this._config.onClick(page);
         }
-        const pagerOnClick = this.pagerComponent?._config?.onClick;
-        if (typeof pagerOnClick === 'function') {
-            pagerOnClick({ page, event, node: this });
-        }
+        this.pagerComponent?.onLinkClick(event, page);
     }
 
     /**

@@ -1,4 +1,4 @@
- /**
+/**
  * @typedef {import('./linearProgress').default} LinearProgress
  * @typedef {import('./linearProgress.types').LinearProgressConfigType} LinearProgressConfigType
  * @typedef {import('@storybook/web-components-vite').Meta<LinearProgressConfigType>} Meta

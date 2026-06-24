@@ -1,20 +1,30 @@
 /**
- * @typedef {import('@storybook/web-components-vite').Meta} Meta
- * @typedef {import('@storybook/web-components-vite').StoryObj} StoryObj
  * @typedef {import('./pager').default} Pager
- * @typedef {import('@storybook/web-components-vite').StoryContext} StoryContext
+ * @typedef {import('./pager.types').PagerConfigType} PagerConfigType
+ * @typedef {import('@storybook/web-components-vite').Meta<PagerConfigType>} Meta
+ * @typedef {import('@storybook/web-components-vite').StoryObj<PagerConfigType>} StoryObj
  */
+import { defaultParams, testParams } from '@arpadroid/module/storybook/helper';
 import { attrString, getURLParam } from '@arpadroid/tools';
 import { waitFor, userEvent, fireEvent, expect } from 'storybook/test';
-import { getArgs, playSetup } from './pager.stories.utils';
 
 const html = String.raw;
 /** @type {Meta} */
 const PagerStory = {
     title: 'UI/Pager',
     tags: [],
+    args: {
+        className: 'pager',
+        currentPage: 2,
+        totalPages: 100,
+        maxNodes: 7,
+        hasArrowControls: true,
+        hasInput: false,
+        urlParam: 'page',
+        ariaLabel: 'Test pager'
+    },
     component: 'arpa-pager',
-    render: (/** @type {Record<string, unknown>} */ args) => html`
+    render: args => html`
         <arpa-pager id="demo-pager" ${attrString(args)} views="grid, list"></arpa-pager>
 
         <script type="module">
@@ -30,34 +40,30 @@ const PagerStory = {
     `
 };
 
+/**
+ * Setup function for the pager stories.
+ * @param {HTMLElement} canvasElement
+ * @returns {Promise<{pagerNode: Pager}>}
+ */
+async function playSetup(canvasElement) {
+    await customElements.whenDefined('arpa-pager');
+    const pagerNode = /** @type {Pager} */ (canvasElement.querySelector('arpa-pager'));
+    await pagerNode?.promise;
+    return { pagerNode };
+}
+
 /** @type {StoryObj} */
 export const Default = {
     name: 'Render',
-    parameters: {},
-    args: getArgs()
+    parameters: defaultParams
 };
 
 /** @type {StoryObj} */
 export const Test = {
-    args: {
-        className: 'pager',
-        currentPage: 2,
-        totalPages: 100,
-        maxNodes: 7,
-        hasArrowControls: true,
-        hasInput: false,
-        urlParam: 'page',
-        ariaLabel: 'Test pager'
-    },
-    parameters: {
-        controls: { disable: true },
-        usage: { disable: true },
-        options: { selectedPanel: 'storybook/interactions/panel' }
-    },
-
-    play: async (/** @type {StoryContext} */ { canvasElement, step }) => {
+    parameters: testParams,
+    play: async ({ canvas, canvasElement, step }) => {
         const setup = await playSetup(canvasElement);
-        const { canvas, pagerNode } = setup;
+        const { pagerNode } = setup;
 
         await step('Renders the pager with the given props', async () => {
             const pagination = canvas.getByRole('navigation', { name: /Test pager/i });
@@ -121,6 +127,7 @@ export const Test = {
         });
 
         await step('Clicks next and loops back to the first page', async () => {
+            /** @type {HTMLAnchorElement} */
             const nextButton = canvas.getByRole('link', { name: /Next page/i });
             await waitFor(() => {
                 expect(getURLParam('page', nextButton.href)).toBe('1');

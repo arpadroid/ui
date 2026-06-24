@@ -13,24 +13,7 @@ const html = String.raw;
 const ImageStory = {
     title: 'UI/Image',
     tags: [],
-    component: 'arpa-image',
-    render: args => {
-        return html`
-            <style>
-                #storybook-root {
-                    height: 100%;
-                    width: 100%;
-                    max-height: 100%;
-                    overflow: auto;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                }
-            </style>
-
-            <arpa-image ${attrString(args)}></arpa-image>
-        `;
-    }
+    component: 'arpa-image'
 };
 
 const sources = {

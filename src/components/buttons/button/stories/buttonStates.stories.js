@@ -6,7 +6,6 @@
  */
 
 import { expect } from 'storybook/test';
-import { playSetup } from './button.stories.util';
 import ButtonStory from './button.stories';
 
 /** @type {ButtonMetaStatesMetaType} */
@@ -22,9 +21,9 @@ export const Disabled = {
         disabled: true,
         content: 'Disabled Button'
     },
-    play: async ({ canvasElement, step }) => {
-        const setup = await playSetup(canvasElement);
-        const { buttonNode } = setup;
+    play: async ({ canvas, step }) => {
+        await customElements.whenDefined('arpa-button');
+        const buttonNode = /** @type {HTMLButtonElement} */ (canvas.getByRole('button'));
         await step('renders the button', async () => {
             expect(buttonNode).not.toBeNull();
         });
@@ -37,6 +36,7 @@ export const Focused = {
         content: 'Focused Button'
     },
     play: async ({ canvas }) => {
+        await customElements.whenDefined('arpa-button');
         const button = canvas.getByRole('button');
         button.focus();
     }

@@ -6,7 +6,6 @@
  */
 
 import { waitFor, expect } from 'storybook/test';
-import { playSetup } from './button.stories.util';
 import ButtonStory from './button.stories';
 import { testParams } from '@arpadroid/module/storybook/helper';
 
@@ -27,9 +26,10 @@ export const Test = {
         tooltipPosition: 'top'
     },
     parameters: testParams,
-    play: async ({ canvasElement, step, canvas }) => {
-        const setup = await playSetup(canvasElement);
-        const { buttonNode, buttonComponent } = setup;
+    play: async ({ canvas, step }) => {
+        await customElements.whenDefined('arpa-button');
+        const buttonNode = /** @type {HTMLButtonElement} */ (canvas.getByRole('button'));
+        const buttonComponent = /** @type {Button} */ (buttonNode.closest('arpa-button'));
 
         await step('Renders the button', async () => {
             expect(buttonNode).toBeInTheDocument();
@@ -77,9 +77,10 @@ export const DynamicRender = {
         tooltipPosition: undefined
     },
     parameters: testParams,
-    play: async ({ canvasElement, step }) => {
-        const setup = await playSetup(canvasElement);
-        const { buttonComponent } = setup;
+    play: async ({ canvas, step }) => {
+        await customElements.whenDefined('arpa-button');
+        const buttonNode = /** @type {HTMLButtonElement} */ (canvas.getByRole('button'));
+        const buttonComponent = /** @type {Button} */ (buttonNode.closest('arpa-button'));
 
         await step('Sets an RHS icon', async () => {
             buttonComponent.setProp('rhsIcon', 'person');

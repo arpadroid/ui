@@ -10,52 +10,50 @@
     from {
         opacity: 0;
     }
+
     to {
         opacity: 1;
     }
 }
 
 .dialog {
-    animation: fadeIn 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
-    align-items: center;
-    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 10;
     display: flex;
+    display: none;
+    visibility: visible;
     flex-direction: column;
+    align-items: center;
     justify-content: center;
-    margin: 0;
-    min-height: 100%;
+    width: 100%;
     min-width: 100%;
     max-width: 100%;
+    min-height: 100%;
     padding: 24px;
-    visibility: visible;
-    width: 100%;
-    z-index: 10;
-    display: none;
+    margin: 0;
+    background-color: rgb(0 0 0 / 80%);
+    animation: fadeIn 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
 
     &[open] {
+        position: fixed;
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
-        flex-direction: column;
-        position: fixed;
-    }
-
-    &:has(.dialog__icon) .dialog__content {
-        padding: 0 0.5rem;
     }
 }
 
 .dialog__close {
-    margin-left: auto;
     align-self: flex-end;
+    margin-left: auto;
 }
 
 .dialog__controls {
     display: flex;
     flex-direction: row;
-    justify-content: flex-end;
     gap: 0.5rem;
+    justify-content: flex-end;
     margin-left: auto;
+
     button {
         --button-underline-color: var(--dialog-outline-color);
         --button-outline-active: 2px solid var(--dialog-outline-color);
@@ -64,21 +62,23 @@
 }
 
 .dialog__wrapper {
-    background-color: var(--color-background);
-    border-radius: 1rem;
-    box-shadow: rgba(0, 0, 0, 0.15) 0px 15px 25px, rgba(0, 0, 0, 0.05) 0px 5px 10px;
+    position: relative;
     display: flex;
     flex-direction: column;
+    width: 100%;
+    max-width: 1000px;
     height: auto;
     max-height: calc(100vh - 48px);
-    max-width: 1000px;
-    overflow: visible;
     padding: 0;
-    transition: opacity 1s ease-in;
-    width: 100%;
+    overflow: visible;
     outline: 3px solid var(--grey-50);
+    background-color: var(--color-background);
     border: 3px solid var(--dialog-outline-color);
-    position: relative;
+    border-radius: 1rem;
+    box-shadow:
+        rgb(0 0 0 / 15%) 0 15px 25px,
+        rgb(0 0 0 / 5%) 0 5px 10px;
+    transition: opacity 1s ease-in;
 }
 
 /** 
@@ -86,23 +86,24 @@
  */
 
 .dialog__header {
+    z-index: 10;
     display: flex;
     align-items: center;
     padding: var(--dialog-padding);
-    z-index: 10;
+
     &:has(> .dialog__headerActions:only-child) {
-        background-color: transparent;
         position: absolute;
         right: 0;
+        background-color: transparent;
     }
 }
 
 .dialog__headerContent {
     display: flex;
-    align-items: center;
-    margin: 0;
     flex: 1 1 auto;
     gap: 1rem;
+    align-items: center;
+    margin: 0;
 }
 
 .dialog__headerActions {
@@ -116,8 +117,8 @@
     font-size: 20px;
 
     .icon {
-        margin-right: 12px;
         max-width: 26px;
+        margin-right: 12px;
         color: var(--dialog-icon-color);
     }
 }
@@ -132,41 +133,46 @@
  */
 
 .dialog__body {
-    overflow: auto;
-    flex: 1 1 auto;
+    position: relative;
     display: flex;
+    flex: 1 1 auto;
     flex-direction: column;
     padding: var(--dialog-padding);
-    line-height: 26px;
-    position: relative;
     padding-top: 0;
+    overflow: auto;
+    line-height: 26px;
 }
 
 .dialog__content {
-    flex: 1 0 auto;
     display: flex;
+    flex: 1 0 auto;
     flex-direction: column;
+
     /* padding: 0 0.5rem; */
 }
 
 /**
- * Footer
- */
+* Footer
+*/
 
 .dialog__footer {
-    padding: 0 1.5rem 0.75rem;
     display: flex;
-    align-items: center;
     gap: 1rem;
+    align-items: center;
+    padding: 0 1.5rem 0.75rem;
 }
 
 /**
- * Text Color
- */
+* Text Color
+*/
 .dialog__content,
 .dialog__titleText,
 .dialog__icon {
     color: var(--dialog-text-color);
+}
+
+.dialog:has(.dialog__icon) .dialog__content {
+    padding: 0 0.5rem;
 }
 
 /**
@@ -181,6 +187,7 @@
     --dialog-padding: 1rem;
 
     .dialog__wrapper {
+        border: none;
         border-radius: 0.25rem;
     }
 
@@ -190,10 +197,6 @@
 
     .dialog__body {
         padding: 0;
-    }
-
-    .dialog__wrapper {
-        border: none;
     }
 }
 
@@ -206,6 +209,7 @@
     --dialog-outline-color: var(--red-dark);
     --dialog-icon-color: var(--red-dark);
     --button-icon-color-active: var(--red-dark);
+
     .dialog__content {
         font-weight: 600;
     }
@@ -231,9 +235,11 @@
 
 .dialog[size='small'] {
     --dialog-padding: 1rem;
+
     .dialog__wrapper {
         max-width: 560px;
     }
+
     .dialog__body {
         padding-bottom: 0.5rem;
     }
@@ -253,17 +259,17 @@
 .dialog[size='medium'] {
     .dialog__wrapper {
         max-width: 800px;
-        max-height: 500px;
         height: 500px;
         min-height: 500px;
+        max-height: 500px;
     }
 }
 
 .dialog[size='full-screen'] {
     .dialog__wrapper {
-        max-width: calc(100dvw - 4rem);
-        max-height: calc(100dvh - 4rem);
         width: 100dvw;
+        max-width: calc(100dvw - 4rem);
         height: 100dvh;
+        max-height: calc(100dvh - 4rem);
     }
 }
