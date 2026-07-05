@@ -115,13 +115,7 @@ class ArpaZone extends HTMLElement {
 
         if (!zoneElement) {
             LOST_ZONES.add(name);
-            console.error(`No zone element found for zone "${name}". `, {
-                zoneElement,
-                zoneTarget,
-                element: this.element,
-                html: this.fragment?.textContent,
-                parent: this.parentNode
-            });
+            console.error(`No zone element found for zone "${name}".`);
         }
         this.remove();
     }
