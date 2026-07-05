@@ -11,7 +11,7 @@
  */
 import { attrString, dashedToCamel, getStringBetween, mergeObjects, renderNode } from '@arpadroid/tools';
 import { defineCustomElement, attr, bind, classNames } from '@arpadroid/tools';
-import { handleZones, hasZone, getZone } from '../../../tools/zoneTool';
+import { hasZone, getZone } from '../../../tools/zoneTool';
 import { getCallbackProp, handleCallbackProp } from './helper/arpaElementProps.helper.js';
 import { hasProp, getProp, setProp, getArrayProp } from './helper/arpaElementProps.helper.js';
 import { onDestroy, sanitizeAttributes } from './helper/arpaElement.helper';
@@ -27,9 +27,6 @@ class ArpaElement extends HTMLElement {
     /////////////////////////////
     /** @type {(() => unknown)[]} */
     _bindings = [];
-    /** @type {Set<string> | undefined} */
-    zonesByName = new Set();
-    _zones = new Set();
     /** @type {number | undefined} */
     _lastRendered = undefined;
     _hasRendered = false;
@@ -63,6 +60,8 @@ class ArpaElement extends HTMLElement {
         this._onRenderReadyCallbacks = [];
         /** @type {(() => unknown)[]} */
         this._preRenderCallbacks = [];
+        /** @type {Set<string> | undefined} */
+        this.zonesByName = new Set();
         this._zones = new Set();
         this.i18nKey = dashedToCamel(this.tagName.toLowerCase());
         this.$preInitialize();
@@ -768,10 +767,6 @@ class ArpaElement extends HTMLElement {
 
     canRender() {
         return canRender(this);
-    }
-
-    _handleZones() {
-        handleZones();
     }
 
     $onDomReady() {
