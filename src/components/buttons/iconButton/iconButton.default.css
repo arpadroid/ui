@@ -1,7 +1,6 @@
 :root {
     --icon-button-height: var(--icon-button-size);
     --icon-button-size: 44px;
-
     --icon-button-hilight-bg: var(--selected-hilight);
     --icon-button-hilight-border: 2px solid var(--color-primary);
     --icon-button-border-radius: 50%;
@@ -9,27 +8,28 @@
 }
 
 .iconButton__button,
-.iconButton__button,
 .iconLink {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    position: relative;
     width: var(--icon-button-size);
-    height: var(--icon-button-size);
     min-width: var(--icon-button-size);
+    height: var(--icon-button-size);
     min-height: var(--icon-button-size);
-    border-radius: var(--icon-button-border-radius);
-    border: 2px solid transparent;
     padding: 0;
     cursor: pointer;
     background: transparent;
+    border: 2px solid transparent;
+    border-radius: var(--icon-button-border-radius);
     transition: var(--theme-transition);
+
     &:hover,
     &:focus {
+        outline: none;
         background-color: var(--icon-button-active-bg);
         border: 2px solid var(--border-color);
-        outline: none;
+
         arpa-icon {
             color: var(--color-primary);
         }
@@ -55,23 +55,29 @@
 
 button.iconButton--small {
     width: 30px;
-    height: 30px;
     min-width: 30px;
+    height: 30px;
     min-height: 30px;
 }
 
 a.iconButton__button,
 .iconButton .iconButton__content,
 .iconLink .icon {
-    color: var(--grey-400);
-    font-size: 20px;
     display: flex;
-    width: 100%;
-    height: 100%;
     align-items: center;
     justify-content: center;
-    transition: var(--theme-transition);
+    width: 100%;
+    height: 100%;
+    font-size: 20px;
+    color: var(--grey-400);
     text-align: center;
+    transition: var(--theme-transition);
+}
+
+a.iconButton__button .icon {
+    width: 100%;
+    height: 100%;
+    padding: 0;
 }
 
 /* 
@@ -82,19 +88,19 @@ a.iconButton__button,
     visibility: visible;
 }
 
-a.iconButton:hover .icon,
-a.iconButton:focus .icon {
-    color: var(--grey-800);
-}
-
 .iconLink:hover .icon,
 .iconButton:hover .iconButton__content {
     color: var(--color-primary);
 }
 
+a.iconButton:hover .icon,
+a.iconButton:focus .icon {
+    color: var(--grey-800);
+}
+
 .iconButton__tooltip {
-    left: 100%;
     right: auto;
+    left: 100%;
 }
 
 .iconButton--rightAlign .iconButton__tooltip {
@@ -113,12 +119,6 @@ a.iconButton__button {
     text-align: center;
 }
 
-a.iconButton__button .icon {
-    width: 100%;
-    height: 100%;
-    padding: 0;
-}
-
 a.iconButton:hover,
 a.iconButton:focus {
     color: var(--color-primary);
@@ -127,14 +127,13 @@ a.iconButton:focus {
 /* Disabled */
 
 button.iconButton__button:disabled {
-    cursor: auto;
-}
-
-button.iconButton__button:disabled {
     cursor: not-allowed;
+    cursor: auto;
+
     .icon {
         opacity: 0.5;
     }
+
     &:hover {
         .icon {
             color: var(--grey-400);
@@ -160,9 +159,11 @@ button.iconButton:disabled .iconButton__content {
  */
 button.iconButton[variant='minimal'] {
     --icon-button-size: 20px;
-    border: none;
-    background: none;
+
     padding: 0;
+    background: none;
+    border: none;
+
     &:hover,
     &:focus {
         background-color: transparent;
@@ -180,12 +181,14 @@ button.iconButton[variant='compact'] {
 /* Mini */
 .iconButton.iconButton--mini {
     --icon-button-size: 1.5rem;
+
     button {
         background-color: transparent;
-        border: 0px solid transparent;
+        border: 0 solid transparent;
+
         &:hover,
         &:focus {
-            border: 0px solid transparent;
+            border: 0 solid transparent;
         }
 
         .iconButton__content {

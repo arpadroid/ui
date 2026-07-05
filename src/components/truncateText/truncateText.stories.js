@@ -4,10 +4,8 @@
  * @typedef {import('@storybook/web-components-vite').Meta<TruncateTextConfigType & {children: string}>} Meta
  * @typedef {import('@storybook/web-components-vite').StoryObj} Story
  */
-import { attrString } from '@arpadroid/tools';
 import { waitFor, expect } from 'storybook/test';
 import { defaultParams, testParams } from '@arpadroid/module/storybook/helper';
-const html = String.raw;
 
 /**
  * Sets up the testing environment for the truncate text component.
@@ -31,26 +29,8 @@ const TruncateTextStory = {
     },
     args: {
         maxLength: 79,
-        children:
+        content:
             'In the vast expanse of the cosmos, stars are born from clouds of dust, only to collapse and scatter that dust again when they die. Every atom in your body was forged in the heart of a dying star, millions of years before the Earth existed. Yet here you are, a collection of star-stuff, capable of looking up at the night sky and wondering about your origins. The universe is as much within you as it is outside of you.'
-    },
-    render: args => {
-        const { children, ...rest } = args;
-        return html`
-            <style>
-                #storybook-root {
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    height: 100%;
-                }
-                truncate-text {
-                    width: 100%;
-                    max-width: 620px;
-                }
-            </style>
-            <truncate-text ${attrString(rest)}> ${children} </truncate-text>
-        `;
     }
 };
 
@@ -163,7 +143,7 @@ export const WithButtonInlineLayout = {
 /** @type {Story} */
 export const ShortText = {
     args: {
-        children: 'Short text that should not be truncated.',
+        content: 'Short text that should not be truncated.',
         maxLength: 50,
         hasButton: true
     },

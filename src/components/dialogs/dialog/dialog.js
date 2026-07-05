@@ -1,6 +1,7 @@
 /**
  * @typedef {import('./dialog.types').DialogConfigType} DialogConfigType
  * @typedef {import('../dialogs/dialogs.js').default} Dialogs
+ * @typedef {import('../../buttons/button/button.js').default} ArpaButton
  */
 
 import ArpaElement from '../../core/arpaElement/arpaElement.js';
@@ -205,12 +206,11 @@ class Dialog extends ArpaElement {
     }
 
     async $initializeNodes() {
-        this.wrapperNode = this.querySelector('.dialog__wrapper');
-        this.headerNode = this.querySelector('.dialog__header');
-        this.contentNode = this.querySelector('.dialog__content');
-        this.footerNode = this.querySelector('.dialog__footer');
-        this.closeBtn = this.querySelector('.dialog__close');
-        this.closeBtn?.addEventListener('click', this.close);
+        const buttonComponent = /** @type {ArpaButton | undefined} */ (this.nodes.close);
+        buttonComponent?.promise.then(() => {
+            this.closeBtn = buttonComponent?.button;
+            this.closeBtn?.addEventListener('click', this.close);
+        });
         this.preloader = this.querySelector('.dialog__preloader');
         const { promise } = this._config;
         promise?.finally(() => {

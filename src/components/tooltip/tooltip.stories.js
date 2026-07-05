@@ -1,6 +1,6 @@
 /**
- * @typedef {import('../tooltip').default} Tooltip
- * @typedef {import('../tooltip.types').TooltipConfigType} TooltipConfigType
+ * @typedef {import('./tooltip').default} Tooltip
+ * @typedef {import('./tooltip.types').TooltipConfigType} TooltipConfigType
  * @typedef {import('@storybook/web-components-vite').Meta<TooltipConfigType>} Meta
  * @typedef {import('@storybook/web-components-vite').StoryObj<TooltipConfigType>} Story
  */

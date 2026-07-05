@@ -6,7 +6,7 @@
  * @typedef {import('../dialog/dialog').default} Dialog
  */
 import { attrString } from '@arpadroid/tools';
-import { waitFor, expect, within, fn, fireEvent } from 'storybook/test';
+import { waitFor, expect, within, fn, fireEvent, userEvent } from 'storybook/test';
 import { playSetup, renderDialog } from './dialogStoryUtil';
 const html = String.raw;
 
@@ -61,14 +61,16 @@ export const Test = {
         await step('Closes the dialog', async () => {
             const button = dialog.getByRole('button', { name: 'close' });
             expect(button).toBeInTheDocument();
-            button.click();
+            await userEvent.click(button);
             await waitFor(() => expect(dialogNode).not.toHaveAttribute('open'));
             expect(dialogNode).not.toBeVisible();
-            expect(args['@onClose']).toHaveBeenCalled();
+            await waitFor(() => {
+                expect(args['@onClose']).toHaveBeenCalled();
+            });
         });
 
         await step('Reopens the dialog', async () => {
-            dialogNode?.open();
+            await dialogNode?.open();
             await waitFor(() => expect(dialogNode).toHaveAttribute('open'));
             expect(args['@onOpen']).toHaveBeenCalled();
         });

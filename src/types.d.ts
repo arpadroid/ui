@@ -5,7 +5,13 @@ export {
     TemplateContentMode,
     TemplatesType,
     SetTemplateConfigType,
-    ArpaElementTemplateType
+    ArpaElementTemplateType,
+    ArpaElementContentType,
+    ArpaElementAttributesType,
+    ApplyTemplateConfigType,
+    TemplateContainerConfigType,
+    ArpaElementContentNodeType,
+    ArpaElementNodeType
 } from './components/core/arpaElement/arpaElement.types';
 
 export * from './components/inputCombo/inputCombo.types';
@@ -22,7 +28,7 @@ export * from './components/dialogs/deleteDialog/deleteDialog.types';
 export * from './components/preloaders/circularSpinner/circularSpinner.types';
 export * from './components/dropArea/dropArea.types';
 export * from './components/truncateText/truncateText.types';
-
+export * from './components/tooltip/tooltip.types';
 declare global {
     interface Window {
         arpaSafeIDs: Record<string, boolean>;

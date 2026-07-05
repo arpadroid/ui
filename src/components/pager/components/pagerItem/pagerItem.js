@@ -72,12 +72,12 @@ class PagerItem extends ArpaElement {
     }
 
     hasInput() {
-        return (
-            this.pagerComponent?.hasProp('has-input') ??
-            (this.hasProp('has-input') &&
-                !this.classList.contains('pager__next') &&
-                !this.classList.contains('pager__prev'))
-        );
+        const totalPages = this.pagerComponent?.getTotalPages() || 0;
+        const maxNodes = this.pagerComponent?._config?.maxNodes || 0;
+        if (totalPages <= maxNodes) {
+            return false;
+        }
+        return !this.classList.contains('pager__next') && !this.classList.contains('pager__prev');
     }
 
     // #endregion Get

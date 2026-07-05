@@ -98,7 +98,8 @@ export const NoImage = {
 export const NotFoundImage = {
     name: 'Not Found Image',
     args: {
-        src: sources.notFound
+        src: sources.notFound,
+        size: 200
     }
 };
 

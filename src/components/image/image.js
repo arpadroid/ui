@@ -45,7 +45,7 @@ class ArpaImage extends ArpaElement {
         const config = {
             alt: '',
             caption: '',
-            defaultSize: 'medium',
+            defaultSize: undefined,
             dropAreaHandler: undefined,
             errorClass: 'image--error',
             loadingClass: 'image--loading',

@@ -26,6 +26,10 @@ export function hasProp(element, name, config = element._config) {
     if (typeof config[dashedToCamel(name)] !== 'undefined') {
         return config[dashedToCamel(name)];
     }
+    const payload = element?.getPayload?.() || {};
+    if (typeof payload[dashedToCamel(name)] !== 'undefined') {
+        return payload[dashedToCamel(name)];
+    }
 }
 
 /**
@@ -38,7 +42,10 @@ export function hasProp(element, name, config = element._config) {
 export function getProp(element, name, config = element._config ?? {}) {
     const configName = dashedToCamel(name);
     let rv;
-    rv = element.getAttribute(camelToDashed(name)) || config[configName];
+    rv =
+        element.getAttribute(camelToDashed(name)) ||
+        config[configName] ||
+        ('getPayload' in element && element.getPayload?.()?.[configName]);
     if (rv === 'undefined') {
         rv = undefined;
     }
@@ -46,7 +53,7 @@ export function getProp(element, name, config = element._config ?? {}) {
 }
 
 /**
- * Gets the value of a property from the element's configuration or attributes as an array.
+ * Returns the value of a property from the element's configuration or attributes as an array.
  * @param {ArpaElement | ArpaNode} element
  * @param {string} name
  * @param {Record<string, unknown>} [config]
@@ -56,6 +63,10 @@ export function getArrayProp(element, name, config = element._config) {
     const value = getProp(element, name, config);
     if (typeof value === 'string') {
         return value.split(',').map(item => item.trim());
+    }
+
+    if (!Array.isArray(value)) {
+        return [value].filter(item => item !== undefined && item !== null);
     }
     return value;
 }
@@ -112,7 +123,7 @@ export function evaluatePropToken(element, condition) {
         return false;
     }
 
-    const hasProp = Boolean(element.hasProp(propName));
+    const hasProp = Boolean(element.hasProp(propName) || element.hasContent(propName));
     return isNegation ? Boolean(!hasProp) : Boolean(hasProp);
 }
 

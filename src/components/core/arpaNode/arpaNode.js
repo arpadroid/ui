@@ -2,6 +2,7 @@
  * @typedef {import('./arpaNode.types').ArpaNodeConfigType} ArpaNodeConfigType
  * @typedef {import('./arpaNode.types').ArpaNodeAttributesType} ArpaNodeAttributesType
  * @typedef {import('../arpaElement/arpaElement.js').default} ArpaElement
+ * @typedef {import('../arpaElement/arpaElement.types').ArpaElementContentNodeType} ArpaElementContentNodeType
  */
 import { defineCustomElement, getAttributes, mergeObjects, renderNode } from '@arpadroid/tools';
 import { getArpaElement } from '../arpaElement/helper/arpaElement.helper';
@@ -16,6 +17,7 @@ class ArpaNode extends HTMLElement {
         super();
         this.canRender = this.getAttribute('can-render');
         this.fragment = document.createDocumentFragment();
+        this.nodesContainer = this.closest('.template-nodes-container');
         this._initializeContent();
         this.setConfig(config);
     }
@@ -26,8 +28,9 @@ class ArpaNode extends HTMLElement {
             this.initialHTML = html;
             this.initialTextContent = this.textContent;
         }
+
+        this._childNodes = [...this.childNodes];
         this.fragment.append(...this.childNodes);
-        this._childNodes = [...this.fragment.childNodes];
     }
 
     /**
@@ -101,7 +104,7 @@ class ArpaNode extends HTMLElement {
      * @param {ArpaNodeConfigType} config
      * @param {ArpaNodeAttributesType} attr
      */
-    registerNodeConfig(config, attr) {
+    registerNodeConfig(config = this.getConfig(), attr = this.getNodeAttributes()) {
         const elementPayload = {
             ...config,
             attr,
@@ -155,8 +158,7 @@ class ArpaNode extends HTMLElement {
             return Promise.reject(new Error(msg));
         }
         if (!this.node) {
-            /** @type {((HTMLElement | DocumentFragment | Node) & {arpaNode?: ArpaNode})} */
-            this.node = this.renderNode();
+            this.node = /** @type {ArpaElementContentNodeType & {arpaNode?: ArpaNode}} */ (this.renderNode());
         }
 
         if (this.node) {

@@ -1,5 +1,6 @@
 import { ZoneFilterType } from '../../../tools/zoneTool.types';
 import { ArpaNodeConfigType } from '../arpaNode/arpaNode.types';
+import ArpaElement, { ArpaNode } from './arpaElement';
 
 export type ArpaElementConfigType = {
     attributes?: Record<string, string>;
@@ -19,6 +20,10 @@ export type ArpaElementConfigType = {
     zoneResolverSelector?: string;
     zoneSelector?: string;
 };
+
+export type ArpaElementContentNodeType = ArpaElement | HTMLElement | ArpaNode | Element;
+
+export type ArpaElementNodeType = ArpaElementContentNodeType | HTMLElement | Node | DocumentFragment;
 
 export type TemplateContentMode = 'add' | 'content' | 'prepend' | 'append' | 'list-item' | 'view';
 

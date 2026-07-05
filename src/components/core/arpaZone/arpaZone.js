@@ -123,6 +123,7 @@ class ArpaZone extends HTMLElement {
                 parent: this.parentNode
             });
         }
+        this.remove();
     }
 }
 

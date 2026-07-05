@@ -1,5 +1,6 @@
 /**
  * @typedef {import('./arpaElement.types').ArpaElementConfigType} ArpaElementConfigType
+ * @typedef {import('./arpaElement.types').ArpaElementContentNodeType} ArpaElementContentNodeType
  * @typedef {import('./arpaElement.types').TemplateContentMode} TemplateContentMode
  * @typedef {import('../arpaNode/arpaNode.types').ArpaNodeConfigType} ArpaNodeConfigType
  * @typedef {import('./arpaElement.types').TemplatesType} TemplatesType
@@ -9,8 +10,8 @@
  * @typedef {import('../arpaNode/arpaNode').default} ArpaNode
  */
 import { attrString, dashedToCamel, getStringBetween, mergeObjects, renderNode } from '@arpadroid/tools';
-import { defineCustomElement, attr, setNodes, bind, classNames } from '@arpadroid/tools';
-import { handleZones, zoneMixin, hasZone, getZone, extractZones } from '../../../tools/zoneTool';
+import { defineCustomElement, attr, bind, classNames } from '@arpadroid/tools';
+import { handleZones, hasZone, getZone } from '../../../tools/zoneTool';
 import { getCallbackProp, handleCallbackProp } from './helper/arpaElementProps.helper.js';
 import { hasProp, getProp, setProp, getArrayProp } from './helper/arpaElementProps.helper.js';
 import { onDestroy, sanitizeAttributes } from './helper/arpaElement.helper';
@@ -27,7 +28,8 @@ class ArpaElement extends HTMLElement {
     /** @type {(() => unknown)[]} */
     _bindings = [];
     /** @type {Set<string> | undefined} */
-    zonesByName = undefined;
+    zonesByName = new Set();
+    _zones = new Set();
     /** @type {number | undefined} */
     _lastRendered = undefined;
     _hasRendered = false;
@@ -39,11 +41,13 @@ class ArpaElement extends HTMLElement {
     templates = {};
     /** @type {Record<string, ArpaNodeConfigType>} */
     nodesConfig = {};
-    /** @type {Record<string, (HTMLElement | Node | DocumentFragment | ArpaElement) & {arpaNode?: ArpaNode }>} */
+    /** @type {Record<string, ArpaElementContentNodeType>} */
     nodes = {};
     /** @type {Record<string, unknown>} */
     templateVars = {};
     isArpaElement = true;
+    /** @type {ArpaElementContentNodeType} */
+    contentNode;
 
     /**
      * Creates a new instance of ArpaElement.
@@ -65,7 +69,6 @@ class ArpaElement extends HTMLElement {
         this.setConfig(config);
         this._preInitializeContent();
         this._initializeTemplates();
-        this._initializeZones();
         this._initializeContent();
         this.$initialize();
         this.promise = this.getPromise();
@@ -80,16 +83,10 @@ class ArpaElement extends HTMLElement {
         // abstract method
     }
 
-    /**
-     * Initializes the zones for the element.
-     */
-    _initializeZones() {
-        zoneMixin(this);
-    }
-
     _preInitializeContent() {
         const { content } = this._config;
         typeof content === 'string' && (this.innerHTML = content);
+        delete this._config.content;
         attr(this, sanitizeAttributes(this, this._config));
     }
 
@@ -159,10 +156,10 @@ class ArpaElement extends HTMLElement {
 
     /**
      * Returns the content node for the element. If the element has template children, it returns the node marked with "is-content". Otherwise, it returns the element itself.
-     * @returns {HTMLElement | null} The content node for the element.
+     * @returns {ArpaElementContentNodeType | null} The content node for the element.
      */
     getContentNode() {
-        return this.querySelector('[is-content]') || this;
+        return this.nodes?.content || this.querySelector('[is-content]');
     }
 
     /**
@@ -320,24 +317,62 @@ class ArpaElement extends HTMLElement {
     ////////////////////
 
     /**
-     * Sets the content of the element.
-     * @param {string | HTMLElement} content - The content to set.
-     * @param {HTMLElement | null} [contentContainer] - The container for the content.
+     * Given some content in various formats, normalize it to an array of nodes.
+     * @param {string | HTMLElement | NodeList | DocumentFragment | Node[]} content - The content to normalize.
+     * @returns {Node[]} The normalized array of nodes.
      */
-    setContent(content, contentContainer = this.contentNode || this.getContentNode()) {
-        if (typeof content === 'string') {
-            this._content = content;
-            const node = renderNode(content);
-            this._childNodes = node ? [node] : [];
-        } else if (content instanceof HTMLElement) {
-            this._content = content.outerHTML;
-            this._childNodes = [...content.childNodes];
+    normalizeContentNodes(content) {
+        let rv = content;
+        if (rv instanceof NodeList || rv instanceof HTMLCollection) {
+            rv = [...rv];
         }
-        if (contentContainer instanceof HTMLElement) {
-            const childElements = /** @type {Element[]} */ (this.getChildElements());
-            setNodes(contentContainer, childElements);
+        if (rv instanceof DocumentFragment) {
+            rv = [...rv.childNodes];
         }
-        this.$onContentSet();
+        if (typeof rv === 'string') {
+            const node = renderNode(rv);
+            rv = node ? [node] : [];
+        } else if (rv instanceof HTMLElement) {
+            rv = [rv];
+        } else if (Array.isArray(rv)) {
+            rv = [...rv];
+        }
+        return rv;
+    }
+
+    /**
+     * Sets the content of the element.
+     * @param {string | HTMLElement | NodeList | DocumentFragment | Node[]} content - The content to set.
+     * @param {{callOnContentSet?: boolean, replace?: boolean}} [options]
+     */
+    async setContent(content = [], options = {}) {
+        const { callOnContentSet = true, replace = true } = options;
+        await this.promise;
+        const childNodes = this.normalizeContentNodes(content);
+        this._childNodes = childNodes;
+
+        const contentNode = this.getContentNode() || this;
+        this.contentNode = contentNode;
+
+        if (!contentNode || !childNodes) return;
+        'promise' in contentNode && (await contentNode.promise);
+        replace && (contentNode.innerHTML = '');
+        if (
+            contentNode !== this &&
+            'setContent' in contentNode &&
+            typeof contentNode?.setContent === 'function'
+        ) {
+            contentNode.setContent(childNodes, { callOnContentSet: true, replace: true });
+        } else {
+            const position = this.getProp('contentPosition') || 'append';
+            if (position === 'prepend') {
+                contentNode.prepend(...childNodes);
+            } else if (position === 'append') {
+                contentNode.append(...childNodes);
+            }
+        }
+
+        callOnContentSet && this.$onContentSet();
     }
 
     $onContentSet() {}
@@ -397,6 +432,8 @@ class ArpaElement extends HTMLElement {
         }
         return node;
     }
+
+    nodesConfigInitialized = false;
 
     /**
      * Returns the configuration for a node element.
@@ -710,7 +747,6 @@ class ArpaElement extends HTMLElement {
         await this.$initializeNodes();
         this._onRenderReadyCallbacks.forEach(callback => typeof callback === 'function' && callback());
         this._onRenderReadyCallbacks = [];
-        this._handleZones();
         this.$onDomReady();
         this._onRenderComplete();
     }
@@ -745,19 +781,22 @@ class ArpaElement extends HTMLElement {
     async _onRenderComplete() {
         this._hasRendered = true;
         this._onRenderedCallbacks.forEach(callback => callback());
-        this.handleContent();
+        await this.handleContent();
         await this._resolveRender();
         this.$onComplete();
     }
 
-    handleContent() {
+    async handleContent() {
         if (!this.hasNodesConfig() || !this._config.handleContent) {
             return;
         }
-        this.contentNode = (this.contentNode?.isConnected && this.contentNode) || this.getContentNode();
-        if (!this.contentNode || this.contentNode.innerHTML.trim()) return;
-        const position = this.getProp('contentPosition') || 'append';
-        this.contentNode?.[position](...(this._childNodes || []));
+        this._childNodes?.length &&
+            this.setContent(this._childNodes, {
+                callOnContentSet: false,
+                replace: false
+            });
+
+        return true;
     }
 
     async _resolveRender() {
@@ -840,7 +879,6 @@ class ArpaElement extends HTMLElement {
         this._isReady = false;
 
         this._initializeTemplates();
-        extractZones(this);
         this.promise = this.getPromise();
         this.connectedCallback();
     }

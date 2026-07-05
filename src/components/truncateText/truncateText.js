@@ -97,15 +97,20 @@ class TruncateText extends ArpaElement {
             this.truncatedNode = this.contentNode?.cloneNode();
         }
         const content = text?.slice(0, maxLength);
-        this.truncatedNode.textContent = content;
-        this.contentNode?.replaceWith(this.truncatedNode);
-        this.ellipsisNode && this.truncatedNode?.after(this.ellipsisNode);
-        this.buttonComponent?.setProp('content', this.getProp('lblShow'));
+
+        if (this.truncatedNode instanceof HTMLElement) {
+            this.truncatedNode.textContent = content;
+            this.contentNode?.replaceWith(this.truncatedNode);
+            this.ellipsisNode && this.truncatedNode?.after(this.ellipsisNode);
+        }
+        this.buttonComponent?.setContent(this.getProp('lblShow'));
         this.buttonComponent?.setProp('rhsIcon', this.getProp('icon'));
     }
 
     showFullContent() {
-        this.truncatedNode?.replaceWith(this.contentNode);
+        if (this.contentNode instanceof HTMLElement && this.truncatedNode instanceof HTMLElement) {
+            this.truncatedNode?.replaceWith(this.contentNode);
+        }
         this.ellipsisNode?.remove();
         this.buttonComponent?.setProp('content', this.getProp('lblHide'));
         this.buttonComponent?.setProp('rhsIcon', this.getProp('iconHide'));
@@ -138,7 +143,7 @@ class TruncateText extends ArpaElement {
     }
 
     $onContentSet() {
-        this._textContent = this.contentNode?.textContent;
+        this._textContent = this.contentNode?.textContent?.trim() || '';
         this.reRender();
     }
 

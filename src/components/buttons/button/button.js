@@ -33,7 +33,7 @@ class Button extends ArpaElement {
      * @returns {string} The resolved aria-label for the button.
      */
     getAriaLabel() {
-        if (this.hasContent('content')) return '';
+        if (this.hasContent('content') || this.textContent.trim()?.length) return '';
         const { ariaLabel, label, tooltip } = this.getProperties('ariaLabel', 'label', 'tooltip');
         const aria = ariaLabel || label || tooltip || '';
         return this.resolveAriaLabel(aria) || '';

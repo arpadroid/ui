@@ -26,10 +26,11 @@ export const Test = {
         tooltipPosition: 'top'
     },
     parameters: testParams,
-    play: async ({ canvas, step }) => {
+    play: async ({ canvas, canvasElement, step }) => {
         await customElements.whenDefined('arpa-button');
-        const buttonNode = /** @type {HTMLButtonElement} */ (canvas.getByRole('button'));
-        const buttonComponent = /** @type {Button} */ (buttonNode.closest('arpa-button'));
+        const buttonComponent = /** @type {Button} */ (canvasElement.querySelector('arpa-button'));
+        await buttonComponent.promise;
+        const buttonNode = await waitFor(() => canvas.getByRole('button'));
 
         await step('Renders the button', async () => {
             expect(buttonNode).toBeInTheDocument();
@@ -77,10 +78,10 @@ export const DynamicRender = {
         tooltipPosition: undefined
     },
     parameters: testParams,
-    play: async ({ canvas, step }) => {
+    play: async ({ canvasElement, step }) => {
         await customElements.whenDefined('arpa-button');
-        const buttonNode = /** @type {HTMLButtonElement} */ (canvas.getByRole('button'));
-        const buttonComponent = /** @type {Button} */ (buttonNode.closest('arpa-button'));
+        const buttonComponent = /** @type {Button} */ (canvasElement.querySelector('arpa-button'));
+        await buttonComponent.promise;
 
         await step('Sets an RHS icon', async () => {
             buttonComponent.setProp('rhsIcon', 'person');

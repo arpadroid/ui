@@ -137,7 +137,10 @@ export function processTemplateAttributes(template, props = {}, element) {
     let lastIndex = 0;
     let searchIndex = 0;
 
-    while ((searchIndex = template.indexOf('=', searchIndex)) !== -1) {
+    while (
+        (searchIndex = 'function' === typeof template.indexOf ? template.indexOf('=', searchIndex) : -1) !==
+        -1
+    ) {
         const match = getTemplateAttributeMatch(template, lastIndex, searchIndex);
         if (!match) {
             searchIndex += 1;
@@ -154,7 +157,7 @@ export function processTemplateAttributes(template, props = {}, element) {
         searchIndex = lastIndex;
     }
 
-    result.push(template.slice(lastIndex));
+    template.slice && result.push(template.slice(lastIndex));
     return result.join('');
 }
 
@@ -179,6 +182,7 @@ export function _processTemplate(template, props = {}, element) {
             break;
         }
         const placeholder = template.slice(matchIndex + 1, endIndex);
+
         const val = processTemplateVariable(placeholder, props[placeholder], element);
         result.push(val);
         startIndex = endIndex + 1;
@@ -385,7 +389,7 @@ export function renderChild(element, name, config = {}, attributes = {}) {
  * @param {ArpaElement} element
  * @param {string} name
  * @param {ArpaNodeConfigType} config
- * @returns {ArpaElement | HTMLElement | Node | null}
+ * @returns {import('../arpaElement.types').ArpaElementNodeType | null}
  */
 export function spawnNode(element, name, config) {
     let node = element.nodes[name];
@@ -399,8 +403,8 @@ export function spawnNode(element, name, config) {
         const conf = mergeObjects(element.getNodeConfig(name) || {}, config);
         const renderedNode = renderNode(renderChild(element, name, conf));
         if (renderedNode) {
-            element.nodes[name] = renderedNode;
-            node = renderedNode;
+            element.nodes[name] = /** @type {HTMLElement} */ (renderedNode);
+            node = /** @type {HTMLElement} */ (renderedNode);
         }
     }
     return node;
@@ -469,6 +473,52 @@ export async function applyTemplateAttributes(element, template, _payload = {}, 
 }
 
 /**
+ * Returns the configuration for the nodes defined in the template.
+ * @param {ArpaElement} element
+ * @param {string | null} [template]
+ */
+export function getNodesConfigFromTemplate(element, template = element.$renderTemplate()) {
+    template = String(template || '')?.trim();
+
+    const tpl = document.createElement('template');
+    tpl.innerHTML = template;
+    /** @type {ArpaNode[]} */
+    const arpaNodes = Array.from(tpl.content.querySelectorAll('arpa-node') || []);
+    const arpaNodeAttrNames = [
+        'can-render',
+        'class-name',
+        'has-zone',
+        'id',
+        'is-content',
+        'name',
+        'tag',
+        'zone-name',
+        'zone-target'
+    ];
+    arpaNodes.forEach(node => {
+        const name = node.getAttribute('name');
+        if (!name) return;
+        const attr = getAttributes(node);
+        /** @type {ArpaNodeConfigType} */
+        const cnf = {
+            attr: {},
+            // content: renderTemplate(node?.innerHTML, element?.templateVars, element),
+            // childNodes: [...node.childNodes]
+        };
+        Object.keys(attr).forEach(key => {
+            if (arpaNodeAttrNames.includes(key)) {
+                // @ts-ignore
+                cnf[key] = attr[key];
+            } else {
+                // @ts-ignore
+                cnf.attr[key] = attr[key];
+            }
+        });
+        element.setNodeConfig(name, cnf);
+    });
+}
+
+/**
  * Sets the template for the element.
  * @template {ArpaElement} T
  * @param {T} element
@@ -479,6 +529,7 @@ export async function applyTemplate(element, template, payload = {}) {
     if (template instanceof HTMLTemplateElement) {
         applyTemplateAttributes(element, template, payload);
         const templateMode = template?.getAttribute('template-mode') || 'content';
+        getNodesConfigFromTemplate(element);
         const content = processTemplate(template.innerHTML, payload, element);
         if (templateMode === 'content') {
             element.templates.content = template;
