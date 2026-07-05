@@ -22,7 +22,8 @@ class Button extends ArpaElement {
             className: 'arpaButton',
             type: 'button',
             buttonClass: 'arpaButton__button',
-            tooltipPosition: 'left'
+            tooltipPosition: 'left',
+            eventHandlerSelector: 'button',
         };
 
         return /** @type {ButtonConfigType} */ (super.getDefaultConfig(config));

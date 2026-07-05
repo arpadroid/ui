@@ -165,10 +165,8 @@ class ArpaNode extends HTMLElement {
             this.element.nodes[name] = this.node;
             this.node.arpaNode = this;
             this.replaceWith(this.node);
-            this.remove();
-        } else {
-            this.remove();
         }
+        this.remove();
     }
 }
 

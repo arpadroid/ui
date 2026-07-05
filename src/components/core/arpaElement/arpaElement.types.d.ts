@@ -6,6 +6,7 @@ export type ArpaElementConfigType = {
     attributes?: Record<string, string>;
     className?: string;
     classNames?: string[];
+    eventHandlerSelector?: string;
     content?: ArpaElementContentType;
     contentPosition?: 'prepend' | 'append' | 'top' | 'replace' | 'bottom';
     handleContent?: boolean;

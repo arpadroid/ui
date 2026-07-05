@@ -111,7 +111,11 @@ class ArpaZone extends HTMLElement {
             // @ts-ignore
             zoneTargetNode && (zoneElement = zoneTargetNode);
         }
-        zoneElement?.append(this.fragment);
+        if (this.hasAttribute('replace-content')) {
+            zoneElement?.replaceChildren(...this.fragment?.childNodes);
+        } else {
+            zoneElement?.append(this.fragment);
+        }
 
         if (!zoneElement) {
             LOST_ZONES.add(name);

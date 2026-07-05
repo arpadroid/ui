@@ -1,14 +1,14 @@
 /**
- * @typedef {import("../arpaElement").default} ArpaElement
  * @typedef {import('../../arpaNode/arpaNode.types').ArpaNodeConfigType} ArpaNodeConfigType
  * @typedef {import("../../arpaNode/arpaNode").default} ArpaNode
  * @typedef {import("../../arpaZone/arpaZone").default} ArpaZone
  */
 
-import { attr, getAttributes, getAttributesWithPrefix } from '@arpadroid/tools';
+import { attr, getAttributes, listen, getAttributesWithPrefix } from '@arpadroid/tools';
 import { mergeObjects, renderNode, attrString, dashedToCamel } from '@arpadroid/tools';
 import { hasContent } from '../helper/arpaElement.helper';
 import { evaluateProp } from './arpaElementProps.helper';
+import ArpaElement from '../arpaElement';
 
 //////////////////////////////////
 // #region Template Processing
@@ -122,6 +122,49 @@ function getTemplateAttributeMatch(template, lastIndex, equalsIndex) {
 }
 
 /**
+ * Returns the event handler element for a template attribute.
+ * @param {ArpaElement} element
+ * @param {string} attr
+ * @param {string} value
+ * @returns {Promise<Element | ArpaElement | null>}
+ */
+export async function getTemplateEventHandler(element, attr, value) {
+    const selector = `[${attr}="{${value}}"]`;
+    let eventHandler = element.querySelector(selector);
+    if (eventHandler instanceof ArpaElement) {
+        const { eventHandlerSelector } = eventHandler._config;
+        if (eventHandlerSelector) {
+            await eventHandler.promise;
+            const nestedHandler = eventHandler.querySelector(eventHandlerSelector);
+            if (nestedHandler) {
+                eventHandler = nestedHandler;
+            }
+        }
+    }
+    if (!eventHandler) {
+        console.warn('Event Handler not found', { element, attr, value });
+    }
+    return eventHandler;
+}
+
+/**
+ * Handles the event listener for a template attribute.
+ * @param {ArpaElement} element
+ * @param {string} attr
+ * @param {string} value
+ */
+export async function handleTemplateEventListener(element, attr, value) {
+    const fnName = dashedToCamel(value); // @ts-expect-error
+    const fn = element?.[fnName];
+    if (typeof fn !== 'function') return;
+    const eventName = attr.replace('on-', '').replace(/-/g, '');
+    await element.promise;
+    await new Promise(resolve => setTimeout(resolve, 0));
+    const eventHandler = await getTemplateEventHandler(element, attr, value);
+    listen(eventHandler, eventName, fn);
+}
+
+/**
  * Processes a template attribute token.
  * @param {string} template
  * @param {Record<string, unknown>} props
@@ -146,10 +189,17 @@ export function processTemplateAttributes(template, props = {}, element) {
             searchIndex += 1;
             continue;
         }
-
         const value = processTemplateVariable(match.propName, props[match.propName], element);
         const renderedAttribute = attrString({ [match.attrName]: value });
 
+        if (element && !value && match.propName.startsWith('$on') && match.attrName.startsWith('on-')) {
+            result.push(template.slice(lastIndex, match.nextIndex));
+            void handleTemplateEventListener(element, match.attrName, match.propName);
+
+            lastIndex = match.nextIndex;
+            searchIndex = lastIndex;
+            continue;
+        }
         result.push(template.slice(lastIndex, match.spacingStart));
         renderedAttribute && result.push(`${match.spacing}${renderedAttribute}`);
 
@@ -183,6 +233,12 @@ export function _processTemplate(template, props = {}, element) {
         }
         const placeholder = template.slice(matchIndex + 1, endIndex);
 
+        if (placeholder.startsWith('$on') && !props[placeholder]) {
+            result.push(`{${placeholder}}`);
+            startIndex = endIndex + 1;
+            continue;
+        }
+
         const val = processTemplateVariable(placeholder, props[placeholder], element);
         result.push(val);
         startIndex = endIndex + 1;
@@ -201,29 +257,6 @@ export function _processTemplate(template, props = {}, element) {
 export function processTemplate(template, props = {}, element) {
     template = processTemplateAttributes(template, props, element);
     return _processTemplate(template, props, element);
-}
-
-/**
- * Renders the template for the element.
- * @param {ArpaElement} component
- * @param {string | null} [_template]
- * @param {Record<string, unknown>} [vars]
- * @returns {string}
- */
-export function renderTemplate(component, _template, vars = component.getTemplateVars()) {
-    const templateContent = component.templates?.content?.innerHTML.trim();
-    const template = _template || templateContent || component.$renderTemplate();
-
-    for (const tplVar of Object.keys(vars)) {
-        if (typeof vars[tplVar] === 'function') {
-            vars[tplVar] = vars[tplVar](component);
-        }
-        if (typeof vars[tplVar] === 'string') {
-            vars[tplVar] = processTemplate(vars[tplVar], vars, component);
-        }
-    }
-    const result = template && processTemplate(template, vars, component);
-    return typeof result === 'string' ? result : '';
 }
 
 // #endregion Template Processing
@@ -276,6 +309,7 @@ export function getDefaultNodeConfig(element, name) {
 export function canRenderNode(element, name, config = {}, attributes = {}) {
     const { canRender = true } = config;
     const { canRender: attrCanRender = true } = attributes;
+
     if (Boolean(attrCanRender) === false || Boolean(canRender) === false) {
         return false;
     }
@@ -502,8 +536,7 @@ export function getNodesConfigFromTemplate(element, template = element.$renderTe
         /** @type {ArpaNodeConfigType} */
         const cnf = {
             attr: {},
-            // content: renderTemplate(node?.innerHTML, element?.templateVars, element),
-            // childNodes: [...node.childNodes]
+            content: node.innerHTML
         };
         Object.keys(attr).forEach(key => {
             if (arpaNodeAttrNames.includes(key)) {
@@ -514,8 +547,47 @@ export function getNodesConfigFromTemplate(element, template = element.$renderTe
                 cnf.attr[key] = attr[key];
             }
         });
-        element.setNodeConfig(name, cnf);
+        element.setNodeConfig(name, mergeObjects(element.getNodeConfig(name), cnf));
     });
+}
+
+/**
+ * Ensures that the super class template is processed for the element.
+ * @param {ArpaElement} element
+ */
+export function handleSuperTemplate(element) {
+    if (element?.context?.superInitialized) return;
+    const superRenderTemplate = Object.getPrototypeOf(element?.constructor?.prototype)?.$renderTemplate;
+    if (!superRenderTemplate || superRenderTemplate === element.$renderTemplate) return;
+    const superTemplate = superRenderTemplate.call(element);
+    if (superTemplate) {
+        getNodesConfigFromTemplate(element, superTemplate);
+        element.context.superInitialized = true;
+    }
+}
+
+/**
+ * Renders the template for the element.
+ * @param {ArpaElement} component
+ * @param {string | null} [_template]
+ * @param {Record<string, unknown>} [vars]
+ * @returns {string}
+ */
+export function renderTemplate(component, _template, vars = component.getTemplateVars()) {
+    const templateContent = component.templates?.content?.innerHTML.trim();
+    handleSuperTemplate(component);
+    const template = _template || templateContent || component.$renderTemplate();
+
+    for (const tplVar of Object.keys(vars)) {
+        if (typeof vars[tplVar] === 'function') {
+            vars[tplVar] = vars[tplVar](component);
+        }
+        if (typeof vars[tplVar] === 'string') {
+            vars[tplVar] = processTemplate(vars[tplVar], vars, component);
+        }
+    }
+    const result = template && processTemplate(template, vars, component);
+    return typeof result === 'string' ? result : '';
 }
 
 /**
