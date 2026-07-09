@@ -45,6 +45,8 @@ class ArpaElement extends HTMLElement {
     isArpaElement = true;
     /** @type {ArpaElementContentNodeType} */
     contentNode;
+    /** @type {Record<string, unknown>} */
+    context = {};
 
     /**
      * Creates a new instance of ArpaElement.
