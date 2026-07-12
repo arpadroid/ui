@@ -3,10 +3,10 @@ import type { PagerItem } from './pager';
 export type PagerConfigType = {
     id?: string;
     className?: string;
-    currentPage?: number;
+    currentPage?: number | string;
     itemComponent?: string;
-    totalPages?: number;
-    maxNodes?: number;
+    totalPages?: number | string;
+    maxNodes?: number | string;
     hasArrowControls?: boolean;
     adjustSelectedPosition?: boolean;
     urlParam?: string;

@@ -1,10 +1,10 @@
 /**
  * @typedef {import('./arpaZone.types').ArpaZoneConfigType} ArpaZoneConfigType
- * @typedef {import('../arpaElement/arpaElement.js').default} ArpaElement
  */
 import { defineCustomElement, mergeObjects } from '@arpadroid/tools';
 import { getArpaElement } from '../arpaElement/helper/arpaElement.helper';
 import { getProp } from '../arpaElement/helper/arpaElementProps.helper.js';
+import ArpaElement from '../arpaElement/arpaElement.js';
 
 export const LOST_ZONES = new Set();
 
@@ -88,6 +88,17 @@ class ArpaZone extends HTMLElement {
         return container?.querySelector(`[zone="${zoneName}"]`);
     }
 
+    /**
+     * Returns the target element for the zone, which is either specified by the 'zone-target' attribute or defaults to the zone element itself.
+     * @param {import('../arpaNode/arpaNode').ArpaElementContentNodeType} zoneElement
+     * @returns {Element | null}
+     */
+    getZoneTarget(zoneElement) {
+        const zoneTarget = zoneElement.getAttribute('zone-target');
+        const zoneTargetNode = zoneTarget && zoneElement?.querySelector(zoneTarget);
+        return zoneTargetNode || ('zoneTarget' in zoneElement && zoneElement?.zoneTarget) || zoneElement;
+    }
+
     async connectedCallback() {
         this._initializeZone();
         const name = this.getProp('name');
@@ -100,27 +111,28 @@ class ArpaZone extends HTMLElement {
             return;
         }
         await this.element.promise;
-        let zoneElement = /** @type { ArpaElement | null } */ (
-            this.getZoneElement() || (await this.findZoneElement())
-        );
+        /** @type {Element | undefined} */
+        let zoneElement = this.getZoneElement() || (await this.findZoneElement());
 
-        const zoneTarget = zoneElement?.getAttribute('zone-target');
-        if (zoneElement && zoneTarget) {
-            zoneElement?.promise && (await zoneElement?.promise);
-            const zoneTargetNode = zoneElement?.querySelector(zoneTarget);
-            // @ts-ignore
-            zoneTargetNode && (zoneElement = zoneTargetNode);
-        }
-        if (this.hasAttribute('replace-content')) {
-            zoneElement?.replaceChildren(...this.fragment?.childNodes);
-        } else {
-            zoneElement?.append(this.fragment);
+        if (zoneElement) {
+            if (zoneElement instanceof ArpaElement) {
+                await zoneElement.promise;
+            }
+            const target = this.getZoneTarget(zoneElement);
+            target && (zoneElement = target);
         }
 
         if (!zoneElement) {
             LOST_ZONES.add(name);
             console.error(`No zone element found for zone "${name}".`);
         }
+
+        if (this.hasAttribute('replace-content')) {
+            zoneElement?.replaceChildren(...this.fragment?.childNodes);
+        } else {
+            zoneElement?.append(this.fragment);
+        }
+
         this.remove();
     }
 }

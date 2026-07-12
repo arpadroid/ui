@@ -5,7 +5,7 @@
  * @typedef {import("../../arpaZone/arpaZone").default} ArpaZone
  */
 import { camelToDashed, listen, dashedToCamel } from '@arpadroid/tools';
-import { findNodeComponent } from '../../../../tools/zoneTool';
+import { getArpaElement } from './arpaElement.helper.js';
 
 /**
  * Checks if an element has a property as an attribute or defined in the configuration.
@@ -81,7 +81,7 @@ export function getCallbackProp(element, propertyName) {
     const val = getProp(element, propertyName);
     if (typeof val === 'string' && val?.[0] === ':') {
         const methodName = val.slice(1);
-        const parentComponent = findNodeComponent(/** @type {ArpaElement} */ (element.parentNode));
+        const parentComponent = getArpaElement(/** @type {ArpaElement} */ (element.parentNode));
         // @ts-ignore
         const method = parentComponent?.[methodName];
         return method?.bind(parentComponent);

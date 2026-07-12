@@ -1,26 +1,25 @@
-import { ZoneFilterType } from '../../../tools/zoneTool.types';
 import { ArpaNodeConfigType } from '../arpaNode/arpaNode.types';
 import ArpaElement, { ArpaNode } from './arpaElement';
 
 export type ArpaElementConfigType = {
     attributes?: Record<string, string>;
+    blueprint?: ArpaElementBluePrintType;
     className?: string;
-    classNames?: string[];
-    eventHandlerSelector?: string;
+    classNames?: (string | (() => string))[];
     content?: ArpaElementContentType;
     contentPosition?: 'prepend' | 'append' | 'top' | 'replace' | 'bottom';
+    eventHandlerSelector?: string;
     handleContent?: boolean;
-    template?: string;
     nodesConfig?: Record<string, ArpaNodeConfigType> | undefined;
+    template?: ArpaElementBluePrintType;
     templateContainer?: HTMLElement | string;
     templates?: TemplatesType;
     templateTypes?: TemplateContentMode[];
     templateVars?: Record<string, unknown> | (() => Record<string, unknown>);
     variant?: string;
-    zoneFilter?: ZoneFilterType;
-    zoneResolverSelector?: string;
-    zoneSelector?: string;
 };
+
+export type ArpaElementBluePrintType = string | (() => string);
 
 export type ArpaElementContentNodeType = ArpaElement | HTMLElement | ArpaNode | Element;
 

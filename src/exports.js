@@ -3,14 +3,12 @@
  */
 
 export * from './components/core/arpaElement/helper/arpaElementProps.helper.js';
-export * from './tools/zoneTool.js';
 
 export {
     canRender,
     getArpaElement,
     getUserConfig,
     hasContent,
-    onDestroy,
     sanitizeAttributeEffect,
     sanitizeAttributes
 } from './components/core/arpaElement/helper/arpaElement.helper.js';

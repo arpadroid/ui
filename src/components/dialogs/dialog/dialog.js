@@ -47,19 +47,6 @@ class Dialog extends ArpaElement {
         observerMixin(this);
     }
 
-    /**
-     * Manual allocation of zones.
-     * @param {import('../../../tools/zoneTool.types.js').ZoneToolPlaceZoneType} payload
-     * @returns {boolean | undefined}
-     */
-    _onLostZone({ zoneName, zone }) {
-        if (!zoneName || !zone) return false;
-        if (['content'].includes(zoneName) && zone._parentNode === this) {
-            this.promise.then(() => this.contentNode?.append(...zone.childNodes));
-            return true;
-        }
-    }
-
     async _resolveRender() {
         await this._initializeDialog();
         return this.resolvePromise?.(true);

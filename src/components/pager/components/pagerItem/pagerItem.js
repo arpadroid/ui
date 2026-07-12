@@ -73,7 +73,7 @@ class PagerItem extends ArpaElement {
 
     hasInput() {
         const totalPages = this.pagerComponent?.getTotalPages() || 0;
-        const maxNodes = this.pagerComponent?._config?.maxNodes || 0;
+        const maxNodes = Number(this.pagerComponent?._config?.maxNodes) || 0;
         if (totalPages <= maxNodes) {
             return false;
         }

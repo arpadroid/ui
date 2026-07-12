@@ -937,13 +937,6 @@ class CustomElement extends ArpaElement {
         /* Called during cleanup */
     }
 
-    _onPlaceZone(payload) {
-        /* Called when zones are placed */
-    }
-
-    _onLostZone(payload) {
-        /* Called when zones are lost */
-    }
 
     $renderTemplate() {
         /* Get the template to render */

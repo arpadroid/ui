@@ -5,16 +5,14 @@
  * @typedef {import('../arpaNode/arpaNode.types').ArpaNodeConfigType} ArpaNodeConfigType
  * @typedef {import('./arpaElement.types').TemplatesType} TemplatesType
  * @typedef {import('./arpaElement.types').ArpaElementTemplateType} ArpaElementTemplateType
- * @typedef {import('../../../tools/zoneTool.types.js').ZoneToolPlaceZoneType} ZoneToolPlaceZoneType
- * @typedef {import('../../../tools/zoneTool.types.js').ZoneType} ZoneType
  * @typedef {import('../arpaNode/arpaNode').default} ArpaNode
+ * @typedef {import('../arpaZone/arpaZone').default} ArpaZone
  */
 import { attrString, dashedToCamel, getStringBetween, mergeObjects, renderNode } from '@arpadroid/tools';
 import { defineCustomElement, attr, bind, classNames } from '@arpadroid/tools';
-import { hasZone, getZone } from '../../../tools/zoneTool';
 import { getCallbackProp, handleCallbackProp } from './helper/arpaElementProps.helper.js';
 import { hasProp, getProp, setProp, getArrayProp } from './helper/arpaElementProps.helper.js';
-import { onDestroy, sanitizeAttributes } from './helper/arpaElement.helper';
+import { hasZone, sanitizeAttributes } from './helper/arpaElement.helper';
 import { canRender, hasContent } from './helper/arpaElement.helper';
 import { renderTemplate, getClass, renderChild } from './helper/arpaElementTemplate.helper';
 import { selectTemplates, spawnNode } from './helper/arpaElementTemplate.helper';
@@ -36,6 +34,8 @@ class ArpaElement extends HTMLElement {
     _textContent = '';
     /** @type {TemplatesType} */
     templates = {};
+    /** @type {string | (() => string)} */
+    $template = '';
     /** @type {Record<string, ArpaNodeConfigType>} */
     nodesConfig = {};
     /** @type {Record<string, ArpaElementContentNodeType>} */
@@ -47,6 +47,8 @@ class ArpaElement extends HTMLElement {
     contentNode;
     /** @type {Record<string, unknown>} */
     context = {};
+    /** @type {HTMLElement | ArpaElement} */
+    zoneTarget;
 
     /**
      * Creates a new instance of ArpaElement.
@@ -122,6 +124,14 @@ class ArpaElement extends HTMLElement {
         return true;
     }
 
+    getBlueprint() {
+        let { blueprint } = this._config;
+        if (typeof blueprint === 'function') {
+            blueprint = blueprint.call(this);
+        }
+        return (blueprint || '').trim();
+    }
+
     /**
      * Sets the configuration for the element.
      * @param {Record<string, unknown>} [config]
@@ -162,7 +172,7 @@ class ArpaElement extends HTMLElement {
 
     /**
      * Gets the current configuration of the element.
-     * @returns {Record<string, unknown>} The configuration object.
+     * @returns {typeof this._config} The configuration object.
      */
     getConfig() {
         return this._config;
@@ -235,15 +245,6 @@ class ArpaElement extends HTMLElement {
     }
 
     /**
-     * Gets the zone with the specified name.
-     * @param {string} name
-     * @returns {ZoneType | null} The zone with the specified name.
-     */
-    getZone(name) {
-        return getZone(this, name);
-    }
-
-    /**
      * Returns the base class for the element.
      * If a name is given, it is added to the class name following BEM convention.
      * @param {string} [name]
@@ -275,6 +276,21 @@ class ArpaElement extends HTMLElement {
     }
 
     /**
+     * Gets a zone from a component.
+     * @param {ArpaElement} component - The component to search.
+     * @param {string} name
+     * @returns {ArpaZone | null} The zone or null if not found.
+     */
+    getZone(component, name) {
+        if (component._zones) {
+            for (const zone of component._zones) {
+                if (zone.getAttribute('name') === name) return zone;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Gets the variables to be used in the template rendering.
      * @returns {Record<string, unknown>} The template variables.
      */
@@ -296,15 +312,6 @@ class ArpaElement extends HTMLElement {
     //////////////////////
     // #region Has
     //////////////////////
-
-    /**
-     * Determines if the element has a zone with the specified name.
-     * @param {string} name
-     * @returns {boolean} True if the element has a zone with the specified name; otherwise, false.
-     */
-    hasZone(name) {
-        return hasZone(this, name);
-    }
 
     /**
      * Determines if the element has content for the specified property.
@@ -364,7 +371,6 @@ class ArpaElement extends HTMLElement {
         await this.promise;
         const childNodes = this.normalizeContentNodes(content);
         this._childNodes = childNodes;
-
         const contentNode = this.getContentNode() || this;
         this.contentNode = contentNode;
 
@@ -662,24 +668,11 @@ class ArpaElement extends HTMLElement {
         }
     }
 
-    $onDestroy() {
-        onDestroy(this);
+    hasZone(name = '') {
+        return hasZone(this, name);
     }
 
-    /**
-     * Handles a lost zone.
-     * @param {ZoneToolPlaceZoneType} _payload
-     * @returns {boolean | ((payload: ZoneToolPlaceZoneType) => any) | undefined}
-     */
-    _onLostZone(_payload) {
-        return false;
-    }
-
-    /**
-     * Transfers the links from the icon menu component zone to the navigation component.
-     * @param {ZoneToolPlaceZoneType} _payload - The payload object passed by the ZoneTool.
-     */
-    _onPlaceZone(_payload) {}
+    $onDestroy() {}
 
     _addClassNames() {
         const _classes = /** @type {string[]} */ (getArrayProp(this, 'classNames')) || [];
@@ -882,9 +875,11 @@ class ArpaElement extends HTMLElement {
     }
 
     $renderTemplate() {
-        const { getTemplate } = this._config;
-        let template = typeof getTemplate === 'function' ? getTemplate(this) : this._config?.template;
-        if (!template && this.nodesConfig) {
+        let { template = this.$template } = this._config;
+        if (typeof template === 'function') {
+            template = template.call(this);
+        }
+        if (typeof template !== 'string' && this.nodesConfig) {
             template = '';
             for (const key of Object.keys(this.nodesConfig)) {
                 template += `{${key}}`;

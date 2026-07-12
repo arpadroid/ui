@@ -48,6 +48,7 @@ class ArpaImage extends ArpaElement {
             defaultSize: undefined,
             dropAreaHandler: undefined,
             errorClass: 'image--error',
+            eventHandlerSelector: 'img',
             loadingClass: 'image--loading',
             hasPreloader: true,
             hasPreview: false,
