@@ -1,13 +1,13 @@
 /**
  * @typedef {import('./arpaNode.types').ArpaNodeConfigType} ArpaNodeConfigType
  * @typedef {import('./arpaNode.types').ArpaNodeAttributesType} ArpaNodeAttributesType
- * @typedef {import('../arpaElement/arpaElement.js').default} ArpaElement
  * @typedef {import('../arpaElement/arpaElement.types').ArpaElementContentNodeType} ArpaElementContentNodeType
  */
-import { defineCustomElement, getAttributes, mergeObjects, renderNode } from '@arpadroid/tools';
+import { defineCustomElement, getAttributes, mergeObjects } from '@arpadroid/tools';
 import { getArpaElement } from '../arpaElement/helper/arpaElement.helper';
 import { renderChild } from '../arpaElement/helper/arpaElementTemplate.helper';
 import { getProp } from '../arpaElement/helper/arpaElementProps.helper.js';
+import ArpaElement from '../arpaElement/arpaElement.js';
 class ArpaNode extends HTMLElement {
     /**
      * Creates an instance of ArpaNode.
@@ -132,12 +132,15 @@ class ArpaNode extends HTMLElement {
             return;
         }
 
-        const html = renderChild(this.element, name, config, attr);
+        const html = renderChild(this.element, name, config, attr).trim();
         if (tag === 'fragment') {
             this.fragment.append(html);
             return this.fragment;
         }
-        const node = /** @type {HTMLElement} */ (renderNode(html));
+        if (!html) return;
+        const template = document.createElement('template');
+        template.innerHTML = html;
+        const node = template.content.firstElementChild;
         node?.appendChild(this.fragment);
         return node;
     }
@@ -163,6 +166,7 @@ class ArpaNode extends HTMLElement {
 
         if (this.node) {
             this.element.nodes[name] = this.node;
+            this.element.arpaNodes[name] = this;
             this.node.arpaNode = this;
             this.replaceWith(this.node);
         }

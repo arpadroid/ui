@@ -132,23 +132,25 @@ function getTemplateAttributeMatch(template, lastIndex, equalsIndex) {
  * @param {ArpaElement} element
  * @param {string} attr
  * @param {string} value
- * @returns {Promise<Element | ArpaElement | null>}
+ * @returns {Promise<(Element | ArpaElement | null)[]>}
  */
-export async function getTemplateEventHandler(element, attr, value) {
+export async function getTemplateEventHandlers(element, attr, value) {
     const selector = `[${attr}="{${value}}"]`;
-    let eventHandler = element.querySelector(selector);
-    if (eventHandler && 'getProp' in eventHandler) {
+    const handlers = [];
+    const eventHandlers = Array.from(element.querySelectorAll(selector));
+    for (const eventHandler of eventHandlers) {
+        if (!('getProp' in eventHandler)) {
+            handlers.push(eventHandler);
+            continue;
+        }
         const arpaHandler = /** @type {ArpaElement} */ (eventHandler);
         const eventHandlerSelector = arpaHandler.getProp('eventHandlerSelector');
         if (eventHandlerSelector) {
             await arpaHandler.promise;
-            const nestedHandler = arpaHandler.querySelector(eventHandlerSelector);
-            if (nestedHandler) {
-                eventHandler = nestedHandler;
-            }
+            handlers.push(...arpaHandler.querySelectorAll(eventHandlerSelector));
         }
     }
-    return eventHandler;
+    return handlers;
 }
 
 /**
@@ -164,7 +166,7 @@ export async function handleTemplateEventListener(element, attr, value) {
     const eventName = attr.replace('on-', '').replace(/-/g, '');
     await element.promise;
     await new Promise(resolve => setTimeout(resolve, 0));
-    const eventHandler = await getTemplateEventHandler(element, attr, value);
+    const eventHandler = await getTemplateEventHandlers(element, attr, value);
     listen(eventHandler, eventName, fn);
 }
 
@@ -527,7 +529,6 @@ export function getNodesConfigBlueprint(element, blueprint = element.getBlueprin
         'class-name',
         'has-zone',
         'id',
-        'is-content',
         'name',
         'tag',
         'zone-name',
@@ -563,10 +564,15 @@ export function getNodesConfigBlueprint(element, blueprint = element.getBlueprin
  * @returns {string}
  */
 export function renderTemplate(component, _template, vars = component.getTemplateVars()) {
-    const templateContent = component.templates?.content?.innerHTML.trim();
     getNodesConfigBlueprint(component);
+    const tplNode = component.templates?.content;
+    const templateContent = tplNode?.innerHTML?.trim() || '';
+    const templateMode = tplNode?.getAttribute('template-mode') || 'content';
+    let template = _template || templateContent || component?.$renderTemplate() || '';
+    if (templateMode === 'append') {
+        template = _template || `${templateContent}${component?.$renderTemplate() || ''}` || '';
+    }
 
-    const template = _template || templateContent || component.$renderTemplate();
     for (const tplVar of Object.keys(vars)) {
         if (typeof vars[tplVar] === 'function') {
             vars[tplVar] = vars[tplVar](component);

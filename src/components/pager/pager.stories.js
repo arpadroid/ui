@@ -6,7 +6,7 @@
  */
 import { defaultParams, testParams } from '@arpadroid/module/storybook/helper';
 import { attrString, getURLParam } from '@arpadroid/tools';
-import { waitFor, userEvent, fireEvent, expect } from 'storybook/test';
+import { waitFor, userEvent, expect, fireEvent } from 'storybook/test';
 
 const html = String.raw;
 /** @type {Meta} */
@@ -55,7 +55,7 @@ async function playSetup(canvasElement) {
 /** @type {StoryObj} */
 export const Default = {
     name: 'Render',
-    parameters: defaultParams
+    parameters: defaultParams,
 };
 
 /** @type {StoryObj} */
@@ -94,10 +94,9 @@ export const Test = {
             const nextLink = canvas.getByRole('link', { name: /Next page/i });
             const currentPage = pagerNode.getCurrentPage();
             expect(currentPage).toBe(2);
-            await new Promise(resolve => setTimeout(resolve, 100));
-            await nextLink.click();
+            await userEvent.click(nextLink);
             await waitFor(() => {
-                expect(nextLink).toHaveAttribute('data-page', '3');
+                expect(nextLink).toHaveAttribute('data-page', '4');
                 const currentPage = getURLParam('page');
                 expect(currentPage).toBe('3');
                 expect(pagerNode.getCurrentPage()).toBe(3);

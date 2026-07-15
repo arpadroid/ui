@@ -196,14 +196,19 @@ class Pager extends ArpaElement {
     // #region Render
     /////////////////////
 
-    render() {
+    _preRender() {
+        super._preRender();
         this.setAttribute('role', 'navigation');
         const { ariaLabel } = this._config;
         if (ariaLabel && !this.hasAttribute('aria-label')) {
             this.setAttribute('aria-label', ariaLabel);
         }
-        super.render();
+    }
+
+    async $initializeNodes() {
+        await super.$initializeNodes();
         this.renderPager();
+        return true;
     }
 
     renderPager() {

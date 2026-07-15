@@ -8,7 +8,7 @@
  * @typedef {import('../arpaNode/arpaNode').default} ArpaNode
  * @typedef {import('../arpaZone/arpaZone').default} ArpaZone
  */
-import { attrString, dashedToCamel, getStringBetween, mergeObjects, renderNode } from '@arpadroid/tools';
+import { attrString, dashedToCamel, getStringBetween, mergeObjects } from '@arpadroid/tools';
 import { defineCustomElement, attr, bind, classNames } from '@arpadroid/tools';
 import { getCallbackProp, handleCallbackProp } from './helper/arpaElementProps.helper.js';
 import { hasProp, getProp, setProp, getArrayProp } from './helper/arpaElementProps.helper.js';
@@ -40,15 +40,17 @@ class ArpaElement extends HTMLElement {
     nodesConfig = {};
     /** @type {Record<string, ArpaElementContentNodeType>} */
     nodes = {};
+    /** @type {Record<string, ArpaNode>} */
+    arpaNodes = {};
     /** @type {Record<string, unknown>} */
     templateVars = {};
     isArpaElement = true;
-    /** @type {ArpaElementContentNodeType} */
-    contentNode;
     /** @type {Record<string, unknown>} */
     context = {};
     /** @type {HTMLElement | ArpaElement} */
     zoneTarget;
+    /** @type {ArpaElementContentNodeType | null} */
+    contentNode = null;
 
     /**
      * Creates a new instance of ArpaElement.
@@ -277,13 +279,12 @@ class ArpaElement extends HTMLElement {
 
     /**
      * Gets a zone from a component.
-     * @param {ArpaElement} component - The component to search.
      * @param {string} name
      * @returns {ArpaZone | null} The zone or null if not found.
      */
-    getZone(component, name) {
-        if (component._zones) {
-            for (const zone of component._zones) {
+    getZone(name) {
+        if (this._zones) {
+            for (const zone of this._zones) {
                 if (zone.getAttribute('name') === name) return zone;
             }
         }
@@ -351,8 +352,9 @@ class ArpaElement extends HTMLElement {
             rv = [...rv.childNodes];
         }
         if (typeof rv === 'string') {
-            const node = renderNode(rv);
-            rv = node ? [node] : [];
+            const div = document.createElement('div');
+            div.innerHTML = rv;
+            rv = [...div.childNodes];
         } else if (rv instanceof HTMLElement) {
             rv = [rv];
         } else if (Array.isArray(rv)) {
@@ -807,7 +809,6 @@ class ArpaElement extends HTMLElement {
                 callOnContentSet: false,
                 replace: false
             });
-
         return true;
     }
 
@@ -875,6 +876,10 @@ class ArpaElement extends HTMLElement {
     }
 
     $renderTemplate() {
+        return this.$renderDefaultTemplate();
+    }
+
+    $renderDefaultTemplate() {
         let { template = this.$template } = this._config;
         if (typeof template === 'function') {
             template = template.call(this);
@@ -891,10 +896,9 @@ class ArpaElement extends HTMLElement {
     reRender() {
         this._hasRendered = false;
         this._isReady = false;
-
         this._initializeTemplates();
         this.promise = this.getPromise();
-        this.connectedCallback();
+        this._render();
     }
 
     // #endregion

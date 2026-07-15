@@ -44,10 +44,13 @@ class Tooltip extends ArpaElement {
     findHandler() {
         if (this.handler instanceof HTMLElement) return this.handler;
         let handler = this.getProp('handler');
-        handler && typeof handler === 'string' && (handler = resolveNode(handler));
-        if (!(handler instanceof HTMLElement)) {
-            handler = this.closest('.tooltip__handler, button, a');
-            handler instanceof HTMLElement && this.classList.add('tooltip--contained');
+        const containedHandler = this.closest('.tooltip__handler, button, a');
+        if (containedHandler instanceof HTMLElement) {
+            handler = containedHandler;
+            this.classList.add('tooltip--contained');
+        }
+        if (!handler && typeof handler === 'string') {
+            handler = resolveNode(handler);
         }
         return handler;
     }
@@ -107,8 +110,10 @@ class Tooltip extends ArpaElement {
         await super.$initializeNodes();
         this.classList.add(`tooltip--${this.getPosition()}`);
         this.setHandler(this.getHandler());
-        if (this.handler && !this.handler.isConnected && !this.handler.contains(this)) {
-            this.appendChild(this.handler);
+        if (this.handler) {
+            if (!this.handler.isConnected && !this.handler.contains(this)) {
+                this.appendChild(this.handler);
+            }
         }
         return true;
     }
