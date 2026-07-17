@@ -67,7 +67,7 @@ class ArpaZone extends HTMLElement {
         const containers = /** @type {(HTMLElement)[]} */ [...Object.values(element?.nodes || {})];
         for (const container of containers) {
             if (!container || !(container instanceof HTMLElement)) continue;
-            if (container instanceof HTMLElement && 'promise' in container) {
+            if ('promise' in container) {
                 await container.promise;
             }
             // @ts-ignore
@@ -111,7 +111,7 @@ class ArpaZone extends HTMLElement {
             return;
         }
         await this.element.promise;
-        /** @type {Element | undefined} */
+        /** @type {Element | undefined | null} */
         let zoneElement = this.getZoneElement() || (await this.findZoneElement());
 
         if (zoneElement) {
@@ -120,6 +120,15 @@ class ArpaZone extends HTMLElement {
             }
             const target = this.getZoneTarget(zoneElement);
             target && (zoneElement = target);
+        }
+
+        if (!zoneElement) {
+            await this.element?.promise;
+            await new Promise(resolve => setTimeout(resolve, 1));
+            zoneElement =
+                this.getZoneElement() ||
+                (await this.findZoneElement()) ||
+                document.querySelector(`body > *[zone="${name}"]`);
         }
 
         if (!zoneElement) {
