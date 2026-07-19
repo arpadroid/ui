@@ -329,8 +329,8 @@ class ArpaImage extends ArpaElement {
             ${hasCaption ? '<figure>' : ''}
             <picture>
                 <arpa-node
-                    tag="arpa-tooltip"
                     name="thumbnail"
+                    tag="arpa-tooltip"
                     class="image__thumbnail"
                     icon="{icon}"
                     can-render="hasPreview() || hasThumbnail()"
@@ -339,8 +339,8 @@ class ArpaImage extends ArpaElement {
                 </arpa-node>
 
                 <arpa-node
-                    tag="circular-spinner"
                     name="preloader"
+                    tag="circular-spinner"
                     aria-label="${this.getText('lblLoadingImage')}"
                     can-render="hasPreloader()"
                 ></arpa-node>
@@ -348,8 +348,10 @@ class ArpaImage extends ArpaElement {
                 {renderSources()}
 
                 <arpa-node
-                    tag="img"
                     name="image"
+                    tag="img"
+                    alt="{alt}"
+                    draggable="{isDraggable}"
                     ${$attr(this.getImageAttributes())}
                     can-render="getImageURL()"
                 ></arpa-node>
@@ -383,8 +385,6 @@ class ArpaImage extends ArpaElement {
         const lazyLoad = this.hasLazyLoad();
         const hasNativeLazy = this.getProp('hasNativeLazy');
         return {
-            alt: this.getProp('alt'),
-            draggable: this.getProp('isDraggable'),
             class: classNames({ 'image--lazy': Boolean(lazyLoad) ? 'image--lazy' : false }),
             'data-src': lazyLoad && !hasNativeLazy ? src : '',
             lazyLoad: lazyLoad && !hasNativeLazy,
@@ -576,9 +576,10 @@ class ArpaImage extends ArpaElement {
      * Loads the image.
      * @param {HTMLImageElement | null | undefined} image - The source of the image to load.
      * @param {ImageConfigType} config - The configuration options for the image.
-     * @returns {HTMLImageElement | undefined} - The image element.
+     * @returns {Promise<HTMLImageElement | undefined>} - The image element.
      */
-    initializeImage(image = this.image, config = this._config || {}) {
+    async initializeImage(image = this.image, config = this._config || {}) {
+        await this.promise;
         if (image instanceof HTMLImageElement) {
             listen(image, 'load', this._onLoad);
             listen(image, 'error', this._onError);

@@ -3,7 +3,7 @@
  * @typedef {import('../buttons/button/button.js').default} ArpaButton
  */
 import ArpaElement from '../core/arpaElement/arpaElement.js';
-import { classNames, defineCustomElement, listen } from '@arpadroid/tools';
+import { classNames, defineCustomElement } from '@arpadroid/tools';
 
 const html = String.raw;
 class TruncateText extends ArpaElement {
@@ -12,6 +12,7 @@ class TruncateText extends ArpaElement {
      * @returns {TruncateTextConfigType}
      */
     getDefaultConfig() {
+        this.bind('toggleTruncate');
         this.i18nKey = 'ui.truncateText';
         /** @type {TruncateTextConfigType} */
         const config = {
@@ -29,10 +30,6 @@ class TruncateText extends ArpaElement {
         return super.getDefaultConfig(config);
     }
 
-    async $initialize() {
-        this.toggleTruncate = this.toggleTruncate.bind(this);
-    }
-
     ////////////////////////////
     // #region Rendering
     ////////////////////////////
@@ -48,13 +45,12 @@ class TruncateText extends ArpaElement {
         return html`<arpa-node
             name="button"
             tag="arpa-button"
+            on-click="{toggleTruncate}"
             can-render="hasButton && canTruncate()"
             rhs-icon="{icon}"
             variant="minimal"
             button-class="${classNames(this.getProp('buttonClasses'))}"
-        >
-            {lblShow}
-        </arpa-node>`;
+        ></arpa-node>`;
     }
 
     $renderTemplate() {
@@ -90,6 +86,7 @@ class TruncateText extends ArpaElement {
     }
 
     async truncateText() {
+        await this.promise;
         const maxLength = this.getMaxLength();
         const text = this.contentNode?.textContent?.trim();
         if (!maxLength || !text?.length || text?.length <= maxLength) return;
@@ -150,10 +147,6 @@ class TruncateText extends ArpaElement {
     async $initializeNodes() {
         await super.$initializeNodes();
         this.buttonComponent = /** @type {ArpaButton} */ (this.nodes.button);
-        this.buttonComponent?.promise.then(() => {
-            this.button = this.buttonComponent?.button;
-            this.button && listen(this.button, 'click', this.toggleTruncate);
-        });
         this.ellipsisNode = /** @type {HTMLElement} */ (this.nodes.ellipsis);
         this.ellipsisNode.remove();
         return true;

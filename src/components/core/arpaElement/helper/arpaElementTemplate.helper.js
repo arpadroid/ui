@@ -198,7 +198,7 @@ export function processTemplateAttributes(template, props = {}, element) {
         const value = processTemplateVariable(match.propName, props[match.propName], element);
         const renderedAttribute = attrString({ [match.attrName]: value });
 
-        if (element && !value && match.propName.startsWith('$on') && match.attrName.startsWith('on-')) {
+        if (element && !value && match.attrName.startsWith('on-')) {
             result.push(template.slice(lastIndex, match.nextIndex));
             handleTemplateEventListener(element, match.attrName, match.propName);
 
@@ -238,8 +238,8 @@ export function _processTemplate(template, props = {}, element) {
             break;
         }
         const placeholder = template.slice(matchIndex + 1, endIndex);
-
-        if (placeholder.startsWith('$on') && !props[placeholder]) {
+        // @ts-ignore
+        if (!props[placeholder] && typeof element[placeholder] === 'function') {
             result.push(`{${placeholder}}`);
             startIndex = endIndex + 1;
             continue;

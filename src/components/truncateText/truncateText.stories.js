@@ -4,7 +4,7 @@
  * @typedef {import('@storybook/web-components-vite').Meta<TruncateTextConfigType & {children: string}>} Meta
  * @typedef {import('@storybook/web-components-vite').StoryObj} Story
  */
-import { waitFor, expect } from 'storybook/test';
+import { waitFor, expect, userEvent } from 'storybook/test';
 import { defaultParams, testParams } from '@arpadroid/module/storybook/helper';
 
 /**
@@ -84,7 +84,7 @@ export const TestWithButton = {
 
         await step('Expands the text when the read more button is clicked.', async () => {
             const readMoreButton = canvas.getByRole('button', { name: /read more/i });
-            readMoreButton.click();
+            await userEvent.click(readMoreButton);
             await waitFor(() =>
                 expect(truncateTextNode.textContent).toContain(
                     'The universe is as much within you as it is outside of you.'
@@ -171,7 +171,7 @@ export const DynamicUpdates = {
     play: async ({ canvasElement, step, canvas }) => {
         const { truncateTextNode } = await playSetup(canvasElement);
         await step('Dynamically updates the text content and re-applies truncation.', async () => {
-            truncateTextNode.setContent(
+            await truncateTextNode.setContent(
                 'New dynamic text that exceeds the maximum length and should be truncated.'
             );
             await waitFor(() => {
@@ -184,9 +184,9 @@ export const DynamicUpdates = {
 
         await step('Expands the new text when the read more button is clicked.', async () => {
             const readMoreButton = canvas.getByRole('button', { name: /read more/i });
-            readMoreButton.click();
+            await userEvent.click(readMoreButton);
             await waitFor(() =>
-                expect(truncateTextNode.textContent).toContain(
+                expect(truncateTextNode.nodes.content.textContent).toContain(
                     'New dynamic text that exceeds the maximum length and should be truncated.'
                 )
             );
