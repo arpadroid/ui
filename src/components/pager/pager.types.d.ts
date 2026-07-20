@@ -7,7 +7,7 @@ export type PagerConfigType = {
     itemComponent?: string;
     totalPages?: number | string;
     maxNodes?: number | string;
-    hasArrowControls?: boolean;
+    hasArrowControls?: boolean | 'false';
     adjustSelectedPosition?: boolean;
     urlParam?: string;
     ariaLabel?: string;
