@@ -5,8 +5,9 @@
  * @typedef {import('@storybook/web-components-vite').StoryObj<DropAreaConfigType>} StoryObj
  */
 
-import { expect, fn } from 'storybook/test';
+import { expect, fn, userEvent, waitFor } from 'storybook/test';
 import { defaultParams, testParams } from '@arpadroid/module/storybook/helper';
+
 /** @type {Meta} */
 const DropAreaStory = {
     title: 'UI/Drop Area',
@@ -26,12 +27,12 @@ export const Render = {
 export const TestSingle = {
     parameters: testParams,
     play: async ({ canvasElement, canvas, step }) => {
-        await customElements.whenDefined('drop-area');
         /** @type {DropArea | null} */
         const dropAreaNode = canvasElement.querySelector('drop-area');
         const dropArea = /** @type {DropArea} */ (dropAreaNode);
         await dropArea.promise;
-        const handlerNode = dropArea.querySelector('.dropArea__handler');
+        await new Promise(resolve => setTimeout(resolve, 0));
+        const handlerNode = /** @type {HTMLElement} */ (dropArea.querySelector('.dropArea__handler'));
 
         await step('renders the drop area', async () => {
             expect(dropAreaNode).toBeInTheDocument();
@@ -78,9 +79,11 @@ export const TestSingle = {
 
             handlerNode?.dispatchEvent(dropEvent);
 
-            expect(onDrop).toHaveBeenCalledTimes(1);
-            expect(onDrop.mock.calls[0]?.[0]).toBe(dropEvent);
-            expect(onDrop.mock.calls[0]?.[1]).toEqual([file]);
+            await waitFor(() => {
+                expect(onDrop).toHaveBeenCalledTimes(1);
+                expect(onDrop.mock.calls[0]?.[0]).toBe(dropEvent);
+                expect(onDrop.mock.calls[0]?.[1]).toEqual([file]);
+            });
         });
 
         await step('ignores drops that do not contain files', async () => {
@@ -103,6 +106,18 @@ export const TestSingle = {
 
             expect(onDrop).not.toHaveBeenCalled();
         });
+
+        await step('clicks the handler to trigger the file input.', async () => {
+            const input = dropArea.querySelector('input[type="file"]');
+            const clickSpy = fn((event) => {
+                event.preventDefault();
+                event.stopPropagation();
+            });
+            input?.addEventListener('click', clickSpy);
+            await userEvent.click(handlerNode);
+            expect(clickSpy).toHaveBeenCalledTimes(1);
+            
+        });
     }
 };
 
@@ -110,11 +125,11 @@ export const TestSingle = {
 export const TestMultiple = {
     parameters: testParams,
     play: async ({ canvasElement, step }) => {
-        await customElements.whenDefined('drop-area');
         /** @type {DropArea | null} */
         const dropAreaNode = canvasElement.querySelector('drop-area');
         const dropArea = /** @type {DropArea} */ (dropAreaNode);
         await dropArea.promise;
+        await new Promise(resolve => setTimeout(resolve, 0));
         const handlerNode = dropArea.querySelector('.dropArea__handler');
 
         await step('handles multiple dropped files', async () => {
@@ -148,6 +163,5 @@ export const TestMultiple = {
         });
     }
 };
-
 
 export default DropAreaStory;

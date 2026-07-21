@@ -8,10 +8,6 @@ import ArpaElement from '../core/arpaElement/arpaElement.js';
 
 const html = String.raw;
 class DropArea extends ArpaElement {
-    /////////////////////////
-    // #region INITIALIZATION
-    /////////////////////////
-
     /**
      * Creates an instance of DropArea.
      * @param {DropAreaConfigType} config - The configuration object.
@@ -21,8 +17,7 @@ class DropArea extends ArpaElement {
         this.signal = dummySignal;
         this.on = dummyListener;
         observerMixin(this);
-        this.bind('_onHandlerLeave', '_preventDefaultBehavior', '_onHandlerClick', '_onHandlerEnter');
-        this._onDrop = this.onDrop.bind(this);
+        this.bind('onHandlerLeave', 'preventDefaultBehavior', 'onHandlerEnter');
     }
 
     /**
@@ -33,41 +28,13 @@ class DropArea extends ArpaElement {
         this.i18nKey = 'ui.dropArea';
         return mergeObjects(super.getDefaultConfig(), {
             label: '{i18n:txtDropFiles}',
+            className: 'dropArea',
+            classNames: [() => this.hasProp('hasInput') && 'dropArea--hasInput'],
             icon: 'file_upload',
             handler: undefined,
-            hasInput: false
+            hasInput: true
         });
     }
-
-    // #endregion
-
-    /////////////////////
-    // #region RENDERING
-    /////////////////////
-
-    $renderTemplate() {
-        return html`
-            <button class="dropArea__handler fieldInput" type="button">
-                <div class="dropArea__content">
-                    <arpa-icon class="dropArea__icon">{icon}</arpa-icon>
-                    <p class="dropArea__label" zone="label">{label}</p>
-                </div>
-                <arpa-node
-                    can-render="hasInput"
-                    tag="input"
-                    name="input"
-                    accept="image/*"
-                    type="file"
-                ></arpa-node>
-            </button>
-        `;
-    }
-
-    // #endregion
-
-    /////////////////////
-    // #region ACCESSORS
-    /////////////////////
 
     /**
      * Returns the input element.
@@ -84,52 +51,52 @@ class DropArea extends ArpaElement {
         return this.querySelector('input[type="file"]');
     }
 
-    // #endregion
-
-    ////////////////////
-    // #region LIFECYCLE
-    ////////////////////
-
-    $onConnected() {
-        super.$onConnected();
-        this.classList.add('dropArea');
-        if (this.hasProp('hasInput')) {
-            this.classList.add('dropArea--hasInput');
-        }
-        this._initializeInput();
-        /** @type {HTMLElement | null} */
-        this.handlerNode = this.querySelector('.dropArea__handler');
-        this._initializeHandler();
+    $renderTemplate() {
+        return html`<arpa-node
+            name="handler"
+            tag="button"
+            on-click="{onHandlerClick}"
+            on-drop="{onDrop}"
+            class="fieldInput"
+            type="button"
+        >
+            <div class="dropArea__content">
+                <arpa-icon class="dropArea__icon">{icon}</arpa-icon>
+                <p class="dropArea__label" zone="label">{label}</p>
+            </div>
+            <arpa-node
+                name="input"
+                tag="input"
+                can-render="hasInput"
+                accept="image/*"
+                type="file"
+            ></arpa-node>
+        </arpa-node> `;
     }
 
-    _initializeInput() {
+    async $initializeNodes() {
+        await super.$initializeNodes();
         this.input = this.getInput();
+        this._initializeHandler();
+        return true;
     }
 
-    _initializeHandler(node = this.handlerNode) {
+    _initializeHandler(node = this.nodes.handler) {
         if (!node) return;
-        listen(node, 'click', this._onHandlerClick);
-        listen(node, 'drop', this._onDrop, false);
-        listen(node, ['dragenter', 'dragover', 'dragleave', 'drop'], this._preventDefaultBehavior, false);
-        listen(node, ['dragenter', 'dragover'], this._onHandlerEnter, false);
-        listen(node, ['dragleave', 'drop'], this._onHandlerLeave, false);
+        listen(node, ['dragenter', 'dragover', 'dragleave', 'drop'], this.preventDefaultBehavior, false);
+        listen(node, ['dragenter', 'dragover'], this.onHandlerEnter, false);
+        listen(node, ['dragleave', 'drop'], this.onHandlerLeave, false);
     }
 
-    // #endregion
-
-    /////////////////
-    // #region EVENTS
-    /////////////////
-
-    _onHandlerEnter() {
-        this.handlerNode?.classList.add('dropArea__handler--active');
+    onHandlerEnter() {
+        this.nodes.handler?.classList.add('dropArea__handler--active');
     }
 
-    _onHandlerLeave() {
-        this.handlerNode?.classList.remove('dropArea__handler--active');
+    onHandlerLeave() {
+        this.nodes.handler?.classList.remove('dropArea__handler--active');
     }
 
-    _onHandlerClick() {
+    onHandlerClick() {
         this.input?.click();
     }
 
@@ -137,7 +104,7 @@ class DropArea extends ArpaElement {
      * Prevents the default behavior of an event.
      * @param {Event} event
      */
-    _preventDefaultBehavior(event) {
+    preventDefaultBehavior(event) {
         event.preventDefault();
         event.stopPropagation();
     }
@@ -183,8 +150,6 @@ class DropArea extends ArpaElement {
             }
         }
     }
-
-    // #endregion
 }
 
 defineCustomElement('drop-area', DropArea);
