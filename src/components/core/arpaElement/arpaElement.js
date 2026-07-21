@@ -229,10 +229,6 @@ class ArpaElement extends HTMLElement {
         return names.reduce(reduce, {});
     }
 
-    getTagName() {
-        return this.tagName.toLowerCase();
-    }
-
     /**
      * Returns the base class for the element.
      * If a name is given, it is added to the class name following BEM convention.
