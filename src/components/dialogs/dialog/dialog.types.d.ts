@@ -12,6 +12,6 @@ export type DialogConfigType = ArpaElementConfigType & {
     promise?: Promise<unknown>;
     title?: string;
     variant?: 'primary' | 'secondary' | 'tertiary' | 'minimal' | 'delete' | 'default';
-    '@onOpen'?: (dialogInstance: unknown) => void;
-    '@onClose'?: (dialogInstance: unknown) => void;
+    onOpen?: (dialogInstance: unknown) => void;
+    onClose?: (dialogInstance: unknown) => void;
 };

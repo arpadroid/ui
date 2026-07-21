@@ -20,14 +20,17 @@ const ButtonStory = {
         tooltip: 'Play',
         icon: 'play_arrow',
         tooltipPosition: 'right',
-        '@onClick': onClickAction
+        onClick: onClickAction
     }
 };
 
 /** @type {Story} */
 export const Default = {
     name: 'Render',
-    parameters: defaultParams
+    parameters: defaultParams,
+    args: {
+        onClick: onClickAction
+    }
 };
 
 /** @type {Story} */

@@ -6,11 +6,12 @@ import { defineCustomElement } from '@arpadroid/tools';
 import Button from '../button/button.js';
 
 class IconButton extends Button {
-    /** 
+    /**
      * Returns the default configuration.
      * @returns {IconButtonConfigType}
      */
     getDefaultConfig() {
+        const parentConfig = super.getDefaultConfig();
         /** @type {IconButtonConfigType} */
         const config = {
             buttonClass: 'iconButton__button',
@@ -24,7 +25,7 @@ class IconButton extends Button {
                 }
             }
         };
-        return mergeObjects(super.getDefaultConfig(), config);
+        return mergeObjects(parentConfig, config);
     }
 }
 

@@ -6,7 +6,7 @@
  * @typedef {import('../dialog/dialog').default} Dialog
  * @typedef {import('./confirmDialog').default} ConfirmDialog
  */
-import { waitFor, expect, within, fn } from 'storybook/test';
+import { waitFor, expect, within, fn, userEvent } from 'storybook/test';
 import DialogStory from '../dialog/dialog.stories';
 import { renderDialog } from '../dialog/dialogStoryUtil';
 import { defaultParams, testParams } from '@arpadroid/module/storybook/helper';
@@ -40,8 +40,8 @@ const ConfirmDialogStory = {
         title: 'Confirm Action',
         zoneContent: dialogText,
         open: true,
-        '@onConfirm': fn(),
-        '@onCancel': fn()
+        onConfirm: fn(),
+        onCancel: fn()
     },
     render: args => renderDialog(args, 'confirm-dialog')
 };
@@ -64,9 +64,10 @@ export const Test = {
             throw new Error('Dialog or Dialogs component not found');
         }
         const dialog = within(dialogNode);
-        dialogNode?.on('confirm', args['@onConfirm']);
-        dialogNode?.on('cancel', args['@onCancel']);
+        dialogNode?.on('confirm', args.onConfirm);
+        dialogNode?.on('cancel', args.onCancel);
         dialogNode.setPayload([{ id: 1 }]);
+        const cancelButton = await waitFor(() => dialog.getByRole('button', { name: /Cancel/i }));
 
         await step('Renders the dialog', async () => {
             expect(dialogsNode).toBeInTheDocument();
@@ -79,12 +80,11 @@ export const Test = {
         await step(
             'Clicks on cancel button and expects the dialog to close and cancel signal to be fired.',
             async () => {
-                const button = dialog.getByRole('button', { name: /Cancel/i });
                 expect(dialogNode).toHaveAttribute('open');
-                expect(button).toBeInTheDocument();
-                button.click();
+                expect(cancelButton).toBeInTheDocument();
+                await userEvent.click(cancelButton);
                 expect(dialogNode).not.toHaveAttribute('open');
-                expect(args['@onCancel']).toHaveBeenCalledTimes(1);
+                expect(args.onCancel).toHaveBeenCalledTimes(1);
             }
         );
 
@@ -94,10 +94,10 @@ export const Test = {
             expect(dialogNode).toHaveAttribute('open');
             expect(button).toBeInTheDocument();
             expect(dialogNode).toHaveAttribute('open');
-            button.click();
+            await userEvent.click(button);
             await waitFor(() => {
                 expect(dialogNode).not.toHaveAttribute('open');
-                expect(args['@onConfirm']).toHaveBeenCalledWith([{ id: 1 }], undefined, undefined);
+                expect(args.onConfirm).toHaveBeenCalledWith([{ id: 1 }], undefined, undefined);
             });
         });
 

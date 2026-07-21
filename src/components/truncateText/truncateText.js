@@ -12,7 +12,6 @@ class TruncateText extends ArpaElement {
      * @returns {TruncateTextConfigType}
      */
     getDefaultConfig() {
-        this.bind('toggleTruncate');
         this.i18nKey = 'ui.truncateText';
         /** @type {TruncateTextConfigType} */
         const config = {

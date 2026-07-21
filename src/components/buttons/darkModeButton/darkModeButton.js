@@ -7,11 +7,6 @@ class DarkModeButton extends IconButton {
     /** @type {DarkModeButtonConfigType} */
     _config = this._config;
 
-    $initialize() {
-        super.$initialize();
-        this.bind('_onClick');
-    }
-
     /**
      * Returns the default configuration.
      * @returns {DarkModeButtonConfigType}
@@ -35,9 +30,10 @@ class DarkModeButton extends IconButton {
 
     /**
      * Toggles Dark Mode styles and updates the icon and label when the button is clicked.
+     * @param {Event} event
      */
-    _onClick() {
-        super._onClick();
+    onClick(event) {
+        super.onClick(event);
         const styleNode = document.getElementById('dark-styles');
         if (!(styleNode instanceof HTMLLinkElement)) {
             console.error('Dark mode styles not found.');

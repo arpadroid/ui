@@ -166,6 +166,13 @@ export const Test = {
         await step('renders the image preloader text', async () => {
             await waitFor(() => expect(preloader).not.toBeNull());
         });
+
+        await step('renders the image', async () => {
+            const image = /** @type {ArpaImageComponent | null} */ (
+                canvasElement.querySelector('arpa-image')
+            );
+            await waitFor(() => expect(image?.hasLoaded()).toBe(true));
+        });
     }
 };
 

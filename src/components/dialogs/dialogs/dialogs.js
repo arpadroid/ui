@@ -3,7 +3,7 @@
  * @typedef {import('../dialog/dialog.types.js').DialogConfigType} DialogConfigType
  */
 import ArpaElement from '../../core/arpaElement/arpaElement.js';
-import { isObject, renderNode, attrString, defineCustomElement } from '@arpadroid/tools';
+import { isObject, renderNode, attrString, defineCustomElement, listen } from '@arpadroid/tools';
 
 const html = String.raw;
 class Dialogs extends ArpaElement {
@@ -22,16 +22,19 @@ class Dialogs extends ArpaElement {
     }
 
     $initialize() {
-        this.bind('_onKeyUp');
-        document.addEventListener('keyup', this._onKeyUp);
+        this.bind('onKeyUp');
+        listen(document, 'keyup', this.onKeyUp);
     }
 
     /**
      * Handles key up events.
-     * @param {KeyboardEvent} event - The keyboard event.
+     * @param {Event} event - The keyboard event.
      */
-    _onKeyUp(event) {
-        if (event.key === 'Escape') this.closeCurrentDialog();
+    onKeyUp(event) {
+        if (!(event instanceof KeyboardEvent)) return;
+        if (event.key === 'Escape') {
+            this.closeCurrentDialog();
+        }
     }
 
     getDialogs() {

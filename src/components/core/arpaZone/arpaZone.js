@@ -71,7 +71,7 @@ class ArpaZone extends HTMLElement {
                 await container.promise;
             }
             // @ts-ignore
-            const zoneElement = this.getZoneElement(container);
+            const zoneElement = this.selectZoneElement(container);
             if (zoneElement) {
                 return zoneElement;
             }
@@ -83,7 +83,7 @@ class ArpaZone extends HTMLElement {
      * @param {ArpaElement | null} [container]
      * @returns {HTMLElement | null | undefined}
      */
-    getZoneElement(container = this.element) {
+    selectZoneElement(container = this.element) {
         const zoneName = this.getProp('name');
         return container?.querySelector(`[zone="${zoneName}"]`);
     }
@@ -112,7 +112,7 @@ class ArpaZone extends HTMLElement {
         }
         await this.element.promise;
         /** @type {Element | undefined | null} */
-        let zoneElement = this.getZoneElement() || (await this.findZoneElement());
+        let zoneElement = this.selectZoneElement() || (await this.findZoneElement());
 
         if (zoneElement) {
             if (zoneElement instanceof ArpaElement) {
@@ -126,7 +126,7 @@ class ArpaZone extends HTMLElement {
             await this.element?.promise;
             await new Promise(resolve => setTimeout(resolve, 1));
             zoneElement =
-                this.getZoneElement() ||
+                this.selectZoneElement() ||
                 (await this.findZoneElement()) ||
                 document.querySelector(`body > *[zone="${name}"]`);
         }

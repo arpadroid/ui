@@ -6,7 +6,7 @@
  * @typedef {import('../dialogs/dialogs').default} Dialogs
  */
 
-import { expect, within, waitFor } from 'storybook/test';
+import { expect, within, waitFor, userEvent } from 'storybook/test';
 import { renderDialog } from '../dialog/dialogStoryUtil';
 import ConfirmDialogStory from '../confirmDialog/confirmDialog.stories';
 import { defaultParams, testParams } from '@arpadroid/module/storybook/helper';
@@ -52,8 +52,8 @@ export const Test = {
         await dialogNode?.promise;
 
         const dialog = within(dialogNode);
-        dialogNode.on('confirm', args['@onConfirm']);
-        dialogNode.on('cancel', args['@onCancel']);
+        dialogNode.on('confirm', args.onConfirm);
+        dialogNode.on('cancel', args.onCancel);
 
         await step('Renders the dialog', async () => {
             expect(dialogsNode).toBeInTheDocument();
@@ -70,9 +70,9 @@ export const Test = {
 
             const cancelButton = dialog.getByRole('button', { name: /cancel/i });
             expect(cancelButton).toBeInTheDocument();
-            cancelButton.click();
+            await userEvent.click(cancelButton);
             await waitFor(() => {
-                expect(args['@onCancel']).toHaveBeenCalled();
+                expect(args.onCancel).toHaveBeenCalled();
             });
         });
 
@@ -80,9 +80,9 @@ export const Test = {
             await dialogNode.open();
             const confirmButton = dialog.getByRole('button', { name: /delete/i });
             expect(confirmButton).toBeInTheDocument();
-            confirmButton.click();
+            await userEvent.click(confirmButton);
             await waitFor(() => {
-                expect(args['@onConfirm']).toHaveBeenCalled();
+                expect(args.onConfirm).toHaveBeenCalled();
             });
         });
 

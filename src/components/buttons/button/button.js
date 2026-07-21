@@ -16,14 +16,13 @@ class Button extends ArpaElement {
      * @returns {ButtonConfigType}
      */
     getDefaultConfig() {
-        this.bind('_onClick');
         /** @type {ButtonConfigType} */
         const config = {
             className: 'arpaButton',
             type: 'button',
             buttonClass: 'arpaButton__button',
             tooltipPosition: 'left',
-            eventHandlerSelector: 'button',
+            eventHandlerSelector: 'button'
         };
 
         return /** @type {ButtonConfigType} */ (super.getDefaultConfig(config));
@@ -54,6 +53,7 @@ class Button extends ArpaElement {
             variant="{variant}"
             zone="{buttonZone}"
             disabled="{disabled}"
+            on-click="{onClick}"
         >
             <arpa-node tag="arpa-icon" name="icon"></arpa-node>
             <arpa-node tag="span" is-content name="content">{label}</arpa-node>
@@ -67,20 +67,25 @@ class Button extends ArpaElement {
         </button>`;
     }
 
-    _onClick() {
-        const { '@onClick': onClick } = this._config;
-        if (typeof onClick === 'function') {
-            onClick(this);
-        }
+    /**
+     * Handles the button onClick event, invoking the configured onClick callback if it exists.
+     * @param {Event} event
+     */
+    onClick(event) {
+        const { onClick } = this._config;
+        typeof onClick === 'function' && onClick(event, this);
     }
 
     async $initializeNodes() {
         await super.$initializeNodes();
         const button = this.querySelector('button');
         if (!button) return false;
-        listen(button, 'click', this._onClick);
         /** @type {HTMLButtonElement | null} */
         this.button = button;
+        const { onClick } = this._config;
+        if (typeof onClick === 'function') {
+            listen(button, 'click', event => onClick(event, this));
+        }
         this.handleVariant();
         return true;
     }
@@ -96,6 +101,11 @@ class Button extends ArpaElement {
                 this.button?.setAttribute('type', 'submit');
             }
         }
+    }
+
+    async focus() {
+        await this.promise;
+        this.button?.focus();
     }
 }
 

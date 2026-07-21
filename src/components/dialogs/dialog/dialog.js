@@ -22,7 +22,7 @@ class Dialog extends ArpaElement {
      * @returns {DialogConfigType}
      */
     getDefaultConfig() {
-        this.bind('open', 'close');
+        this.bind('open');
         /** @type {DialogConfigType} */
         const config = {
             open: false,
@@ -87,8 +87,7 @@ class Dialog extends ArpaElement {
     }
 
     async _initializeButton() {
-        const button = await this.getButton();
-        button && listen(button, 'click', this.open);
+        listen(await this.getButton(), 'click', this.open);
     }
 
     async getButton() {
@@ -118,14 +117,14 @@ class Dialog extends ArpaElement {
         document.body.style.overflow = 'hidden';
         this.setAttribute('open', '');
         this.signal('open');
-        this.callCallback('@onOpen', this);
+        this.callCallback('onOpen', this);
     }
 
     close() {
         document.body.style.overflow = '';
         this.removeAttribute('open');
         this.signal('close');
-        this.callCallback('@onClose', this);
+        this.callCallback('onClose', this);
     }
 
     isOpen() {
@@ -149,9 +148,7 @@ class Dialog extends ArpaElement {
         return typeof promise?.finally === 'function';
     }
 
-    ////////////////////////////
     // #endregion Accessors
-    ////////////////////////////
 
     ////////////////////////////
     // #region Rendering
@@ -175,6 +172,7 @@ class Dialog extends ArpaElement {
                 <arpa-node name="headerActions">
                     <arpa-node
                         tag="icon-button"
+                        on-click="{close}"
                         can-render="canClose"
                         variant="minimal"
                         name="close"
@@ -193,11 +191,6 @@ class Dialog extends ArpaElement {
     }
 
     async $initializeNodes() {
-        const buttonComponent = /** @type {ArpaButton | undefined} */ (this.nodes.close);
-        buttonComponent?.promise.then(() => {
-            this.closeBtn = buttonComponent?.button;
-            this.closeBtn?.addEventListener('click', this.close);
-        });
         this.preloader = this.querySelector('.dialog__preloader');
         const { promise } = this._config;
         promise?.finally(() => {

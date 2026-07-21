@@ -70,7 +70,6 @@ class ArpaElement extends HTMLElement {
         this.zonesByName = new Set();
         this._zones = new Set();
         this.i18nKey = dashedToCamel(this.tagName.toLowerCase());
-        this._doBindings();
         this.$preInitialize();
         this.setConfig(config);
         this._preInitializeContent();
@@ -79,18 +78,6 @@ class ArpaElement extends HTMLElement {
         this.$initialize();
         this.promise = this.getPromise();
         handleCallbackProp(this, 'on-click', 'click');
-    }
-
-    _doBindings() {
-        Object.getOwnPropertyNames(Object.getPrototypeOf(this)).forEach(key => {
-            if (!key.startsWith('$on')) return;
-            // @ts-expect-error
-            const fn = this[key];
-            if (fn instanceof Function && key !== 'constructor') {
-                // @ts-expect-error
-                this[key] = fn.bind(this);
-            }
-        });
     }
 
     $preInitialize() {

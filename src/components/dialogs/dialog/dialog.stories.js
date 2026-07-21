@@ -19,8 +19,8 @@ const DialogStory = {
         id: 'dialog',
         title: 'Dialog title',
         open: true,
-        '@onOpen': fn(),
-        '@onClose': fn()
+        onOpen: fn(),
+        onClose: fn()
     },
     render: args => renderDialog(args)
 };
@@ -44,8 +44,8 @@ export const Test = {
     play: async ({ step, args }) => {
         const { dialogNode, dialogsNode } = await playSetup();
         const dialog = within(dialogNode);
-        dialogNode?.on('open', args['@onOpen']);
-        dialogNode?.on('close', args['@onClose']);
+        dialogNode?.on('open', args.onOpen);
+        dialogNode?.on('close', args.onClose);
         await step('Renders the dialog', async () => {
             expect(dialogsNode).toBeInTheDocument();
             expect(dialogNode).toBeInTheDocument();
@@ -65,14 +65,14 @@ export const Test = {
             await waitFor(() => expect(dialogNode).not.toHaveAttribute('open'));
             expect(dialogNode).not.toBeVisible();
             await waitFor(() => {
-                expect(args['@onClose']).toHaveBeenCalled();
+                expect(args.onClose).toHaveBeenCalled();
             });
         });
 
         await step('Reopens the dialog', async () => {
             await dialogNode?.open();
             await waitFor(() => expect(dialogNode).toHaveAttribute('open'));
-            expect(args['@onOpen']).toHaveBeenCalled();
+            expect(args.onOpen).toHaveBeenCalled();
         });
     }
 };

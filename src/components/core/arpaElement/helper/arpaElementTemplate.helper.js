@@ -153,6 +153,8 @@ export async function getTemplateEventHandlers(element, attr, value) {
     return handlers;
 }
 
+const listenerMap = new WeakMap();
+
 /**
  * Handles the event listener for a template attribute.
  * @param {ArpaElement} element
@@ -161,8 +163,18 @@ export async function getTemplateEventHandlers(element, attr, value) {
  */
 export async function handleTemplateEventListener(element, attr, value) {
     const fnName = dashedToCamel(value); // @ts-expect-error
-    const fn = element?.[fnName];
+    let fn = element?.[fnName];
     if (typeof fn !== 'function') return;
+    if (!listenerMap.has(element)) {
+        listenerMap.set(element, new Map());
+    }
+    const cacheKey = `${attr}:${value}`;
+    const elementListeners = listenerMap.get(element);
+    if (!elementListeners.has(cacheKey)) {
+        elementListeners.set(cacheKey, fn.bind(element));
+    }
+    fn = elementListeners.get(cacheKey);
+
     const eventName = attr.replace('on-', '').replace(/-/g, '');
     await element.promise;
     await new Promise(resolve => setTimeout(resolve, 0));
