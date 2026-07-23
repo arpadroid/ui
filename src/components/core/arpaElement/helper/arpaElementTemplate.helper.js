@@ -417,15 +417,18 @@ export function setNodeContent(node, content) {
  * Renders a child element.
  * @param {ArpaElement} element
  * @param {string} name
- * @param {ArpaNodeConfigType} [config]
+ * @param {ArpaNodeConfigType & { mustRender?: boolean }} [config]
  * @param {Record<string, string | boolean>} [attributes]
  * @returns {string}
  */
 export function renderChild(element, name, config = {}, attributes = {}) {
     const defaults = getDefaultNodeConfig(element, name);
+    const { mustRender = false } = config;
+
     config = mergeObjects(defaults, config);
     const canRender = canRenderNode(element, name, config, attributes);
-    if (canRender) {
+
+    if (mustRender || canRender) {
         typeof config.attr === 'function' && (config.attr = config.attr());
         const attr = getNodeAttributes(element, name, config, attributes);
         const { tag } = config;
@@ -436,6 +439,24 @@ export function renderChild(element, name, config = {}, attributes = {}) {
         return content;
     }
     return '';
+}
+
+/**
+ * Renders a node.
+ * @param {ArpaElement} element
+ * @param {string} name
+ * @param {ArpaNodeConfigType & { mustRender?: boolean }} [options]
+ * @param {Record<string, string | boolean>} [attributes]
+ * @returns {HTMLElement | Node | null} The rendered node.
+ */
+export function renderChildNode(element, name, options, attributes = {}) {
+    const { mustRender = true } = options || {};
+    const opt = { ...options, mustRender };
+    const node = renderNode(renderChild(element, name, opt, attributes));
+    if (node instanceof HTMLElement) {
+        element.nodes[name] = node;
+    }
+    return node;
 }
 
 /**
@@ -453,13 +474,14 @@ export function spawnNode(element, name, config) {
         }
         // @ts-ignore
         setNodeContent(node, getNodeContent(element, name, config));
-    } else {
-        const conf = mergeObjects(element.getNodeConfig(name) || {}, config);
-        const renderedNode = renderNode(renderChild(element, name, conf));
-        if (renderedNode) {
-            element.nodes[name] = /** @type {HTMLElement} */ (renderedNode);
-            node = /** @type {HTMLElement} */ (renderedNode);
-        }
+        return node;
+    }
+    const conf = mergeObjects(element.getNodeConfig(name) || {}, config);
+
+    const renderedNode = renderChildNode(element, name, conf);
+    if (renderedNode) {
+        element.nodes[name] = /** @type {HTMLElement} */ (renderedNode);
+        node = /** @type {HTMLElement} */ (renderedNode);
     }
     return node;
 }
@@ -539,6 +561,7 @@ export function getNodesConfigBlueprint(element, blueprint = element.getBlueprin
     const arpaNodeAttrNames = [
         'can-render',
         'class-name',
+        'must-render',
         'has-zone',
         'id',
         'name',
@@ -558,7 +581,7 @@ export function getNodesConfigBlueprint(element, blueprint = element.getBlueprin
         Object.keys(attr).forEach(key => {
             if (arpaNodeAttrNames.includes(key)) {
                 // @ts-ignore
-                cnf[key] = attr[key];
+                cnf[dashedToCamel(key)] = attr[key];
             } else {
                 // @ts-ignore
                 cnf.attr[key] = attr[key];

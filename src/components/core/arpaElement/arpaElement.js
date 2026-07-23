@@ -14,7 +14,7 @@ import { getCallbackProp, handleCallbackProp } from './helper/arpaElementProps.h
 import { hasProp, getProp, setProp, getArrayProp } from './helper/arpaElementProps.helper.js';
 import { hasZone, sanitizeAttributes } from './helper/arpaElement.helper';
 import { canRender, hasContent } from './helper/arpaElement.helper';
-import { renderTemplate, getClass, renderChild } from './helper/arpaElementTemplate.helper';
+import { renderTemplate, getClass, renderChild, renderChildNode } from './helper/arpaElementTemplate.helper';
 import { selectTemplates, spawnNode } from './helper/arpaElementTemplate.helper';
 import { I18nTool, I18n } from '@arpadroid/i18n';
 const { arpaElementI18n } = I18nTool;
@@ -399,7 +399,7 @@ class ArpaElement extends HTMLElement {
      * @param {ArpaNodeConfigType} config - The configuration object.
      * @returns {HTMLElement | Node | null}
      */
-    spawnNode(name, config) {
+    spawnNode(name, config = {}) {
         return spawnNode(this, name, config);
     }
 
@@ -845,6 +845,17 @@ class ArpaElement extends HTMLElement {
      */
     renderChild(name, options, attributes = {}) {
         return renderChild(this, name, options, attributes);
+    }
+
+    /**
+     * Renders a node.
+     * @param {string} name
+     * @param {ArpaNodeConfigType & { mustRender?: boolean }} [options]
+     * @param {Record<string, string | boolean>} [attributes]
+     * @returns {HTMLElement | Node | null} The rendered node.
+     */
+    renderNode(name, options, attributes = {}) {
+        return renderChildNode(this, name, options, attributes);
     }
 
     /**

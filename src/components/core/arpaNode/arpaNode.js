@@ -62,11 +62,12 @@ class ArpaNode extends HTMLElement {
     }
 
     getNodeAttributes() {
-        const attr = getAttributes(this, { camelCaseKeys: true });
+        const attr = getAttributes(this, {
+            camelCaseKeys: true,
+            convertFalseToBoolean: false
+        });
         for (const key in this.getDefaultConfig()) {
-            if (key in attr) {
-                delete attr[key];
-            }
+            if (key in attr) delete attr[key];
         }
         const { attr: configAttr = {} } = this._config || {};
         return mergeObjects(configAttr, attr);
