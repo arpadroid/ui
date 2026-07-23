@@ -337,10 +337,9 @@ export function canRenderNode(element, name, config = {}, attributes = {}) {
 
     let canRenderStr = (typeof attrCanRender === 'string' && attrCanRender) || '';
     !canRenderStr && typeof canRender === 'string' && (canRenderStr = canRender);
-    if (canRenderStr && typeof element?.hasProp === 'function') {
-        const result = evaluateProp(element, canRenderStr);
 
-        return result;
+    if (canRenderStr && typeof element?.hasProp === 'function') {
+        return evaluateProp(element, canRenderStr);
     }
 
     if (config.isContent || attributes.isContent || config?.childNodes?.length) {

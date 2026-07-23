@@ -8,6 +8,7 @@ export type ArpaNodeConfigType = {
     childNodes?: Node[];
     className?: string;
     content?: ArpaElementContentType;
+    defer?: string | boolean;
     hasZone?: boolean | 'false';
     id?: string;
     isContent?: boolean;

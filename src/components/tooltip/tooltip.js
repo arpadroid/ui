@@ -205,8 +205,8 @@ class Tooltip extends ArpaElement {
      * @param {'top' | 'bottom' | 'right' | 'left'} position - The position to set the cursor.
      */
     setCursorPosition(axis, position) {
-        this.setAttribute('cursorPositionAxis', axis);
-        this.setAttribute('cursorTooltipPosition', position);
+        this.setAttribute('cursor-position-axis', axis);
+        this.setAttribute('cursor-tooltip-position', position);
         this._initializeCursorPosition();
     }
 
