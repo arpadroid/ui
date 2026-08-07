@@ -138,6 +138,8 @@ class ArpaZone extends HTMLElement {
 
         if (this.hasAttribute('replace-content')) {
             zoneElement?.replaceChildren(...this.fragment?.childNodes);
+        } else if (this.hasAttribute('prepend-content')) {
+            zoneElement?.prepend(...this.fragment?.childNodes);
         } else {
             zoneElement?.append(this.fragment);
         }
