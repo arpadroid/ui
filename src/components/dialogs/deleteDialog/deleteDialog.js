@@ -9,6 +9,7 @@ class DeleteDialog extends ConfirmDialog {
      * @returns {DeleteDialogConfigType}
      */
     getDefaultConfig() {
+        const superConf = super.getDefaultConfig();
         this.i18nKey = 'ui.deleteDialog';
         /** @type {DeleteDialogConfigType} */
         const config = {
@@ -17,11 +18,12 @@ class DeleteDialog extends ConfirmDialog {
             icon: 'delete',
             canClose: true,
             confirmIcon: 'delete',
+            lblConfirm: '{i18n:lblConfirm}',
             attributes: {
                 variant: 'delete'
             }
         };
-        return mergeObjects(super.getDefaultConfig(), config);
+        return mergeObjects(superConf, config);
     }
 }
 
