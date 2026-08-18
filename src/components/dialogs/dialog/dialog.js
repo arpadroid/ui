@@ -22,7 +22,7 @@ class Dialog extends ArpaElement {
      * @returns {DialogConfigType}
      */
     getDefaultConfig() {
-        this.bind('open');
+        this.bind('open', 'close');
         /** @type {DialogConfigType} */
         const config = {
             open: false,
@@ -118,6 +118,7 @@ class Dialog extends ArpaElement {
         this.setAttribute('open', '');
         this.signal('open');
         this.callCallback('onOpen', this);
+        this.canClose() && document.addEventListener('keyup', this.$onKeyUp);
     }
 
     close() {
@@ -125,7 +126,17 @@ class Dialog extends ArpaElement {
         this.removeAttribute('open');
         this.signal('close');
         this.callCallback('onClose', this);
+        this.canClose() && document.removeEventListener('keyup', this.$onKeyUp);
     }
+
+    /**
+     * Closes the dialog when the escape key is pressed.
+     * @param {KeyboardEvent} event
+     * @private
+     */
+    $onKeyUp = event => {
+        event.key === 'Escape' && this.close();
+    };
 
     isOpen() {
         return this.hasProp('open');

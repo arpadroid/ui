@@ -7,7 +7,7 @@
  */
 import { attrString } from '@arpadroid/tools';
 import { waitFor, expect, within, fn, fireEvent, userEvent } from 'storybook/test';
-import { playSetup, renderDialog } from './dialogStoryUtil';
+import { dialogText, playSetup, renderDialog } from './dialogStoryUtil';
 const html = String.raw;
 
 /** @type {Meta} */
@@ -51,11 +51,8 @@ export const Test = {
             expect(dialogNode).toBeInTheDocument();
             expect(dialogsNode).toContainElement(dialogNode);
             expect(dialog.getByText('Dialog title')).toBeInTheDocument();
-            /**
-             * @todo - Fix this test, for some reason this is flaky in the pipeline but always passes in the browser.
-             */
-            // expect(dialog.getByText('Footer content')).toBeInTheDocument();
-            // await waitFor(() => expect(dialog.getByText(dialogText)).toBeInTheDocument());
+            expect(dialog.getByText('Footer content')).toBeInTheDocument();
+            await waitFor(() => expect(dialog.getByText(dialogText)).toBeInTheDocument());
         });
 
         await step('Closes the dialog', async () => {
@@ -74,6 +71,17 @@ export const Test = {
             await waitFor(() => expect(dialogNode).toHaveAttribute('open'));
             expect(args.onOpen).toHaveBeenCalled();
         });
+
+        await step('Closes the dialog with Escape key', async () => {
+            await userEvent.keyboard('{Escape}');
+            await waitFor(() => expect(dialogNode).not.toHaveAttribute('open'));
+            expect(dialogNode).not.toBeVisible();
+            await waitFor(() => {
+                expect(args.onClose).toHaveBeenCalled();
+            });
+        });
+
+        await dialogNode?.open();
     }
 };
 

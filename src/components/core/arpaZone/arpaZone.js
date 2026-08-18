@@ -76,6 +76,9 @@ class ArpaZone extends HTMLElement {
                 return zoneElement;
             }
         }
+        await new Promise(resolve => setTimeout(resolve, 30));
+        const zoneElement = this.selectZoneElement();
+        return zoneElement;
     }
 
     /**
@@ -99,6 +102,20 @@ class ArpaZone extends HTMLElement {
         return zoneTargetNode || ('zoneTarget' in zoneElement && zoneElement?.zoneTarget) || zoneElement;
     }
 
+    /**
+     * Adds the contents of the zone to the specified container element, either replacing, prepending, or appending based on the attributes of the ArpaZone.
+     * @param {Element | null} zoneElement
+     */
+    addZoneContentsToContainer(zoneElement) {
+        if (this.hasAttribute('replace-content')) {
+            zoneElement?.replaceChildren(...this.fragment?.childNodes);
+        } else if (this.hasAttribute('prepend-content')) {
+            zoneElement?.prepend(...this.fragment?.childNodes);
+        } else {
+            zoneElement?.append(this.fragment);
+        }
+    }
+
     async connectedCallback() {
         this._initializeZone();
         const name = this.getProp('name');
@@ -113,36 +130,19 @@ class ArpaZone extends HTMLElement {
         await this.element.promise;
         /** @type {Element | undefined | null} */
         let zoneElement = this.selectZoneElement() || (await this.findZoneElement());
-
         if (zoneElement) {
-            if (zoneElement instanceof ArpaElement) {
-                await zoneElement.promise;
-            }
+            'promise' in zoneElement && (await zoneElement.promise);
             const target = this.getZoneTarget(zoneElement);
-            target && (zoneElement = target);
+            if (target) {
+                zoneElement = target;
+            }
         }
-
-        if (!zoneElement) {
-            await this.element?.promise;
-            await new Promise(resolve => setTimeout(resolve, 1));
-            zoneElement =
-                this.selectZoneElement() ||
-                (await this.findZoneElement()) ||
-                document.querySelector(`body > *[zone="${name}"]`);
-        }
-
         if (!zoneElement) {
             LOST_ZONES.add(name);
             console.error(`No zone element found for zone "${name}".`);
         }
 
-        if (this.hasAttribute('replace-content')) {
-            zoneElement?.replaceChildren(...this.fragment?.childNodes);
-        } else if (this.hasAttribute('prepend-content')) {
-            zoneElement?.prepend(...this.fragment?.childNodes);
-        } else {
-            zoneElement?.append(this.fragment);
-        }
+        zoneElement && this.addZoneContentsToContainer(zoneElement);
 
         this.remove();
     }
