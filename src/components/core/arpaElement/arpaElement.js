@@ -8,7 +8,7 @@
  * @typedef {import('../arpaNode/arpaNode').default} ArpaNode
  * @typedef {import('../arpaZone/arpaZone').default} ArpaZone
  */
-import { attrString, dashedToCamel, getStringBetween, mergeObjects } from '@arpadroid/tools';
+import { attrString, camelToDashed, dashedToCamel, getStringBetween, mergeObjects } from '@arpadroid/tools';
 import { defineCustomElement, attr, bind, classNames } from '@arpadroid/tools';
 import { getCallbackProp, handleCallbackProp } from './helper/arpaElementProps.helper.js';
 import { hasProp, getProp, setProp, getArrayProp } from './helper/arpaElementProps.helper.js';
@@ -90,9 +90,24 @@ class ArpaElement extends HTMLElement {
 
     _preInitializeContent() {
         const { content } = this._config;
-        typeof content === 'string' && (this.innerHTML = content);
-        delete this._config.content;
-        attr(this, sanitizeAttributes(this, this._config));
+        typeof content === 'string' && !this.innerHTML.includes(content) && (this.innerHTML = content);
+        this._printAttributeList();
+    }
+
+    _printAttributeList() {
+        const { attributeList = [] } = this._config;
+        /** @type {Record<string, unknown>} */
+        const attributes = {};
+        attributeList.forEach(
+            /** @param {string} attrName */ attrName => {
+                if (!this.hasAttribute(attrName) && typeof this._config[attrName] !== 'undefined') {
+                    attributes[camelToDashed(attrName)] = this._config[attrName];
+                }
+            }
+        );
+        if (Object.keys(attributes).length > 0) {
+            attr(this, attributes);
+        }
     }
 
     _initializeContent() {
@@ -113,7 +128,7 @@ class ArpaElement extends HTMLElement {
         return true;
     }
 
-    getBlueprint() {
+    $renderBlueprint() {
         let { blueprint } = this._config;
         if (typeof blueprint === 'function') {
             blueprint = blueprint.call(this);
@@ -126,7 +141,7 @@ class ArpaElement extends HTMLElement {
      * @param {Record<string, unknown>} [config]
      * @returns {ArpaElementConfigType}
      */
-    getDefaultConfig(config = {}) {
+    getDefaultConfig(config = this.config || {}) {
         /** @type {ArpaElementConfigType} */
         const defaultConfig = {
             className: '',
@@ -571,7 +586,7 @@ class ArpaElement extends HTMLElement {
 
     /**
      * Sets the configuration for the element.
-     * @param {ArpaElementConfigType} [config]
+     * @param {ArpaElementConfigType & Record<string, unknown>} [config]
      */
     setConfig(config = {}) {
         const defaultConfig = this.getDefaultConfig();
@@ -784,15 +799,13 @@ class ArpaElement extends HTMLElement {
     }
 
     async handleContent() {
-        if (!this.hasNodesConfig() || !this._config.handleContent) {
+        if (!this.hasNodesConfig() || !this._config.handleContent || !this._childNodes?.length) {
             return;
         }
-        this._childNodes?.length &&
-            this.setContent(this._childNodes, {
-                callOnContentSet: false,
-                replace: false
-            });
-        return true;
+        this.setContent(this._childNodes, {
+            callOnContentSet: false,
+            replace: false
+        });
     }
 
     async _resolveRender() {

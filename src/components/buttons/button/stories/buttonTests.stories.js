@@ -8,6 +8,7 @@
 import { waitFor, expect } from 'storybook/test';
 import ButtonStory from './button.stories';
 import { testParams } from '@arpadroid/module/storybook/helper';
+import { $attr } from '@arpadroid/tools';
 
 /** @type {Meta} */
 const ButtonTestsStory = {
@@ -16,14 +17,17 @@ const ButtonTestsStory = {
     title: 'UI/Buttons/Button/Tests'
 };
 
+const html = String.raw;
 /** @type {Story} */
 export const Test = {
     args: {
-        content: 'Click me',
         icon: 'check_circle',
         rhsIcon: 'person',
         tooltip: 'If you click me something awesome will happen.',
         tooltipPosition: 'top'
+    },
+    render: ({ ...args }) => {
+        return html`<arpa-button ${$attr(args)}>Click me</arpa-button>`;
     },
     parameters: testParams,
     play: async ({ canvas, canvasElement, step }) => {

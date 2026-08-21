@@ -147,17 +147,19 @@ class ArpaNode extends HTMLElement {
     }
 
     async handleDefer() {
+        await new Promise(resolve => requestAnimationFrame(resolve));
+
         let deferFn = this.getProp('defer');
+        let rv = undefined;
         if (typeof deferFn === 'string') {
-            // @ts-ignore
-            deferFn = this.element?.[deferFn];
+            deferFn = this.element?.[/** @type {keyof ArpaElement} */ (deferFn)];
         }
         if (typeof deferFn === 'function') {
-            await deferFn.call(this.element);
+            rv = await deferFn.call(this.element);
         } else {
             await this.element?.promise;
         }
-        return true;
+        return typeof rv !== 'undefined' ? rv : true;
     }
 
     async connectedCallback() {
@@ -176,7 +178,11 @@ class ArpaNode extends HTMLElement {
             return Promise.reject(new Error(msg));
         }
         if (this.hasAttribute('defer')) {
-            await this.handleDefer();
+            const rv = await this.handleDefer();
+            if (!rv) {
+                this.remove();
+                return;
+            }
         }
         if (!this.node) {
             this.node = /** @type {ArpaElementContentNodeType & {arpaNode?: ArpaNode}} */ (this.renderNode());

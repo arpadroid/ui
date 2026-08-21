@@ -3,6 +3,7 @@ import ArpaElement, { ArpaNode } from './arpaElement';
 
 export type ArpaElementConfigType = {
     attributes?: Record<string, string>;
+    attributeList?: string[]; // Attributes that must be printed if they exist in config
     blueprint?: ArpaElementBluePrintType;
     className?: string;
     classNames?: (string | (() => string))[];

@@ -1,11 +1,11 @@
 /**
  * @typedef {import('../arpaNode.types.js').ArpaNodeConfigType} ArpaNodeConfigType
- * @typedef {import('../arpaNode.js').default} ArpaNode
  * @typedef {import('@storybook/web-components-vite').Meta<ArpaNodeConfigType>} Meta
  * @typedef {import('@storybook/web-components-vite').StoryObj<ArpaNodeConfigType>} StoryObj
  */
 
 import { expect, waitFor } from 'storybook/test';
+import { $attr } from '@arpadroid/tools';
 
 const html = String.raw;
 
@@ -142,21 +142,15 @@ export const Programmatic = {
         canRender: true,
         content: 'Programmatic content'
     },
-    decorators: [
-        Story => {
-            const wrapper = document.createElement('arpa-element');
-            wrapper.className = 'my-wrapper';
-            const storyElement = Story();
-            customElements.whenDefined('arpa-element').then(() => {
-                // @ts-ignore
-                wrapper?.appendChild(storyElement);
-            });
-            return wrapper;
-        }
-    ],
-    play: async ({ canvasElement, canvas, step }) => {
-        await playSetup();
-        await step('Does not render arpa-nodes', async () => {
+    render: () => {
+        return html`<arpa-element class="my-wrapper"></arpa-element>`;
+    },
+    play: async ({ canvasElement, canvas, step, args }) => {
+        const arpaElement = canvasElement.querySelector('arpa-element');
+        arpaElement && (arpaElement.innerHTML = html`<arpa-node ${$attr(args)}>${args.content}</arpa-node>`);
+        await step('Renders programmatic content', async () => {
+            expect(arpaElement).toBeInTheDocument();
+            expect(arpaElement).toHaveClass('my-wrapper');
             await waitFor(() => assertNoArpaNodes(canvasElement));
             expect(
                 canvas.getByRole('heading', { name: 'Programmatic content', level: 1 })

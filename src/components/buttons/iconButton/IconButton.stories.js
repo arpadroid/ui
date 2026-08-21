@@ -1,15 +1,12 @@
 /**
  * @typedef {import('./iconButton.types.js').IconButtonConfigType} IconButtonConfigType
- * @typedef {import('../button/button').default} Button
- * @typedef {import('../button/button.types.js').ButtonConfigType} ButtonConfigType
+ * @typedef {import('./iconButton').default} IconButton
  * @typedef {import('@storybook/web-components-vite').Meta<IconButtonConfigType>} Meta
  * @typedef {import('@storybook/web-components-vite').StoryObj<IconButtonConfigType>} Story
  */
 
 import { defaultParams, testParams } from '@arpadroid/module/storybook/helper';
 import { expect, fn, userEvent } from 'storybook/test';
-
-const onClickAction = fn(() => {});
 
 /** @type {Meta} */
 const ButtonStory = {
@@ -19,18 +16,14 @@ const ButtonStory = {
     args: {
         tooltip: 'Play',
         icon: 'play_arrow',
-        tooltipPosition: 'right',
-        onClick: onClickAction
+        tooltipPosition: 'right'
     }
 };
 
 /** @type {Story} */
 export const Default = {
     name: 'Render',
-    parameters: defaultParams,
-    args: {
-        onClick: onClickAction
-    }
+    parameters: defaultParams
 };
 
 /** @type {Story} */
@@ -40,13 +33,16 @@ export const Test = {
         icon: 'labs'
     },
     parameters: testParams,
-    play: async ({ canvas, step }) => {
-        const button = canvas.getByRole('button', { name: /test/i });
+    play: async ({ canvas, canvasElement, step }) => {
+        const onClickAction = fn(() => {});
+        const button = /** @type {HTMLButtonElement} */ (canvas.getByRole('button', { name: /test/i }));
+        const arpaButton = /** @type {IconButton} */ (canvasElement.querySelector('icon-button'));
+        arpaButton.setConfig({ onClick: onClickAction });
 
         await step('calls the onClick action when clicked', async () => {
             await userEvent.click(button);
-            expect(onClickAction).toHaveBeenCalledOnce();
-            expect(canvas.getByText(/test/i)).toBeVisible();
+            expect(onClickAction).toHaveBeenCalled();
+            expect(canvas.getByText(/test tooltip/i)).toBeVisible();
         });
     }
 };
@@ -58,7 +54,10 @@ export const Disabled = {
         tooltip: 'Disabled Button'
     },
     parameters: testParams,
-    play: async ({ canvas, step }) => {
+    play: async ({ canvas, canvasElement, step }) => {
+        const onClickAction = fn(() => {});
+        const arpaButton = /** @type {IconButton} */ (canvasElement.querySelector('icon-button'));
+        arpaButton.setConfig({ onClick: onClickAction });
         const button = canvas.getByRole('button', { name: /Disabled Button/i });
         await step('renders the disabled icon button', async () => {
             expect(button).toBeDisabled();

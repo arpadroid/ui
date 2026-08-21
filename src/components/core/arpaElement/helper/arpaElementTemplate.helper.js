@@ -389,11 +389,12 @@ export function getNodeAttributes(element, name, config = {}, attributes = {}) {
 export function getNodeContent(element, name, config = {}) {
     let content = config.content || (name && element?.getProp(name)) || '';
     typeof content === 'function' && (content = content());
-    return processTemplate(
+    const rv = processTemplate(
         /** @type {string} **/ (content),
         element?.getPayload(element?.templateVars),
         element
     );
+    return rv;
 }
 
 /**
@@ -423,7 +424,6 @@ export function setNodeContent(node, content) {
 export function renderChild(element, name, config = {}, attributes = {}) {
     const defaults = getDefaultNodeConfig(element, name);
     const { mustRender = false } = config;
-
     config = mergeObjects(defaults, config);
     const canRender = canRenderNode(element, name, config, attributes);
 
@@ -552,7 +552,8 @@ export async function applyTemplateAttributes(element, template, _payload = {}, 
  * @param {ArpaElement} element
  * @param {string} [blueprint]
  */
-export function getNodesConfigBlueprint(element, blueprint = element.getBlueprint()) {
+export function getNodesConfigBlueprint(element, blueprint) {
+    blueprint = String(blueprint || element.$renderBlueprint() || '');
     const tpl = document.createElement('template');
     tpl.innerHTML = blueprint;
     /** @type {ArpaNode[]} */

@@ -49,7 +49,6 @@ describe('ArpaElementProps Helper', () => {
         });
 
         test('returns config value when attribute absent', () => {
-            // @ts-expect-error
             el.setConfig({ myProp: 'configured' });
             expect(hasProp(el, 'myProp')).toBe('configured');
         });
@@ -63,14 +62,12 @@ describe('ArpaElementProps Helper', () => {
 
     describe('getProp', () => {
         test('returns attribute value (takes priority over config)', () => {
-            // @ts-expect-error
             el.setConfig({ myProp: 'from-config' });
             el.setAttribute('my-prop', 'from-attr');
             expect(getProp(el, 'myProp')).toBe('from-attr');
         });
 
         test('returns config value when attribute absent', () => {
-            // @ts-expect-error
             el.setConfig({ myProp: 'from-config' });
             expect(getProp(el, 'myProp')).toBe('from-config');
         });
@@ -89,14 +86,12 @@ describe('ArpaElementProps Helper', () => {
 
     describe('getArrayProp', () => {
         test('splits comma-separated string and trims whitespace', () => {
-            // @ts-expect-error
             el.setConfig({ testProp: ' value1,  value2, value3 ' });
             expect(getArrayProp(el, 'testProp')).toEqual(['value1', 'value2', 'value3']);
         });
 
         test('returns value as-is when it is already an array', () => {
             const arr = ['a', 'b'];
-            // @ts-expect-error
             el.setConfig({ testProp: arr });
             expect(getArrayProp(el, 'testProp')).toBe(arr);
         });
@@ -110,7 +105,6 @@ describe('ArpaElementProps Helper', () => {
 
     describe('getCallbackProp', () => {
         test('returns undefined when prop does not start with ":"', () => {
-            // @ts-expect-error
             el.setConfig({ onAction: 'plainValue' });
             expect(getCallbackProp(el, 'onAction')).toBeUndefined();
         });
@@ -123,7 +117,6 @@ describe('ArpaElementProps Helper', () => {
             const parent = await createElement();
             const child = await createElement();
             parent.appendChild(child);
-            // @ts-expect-error
             child.setConfig({ onAction: ':nonExistent' });
             expect(getCallbackProp(child, 'onAction')).toBeUndefined();
         });

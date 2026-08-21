@@ -1,65 +1,75 @@
 /**
  * @typedef {import('../arpaElement.types').ArpaElementConfigType} ArpaElementConfigType
- * @typedef {import('@storybook/web-components-vite').Meta<ArpaElementConfigType>} ArpaElementMetaType
- * @typedef {import('@storybook/web-components-vite').StoryObj<ArpaElementConfigType>} ArpaElementStoryType
+ * @typedef {import('@storybook/web-components-vite').Meta<ArpaElementConfigType>} Meta
+ * @typedef {import('@storybook/web-components-vite').StoryObj<ArpaElementConfigType>} Story
  */
 import { expect, waitFor } from 'storybook/test';
 import ArpaElement from '../arpaElement';
-import Usage from './arpaElement.default.usage';
 import TestElement from './testElement.js';
+import { I18n } from '@arpadroid/i18n';
 
 const html = String.raw;
 
-/** @type {ArpaElementMetaType} */
+/** @type {Meta} */
 const ArpaElementStory = {
     title: 'UI/Core/ArpaElement',
-    component: 'arpa-element',
-    args: {
-        className: 'testComponent',
-        classNames: ['class1', 'class2'],
-        attributes: {
-            id: 'testId',
-            'data-test': 'testValue'
-        },
-        variant: '',
-        template: html`<fieldset>
-            <legend>
-                <h2>Arpa Element</h2>
-                <p>
-                    <i18n-text key="ui.arpaElement.docs.description.component"> </i18n-text>
-                </p>
-            </legend>
-            {wrapper}{header}{body}{footer}{testVar2}
-        </fieldset>`,
-        templateVars: {
-            testVar: () => 'Test Variable 1'
-        },
-        nodesConfig: {
-            header: {
-                tag: 'header',
-                content: html`<p>{testVar}</p>`
-            },
-            body: {
-                tag: 'main',
-                isContent: true
-            },
-            footer: { tag: 'footer' }
-        }
-    }
+    component: 'arpa-element'
 };
 
-/** @type {ArpaElementStoryType} */
-export const Default = {
-    name: 'Render',
-    parameters: {
-        usage: Usage
-    },
-    args: {
-        content: html`<p>ArpaElement content</p>`
+const TEMPLATE = html`
+    <fieldset>
+        <legend>
+            <h2>Arpa Element</h2>
+            <p>
+                <i18n-text key="ui.arpaElement.docs.description.component"></i18n-text>
+            </p>
+        </legend>
+
+        <arpa-node name="header" tag="header">
+            <p>{testVar}</p>
+        </arpa-node>
+
+        <arpa-node name="body" tag="main" is-content></arpa-node>
+
+        <arpa-node name="footer" tag="footer"></arpa-node>
+
+        {testVar2}
+    </fieldset>
+`;
+
+/** @type {Story} */
+export const ArpaElementRender = {
+    name: 'ArpaElement - Render',
+    render: () => {
+        return html`
+            <arpa-element id="test-element" class="test-element">
+                <template template-type="content"> ${TEMPLATE} </template>
+                ArpaElement content
+            </arpa-element>
+
+            <!-- Although we would normally create a class that extends ArpaElement
+            and return a default config from getDefaultConfig, we can also set the
+            config programmatically on the element in the following way. -->
+
+            <script>
+                var element = /** @type {ArpaElement} */ (document.getElementById('test-element'));
+                element.setConfig({
+                    className: 'testComponent',
+                    classNames: ['class1', 'class2'],
+                    attributes: {
+                        'data-test': 'testValue'
+                    },
+                    templateVars: {
+                        testVar: () => 'Test Variable 1',
+                        testVar2: 'Test Variable 2'
+                    }
+                });
+            </script>
+        `;
     },
     play: async ({ step, canvas, canvasElement }) => {
+        const element = /** @type {ArpaElement} */ (canvasElement.querySelector('#test-element'));
         await customElements.whenDefined('arpa-element');
-        const element = /** @type {ArpaElement} */ (canvasElement.querySelector('arpa-element'));
         await element.promise;
 
         await step('renders the content', async () => {
@@ -76,37 +86,47 @@ export const Default = {
         });
 
         await step('applies attributes', async () => {
-            expect(element).toHaveAttribute('id', 'testId');
+            expect(element).toHaveAttribute('id', 'test-element');
             expect(element).toHaveAttribute('data-test', 'testValue');
         });
     }
 };
 
-/** @type {ArpaElementStoryType} */
-export const Zones = {
-    name: 'Zones',
-    args: {
-        templateVars: {
-            testVar: () => 'Test Variable 1',
-            testVar2: 'Test Variable 2'
-        },
-        content: html`
-            <arpa-zone name="header" prepend>
-                <h3>Header Content</h3>
-            </arpa-zone>
-            <arpa-zone name="body" prepend>
-                <h3>Body Content</h3>
-            </arpa-zone>
-            <arpa-zone name="footer">
-                <h3>Footer Content</h3>
-            </arpa-zone>
-        `
+/** @type {Story} */
+export const ArpaElementZones = {
+    name: 'ArpaElement - Zones',
+    render: () => {
+        return html`
+            <arpa-element class="testComponent test-element-zones">
+                <template template-type="content">${TEMPLATE}</template>
+
+                <arpa-zone name="header" prepend>
+                    <h3>Header Content</h3>
+                </arpa-zone>
+
+                <arpa-zone name="body" prepend>
+                    <h3>Body Content</h3>
+                </arpa-zone>
+
+                <arpa-zone name="footer">
+                    <h3>Footer Content</h3>
+                </arpa-zone>
+            </arpa-element>
+
+            <script>
+                var element = /** @type {ArpaElement} */ (document.querySelector('.test-element-zones'));
+                element.setConfig({
+                    templateVars: {
+                        testVar: () => 'Test Variable 1',
+                        testVar2: 'Test Variable 2'
+                    }
+                });
+            </script>
+        `;
     },
     play: async ({ step, canvas, canvasElement }) => {
-        await customElements.whenDefined('arpa-element');
-        const element = /** @type {ArpaElement} */ (canvasElement.querySelector('arpa-element'));
+        const element = /** @type {ArpaElement} */ (canvasElement.querySelector('.test-element-zones'));
         await element.promise;
-
         await step('renders the zoned content', async () => {
             await waitFor(() => {
                 const headerZone = canvas.getByText('Header Content');
@@ -130,32 +150,62 @@ export const Zones = {
     }
 };
 
-/** @type {ArpaElementStoryType} */
-export const CustomTemplate = {
-    name: 'Custom Template',
-    args: {},
-
+/** @type {Story} */
+export const TestElementRender = {
+    name: 'TestElement - Render',
     render: () => {
         return html`<test-element class="custom-template">
+            <arpa-zone name="header"> Test header </arpa-zone>
+            <arpa-zone name="externalWrapper" prepend-content>Test external</arpa-zone>
+            <h3>Body Content</h3>
+        </test-element>`;
+    },
+    play: async ({ canvas, canvasElement, step }) => {
+        await customElements.whenDefined('test-element');
+        const element = /** @type {TestElement} */ (canvasElement.querySelector('test-element'));
+        await element?.promise;
+        await step('renders the custom template content', async () => {
+            await waitFor(() => {
+                expect(canvas.getByRole('heading', { name: /Test element/i })).toBeInTheDocument();
+                const text = I18n.getText('ui.arpaElement.docs.description.component');
+                expect(canvas.getByText(text)).toBeInTheDocument();
+                expect(canvas.getByText('Test header')).toBeInTheDocument();
+                expect(canvas.getByText('Test external')).toBeInTheDocument();
+                expect(canvas.getByText('External wrapper')).toBeInTheDocument();
+                expect(canvas.getByText('Body Content')).toBeInTheDocument();
+            });
+        });
+    }
+};
+
+/** @type {Story} */
+export const TestElementCustomTemplate = {
+    name: 'TestElement - Custom Template',
+    args: {},
+    render: () => {
+        return html`<test-element>
             <!-- You can define a custom template using the template-type="content" attribute. -->
             <!-- This allows you to control the entire structure of the component. -->
             <template template-type="content">
                 <fieldset>
                     <legend>
                         <h2>Using Custom Templates</h2>
-                        <span>{testContent}</span>
+                        <span>Every arpa-element can be overridden with a custom template.</span>
                     </legend>
-                    {wrapper}{header}{body}{footer}{content}
-                    <!-- Variable tokens wrapped in curly braces map to internal component template children and variables. -->
-                    <!-- These are defined in the component's getTemplateVars method and nodesConfig configuration. -->
-                    <!-- Template children provide zone functionality by default, allowing you to target them with zone elements in the story content. -->
+                    {body}{header}
+                    <arpa-zone name="header">
+                        <p>Header Template Content</p>
+                    </arpa-zone>
                 </fieldset>
             </template>
             <!-- Any content in the global scope will be rendered in the body template child since it's marked as isContent -->
-            <h3>Body Content</h3>
+            <i18n-text key="ui.arpaElement.docs.description.component"></i18n-text>
             <!-- You can also explicitly target the body zone using a zone element -->
+            <arpa-zone name="body">
+                <h4>Use arpa-nodes to conveniently re-configure components.</h4>
+            </arpa-zone>
             <arpa-zone name="header">
-                <i18n-text key="ui.arpaElement.docs.description.component"></i18n-text>
+                <span>Header Implementation Content</span>
             </arpa-zone>
         </test-element>`;
     },
@@ -165,10 +215,16 @@ export const CustomTemplate = {
         await element?.promise;
         await step('renders the custom template content', async () => {
             await waitFor(() => {
-                const bodyContent = canvas.getByText('Body Content');
+                const bodyContent = canvas.getByText(
+                    'Use arpa-nodes to conveniently re-configure components.'
+                );
                 expect(canvas.getByRole('heading', { name: /Using Custom Template/i })).toBeInTheDocument();
-                expect(canvas.getByText('Top Content')).toBeInTheDocument();
-                expect(canvas.getByText('Head Content')).toBeInTheDocument();
+
+                expect(
+                    canvas.getByText('Every arpa-element can be overridden with a custom template.')
+                ).toBeInTheDocument();
+                expect(canvas.getByText('Header Template Content')).toBeInTheDocument();
+                expect(canvas.getByText('Header Implementation Content')).toBeInTheDocument();
                 expect(bodyContent).toBeInTheDocument();
                 expect(bodyContent.parentElement).toHaveClass('testComponent__body');
                 expect(bodyContent.parentElement?.tagName).toBe('MAIN');

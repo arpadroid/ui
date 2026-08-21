@@ -18,6 +18,9 @@ const ButtonStory = {
         icon: 'check_circle',
         tooltip: 'The button component ',
         tooltipPosition: 'bottom'
+    },
+    render: ({ ...args }) => {
+        return html`<arpa-button ${$attr(args)}>Button</arpa-button>`;
     }
 };
 
@@ -26,7 +29,6 @@ export const Default = {
     parameters: defaultParams,
     name: 'Render',
     args: {
-        content: html`Button`,
         icon: 'check_circle',
         tooltip: 'This is a tooltip.',
         tooltipPosition: 'top'

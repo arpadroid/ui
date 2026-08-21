@@ -23,7 +23,7 @@ export function getArpaElement(element) {
     let node = element.parentElement;
     while (node) {
         // @ts-ignore
-        if (node?.isArpaElement) {
+        if (node?.isArpaElement || node?.tagName === 'ARPA-ELEMENT') {
             return /** @type {ArpaElement} */ (node);
         }
         node = node.parentElement;
