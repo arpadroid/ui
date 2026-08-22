@@ -136,21 +136,27 @@ function getTemplateAttributeMatch(template, lastIndex, equalsIndex) {
  */
 export async function getTemplateEventHandlers(element, attr, value) {
     const selector = `[${attr}="{${value}}"]`;
-    const handlers = [];
-    const eventHandlers = Array.from(element.querySelectorAll(selector));
+    const handlers = new Set();
+    let eventHandlers = Array.from(element.querySelectorAll(selector));
+    if (!eventHandlers.length) {
+        await new Promise(resolve => setTimeout(resolve, 5));
+        eventHandlers = Array.from(element.querySelectorAll(selector));
+    }
     for (const eventHandler of eventHandlers) {
         if (!('getProp' in eventHandler)) {
-            handlers.push(eventHandler);
+            handlers.add(eventHandler);
             continue;
         }
         const arpaHandler = /** @type {ArpaElement} */ (eventHandler);
         const eventHandlerSelector = arpaHandler.getProp('eventHandlerSelector');
         if (eventHandlerSelector) {
             await arpaHandler.promise;
-            handlers.push(...arpaHandler.querySelectorAll(eventHandlerSelector));
+            for (const handler of arpaHandler.querySelectorAll(eventHandlerSelector)) {
+                handlers.add(handler);
+            }
         }
     }
-    return handlers;
+    return [...handlers];
 }
 
 const listenerMap = new WeakMap();
@@ -162,7 +168,7 @@ const listenerMap = new WeakMap();
  * @param {string} value
  */
 export async function handleTemplateEventListener(element, attr, value) {
-    const fnName = dashedToCamel(value); // @ts-expect-error
+    const fnName = /** @type {keyof ArpaElement} */ (dashedToCamel(value));
     let fn = element?.[fnName];
     if (typeof fn !== 'function') return;
     if (!listenerMap.has(element)) {
@@ -177,7 +183,6 @@ export async function handleTemplateEventListener(element, attr, value) {
 
     const eventName = attr.replace('on-', '').replace(/-/g, '');
     await element.promise;
-    await new Promise(resolve => setTimeout(resolve, 0));
     const eventHandler = await getTemplateEventHandlers(element, attr, value);
     listen(eventHandler, eventName, fn);
 }

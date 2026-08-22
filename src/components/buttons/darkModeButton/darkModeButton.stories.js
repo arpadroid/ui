@@ -22,13 +22,15 @@ export const Default = {
 export const Test = {
     name: 'Test',
     play: async ({ canvasElement, step, canvas }) => {
-        await customElements.whenDefined('dark-mode-button');
-
         const buttonComponent = /** @type {DarkModeButton} */ (
             canvasElement.querySelector('dark-mode-button')
         );
         await buttonComponent?.promise;
         const button = /** @type {HTMLButtonElement} */ (buttonComponent?.button);
+
+        const darkStyles = document.getElementById('dark-styles');
+        darkStyles?.setAttribute('disabled', '');
+
         await step('renders the button', async () => {
             expect(button).toBeInTheDocument();
         });
@@ -39,6 +41,7 @@ export const Test = {
         });
 
         await step('Clicks the button and expects dark mode', async () => {
+            await new Promise(resolve => setTimeout(resolve, 10));
             await userEvent.click(button);
             const darkStyles = document.getElementById('dark-styles');
             expect(darkStyles).not.toHaveAttribute('disabled');

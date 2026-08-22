@@ -30,6 +30,7 @@ class ArpaZone extends HTMLElement {
         /** @type {ArpaElement | null} */
         this.element = this.element || getArpaElement(this);
         this.element?.zonesByName?.add(this.getProp('name'));
+        this.element?._zones?.add(this);
     }
 
     /**

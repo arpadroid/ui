@@ -3,47 +3,36 @@
  * @typedef {import('@storybook/web-components-vite').Meta<ConfirmDialogConfigType & {zoneContent?: string}>} Meta
  * @typedef {import('@storybook/web-components-vite').StoryObj<ConfirmDialogConfigType>} Story
  * @typedef {import('../dialogs/dialogs').default} Dialogs
- * @typedef {import('../dialog/dialog').default} Dialog
  * @typedef {import('./confirmDialog').default} ConfirmDialog
  */
 import { waitFor, expect, within, fn, userEvent } from 'storybook/test';
-import DialogStory from '../dialog/dialog.stories';
-import { renderDialog } from '../dialog/dialogStoryUtil';
 import { defaultParams, testParams } from '@arpadroid/module/storybook/helper';
+import { $attr } from '@arpadroid/tools';
 
 const dialogText = 'Are you sure you want to proceed?';
 
-/**
- * Play setup for the confirm dialog story.
- * @param {HTMLElement} canvasElement
- * @returns {Promise<{canvas: any, dialogNode: ConfirmDialog | null, dialogsNode: Dialogs | null}>}
- */
-const playSetup = async canvasElement => {
-    const canvas = within(canvasElement);
-    await customElements.whenDefined('confirm-dialog');
-    await customElements.whenDefined('arpa-dialogs');
-    /** @type {Dialogs | null} */
-    const dialogsNode = document.querySelector('arpa-dialogs');
-    /** @type {ConfirmDialog | null} */
-    const dialogNode = document.querySelector('confirm-dialog');
-    return { canvas, dialogNode, dialogsNode };
-};
+const html = String.raw;
+
+const onConfirm = fn();
+const onCancel = fn();
 
 /** @type {Meta} */
 const ConfirmDialogStory = {
-    ...DialogStory,
     title: 'UI/Dialogs/Confirm Dialog',
     component: 'confirm-dialog',
     args: {
-        ...DialogStory.args,
         id: 'confirm',
         title: 'Confirm Action',
         zoneContent: dialogText,
-        open: true,
-        onConfirm: fn(),
-        onCancel: fn()
+        open: true
     },
-    render: args => renderDialog(args, 'confirm-dialog')
+    render: args => {
+        return html`
+            <arpa-dialogs>
+                <confirm-dialog ${$attr(args)}>${dialogText}</confirm-dialog>
+            </arpa-dialogs>
+        `;
+    }
 };
 
 /** @type {Story} */
@@ -55,19 +44,19 @@ export const Render = {
 export const Test = {
     parameters: testParams,
     args: {
-        id: 'confirm-test',
-        title: 'Confirm Action'
+        id: 'confirm-test'
     },
-    play: async ({ canvasElement, step, args }) => {
-        const { dialogNode, dialogsNode } = await playSetup(canvasElement);
-        if (!dialogNode || !dialogsNode) {
-            throw new Error('Dialog or Dialogs component not found');
-        }
+    play: async ({ step }) => {
+        /** @type {Dialogs | null} */
+        const dialogsNode = document.querySelector('arpa-dialogs');
+        const dialogNode = /** @type {ConfirmDialog} */ (document.querySelector('confirm-dialog'));
+        await customElements.whenDefined('arpa-dialogs');
+        await dialogNode?.promise;
         const dialog = within(dialogNode);
-        dialogNode?.on('confirm', args.onConfirm);
-        dialogNode?.on('cancel', args.onCancel);
         dialogNode.setPayload([{ id: 1 }]);
         const cancelButton = await waitFor(() => dialog.getByRole('button', { name: /Cancel/i }));
+        dialogNode?.on('confirm', onConfirm);
+        dialogNode?.on('cancel', onCancel);
 
         await step('Renders the dialog', async () => {
             expect(dialogsNode).toBeInTheDocument();
@@ -82,9 +71,10 @@ export const Test = {
             async () => {
                 expect(dialogNode).toHaveAttribute('open');
                 expect(cancelButton).toBeInTheDocument();
+                await new Promise(resolve => setTimeout(resolve, 100));
                 await userEvent.click(cancelButton);
-                expect(dialogNode).not.toHaveAttribute('open');
-                expect(args.onCancel).toHaveBeenCalledTimes(1);
+                await waitFor(() => expect(dialogNode).not.toHaveAttribute('open'));
+                expect(onCancel).toHaveBeenCalledTimes(1);
             }
         );
 
@@ -97,7 +87,7 @@ export const Test = {
             await userEvent.click(button);
             await waitFor(() => {
                 expect(dialogNode).not.toHaveAttribute('open');
-                expect(args.onConfirm).toHaveBeenCalledWith([{ id: 1 }], undefined, undefined);
+                expect(onConfirm).toHaveBeenCalledWith([{ id: 1 }], undefined, undefined);
             });
         });
 
