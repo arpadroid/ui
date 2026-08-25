@@ -18,8 +18,12 @@ import { canRender, hasContent } from './helper/arpaElement.helper';
 import { renderTemplate, getClass, renderChild, renderChildNode } from './helper/arpaElementTemplate.helper';
 import { selectTemplates, spawnNode } from './helper/arpaElementTemplate.helper';
 import { I18nTool, I18n } from '@arpadroid/i18n';
+import { DomBatcherTool } from '@arpadroid/tools';
+
 const { arpaElementI18n } = I18nTool;
 
+/** @type {DomBatcherTool | undefined} */
+export let BATCHER;
 class ArpaElement extends HTMLElement {
     //////////////////////////////
     // #region Setup
@@ -59,6 +63,9 @@ class ArpaElement extends HTMLElement {
      */
     constructor(config) {
         super();
+        if (!BATCHER) {
+            BATCHER = new DomBatcherTool();
+        }
         /** @type {Record<string, ArpaElementListenerPayloadType>} */
         this.templateListeners = {};
         /** @type {(() => unknown)[]} */
@@ -748,7 +755,7 @@ class ArpaElement extends HTMLElement {
         }
 
         if (forceRender || this.isConnected) {
-            !this._hasRendered && await this._render();
+            !this._hasRendered && (await this._render());
             await this.$onConnected();
             this.update();
         }
@@ -911,12 +918,12 @@ class ArpaElement extends HTMLElement {
         return template;
     }
 
-    reRender() {
+    async reRender() {
         this._hasRendered = false;
         this._isReady = false;
         this._initializeTemplates();
         this.promise = this.getPromise();
-        this._render();
+        await this._render();
     }
 
     // #endregion

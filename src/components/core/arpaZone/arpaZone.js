@@ -4,7 +4,7 @@
 import { defineCustomElement, mergeObjects } from '@arpadroid/tools';
 import { getArpaElement } from '../arpaElement/helper/arpaElement.helper';
 import { getProp } from '../arpaElement/helper/arpaElementProps.helper.js';
-import ArpaElement from '../arpaElement/arpaElement.js';
+import ArpaElement, { BATCHER } from '../arpaElement/arpaElement.js';
 
 export const LOST_ZONES = new Set();
 /**@type {ArpaZone[]} */
@@ -120,52 +120,26 @@ class ArpaZone extends HTMLElement {
     }
 
     /**
-     * Adds the contents of the zone to the specified container element, either replacing, prepending, or appending based on the attributes of the ArpaZone.
      * @param {Element | undefined} zoneElement
      */
-    async addZoneContentsToContainer(zoneElement = this.zoneElement) {
-        if (!this.fragment.childNodes.length) {
-            return;
-        }
-        if (typeof this.element?.$onZonePlaced === 'function') {
-            const rv = this.element?.$onZonePlaced?.(this, zoneElement);
-            if (rv === false) {
-                return;
-            }
-        }
+    apply(zoneElement = this.zoneElement) {
+        if (!zoneElement) return;
+        let method = /** @type {import('@arpadroid/tools').MethodWriteType} */ ('append');
         if (this.hasAttribute('replace-content')) {
-            zoneElement?.replaceChildren(...this.fragment?.childNodes);
+            method = 'replaceChildren';
         } else if (this.hasAttribute('prepend-content')) {
-            zoneElement?.prepend(...this.fragment?.childNodes);
-        } else {
-            zoneElement?.append(this.fragment);
+            method = 'prepend';
         }
-    }
-    /**
-     * Inserts zones in their containers in batches.
-     * @param {{batchSize?: number}} config
-     */
-    async insertZones(config = {}) {
-        await new Promise(resolve => requestAnimationFrame(resolve));
-        if (QUEUE.length === 0) return;
-        const { batchSize = 20 } = config;
-        const batch = QUEUE.splice(-batchSize);
-        batch.forEach(zone => {
-            zone.addZoneContentsToContainer();
-            zone.remove();
-        });
-        requestAnimationFrame(() => {
-            if (QUEUE.length > 0) {
-                this.insertZones(config);
+        BATCHER?.write(zoneElement, {
+            method,
+            value: this.fragment,
+            callback: () => {
+                if (this.element?.$onZonePlaced?.(this, zoneElement) === false) {
+                    return false;
+                }
             }
         });
-    }
-
-    apply() {
-        QUEUE.unshift(this);
-        if (QUEUE.length === 1) {
-            this.insertZones();
-        }
+        BATCHER?.remove(this);
     }
 
     async connectedCallback() {
