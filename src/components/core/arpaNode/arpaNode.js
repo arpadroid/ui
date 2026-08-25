@@ -163,7 +163,6 @@ class ArpaNode extends HTMLElement {
     }
 
     async connectedCallback() {
-        this._initializeContent();
         const name = this.getProp('name');
         if (!name) {
             const msg = 'An arpa-node must have a name attribute or configuration property defined.';
@@ -193,6 +192,7 @@ class ArpaNode extends HTMLElement {
             this.element.arpaNodes[name] = this;
             this.node.arpaNode = this;
             this.replaceWith(this.node);
+            return;
         }
         this.remove();
     }

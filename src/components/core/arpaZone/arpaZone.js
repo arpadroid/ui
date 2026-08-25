@@ -7,6 +7,8 @@ import { getProp } from '../arpaElement/helper/arpaElementProps.helper.js';
 import ArpaElement from '../arpaElement/arpaElement.js';
 
 export const LOST_ZONES = new Set();
+/**@type {ArpaZone[]} */
+export const QUEUE = [];
 
 class ArpaZone extends HTMLElement {
     /**
@@ -77,9 +79,23 @@ class ArpaZone extends HTMLElement {
                 return zoneElement;
             }
         }
-        await new Promise(resolve => setTimeout(resolve, 30));
-        const zoneElement = this.selectZoneElement();
-        return zoneElement;
+        return this.waitForZoneElement();
+    }
+
+    /**
+     * Polls for the zone element on successive animation frames instead of a blind fixed delay.
+     * @param {number} [maxRetries]
+     * @returns {Promise<Element | null | undefined>}
+     */
+    async waitForZoneElement(maxRetries = 10) {
+        for (let i = 0; i < maxRetries; i++) {
+            const zoneElement = this.selectZoneElement();
+            if (zoneElement) {
+                return zoneElement;
+            }
+            await new Promise(resolve => requestAnimationFrame(resolve));
+        }
+        return this.selectZoneElement();
     }
 
     /**
@@ -105,15 +121,50 @@ class ArpaZone extends HTMLElement {
 
     /**
      * Adds the contents of the zone to the specified container element, either replacing, prepending, or appending based on the attributes of the ArpaZone.
-     * @param {Element | null} zoneElement
+     * @param {Element | undefined} zoneElement
      */
-    addZoneContentsToContainer(zoneElement) {
+    async addZoneContentsToContainer(zoneElement = this.zoneElement) {
+        if (!this.fragment.childNodes.length) {
+            return;
+        }
+        if (typeof this.element?.$onZonePlaced === 'function') {
+            const rv = this.element?.$onZonePlaced?.(this, zoneElement);
+            if (rv === false) {
+                return;
+            }
+        }
         if (this.hasAttribute('replace-content')) {
             zoneElement?.replaceChildren(...this.fragment?.childNodes);
         } else if (this.hasAttribute('prepend-content')) {
             zoneElement?.prepend(...this.fragment?.childNodes);
         } else {
             zoneElement?.append(this.fragment);
+        }
+    }
+    /**
+     * Inserts zones in their containers in batches.
+     * @param {{batchSize?: number}} config
+     */
+    async insertZones(config = {}) {
+        await new Promise(resolve => requestAnimationFrame(resolve));
+        if (QUEUE.length === 0) return;
+        const { batchSize = 20 } = config;
+        const batch = QUEUE.splice(-batchSize);
+        batch.forEach(zone => {
+            zone.addZoneContentsToContainer();
+            zone.remove();
+        });
+        requestAnimationFrame(() => {
+            if (QUEUE.length > 0) {
+                this.insertZones(config);
+            }
+        });
+    }
+
+    apply() {
+        QUEUE.unshift(this);
+        if (QUEUE.length === 1) {
+            this.insertZones();
         }
     }
 
@@ -125,7 +176,15 @@ class ArpaZone extends HTMLElement {
             return;
         }
         if (!this.element) {
-            console.error('An arpa-zone must have a parent arpa-element');
+            await new Promise(resolve => requestAnimationFrame(resolve));
+            this._initializeZone();
+            if (!this.element) {
+                console.error('An arpa-zone must have a parent arpa-element', {
+                    zone: this,
+                    name,
+                    element: this.element
+                });
+            }
             return;
         }
         await this.element.promise;
@@ -139,13 +198,16 @@ class ArpaZone extends HTMLElement {
             }
         }
         if (!zoneElement) {
-            LOST_ZONES.add(name);
-            console.error(`No zone element found for zone "${name}".`);
+            await new Promise(resolve => setTimeout(resolve, 10));
+            if (!this.zoneElement) {
+                LOST_ZONES.add(name);
+                console.error(`No zone element found for zone "${name}".`);
+                this.remove();
+            }
+            return;
         }
-
-        zoneElement && this.addZoneContentsToContainer(zoneElement);
-
-        this.remove();
+        this.zoneElement = zoneElement;
+        this.apply();
     }
 }
 

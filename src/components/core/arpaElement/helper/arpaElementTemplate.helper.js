@@ -1,6 +1,7 @@
 /**
  * @typedef {import('../../arpaNode/arpaNode.types').ArpaNodeConfigType} ArpaNodeConfigType
  * @typedef {import('../arpaElement.types').ArpaElementBluePrintType} ArpaElementBluePrintType
+ * @typedef {import('../arpaElement.types').ArpaElementListenerPayloadType} ArpaElementListenerPayloadType
  * @typedef {import("../../arpaNode/arpaNode").default} ArpaNode
  * @typedef {import("../../arpaZone/arpaZone").default} ArpaZone
  * @typedef {import("../arpaElement").default} ArpaElement
@@ -139,9 +140,10 @@ export async function getTemplateEventHandlers(element, attr, value) {
     const handlers = new Set();
     let eventHandlers = Array.from(element.querySelectorAll(selector));
     if (!eventHandlers.length) {
-        await new Promise(resolve => setTimeout(resolve, 5));
+        await new Promise(resolve => setTimeout(resolve, 20));
         eventHandlers = Array.from(element.querySelectorAll(selector));
     }
+
     for (const eventHandler of eventHandlers) {
         if (!('getProp' in eventHandler)) {
             handlers.add(eventHandler);
@@ -159,7 +161,45 @@ export async function getTemplateEventHandlers(element, attr, value) {
     return [...handlers];
 }
 
-const listenerMap = new WeakMap();
+/**
+ * Applies an event listener for a template attribute.
+ * @param {ArpaElement | undefined} element
+ * @param {string} attr
+ * @param {string} value
+ * @param {(event: Event) => void | null} fn
+ */
+export async function applyTemplateEventListener(element, attr, value, fn) {
+    if (!element) return;
+    'promise' in element && (await element.promise);
+    const eventHandler = await getTemplateEventHandlers(element, attr, value);
+    const eventName = attr.replace('on-', '').replace(/-/g, '');
+    if (typeof fn === 'function') {
+        listen(eventHandler, eventName, fn);
+    }
+}
+
+/**
+ * Registers an event listener for a template attribute.
+ * @param {ArpaElement} element
+ * @param {string} attr
+ * @param {string} value
+ * @returns {ArpaElementListenerPayloadType | null}
+ */
+export function registerTemplateEventListener(element, attr, value) {
+    const fnName = /** @type {keyof ArpaElement} */ (dashedToCamel(value));
+    const fn = element?.[fnName];
+    if (typeof fn !== 'function') return null;
+    const cacheKey = `${attr}:${value}`;
+    if (typeof element.templateListeners[cacheKey] === 'undefined') {
+        element.templateListeners[cacheKey] = {
+            fn: fn.bind(element),
+            attr,
+            value
+        };
+    }
+
+    return element.templateListeners[cacheKey];
+}
 
 /**
  * Handles the event listener for a template attribute.
@@ -168,23 +208,10 @@ const listenerMap = new WeakMap();
  * @param {string} value
  */
 export async function handleTemplateEventListener(element, attr, value) {
-    const fnName = /** @type {keyof ArpaElement} */ (dashedToCamel(value));
-    let fn = element?.[fnName];
-    if (typeof fn !== 'function') return;
-    if (!listenerMap.has(element)) {
-        listenerMap.set(element, new Map());
+    const payload = registerTemplateEventListener(element, attr, value);
+    if (typeof payload?.fn === 'function') {
+        applyTemplateEventListener(element, attr, value, payload?.fn);
     }
-    const cacheKey = `${attr}:${value}`;
-    const elementListeners = listenerMap.get(element);
-    if (!elementListeners.has(cacheKey)) {
-        elementListeners.set(cacheKey, fn.bind(element));
-    }
-    fn = elementListeners.get(cacheKey);
-
-    const eventName = attr.replace('on-', '').replace(/-/g, '');
-    await element.promise;
-    const eventHandler = await getTemplateEventHandlers(element, attr, value);
-    listen(eventHandler, eventName, fn);
 }
 
 /**
@@ -399,6 +426,7 @@ export function getNodeContent(element, name, config = {}) {
         element?.getPayload(element?.templateVars),
         element
     );
+
     return rv;
 }
 

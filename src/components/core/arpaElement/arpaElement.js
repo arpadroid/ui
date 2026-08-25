@@ -5,6 +5,7 @@
  * @typedef {import('../arpaNode/arpaNode.types').ArpaNodeConfigType} ArpaNodeConfigType
  * @typedef {import('./arpaElement.types').TemplatesType} TemplatesType
  * @typedef {import('./arpaElement.types').ArpaElementTemplateType} ArpaElementTemplateType
+ * @typedef {import('./arpaElement.types').ArpaElementListenerPayloadType} ArpaElementListenerPayloadType
  * @typedef {import('../arpaNode/arpaNode').default} ArpaNode
  * @typedef {import('../arpaZone/arpaZone').default} ArpaZone
  */
@@ -58,6 +59,8 @@ class ArpaElement extends HTMLElement {
      */
     constructor(config) {
         super();
+        /** @type {Record<string, ArpaElementListenerPayloadType>} */
+        this.templateListeners = {};
         /** @type {(() => unknown)[]} */
         this._unsubscribes = [];
         /** @type {(() => unknown)[]} */
@@ -396,6 +399,14 @@ class ArpaElement extends HTMLElement {
     }
 
     $onContentSet() {}
+
+    /**
+     * Called when a zone is placed in the element. Override this method to perform actions after a zone is placed.
+     * @param {ArpaZone} _zone - The zone that was placed.
+     * @param {Element | undefined} _container - The container element where the zone was placed.
+     * @returns {undefined | boolean | void} Return false to prevent the default behavior of adding the zone contents to the container.
+     */
+    $onZonePlaced(_zone, _container) {}
 
     /**
      * Sets a child element.
@@ -737,7 +748,7 @@ class ArpaElement extends HTMLElement {
         }
 
         if (forceRender || this.isConnected) {
-            !this._hasRendered && this._render();
+            !this._hasRendered && await this._render();
             await this.$onConnected();
             this.update();
         }

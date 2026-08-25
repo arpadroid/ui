@@ -83,9 +83,12 @@ class ConfirmDialog extends Dialog {
         `;
     }
 
+
     async $onComplete() {
-        super.$onComplete();
+        /** @todo Remove setTimeout. */
+        await new Promise(resolve => setTimeout(resolve, 0));
         this.cancelBtn = /** @type {Button | null} */ (this.nodes.cancelBtn);
+        this.confirmBtn = /** @type {Button | null} */ (this.nodes.confirmBtn);
         this.cancelBtn?.focus();
     }
 }

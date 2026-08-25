@@ -54,3 +54,9 @@ export type ArpaElementContentType =
     | (() => string | HTMLElement | HTMLCollection);
 
 export type ArpaElementAttributesType = Record<string, unknown> | (() => Record<string, unknown>);
+
+export type ArpaElementListenerPayloadType = {
+    fn: (event: Event) => void | null;
+    attr: string;
+    value: string;
+};
