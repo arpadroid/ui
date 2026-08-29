@@ -1,5 +1,6 @@
 /**
  * @typedef {import('../arpaNode.types.js').ArpaNodeConfigType} ArpaNodeConfigType
+ * @typedef {import('./testNode.js').default} TestNode
  * @typedef {import('@storybook/web-components-vite').Meta<ArpaNodeConfigType>} Meta
  * @typedef {import('@storybook/web-components-vite').StoryObj<ArpaNodeConfigType>} StoryObj
  */
@@ -40,6 +41,7 @@ function renderWithZones() {
             </arpa-zone>
             <arpa-zone name="aside">
                 <span>Aside -> Zone</span>
+                <arpa-node tag="arpa-button" name="button">Aside -> Zone Button</arpa-node>
             </arpa-zone>
         </test-node>
     `;
@@ -50,15 +52,6 @@ export const Default = {
     name: 'Render',
     render: renderWithZones
 };
-
-/**
- * Sets up the test environment by waiting for the custom elements to be defined.
- * @returns {Promise<void>}
- */
-async function playSetup() {
-    await customElements.whenDefined('test-node');
-    await customElements.whenDefined('arpa-node');
-}
 
 /**
  * Asserts that no arpa-node elements are present in the given element.
@@ -75,7 +68,15 @@ export const Test = {
     render: renderWithZones,
 
     play: async ({ canvasElement, canvas, step }) => {
-        await playSetup();
+        await customElements.whenDefined('test-node');
+        await customElements.whenDefined('arpa-node');
+        const testNode = /** @type {TestNode} */ (canvasElement.querySelector('test-node'));
+        await step('Initializes all nodes after awaiting for promise', async () => {
+            expect(testNode).toBeInTheDocument();
+            await testNode.promise;
+            expect(testNode.nodes.button).toBeDefined();
+        });
+
         await step('Does not render arpa-nodes', async () => {
             await waitFor(() => assertNoArpaNodes(canvasElement));
         });
@@ -127,7 +128,6 @@ export const NoZones = {
         `;
     },
     play: async ({ canvasElement, step }) => {
-        await playSetup();
         await step('Does not render arpa-nodes', async () => {
             await waitFor(() => assertNoArpaNodes(canvasElement));
         });

@@ -24,6 +24,18 @@ const { arpaElementI18n } = I18nTool;
 
 /** @type {DomBatcherTool | undefined} */
 export let BATCHER;
+
+/**
+ * Returns the singleton instance of the DomBatcherTool.
+ * @returns {DomBatcherTool}
+ */
+export function getBatcher() {
+    if (!BATCHER) {
+        BATCHER = new DomBatcherTool();
+    }
+    return BATCHER;
+}
+
 class ArpaElement extends HTMLElement {
     //////////////////////////////
     // #region Setup
@@ -63,9 +75,17 @@ class ArpaElement extends HTMLElement {
      */
     constructor(config) {
         super();
-        if (!BATCHER) {
-            BATCHER = new DomBatcherTool();
-        }
+        this._preInitialize();
+        this.setConfig(config);
+        this._preInitializeContent();
+        this._initializeTemplates();
+        this._initializeContent();
+        this.$initialize();
+        this.promise = this.getPromise();
+        handleCallbackProp(this, 'on-click', 'click');
+    }
+
+    _preInitialize() {
         /** @type {Record<string, ArpaElementListenerPayloadType>} */
         this.templateListeners = {};
         /** @type {(() => unknown)[]} */
@@ -80,14 +100,8 @@ class ArpaElement extends HTMLElement {
         this.zonesByName = new Set();
         this._zones = new Set();
         this.i18nKey = dashedToCamel(this.tagName.toLowerCase());
+        this.batcher = getBatcher();
         this.$preInitialize();
-        this.setConfig(config);
-        this._preInitializeContent();
-        this._initializeTemplates();
-        this._initializeContent();
-        this.$initialize();
-        this.promise = this.getPromise();
-        handleCallbackProp(this, 'on-click', 'click');
     }
 
     $preInitialize() {
@@ -99,8 +113,6 @@ class ArpaElement extends HTMLElement {
     }
 
     _preInitializeContent() {
-        const { content } = this._config;
-        typeof content === 'string' && !this.innerHTML.includes(content) && (this.innerHTML = content);
         this._printAttributeList();
     }
 
@@ -744,7 +756,7 @@ class ArpaElement extends HTMLElement {
      * @param {boolean} [forceRender] - If true it force a renders the element even if it's not connected.
      */
     async connectedCallback(forceRender = false) {
-        this._preRenderCallbacks.forEach(callback => typeof callback === 'function' && callback());
+        this._preRenderCallbacks?.forEach(callback => typeof callback === 'function' && callback());
         this._preRenderCallbacks = [];
         await this.onReady();
         this._addClassNames();
@@ -779,7 +791,7 @@ class ArpaElement extends HTMLElement {
         await this.render();
         this._initializeTemplateNodes();
         await this.$initializeNodes();
-        this._onRenderReadyCallbacks.forEach(callback => typeof callback === 'function' && callback());
+        this._onRenderReadyCallbacks?.forEach(callback => typeof callback === 'function' && callback());
         this._onRenderReadyCallbacks = [];
         this.$onDomReady();
         this._onRenderComplete();
@@ -810,7 +822,7 @@ class ArpaElement extends HTMLElement {
 
     async _onRenderComplete() {
         this._hasRendered = true;
-        this._onRenderedCallbacks.forEach(callback => callback());
+        this._onRenderedCallbacks?.forEach(callback => callback());
         await this.handleContent();
         await this._resolveRender();
         this.$onComplete();
@@ -827,6 +839,11 @@ class ArpaElement extends HTMLElement {
     }
 
     async _resolveRender() {
+        const nodes = Object.values(this.nodes);
+        for (const node of nodes) {
+            const { promise } = BATCHER?.writes.get(node) || {};
+            promise instanceof Promise && (await promise);
+        }
         return this.resolvePromise?.(true);
     }
 
@@ -839,7 +856,7 @@ class ArpaElement extends HTMLElement {
      * @param {() => unknown} callback
      */
     onRendered(callback) {
-        this._hasRendered ? callback() : this._onRenderedCallbacks.push(callback);
+        this._hasRendered ? callback() : this._onRenderedCallbacks?.push(callback);
     }
 
     /**
@@ -847,7 +864,7 @@ class ArpaElement extends HTMLElement {
      * @param {() => unknown} callback
      */
     onRenderReady(callback) {
-        this._hasRendered ? callback() : this._onRenderReadyCallbacks.push(callback);
+        this._hasRendered ? callback() : this._onRenderReadyCallbacks?.push(callback);
     }
 
     /**
@@ -855,16 +872,18 @@ class ArpaElement extends HTMLElement {
      * @param {() => unknown} callback
      */
     onPreRender(callback) {
-        this._hasRendered ? callback() : this._preRenderCallbacks.push(callback);
+        this._hasRendered ? callback() : this._preRenderCallbacks?.push(callback);
     }
 
     /**
      * Renders the element.
      * @param {string} [template] - The template to render.
+     * @returns {Promise<boolean>} - Returns true when rendering is complete.
      */
-    render(template = '') {
+    async render(template = '') {
         const content = this.renderTemplate(template);
         content && (this.innerHTML = content);
+        return true;
     }
 
     /**

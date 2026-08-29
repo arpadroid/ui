@@ -4,7 +4,7 @@
 import { defineCustomElement, mergeObjects } from '@arpadroid/tools';
 import { getArpaElement } from '../arpaElement/helper/arpaElement.helper';
 import { getProp } from '../arpaElement/helper/arpaElementProps.helper.js';
-import ArpaElement, { BATCHER } from '../arpaElement/arpaElement.js';
+import ArpaElement from '../arpaElement/arpaElement.js';
 
 export const LOST_ZONES = new Set();
 /**@type {ArpaZone[]} */
@@ -119,29 +119,6 @@ class ArpaZone extends HTMLElement {
         return zoneTargetNode || ('zoneTarget' in zoneElement && zoneElement?.zoneTarget) || zoneElement;
     }
 
-    /**
-     * @param {Element | undefined} zoneElement
-     */
-    apply(zoneElement = this.zoneElement) {
-        if (!zoneElement) return;
-        let method = /** @type {import('@arpadroid/tools').MethodWriteType} */ ('append');
-        if (this.hasAttribute('replace-content')) {
-            method = 'replaceChildren';
-        } else if (this.hasAttribute('prepend-content')) {
-            method = 'prepend';
-        }
-        BATCHER?.write(zoneElement, {
-            method,
-            value: this.fragment,
-            callback: () => {
-                if (this.element?.$onZonePlaced?.(this, zoneElement) === false) {
-                    return false;
-                }
-            }
-        });
-        BATCHER?.remove(this);
-    }
-
     async connectedCallback() {
         this._initializeZone();
         const name = this.getProp('name');
@@ -161,7 +138,15 @@ class ArpaZone extends HTMLElement {
             }
             return;
         }
-        await this.element.promise;
+
+        if (typeof this.element?.onRenderReady === 'function') {
+            this.element?.onRenderReady(() => this.onRenderReady());
+        } else {
+            this.onRenderReady();
+        }
+    }
+
+    async onRenderReady() {
         /** @type {Element | undefined | null} */
         let zoneElement = this.selectZoneElement() || (await this.findZoneElement());
         if (zoneElement) {
@@ -177,11 +162,35 @@ class ArpaZone extends HTMLElement {
                 LOST_ZONES.add(name);
                 console.error(`No zone element found for zone "${name}".`);
                 this.remove();
+                return;
             }
-            return;
         }
         this.zoneElement = zoneElement;
-        this.apply();
+        this.apply(this.zoneElement);
+    }
+
+    /**
+     * @param {Element | undefined | null} zoneElement
+     */
+    apply(zoneElement = this.zoneElement) {
+        if (!zoneElement) return;
+        let method = /** @type {import('@arpadroid/tools').MethodWriteType} */ ('append');
+        if (this.hasAttribute('replace-content')) {
+            method = 'replaceChildren';
+        } else if (this.hasAttribute('prepend-content')) {
+            method = 'prepend';
+        }
+
+        this.element?.batcher?.write(zoneElement, {
+            method,
+            value: this.fragment,
+            callback: () => {
+                if (this.element?.$onZonePlaced?.(this, zoneElement) === false) {
+                    return false;
+                }
+            }
+        });
+        this.element?.batcher?.remove(this);
     }
 }
 
