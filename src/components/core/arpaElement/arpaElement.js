@@ -942,7 +942,7 @@ class ArpaElement extends HTMLElement {
         this._isReady = false;
         this._initializeTemplates();
         this.promise = this.getPromise();
-        await this._render();
+        return await this._render();
     }
 
     // #endregion

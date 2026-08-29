@@ -90,8 +90,9 @@ class PagerItem extends ArpaElement {
      * Renders the pager item.
      * @param {string | undefined} template - The template to render.
      * @param {boolean} reRender - Whether to re-render the item.
+     * @returns {Promise<boolean>}
      */
-    render(template, reRender = false) {
+    async render(template, reRender = false) {
         this.grabPagerComponent();
         super.render(template);
         if (!this.contentNode || reRender) {
@@ -100,6 +101,7 @@ class PagerItem extends ArpaElement {
             this.contentNode && this.appendChild(this.contentNode);
             this.appendChildren();
         }
+        return true;
     }
 
     renderInput() {

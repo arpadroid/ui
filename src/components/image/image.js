@@ -307,10 +307,10 @@ class ArpaImage extends ArpaElement {
      * Renders the component.
      */
 
-    reRender() {
+    async reRender() {
         this._hasLoaded = false;
         this._hasError = false;
-        super.reRender();
+        return await super.reRender();
     }
 
     $renderTemplate() {

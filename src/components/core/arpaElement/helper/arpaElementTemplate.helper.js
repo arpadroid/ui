@@ -183,14 +183,14 @@ export async function applyTemplateEventListener(element, attr, value, fn) {
  * @param {ArpaElement} element
  * @param {string} attr
  * @param {string} value
- * @returns {ArpaElementListenerPayloadType | null}
+ * @returns {ArpaElementListenerPayloadType | null | undefined}
  */
 export function registerTemplateEventListener(element, attr, value) {
     const fnName = /** @type {keyof ArpaElement} */ (dashedToCamel(value));
     const fn = element?.[fnName];
     if (typeof fn !== 'function') return null;
     const cacheKey = `${attr}:${value}`;
-    if (typeof element.templateListeners[cacheKey] === 'undefined') {
+    if (element.templateListeners && typeof element?.templateListeners?.[cacheKey] === 'undefined') {
         element.templateListeners[cacheKey] = {
             fn: fn.bind(element),
             attr,
@@ -198,7 +198,7 @@ export function registerTemplateEventListener(element, attr, value) {
         };
     }
 
-    return element.templateListeners[cacheKey];
+    return element?.templateListeners?.[cacheKey];
 }
 
 /**
