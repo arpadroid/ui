@@ -46,10 +46,10 @@ export const Test = {
     },
     parameters: testParams,
     play: async ({ canvas, canvasElement, step }) => {
-        await customElements.whenDefined('circular-spinner');
         const preloader = /** @type {CircularSpinner | null} */ (
             canvasElement.querySelector('circular-spinner')
         );
+        await preloader?.promise;
         await step('renders the circular preloader', async () => {
             expect(preloader).toBeInTheDocument();
             expect(canvas.getByText('Loading...')).toBeInTheDocument();
@@ -68,9 +68,9 @@ export const WithMask = {
         label: 'Loading with mask...'
     },
     play: async ({ canvasElement, step, canvas }) => {
-        await customElements.whenDefined('circular-spinner');
         /** @type {CircularSpinner | null} */
         const preloader = canvasElement.querySelector('circular-spinner');
+        await preloader?.promise;
         await step('renders the circular preloader with mask', async () => {
             expect(preloader).toBeInTheDocument();
             const mask = preloader?.querySelector('.circularSpinner__mask');
@@ -95,8 +95,9 @@ export const CustomContent = {
             <arpa-zone name="label">Please wait.</arpa-zone>
         </circular-spinner>`;
     },
-    play: async ({ canvas, step }) => {
-        await customElements.whenDefined('circular-spinner');
+    play: async ({ canvas, step, canvasElement }) => {
+        const preloader = /** @type {CircularSpinner | null} */ (canvasElement.querySelector('circular-spinner'));
+        await preloader?.promise;
         await step('renders the circular preloader with mask', async () => {
             await waitFor(() => {
                 expect(canvas.getByText('Please wait.')).toBeInTheDocument();

@@ -139,12 +139,21 @@ export async function getTemplateEventHandlers(element, attr, value) {
     const selector = `[${attr}="{${value}}"]`;
     const handlers = new Set();
     let eventHandlers = Array.from(element.querySelectorAll(selector));
-    if (!eventHandlers.length) {
-        await new Promise(resolve => setTimeout(resolve, 20));
+
+    if (!eventHandlers.length && element.promise) {
+        await element.promise;
+        await new Promise(resolve => setTimeout(resolve, 5));
         eventHandlers = Array.from(element.querySelectorAll(selector));
     }
 
-    for (const eventHandler of eventHandlers) {
+    for (let eventHandler of eventHandlers) {
+        if (eventHandler.tagName.toLowerCase() === 'arpa-node') {
+            const arpaNode = /** @type {ArpaNode} */ (eventHandler);
+            await arpaNode.promise;
+            if (arpaNode?.node instanceof HTMLElement) {
+                eventHandler = arpaNode.node;
+            }
+        }
         if (!('getProp' in eventHandler)) {
             handlers.add(eventHandler);
             continue;

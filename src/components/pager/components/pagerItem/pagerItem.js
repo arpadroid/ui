@@ -94,7 +94,7 @@ class PagerItem extends ArpaElement {
      */
     async render(template, reRender = false) {
         this.grabPagerComponent();
-        super.render(template);
+        await super.render(template);
         if (!this.contentNode || reRender) {
             this.innerHTML = '';
             this.contentNode = /** @type {HTMLElement } */ (this.renderContent());

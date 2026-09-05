@@ -31,7 +31,6 @@ export const Test = {
     },
     parameters: testParams,
     play: async ({ canvas, canvasElement, step }) => {
-        await customElements.whenDefined('arpa-button');
         const buttonComponent = /** @type {Button} */ (canvasElement.querySelector('arpa-button'));
         await buttonComponent.promise;
         const buttonNode = await waitFor(() => canvas.getByRole('button'));
@@ -43,8 +42,9 @@ export const Test = {
 
         await step('Shows the tooltip when the button is focused', async () => {
             buttonNode.focus();
-            const tooltip = canvas.getByText('If you click me something awesome will happen.');
-            expect(tooltip).toBeVisible();
+            await waitFor(() =>
+                expect(canvas.getByText('If you click me something awesome will happen.')).toBeVisible()
+            );
         });
 
         await step('Sets a new icon', async () => {

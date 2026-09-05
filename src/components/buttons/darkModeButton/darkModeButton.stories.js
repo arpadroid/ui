@@ -4,7 +4,7 @@
  * @typedef {import('@storybook/web-components-vite').StoryObj<DarkModeButtonConfigType>} Story
  * @typedef {import('./darkModeButton').default} DarkModeButton
  */
-import { expect, userEvent } from 'storybook/test';
+import { expect, userEvent, waitFor } from 'storybook/test';
 
 /** @type {Meta} */
 const DarkModeButtonStory = {
@@ -35,9 +35,9 @@ export const Test = {
             expect(button).toBeInTheDocument();
         });
 
-        await step('Focuses the button and expects tooltip', () => {
+        await step('Focuses the button and expects tooltip', async () => {
             button?.focus();
-            expect(canvas.getByText('Dark Mode')).toBeVisible();
+            await waitFor(() => expect(canvas.getByText('Dark Mode')).toBeVisible());
         });
 
         await step('Clicks the button and expects dark mode', async () => {
@@ -50,9 +50,11 @@ export const Test = {
 
         await step('Clicks the button again and expects light mode', async () => {
             await userEvent.click(button);
-            const darkStyles = document.getElementById('dark-styles');
-            expect(darkStyles).toHaveAttribute('disabled');
-            expect(canvas.getByText('Dark Mode')).toBeVisible();
+            await waitFor(() => {
+                const darkStyles = document.getElementById('dark-styles');
+                expect(darkStyles).toHaveAttribute('disabled');
+                expect(canvas.getByText('Dark Mode')).toBeVisible();
+            });
         });
     }
 };

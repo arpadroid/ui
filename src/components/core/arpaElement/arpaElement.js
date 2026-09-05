@@ -213,6 +213,34 @@ class ArpaElement extends HTMLElement {
     }
 
     /**
+     * Returns the content node for the element. If the element has template children, it returns the node marked with "is-content". Otherwise, it returns the element itself.
+     * @returns {Promise<ArpaElementContentNodeType | null>} The content node for the element.
+     */
+    async getContentNodeAsync() {
+        if (!this.nodes?.content) {
+            await this.promise;
+        }
+        let node = this.getContentNode();
+        /** @todo Remove hack with setTimeout. */
+        if (!node) {
+            await new Promise(resolve => setTimeout(resolve, 0));
+            node = this.getContentNode();
+        }
+        if (!node) {
+            await new Promise(resolve => setTimeout(resolve, 10));
+            node = this.getContentNode();
+        }
+        if (node?.tagName === 'ARPA-NODE') {
+            const arpaNode = /** @type {ArpaNode} */ (node);
+            await arpaNode?.promise;
+            if (arpaNode.node) {
+                return arpaNode.node;
+            }
+        }
+        return node || this;
+    }
+
+    /**
      * Gets the value of a property from the element's configuration or attributes.
      * @param {string} name
      * @returns {any} The value of the property.
@@ -387,16 +415,15 @@ class ArpaElement extends HTMLElement {
      * Sets the content of the element.
      * @param {string | HTMLElement | NodeList | DocumentFragment | Node[]} content - The content to set.
      * @param {{callOnContentSet?: boolean, replace?: boolean}} [options]
+     * @returns {Promise<boolean>} Returns true if the content was successfully set.
      */
     async setContent(content = [], options = {}) {
         const { callOnContentSet = true, replace = true } = options;
-        await this.promise;
         const childNodes = this.normalizeContentNodes(content);
-        this._childNodes = childNodes;
-        const contentNode = this.getContentNode() || this;
+        const contentNode = await this.getContentNodeAsync();
+        if (!contentNode || !childNodes) return false;
         this.contentNode = contentNode;
-
-        if (!contentNode || !childNodes) return;
+        this._childNodes = childNodes;
         'promise' in contentNode && (await contentNode.promise);
         replace && (contentNode.innerHTML = '');
         if (
@@ -404,7 +431,7 @@ class ArpaElement extends HTMLElement {
             'setContent' in contentNode &&
             typeof contentNode?.setContent === 'function'
         ) {
-            contentNode.setContent(childNodes, { callOnContentSet: true, replace: true });
+            await contentNode.setContent(childNodes, { callOnContentSet: true, replace: true });
         } else {
             const position = this.getProp('contentPosition') || 'append';
             if (position === 'prepend') {
@@ -415,6 +442,7 @@ class ArpaElement extends HTMLElement {
         }
 
         callOnContentSet && this.$onContentSet();
+        return true;
     }
 
     $onContentSet() {}
@@ -706,11 +734,7 @@ class ArpaElement extends HTMLElement {
 
     _addClassNames() {
         const _classes = /** @type {string[]} */ (getArrayProp(this, 'classNames')) || [];
-        const classes = classNames(
-            this._config?.className || '',
-            ..._classes,
-            this.getAttribute('class') || ''
-        );
+        const classes = classNames(this._config?.className, ..._classes, this.getAttribute('class'));
         this.setAttribute('class', classes);
     }
 
@@ -823,28 +847,35 @@ class ArpaElement extends HTMLElement {
     async _onRenderComplete() {
         this._hasRendered = true;
         this._onRenderedCallbacks?.forEach(callback => callback());
-        await this.handleContent();
         await this._resolveRender();
-        this.$onComplete();
-    }
-
-    async handleContent() {
-        if (!this.hasNodesConfig() || !this._config.handleContent || !this._childNodes?.length) {
-            return;
-        }
-        this.setContent(this._childNodes, {
-            callOnContentSet: false,
-            replace: false
-        });
     }
 
     async _resolveRender() {
         const nodes = Object.values(this.nodes);
         for (const node of nodes) {
-            const { promise } = BATCHER?.writes.get(node) || {};
+            const { promise } = this.batcher?.writes.get(node) || {};
             promise instanceof Promise && (await promise);
         }
+        await this.$resolveRender();
+        await this.handleContent();
+        await this.$onComplete();
         return this.resolvePromise?.(true);
+    }
+
+    /**
+     * Resolves the render process.
+     * @returns {Promise<boolean | unknown>}
+     */
+    async $resolveRender() {
+        return true;
+    }
+
+    async handleContent() {
+        if (!this.hasNodesConfig() || !this._config.handleContent || !this._childNodes?.length) {
+            return false;
+        }
+        this.setContent(this._childNodes, { callOnContentSet: false, replace: false });
+        return true;
     }
 
     $onComplete() {
@@ -881,8 +912,7 @@ class ArpaElement extends HTMLElement {
      * @returns {Promise<boolean>} - Returns true when rendering is complete.
      */
     async render(template = '') {
-        const content = this.renderTemplate(template);
-        content && (this.innerHTML = content);
+        await this._innerHTML(this.renderTemplate(template));
         return true;
     }
 
@@ -946,6 +976,38 @@ class ArpaElement extends HTMLElement {
     }
 
     // #endregion
+
+    ////////////////////////////////////
+    // #region Batcher Utilities
+    ///////////////////////////////////
+
+    /**
+     * Batches a remove attribute operation for the element.
+     * @param {string} attr
+     * @returns {Promise<void | boolean> | undefined}
+     */
+    _removeAttribute(attr) {
+        return this.batcher?.removeAttribute(this, attr);
+    }
+
+    /**
+     * Batches an innerHTML operation for the element.
+     * @param {string} html
+     * @returns {Promise<void | boolean> | undefined}
+     */
+    _innerHTML(html) {
+        return this.batcher?.innerHTML(this, html);
+    }
+
+    /**
+     * Sets an attribute for the element.
+     * @param {string} attr
+     * @param {string} value
+     * @returns {Promise<void | boolean> | undefined}
+     */
+    _setAttribute(attr, value) {
+        return this.batcher?.setAttribute(this, attr, value);
+    }
 }
 
 defineCustomElement('arpa-element', ArpaElement);

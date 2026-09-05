@@ -63,11 +63,16 @@ class Tooltip extends ArpaElement {
      * Sets the tooltip handler element.
      * @param {HTMLElement | unknown} handler - The handler element.
      */
-    setHandler(handler) {
+    async setHandler(handler = this.getHandler()) {
         if (!(handler instanceof HTMLElement)) return;
         this.handler = handler;
-        this.handler.classList.add('tooltip__handler');
-        this.hasProp('hasCursorPosition') && this._handleCursorPosition();
+        handler.classList.add('tooltip__handler');
+        if (this.hasProp('hasCursorPosition')) {
+            this._handleCursorPosition(handler);
+        }
+        if (!handler.isConnected && !handler.contains(this)) {
+            this.appendChild(handler);
+        }
     }
 
     /**
@@ -108,13 +113,10 @@ class Tooltip extends ArpaElement {
 
     async $initializeNodes() {
         await super.$initializeNodes();
+        await new Promise(resolve => requestAnimationFrame(resolve));
         this.classList.add(`tooltip--${this.getPosition()}`);
-        this.setHandler(this.getHandler());
-        if (this.handler) {
-            if (!this.handler.isConnected && !this.handler.contains(this)) {
-                this.appendChild(this.handler);
-            }
-        }
+        /** @todo Remove this setTimeout delay. */
+        this.promise.then(() => this.setHandler());
         return true;
     }
 

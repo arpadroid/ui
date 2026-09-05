@@ -51,13 +51,11 @@ export const Zones = {
             </arpa-button>
         `;
     },
-    play: async ({ canvasElement, canvas, step }) => {
+    play: async ({ canvasElement, step }) => {
         step('shows the tooltip on focus', async () => {
-            await customElements.whenDefined('arpa-button');
-            const buttonNode = canvas.getByRole('button');
-            expect(buttonNode).toBeInTheDocument();
-            buttonNode.focus();
-            await new Promise(resolve => setTimeout(resolve, 300)); // Wait for tooltip to appear
+            const button = /** @type {Button} */ (canvasElement.querySelector('arpa-button'));
+            await button.promise;
+            await button.focus();
             await waitFor(() => {
                 const tooltip = canvasElement.querySelector('arpa-tooltip');
                 expect(tooltip).toBeVisible();

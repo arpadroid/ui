@@ -39,18 +39,6 @@ export const Default = {
     }
 };
 
-/**
- * Sets up the testing environment for the Image component.
- * @param {HTMLElement} canvasElement
- * @returns {Promise<{preloader: HTMLElement | null, image: ArpaImageComponent | null}>}
- */
-async function playSetup(canvasElement) {
-    await customElements.whenDefined('arpa-image');
-    const image = /** @type {ArpaImageComponent | null} */ (canvasElement.querySelector('arpa-image'));
-    const preloader = /** @type {HTMLElement | null} */ (image?.querySelector('circular-spinner'));
-    return { preloader, image };
-}
-
 /** @type {StoryObj} */
 export const Portrait = {
     parameters: {
@@ -145,9 +133,9 @@ export const Loading = {
         return wrapper;
     },
     play: async ({ canvasElement, step }) => {
-        const setup = await playSetup(canvasElement);
-        const { preloader, image } = setup;
-
+        const image = /** @type {ArpaImageComponent | null} */ (canvasElement.querySelector('arpa-image'));
+        await image?.promise;
+        const preloader = /** @type {HTMLElement | null} */ (image?.querySelector('circular-spinner'));
         await step('shows the preloader while loading', async () => {
             await waitFor(() => {
                 expect(image?.hasLoaded()).toBe(false);
@@ -161,8 +149,10 @@ export const Loading = {
 export const Test = {
     ...Default,
     play: async ({ canvasElement, step }) => {
-        const setup = await playSetup(canvasElement);
-        const { preloader } = setup;
+        const image = /** @type {ArpaImageComponent | null} */ (canvasElement.querySelector('arpa-image'));
+        await image?.promise;
+        const preloader = /** @type {HTMLElement | null} */ (image?.querySelector('circular-spinner'));
+
         await step('renders the image preloader text', async () => {
             await waitFor(() => expect(preloader).not.toBeNull());
         });

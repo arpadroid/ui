@@ -3,6 +3,7 @@
  * @typedef {import('./tooltip.types').TooltipConfigType} TooltipConfigType
  * @typedef {import('@storybook/web-components-vite').Meta<TooltipConfigType>} Meta
  * @typedef {import('@storybook/web-components-vite').StoryObj<TooltipConfigType>} Story
+ * @typedef {import('../buttons/button/button').default} Button
  */
 import { attrString } from '@arpadroid/tools';
 import { waitFor, expect } from 'storybook/test';
@@ -22,28 +23,16 @@ const TooltipStory = {
 
 /** @type {Story} */
 export const Default = {
-    ...TooltipStory,
     name: 'Render',
     parameters: defaultParams
 };
-
-/**
- * Sets up the testing environment for the Tooltip component.
- * @param {HTMLElement} canvasElement - The canvas element containing the tooltip component.
- * @returns {Promise<{tooltipNode: Tooltip | null}>}
- */
-async function playSetup(canvasElement) {
-    await customElements.whenDefined('arpa-tooltip');
-    /** @type {Tooltip | null} */
-    const tooltipNode = canvasElement.querySelector('arpa-tooltip');
-    return { tooltipNode };
-}
 
 /** @type {Story} */
 export const Test = {
     parameters: testParams,
     play: async ({ canvasElement, step, canvas }) => {
-        await playSetup(canvasElement);
+        const tooltipNode = /** @type {Tooltip | null} */ (canvasElement.querySelector('arpa-tooltip'));
+        await tooltipNode?.promise;
         const contentNode = await waitFor(() => canvas.getByText(content));
         await step('renders the tooltip', async () => {
             const handler = canvas.getByRole('button');
@@ -62,7 +51,8 @@ export const ShortText = {
     },
     render: args => html` <arpa-tooltip ${attrString(args)}>Short text</arpa-tooltip> `,
     play: async ({ canvasElement, step, canvas }) => {
-        await playSetup(canvasElement);
+        const tooltipNode = /** @type {Tooltip | null} */ (canvasElement.querySelector('arpa-tooltip'));
+        await tooltipNode?.promise;
         const contentNode = await waitFor(() => canvas.getByText('Short text'));
         await step('renders the tooltip', async () => {
             const handler = canvas.getByRole('button');
@@ -87,18 +77,18 @@ export const ButtonWithTooltip = {
         return html`
             <arpa-button>
                 Custom Button with Tooltip
-                <arpa-tooltip ${attrString(args)}>${buttonTooltipContent}</arpa-tooltip>
+                <arpa-tooltip ${attrString(args)}> ${buttonTooltipContent} </arpa-tooltip>
             </arpa-button>
         `;
     },
     play: async ({ canvasElement, step, canvas }) => {
-        await playSetup(canvasElement);
-        const contentNode = await waitFor(() => canvas.getByText(buttonTooltipContent));
+        const tooltipNode = /** @type {Tooltip | null} */ (canvasElement.querySelector('arpa-tooltip'));
+        await tooltipNode?.promise;
+        const button = /** @type {Button} */ (canvasElement.querySelector('arpa-button'));
         await step('renders the tooltip', async () => {
-            const handler = canvas.getByRole('button');
-            expect(handler).toBeInTheDocument();
-            handler.focus();
-            expect(contentNode).toBeVisible();
+            expect(button).toBeInTheDocument();
+            await button.focus();
+            expect(canvas.getByText(buttonTooltipContent)).toBeVisible();
         });
     }
 };
@@ -127,7 +117,8 @@ export const CustomHandler = {
         `;
     },
     play: async ({ canvasElement, step, canvas }) => {
-        await playSetup(canvasElement);
+        const tooltipNode = /** @type {Tooltip | null} */ (canvasElement.querySelector('arpa-tooltip'));
+        await tooltipNode?.promise;
         const contentNode = await waitFor(() =>
             canvas.getByText('You can declare an existing element', { exact: false })
         );

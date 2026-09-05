@@ -5,7 +5,7 @@
  * @typedef {import('@storybook/web-components-vite').StoryObj<ButtonConfigType>} ButtonStatesStoryType
  */
 
-import { expect } from 'storybook/test';
+import { expect, waitFor } from 'storybook/test';
 import ButtonStory from './button.stories';
 import { $attr } from '@arpadroid/tools';
 const html = String.raw;
@@ -21,11 +21,16 @@ export const Disabled = {
     args: {
         disabled: true
     },
-    play: async ({ canvas, step }) => {
-        await customElements.whenDefined('arpa-button');
-        const buttonNode = /** @type {HTMLButtonElement} */ (canvas.getByRole('button'));
+    play: async ({ step, canvas, canvasElement }) => {
+        const buttonComponent = /** @type {Button} */ (canvasElement.querySelector('arpa-button'));
+        await buttonComponent.promise;
         await step('renders the button', async () => {
-            expect(buttonNode).not.toBeNull();
+            const button = canvas.getByRole('button');
+            expect(button).toBeInTheDocument();
+            expect(button).toBeDisabled();
+            await waitFor(() => {
+                expect(buttonComponent).not.toHaveAttribute('disabled');
+            });
         });
     },
     render: ({ ...args }) => {
@@ -35,13 +40,20 @@ export const Disabled = {
 
 /** @type {ButtonStatesStoryType} */
 export const Focused = {
-    play: async ({ canvas }) => {
-        await customElements.whenDefined('arpa-button');
-        const button = canvas.getByRole('button');
-        button.focus();
+    args: {
+        tooltip: 'Button tooltip'
     },
     render: ({ ...args }) => {
         return html`<arpa-button ${$attr(args)}>Focused Button</arpa-button>`;
+    },
+    play: async ({ step, canvas, canvasElement }) => {
+        const button = /** @type {Button} */ (canvasElement.querySelector('arpa-button'));
+        await button.focus();
+        step('focuses the button', async () => {
+            await waitFor(() => {
+                expect(canvas.getByText('Button tooltip')).toBeVisible();
+            });
+        });
     }
 };
 

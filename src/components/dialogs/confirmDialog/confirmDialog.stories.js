@@ -24,14 +24,12 @@ const ConfirmDialogStory = {
         id: 'confirm',
         title: 'Confirm Action',
         zoneContent: dialogText,
-        open: true
+        open: true,
+        container: '#storybook-root'
     },
+    beforeEach: async ({ canvasElement }) => canvasElement.querySelector('arpa-dialogs')?.remove(),
     render: args => {
-        return html`
-            <arpa-dialogs>
-                <confirm-dialog ${$attr(args)}>${dialogText}</confirm-dialog>
-            </arpa-dialogs>
-        `;
+        return html`<confirm-dialog ${$attr(args)}>${dialogText}</confirm-dialog>`;
     }
 };
 
@@ -47,11 +45,10 @@ export const Test = {
         id: 'confirm-test'
     },
     play: async ({ step }) => {
+        const dialogNode = /** @type {ConfirmDialog} */ (document.querySelector('confirm-dialog'));
+        await dialogNode?.promise;
         /** @type {Dialogs | null} */
         const dialogsNode = document.querySelector('arpa-dialogs');
-        const dialogNode = /** @type {ConfirmDialog} */ (document.querySelector('confirm-dialog'));
-        await customElements.whenDefined('arpa-dialogs');
-        await dialogNode?.promise;
         const dialog = within(dialogNode);
         dialogNode.setPayload([{ id: 1 }]);
         const cancelButton = await waitFor(() => dialog.getByRole('button', { name: /Cancel/i }));

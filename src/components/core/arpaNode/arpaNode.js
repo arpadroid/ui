@@ -20,6 +20,10 @@ class ArpaNode extends HTMLElement {
         this.nodesContainer = this.closest('.template-nodes-container');
         this._initializeContent();
         this.setConfig(config);
+        this.promise = new Promise((resolve, reject) => {
+            this.resolvePromise = resolve;
+            this.rejectPromise = reject;
+        });
     }
 
     _initializeContent() {
@@ -155,6 +159,7 @@ class ArpaNode extends HTMLElement {
             deferFn = this.element?.[/** @type {keyof ArpaElement} */ (deferFn)];
         }
         if (typeof deferFn === 'function') {
+            await new Promise(resolve => requestAnimationFrame(resolve));
             rv = await deferFn.call(this.element);
         } else {
             await this.element?.promise;
@@ -167,22 +172,28 @@ class ArpaNode extends HTMLElement {
         if (!name) {
             const msg = 'An arpa-node must have a name attribute or configuration property defined.';
             console.error(msg, this);
+            this.rejectPromise?.(new Error(msg));
             return Promise.reject(new Error(msg));
         }
+        
         /** @type {ArpaElement | null}  */
         this.element = getArpaElement(this);
         if (!this.element) {
             const msg = 'An arpa-node must have a parent arpa-element';
             console.error(msg, this);
-            return Promise.reject(new Error(msg));
+            this.rejectPromise?.(new Error(msg));
+            return;
         }
+
         if (this.hasAttribute('defer')) {
             const rv = await this.handleDefer();
             if (!rv) {
                 this.remove();
+                this.resolvePromise?.(true);
                 return;
             }
         }
+
         if (!this.node) {
             this.node = /** @type {ArpaElementContentNodeType & {arpaNode?: ArpaNode}} */ (this.renderNode());
         }
@@ -192,9 +203,9 @@ class ArpaNode extends HTMLElement {
             this.element.arpaNodes[name] = this;
             this.node.arpaNode = this;
             this.replaceWith(this.node);
-            return;
         }
         this.remove();
+        this.resolvePromise?.(true);
     }
 }
 

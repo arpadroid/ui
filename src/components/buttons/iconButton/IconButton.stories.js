@@ -6,7 +6,7 @@
  */
 
 import { defaultParams, testParams } from '@arpadroid/module/storybook/helper';
-import { expect, fn, userEvent } from 'storybook/test';
+import { expect, fn, userEvent, waitFor } from 'storybook/test';
 
 /** @type {Meta} */
 const ButtonStory = {
@@ -35,14 +35,17 @@ export const Test = {
     parameters: testParams,
     play: async ({ canvas, canvasElement, step }) => {
         const onClickAction = fn(() => {});
-        const button = /** @type {HTMLButtonElement} */ (canvas.getByRole('button', { name: /test/i }));
         const arpaButton = /** @type {IconButton} */ (canvasElement.querySelector('icon-button'));
+        await arpaButton.promise;
+        const button = /** @type {HTMLButtonElement} */ (canvas.getByRole('button', { name: /test/i }));
         arpaButton.setConfig({ onClick: onClickAction });
 
         await step('calls the onClick action when clicked', async () => {
             await userEvent.click(button);
-            expect(onClickAction).toHaveBeenCalled();
-            expect(canvas.getByText(/test tooltip/i)).toBeVisible();
+            await waitFor(() => {
+                expect(onClickAction).toHaveBeenCalled();
+                expect(canvas.getByText(/test tooltip/i)).toBeVisible();
+            });
         });
     }
 };
@@ -54,17 +57,18 @@ export const Disabled = {
         tooltip: 'Disabled Button'
     },
     parameters: testParams,
-    play: async ({ canvas, canvasElement, step }) => {
+    play: async ({ canvasElement, step }) => {
         const onClickAction = fn(() => {});
         const arpaButton = /** @type {IconButton} */ (canvasElement.querySelector('icon-button'));
         arpaButton.setConfig({ onClick: onClickAction });
-        const button = canvas.getByRole('button', { name: /Disabled Button/i });
+        await arpaButton.promise;
+        const button = arpaButton.button;
         await step('renders the disabled icon button', async () => {
             expect(button).toBeDisabled();
         });
 
         await step('does not call the onClick action when clicked', async () => {
-            await userEvent.click(button);
+            button && (await userEvent.click(button));
             expect(onClickAction).not.toHaveBeenCalled();
         });
     }

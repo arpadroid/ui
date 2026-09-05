@@ -3,6 +3,7 @@ import { ArpaElementConfigType } from '../../core/arpaElement/arpaElement';
 export type DialogConfigType = ArpaElementConfigType & {
     canClose?: boolean;
     content?: string;
+    container?: HTMLElement | string | Document;
     dialogsId?: string;
     footer?: string;
     icon?: string;

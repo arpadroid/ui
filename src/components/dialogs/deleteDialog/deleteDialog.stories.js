@@ -23,14 +23,12 @@ const DeleteDialogStory = {
     args: {
         id: 'delete',
         title: 'Delete',
-        open: true
+        open: true,
+        container: '#storybook-root'
     },
+    beforeEach: async ({ canvasElement }) => canvasElement.querySelector('arpa-dialogs')?.remove(),
     render: args => {
-        return html`
-            <arpa-dialogs>
-                <delete-dialog ${$attr(args)}>${dialogText}</delete-dialog>
-            </arpa-dialogs>
-        `;
+        return html`<delete-dialog ${$attr(args)}>${dialogText}</delete-dialog>`;
     }
 };
 
@@ -48,12 +46,9 @@ export const Test = {
     },
     play: async context => {
         const { step } = context;
-
-        await customElements.whenDefined('delete-dialog');
-        await customElements.whenDefined('arpa-dialogs');
-        const dialogsNode = /** @type {Dialogs} */ (document.querySelector('arpa-dialogs'));
         const dialogNode = /** @type {DeleteDialog} */ (document.querySelector('delete-dialog'));
         await dialogNode?.promise;
+        const dialogsNode = /** @type {Dialogs} */ (document.querySelector('arpa-dialogs'));
 
         const dialog = within(dialogNode);
         dialogNode.on('cancel', onCancel);
@@ -73,7 +68,6 @@ export const Test = {
             await dialogNode.open();
             const cancelButton = await waitFor(() => dialog.getByRole('button', { name: /cancel/i }));
             expect(cancelButton).toBeInTheDocument();
-            await new Promise(resolve => setTimeout(resolve, 100));
             await userEvent.click(cancelButton);
             await waitFor(() => expect(dialogNode).not.toHaveAttribute('open'));
             expect(onCancel).toHaveBeenCalledTimes(1);
@@ -81,13 +75,11 @@ export const Test = {
 
         await step('Emits confirm event on confirm action', async () => {
             await dialogNode.open();
-
             const confirmButton = dialog.getByRole('button', { name: /delete/i });
             expect(confirmButton).toBeInTheDocument();
             await userEvent.click(confirmButton);
             await waitFor(() => {
                 expect(dialogNode).not.toHaveAttribute('open');
-
                 expect(onConfirm).toHaveBeenCalled();
             });
         });

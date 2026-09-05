@@ -54,11 +54,11 @@ export const Test = {
     },
     parameters: testParams,
     play: async ({ canvasElement, step }) => {
-        await customElements.whenDefined('linear-progress');
         const component = /** @type {LinearProgress | null} */ (
             canvasElement.querySelector('linear-progress')
         );
-
+        await component?.promise;
+        
         await step('renders the linear progress component', async () => {
             expect(component).toBeInTheDocument();
         });

@@ -159,6 +159,7 @@ class ArpaZone extends HTMLElement {
         if (!zoneElement) {
             await new Promise(resolve => setTimeout(resolve, 10));
             if (!this.zoneElement) {
+                const name = this.getAttribute('name');
                 LOST_ZONES.add(name);
                 console.error(`No zone element found for zone "${name}".`);
                 this.remove();

@@ -39,10 +39,11 @@ class Button extends ArpaElement {
         return this.resolveAriaLabel(aria) || '';
     }
 
-    _preRender() {
+    async _preRender() {
         super._preRender();
         this._config.disabled = this.hasAttribute('disabled') || this.getProp('variant') === 'disabled';
         this.removeAttribute('disabled');
+        return true;
     }
 
     $renderTemplate() {
@@ -79,7 +80,6 @@ class Button extends ArpaElement {
     async $initializeNodes() {
         await super.$initializeNodes();
         const button = this.querySelector('button');
-        if (!button) return false;
         /** @type {HTMLButtonElement | null} */
         this.button = button;
         const { onClick } = this._config;
@@ -106,6 +106,11 @@ class Button extends ArpaElement {
     async focus() {
         await this.promise;
         this.button?.focus();
+    }
+
+    async click() {
+        await this.promise;
+        this.button?.click();
     }
 }
 

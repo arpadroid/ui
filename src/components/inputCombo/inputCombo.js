@@ -151,7 +151,7 @@ class InputCombo {
      */
     setConfig(config) {
         /** @type {InputComboConfigType} */
-        this._config = mergeObjects(this._defaultConfig, config);
+        this._config = mergeObjects({ ...this._defaultConfig }, config);
     }
 
     /**
@@ -327,8 +327,8 @@ class InputCombo {
         const isContained = lastClicked instanceof HTMLElement && this.combo.contains(lastClicked);
         return Boolean(
             (event?.relatedTarget && this.combo.contains(event?.relatedTarget)) ||
-                isContained ||
-                (event?.relatedTarget && this.input.contains(event?.relatedTarget))
+            isContained ||
+            (event?.relatedTarget && this.input.contains(event?.relatedTarget))
         );
     }
 

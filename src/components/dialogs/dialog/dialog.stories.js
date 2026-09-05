@@ -1,58 +1,82 @@
 /**
  * @typedef {import('./dialog.types').DialogConfigType} DialogConfigType
  * @typedef {import('@storybook/web-components-vite').Meta<DialogConfigType>} Meta
- * @typedef {import('@storybook/web-components-vite').StoryObj<DialogConfigType & {zoneFooter?: string}>} StoryObj
+ * @typedef {import('@storybook/web-components-vite').StoryObj<DialogConfigType & {zoneFooter?: string}>} Story
  * @typedef {import('../dialogs/dialogs').default} Dialogs
  * @typedef {import('../dialog/dialog').default} Dialog
+ * @typedef {import('../../buttons/button/button').default} Button
  */
 import { attrString } from '@arpadroid/tools';
-import { waitFor, expect, within, fn, fireEvent, userEvent } from 'storybook/test';
-import { dialogText, playSetup, renderDialog } from './dialogStoryUtil';
+import { waitFor, expect, within, fn, userEvent } from 'storybook/test';
 const html = String.raw;
+
+const onClose = fn();
+const onOpen = fn();
+
+const content =
+    'In the depths of the ocean, scientists discovered an ancient ecosystem thriving around hydrothermal vents. These towering underwater chimneys spew hot, mineral-rich water, supporting unique life forms—giant tube worms, ghostly shrimp, and bacteria that convert chemicals into energy. This alien-like world, hidden beneath miles of water, may hold secrets to understanding life beyond Earth.';
 
 /** @type {Meta} */
 const DialogStory = {
     title: 'UI/Dialogs/Dialog',
     tags: [],
     component: 'arpa-dialog',
+    parameters: {
+        layout: 'centered'
+    },
+    beforeEach: async ({ canvasElement }) => canvasElement.querySelector('arpa-dialogs')?.remove(),
     args: {
         id: 'dialog',
-        title: 'Dialog title',
-        open: true,
-        onOpen: fn(),
-        onClose: fn()
+        title: 'Beneath miles of water',
+        icon: 'waves',
+        container: '#storybook-root',
+        open: true
     },
-    render: args => renderDialog(args)
+    render: args => {
+        return html`
+            <arpa-dialog ${attrString(args)}>
+                <arpa-zone name="content">${content}</arpa-zone>
+                <arpa-zone name="footer">
+                    <nav-link link="javascript:void(0)"> <arpa-icon>link</arpa-icon> Find out more </nav-link>
+                </arpa-zone>
+            </arpa-dialog>
+        `;
+    }
 };
 
-/** @type {StoryObj} */
+/** @type {Story} */
 export const Default = {
     name: 'Render',
     parameters: {},
     args: {}
 };
 
-/** @type {StoryObj} */
+/** @type {Story} */
 export const Test = {
     parameters: {
         controls: { disable: true }
     },
     args: {
-        id: 'dialog-test',
-        zoneFooter: 'Footer content'
+        container: '#storybook-root',
+        title: 'Beneath miles of water',
+        id: 'dialog-test'
     },
-    play: async ({ step, args }) => {
-        const { dialogNode, dialogsNode } = await playSetup();
+    play: async ({ step, args, canvasElement }) => {
+        const { title = '' } = args;
+
+        const dialogNode = /** @type {Dialog} */ (canvasElement.querySelector('arpa-dialog'));
+        await dialogNode.promise;
         const dialog = within(dialogNode);
-        dialogNode?.on('open', args.onOpen);
-        dialogNode?.on('close', args.onClose);
+        dialogNode?.on('open', onOpen);
+        dialogNode?.on('close', onClose);
+
         await step('Renders the dialog', async () => {
-            expect(dialogsNode).toBeInTheDocument();
-            expect(dialogNode).toBeInTheDocument();
-            expect(dialogsNode).toContainElement(dialogNode);
-            expect(dialog.getByText('Dialog title')).toBeInTheDocument();
-            expect(dialog.getByText('Footer content')).toBeInTheDocument();
-            await waitFor(() => expect(dialog.getByText(dialogText)).toBeInTheDocument());
+            await waitFor(() => {
+                expect(dialogNode.parentElement?.tagName).toBe('ARPA-DIALOGS');
+                expect(dialog.getByText(title)).toBeVisible();
+                expect(dialog.getByText(content, { exact: false })).toBeInTheDocument();
+                expect(dialog.getByText('Find out more')).toBeInTheDocument();
+            });
         });
 
         await step('Closes the dialog', async () => {
@@ -62,14 +86,14 @@ export const Test = {
             await waitFor(() => expect(dialogNode).not.toHaveAttribute('open'));
             expect(dialogNode).not.toBeVisible();
             await waitFor(() => {
-                expect(args.onClose).toHaveBeenCalled();
+                expect(onClose).toHaveBeenCalled();
             });
         });
 
         await step('Reopens the dialog', async () => {
             await dialogNode?.open();
             await waitFor(() => expect(dialogNode).toHaveAttribute('open'));
-            expect(args.onOpen).toHaveBeenCalled();
+            expect(onOpen).toHaveBeenCalled();
         });
 
         await step('Closes the dialog with Escape key', async () => {
@@ -77,7 +101,7 @@ export const Test = {
             await waitFor(() => expect(dialogNode).not.toHaveAttribute('open'));
             expect(dialogNode).not.toBeVisible();
             await waitFor(() => {
-                expect(args.onClose).toHaveBeenCalled();
+                expect(onClose).toHaveBeenCalled();
             });
         });
 
@@ -85,7 +109,7 @@ export const Test = {
     }
 };
 
-/** @type {StoryObj} */
+/** @type {Story} */
 export const ButtonDialog = {
     parameters: {},
     args: {
@@ -95,7 +119,6 @@ export const ButtonDialog = {
     },
     render: args => {
         return html`
-            <arpa-dialogs id="button-dialogs"> </arpa-dialogs>
             <arpa-button variant="primary" id="openDialog">
                 Open Dialog
                 <arpa-dialog dialogs-id="button-dialogs" ${attrString(args)}>
@@ -108,28 +131,16 @@ export const ButtonDialog = {
                 </arpa-dialog>
             </arpa-button>
         `;
-    }
-};
-
-/** @type {StoryObj} */
-export const ButtonDialogTest = {
-    ...ButtonDialog,
-    args: {
-        id: 'button-dialog-test',
-        open: false,
-        title: undefined
     },
-    play: async ({ canvas, step }) => {
-        const { dialogNode } = await playSetup();
-        await dialogNode?.promise;
+    play: async ({ canvas, step, canvasElement }) => {
+        const dialogNode = /** @type {Dialog} */ (canvasElement.querySelector('arpa-dialog'));
+        await dialogNode.promise;
         const button = canvas.getByRole('button', { name: /Open Dialog/i });
         expect(dialogNode).not.toHaveAttribute('open');
-
         await step('Clicks on the button and opens the dialog', async () => {
-            await fireEvent.click(button);
+            await userEvent.click(button);
             await waitFor(() => {
-                // expect(dialogNode).toHaveAttribute('open', '');
-                expect(dialogNode).toBeInTheDocument();
+                expect(dialogNode).toHaveAttribute('open');
             });
         });
     }

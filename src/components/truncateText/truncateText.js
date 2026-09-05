@@ -84,8 +84,7 @@ class TruncateText extends ArpaElement {
         return this.truncatedNode?.isConnected;
     }
 
-    async truncateText() {
-        await this.promise;
+    truncateText() {
         const maxLength = this.getMaxLength();
         const text = this.contentNode?.textContent?.trim();
         if (!maxLength || !text?.length || text?.length <= maxLength) return;
@@ -147,11 +146,11 @@ class TruncateText extends ArpaElement {
         await super.$initializeNodes();
         this.buttonComponent = /** @type {ArpaButton} */ (this.nodes.button);
         this.ellipsisNode = /** @type {HTMLElement} */ (this.nodes.ellipsis);
-        this.ellipsisNode.remove();
+        this.ellipsisNode?.remove();
         return true;
     }
 
-    $onComplete() {
+    async $onComplete() {
         if (!this.canTruncate()) {
             const button = this.querySelector('.truncateText__button');
             button?.remove();
@@ -162,6 +161,7 @@ class TruncateText extends ArpaElement {
         } else {
             this.showFullContent();
         }
+        return true;
     }
 
     // #endregion LIFECYCLE

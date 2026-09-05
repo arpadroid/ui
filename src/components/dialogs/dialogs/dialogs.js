@@ -49,7 +49,6 @@ class Dialogs extends ArpaElement {
     async addDialog(dialog) {
         if (dialog instanceof HTMLElement) {
             this.appendChild(dialog);
-            await dialog.connectedCallback();
             return true;
         }
         if (isObject(dialog)) {

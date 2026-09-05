@@ -1,11 +1,3 @@
-:root {
-    --dialog-padding: 1.5rem 1.5rem;
-    --dialog-outline: 2px solid white;
-    --dialog-text-color: var(--grey-800);
-    --dialog-outline-color: transparent;
-    --dialog-icon-color: var(--dialog-text-color);
-}
-
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -17,6 +9,14 @@
 }
 
 .dialog {
+    --dialog-padding: 1.5rem;
+    --dialog-v-padding: 1.5rem;
+    --dialog-outline: 2px solid white;
+    --dialog-text-color: var(--grey-800);
+    --dialog-outline-color: transparent;
+    --dialog-icon-color: var(--blue-navy);
+    --dialog-title-color: var(--grey-700);
+
     z-index: 10;
     display: flex;
     display: none;
@@ -42,9 +42,13 @@
     }
 }
 
-.dialog__close {
+.dialog__close.dialog__close {
     align-self: flex-end;
     margin-left: auto;
+
+    .icon.icon {
+        --icon-size: 1.75rem;
+    }
 }
 
 .dialog__controls {
@@ -74,7 +78,7 @@
     outline: 3px solid var(--grey-50);
     background-color: var(--color-background);
     border: 3px solid var(--dialog-outline-color);
-    border-radius: 1rem;
+    border-radius: 2rem;
     box-shadow:
         rgb(0 0 0 / 15%) 0 15px 25px,
         rgb(0 0 0 / 5%) 0 5px 10px;
@@ -112,20 +116,24 @@
 
 .dialog__title {
     display: flex;
-    align-items: center;
+    gap: 0.75rem;
+    align-items: flex-start;
     margin: 0;
-    font-size: 20px;
+    font-size: 1.4rem;
+    color: var(--dialog-title-color);
 
     .icon {
-        max-width: 26px;
-        margin-right: 12px;
+        --icon-size: 1.75rem;
+
+        position: relative;
+        align-self: flex-start;
         color: var(--dialog-icon-color);
     }
 }
 
 .dialog__subtTitle {
     margin: 0;
-    font-size: 14px;
+    font-size: 1rem;
 }
 
 /** 
@@ -143,12 +151,16 @@
     line-height: 26px;
 }
 
+.dialog:has(.dialog__footer) {
+    .dialog__body {
+        padding: 0 var(--dialog-padding);
+    }
+}
+
 .dialog__content {
     display: flex;
     flex: 1 0 auto;
     flex-direction: column;
-
-    /* padding: 0 0.5rem; */
 }
 
 /**
@@ -159,7 +171,7 @@
     display: flex;
     gap: 1rem;
     align-items: center;
-    padding: 0 1.5rem 0.75rem;
+    padding: var(--dialog-v-padding) var(--dialog-padding);
 }
 
 /**
@@ -172,7 +184,7 @@
 }
 
 .dialog:has(.dialog__icon) .dialog__content {
-    padding: 0 0.5rem;
+    /* padding: 0 0.5rem; */
 }
 
 /**

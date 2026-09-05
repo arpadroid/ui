@@ -22,7 +22,6 @@ class Dialog extends ArpaElement {
      * @returns {DialogConfigType}
      */
     getDefaultConfig() {
-        this.bind('open', 'close');
         /** @type {DialogConfigType} */
         const config = {
             open: false,
@@ -30,6 +29,7 @@ class Dialog extends ArpaElement {
             persist: false,
             variant: 'default',
             canClose: true,
+            container: document.body,
             attributes: {
                 role: 'dialog'
             }
@@ -38,6 +38,7 @@ class Dialog extends ArpaElement {
     }
 
     $preInitialize() {
+        this.bind('open', 'close');
         this.originalParent = /** @type {HTMLElement & { dialog?: Dialog }} */ (
             this.parentNode instanceof HTMLElement ? this.parentNode : null
         );
@@ -47,9 +48,16 @@ class Dialog extends ArpaElement {
         observerMixin(this);
     }
 
-    async _resolveRender() {
-        await this._initializeDialog();
-        return this.resolvePromise?.(true);
+    async $resolveRender() {
+        return await this._initializeDialog();
+    }
+
+    getContainer() {
+        let container = this.getProp('container') || document.body;
+        if (typeof container === 'string') {
+            container = document.querySelector(container) || document.body;
+        }
+        return container;
     }
 
     /**
@@ -58,36 +66,40 @@ class Dialog extends ArpaElement {
      * @returns {Promise<boolean | undefined>}
      */
     async _initializeDialog() {
-        this._initializeButton();
+        await this._initializeButton();
         const dialogsTagName = 'arpa-dialogs';
         /** @type {Dialogs | null} */
         this.dialogs = this.dialogs || this.closest(dialogsTagName);
-        if (this.dialogs) return;
+        if (this.dialogs) {
+            return;
+        }
         const dialogsId = this.getProp('dialogs-id') || dialogsTagName;
-
         this.dialogs = /** @type {Dialogs | null} */ (document.getElementById(dialogsId));
         if (this.dialogs) {
             await this.dialogs.promise;
             await this.dialogs.addDialog(this);
+            this.initialized = true;
             return true;
-        }
-        if (!this.dialogs) {
+        } else {
             this.dialogs = /** @type {Dialogs | null} */ (
                 renderNode(html`<arpa-dialogs ${attrString({ id: dialogsId })}></arpa-dialogs>`)
             );
-            this.dialogs && document.body.appendChild(this.dialogs);
+            const container = this.getContainer();
+            this.dialogs && container.appendChild(this.dialogs);
             await this.dialogs?.promise;
         }
-        if (this.parentNode !== this.dialogs) {
-            if (typeof this.dialogs?.addDialog !== 'function') {
-                await customElements.whenDefined(dialogsTagName);
-            }
+        if (this.parentNode !== this.dialogs && !this.initialized) {
             await this.dialogs?.addDialog(this);
+            this.initialized = true;
         }
     }
 
     async _initializeButton() {
-        listen(await this.getButton(), 'click', this.open);
+        const btn = await this.getButton();
+        listen(btn, 'click', this.open);
+        const arpaButton = /** @type {ArpaButton} */ (this.closest('arpa-button'));
+        arpaButton && (await arpaButton?.promise);
+        return arpaButton;
     }
 
     async getButton() {
@@ -95,7 +107,7 @@ class Dialog extends ArpaElement {
         if (button) return button;
         /** @type {HTMLElement & { dialog?: Dialog, promise?: Promise<void> } | undefined} */
         const parent = this.originalParent;
-        parent && (await parent?.promise);
+        parent?.promise && (await parent?.promise);
         return parent?.closest('button') || parent?.querySelector('button');
     }
 
