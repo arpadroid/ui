@@ -87,7 +87,10 @@ class TruncateText extends ArpaElement {
     truncateText() {
         const maxLength = this.getMaxLength();
         const text = this.contentNode?.textContent?.trim();
-        if (!maxLength || !text?.length || text?.length <= maxLength) return;
+        if (!maxLength || !text?.length || text?.length <= maxLength) {
+            this.removeAttribute('is-truncated');
+            return;
+        }
         if (!this.truncatedNode) {
             this.truncatedNode = this.contentNode?.cloneNode();
         }
@@ -98,8 +101,8 @@ class TruncateText extends ArpaElement {
             this.contentNode?.replaceWith(this.truncatedNode);
             this.ellipsisNode && this.truncatedNode?.after(this.ellipsisNode);
         }
-        this.buttonComponent?.setContent(this.getProp('lblShow'));
-        this.buttonComponent?.setProp('rhsIcon', this.getProp('icon'));
+        this.button?.setContent(this.getProp('lblShow'));
+        this.button?.setProp('rhsIcon', this.getProp('icon'));
     }
 
     showFullContent() {
@@ -107,8 +110,9 @@ class TruncateText extends ArpaElement {
             this.truncatedNode?.replaceWith(this.contentNode);
         }
         this.ellipsisNode?.remove();
-        this.buttonComponent?.setProp('content', this.getProp('lblHide'));
-        this.buttonComponent?.setProp('rhsIcon', this.getProp('iconHide'));
+        this.button?.setProp('content', this.getProp('lblHide'));
+        this.button?.setProp('rhsIcon', this.getProp('iconHide'));
+        this.removeAttribute('is-truncated');
     }
 
     toggleTruncate() {
@@ -123,6 +127,10 @@ class TruncateText extends ArpaElement {
 
     static get observedAttributes() {
         return ['is-truncated'];
+    }
+
+    getContentNode() {
+        return this.querySelector('.truncateText__content');
     }
 
     /**
@@ -144,7 +152,8 @@ class TruncateText extends ArpaElement {
 
     async $initializeNodes() {
         await super.$initializeNodes();
-        this.buttonComponent = /** @type {ArpaButton} */ (this.nodes.button);
+        this.button = /** @type {ArpaButton} */ (this.nodes.button);
+        await this.button?.promise;
         this.ellipsisNode = /** @type {HTMLElement} */ (this.nodes.ellipsis);
         this.ellipsisNode?.remove();
         return true;

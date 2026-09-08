@@ -75,11 +75,9 @@ class ArpaZone extends HTMLElement {
             }
             // @ts-ignore
             const zoneElement = this.selectZoneElement(container);
-            if (zoneElement) {
-                return zoneElement;
-            }
+            if (zoneElement) return zoneElement;
         }
-        return this.waitForZoneElement();
+        return await this.waitForZoneElement();
     }
 
     /**
@@ -111,12 +109,21 @@ class ArpaZone extends HTMLElement {
     /**
      * Returns the target element for the zone, which is either specified by the 'zone-target' attribute or defaults to the zone element itself.
      * @param {import('../arpaNode/arpaNode').ArpaElementContentNodeType} zoneElement
-     * @returns {Element | null}
+     * @returns {Promise<Element | null | undefined>}
      */
-    getZoneTarget(zoneElement) {
-        const zoneTarget = zoneElement.getAttribute('zone-target');
-        const zoneTargetNode = zoneTarget && zoneElement?.querySelector(zoneTarget);
-        return zoneTargetNode || ('zoneTarget' in zoneElement && zoneElement?.zoneTarget) || zoneElement;
+    async getZoneTarget(zoneElement) {
+        let zoneTarget =
+            zoneElement.getAttribute('zone-target') ||
+            ('zoneTarget' in zoneElement && zoneElement?.zoneTarget) ||
+            null;
+        if ('getZoneTarget' in zoneElement && typeof zoneElement.getZoneTarget === 'function') {
+            zoneTarget = await zoneElement.getZoneTarget();
+        }
+
+        if (typeof zoneTarget === 'string') {
+            zoneTarget = zoneElement?.querySelector(zoneTarget);
+        }
+        return zoneTarget || zoneElement;
     }
 
     async connectedCallback() {
@@ -139,7 +146,7 @@ class ArpaZone extends HTMLElement {
             return;
         }
 
-        if (typeof this.element?.onRenderReady === 'function') {
+        if (typeof this.element?.onRendered === 'function') {
             this.element?.onRenderReady(() => this.onRenderReady());
         } else {
             this.onRenderReady();
@@ -151,21 +158,19 @@ class ArpaZone extends HTMLElement {
         let zoneElement = this.selectZoneElement() || (await this.findZoneElement());
         if (zoneElement) {
             'promise' in zoneElement && (await zoneElement.promise);
-            const target = this.getZoneTarget(zoneElement);
+            const target = await this.getZoneTarget(zoneElement);
             if (target) {
                 zoneElement = target;
             }
         }
         if (!zoneElement) {
-            await new Promise(resolve => setTimeout(resolve, 10));
-            if (!this.zoneElement) {
-                const name = this.getAttribute('name');
-                LOST_ZONES.add(name);
-                console.error(`No zone element found for zone "${name}".`);
-                this.remove();
-                return;
-            }
+            const name = this.getAttribute('name');
+            LOST_ZONES.add(name);
+            console.error(`No zone element found for zone "${name}".`);
+            this.remove();
+            return;
         }
+
         this.zoneElement = zoneElement;
         this.apply(this.zoneElement);
     }

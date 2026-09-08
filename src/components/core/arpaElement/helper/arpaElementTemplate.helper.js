@@ -129,6 +129,28 @@ function getTemplateAttributeMatch(template, lastIndex, equalsIndex) {
 }
 
 /**
+ * Waits for event handler elements matching a template attribute to be available in the DOM.
+ * @param {ArpaElement} element
+ * @param {string} attr
+ * @param {string} value
+ * @returns {Promise<(Element | ArpaElement)[]>}
+ */
+export async function waitForEventHandlers(element, attr, value) {
+    const selector = `[${attr}="{${value}}"]`;
+    let eventHandlers = Array.from(element.querySelectorAll(selector));
+    if (!eventHandlers.length && element.onRendered) {
+        await element.onRendered();
+        await new Promise(resolve => setTimeout(resolve, 10));
+        eventHandlers = Array.from(element.querySelectorAll(selector));
+        if (!eventHandlers.length) {
+            await new Promise(resolve => setTimeout(resolve, 0));
+            eventHandlers = Array.from(element.querySelectorAll(selector));
+        }
+    }
+    return eventHandlers;
+}
+
+/**
  * Returns the event handler element for a template attribute.
  * @param {ArpaElement} element
  * @param {string} attr
@@ -136,15 +158,8 @@ function getTemplateAttributeMatch(template, lastIndex, equalsIndex) {
  * @returns {Promise<(Element | ArpaElement | null)[]>}
  */
 export async function getTemplateEventHandlers(element, attr, value) {
-    const selector = `[${attr}="{${value}}"]`;
     const handlers = new Set();
-    let eventHandlers = Array.from(element.querySelectorAll(selector));
-
-    if (!eventHandlers.length && element.promise) {
-        await element.promise;
-        await new Promise(resolve => setTimeout(resolve, 5));
-        eventHandlers = Array.from(element.querySelectorAll(selector));
-    }
+    const eventHandlers = await waitForEventHandlers(element, attr, value);
 
     for (let eventHandler of eventHandlers) {
         if (eventHandler.tagName.toLowerCase() === 'arpa-node') {
@@ -180,6 +195,7 @@ export async function getTemplateEventHandlers(element, attr, value) {
 export async function applyTemplateEventListener(element, attr, value, fn) {
     if (!element) return;
     'promise' in element && (await element.promise);
+    await element?.onRendered();
     const eventHandler = await getTemplateEventHandlers(element, attr, value);
     const eventName = attr.replace('on-', '').replace(/-/g, '');
     if (typeof fn === 'function') {

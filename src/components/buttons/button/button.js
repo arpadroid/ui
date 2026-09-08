@@ -39,11 +39,9 @@ class Button extends ArpaElement {
         return this.resolveAriaLabel(aria) || '';
     }
 
-    async _preRender() {
-        super._preRender();
+    _preRender() {
         this._config.disabled = this.hasAttribute('disabled') || this.getProp('variant') === 'disabled';
         this.removeAttribute('disabled');
-        return true;
     }
 
     $renderTemplate() {

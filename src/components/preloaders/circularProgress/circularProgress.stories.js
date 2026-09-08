@@ -5,7 +5,7 @@
  * @typedef {import('@storybook/web-components-vite').StoryObj<CircularProgressConfigType>} Story
  */
 import { defaultParams, testParams } from '@arpadroid/module/storybook/helper';
-import { expect } from 'storybook/test';
+import { expect, waitFor } from 'storybook/test';
 
 /** @type {Meta} */
 const CircularProgressStory = {
@@ -54,8 +54,10 @@ export const Test = {
     },
     parameters: testParams,
     play: async ({ canvas, step }) => {
-        const component = /** @type {CircularProgress | null} */ (canvas.getByRole('progressbar'));
-        await component?.promise;
+        const component = /** @type {CircularProgress | null} */ (
+            await waitFor(() => canvas.getByRole('progressbar'))
+        );
+        await component?.onRendered();
         await step('renders the circular progress component', async () => {
             expect(component).toBeInTheDocument();
         });
@@ -87,8 +89,10 @@ export const SimulateProgress = {
     },
     parameters: testParams,
     play: async ({ canvas, step }) => {
-        const component = /** @type {CircularProgress | null} */ (canvas.getByRole('progressbar'));
-        await component?.promise;
+        const component = /** @type {CircularProgress | null} */ (
+            await waitFor(() => canvas.getByRole('progressbar'))
+        );
+        await component?.onRendered();
         await step('simulates progress updates over time', async () => {
             expect(component).toBeInTheDocument();
             expect(canvas.getByText('0%')).toBeInTheDocument();
@@ -110,8 +114,10 @@ export const Empty = {
         progress: 0
     },
     play: async ({ canvas, step }) => {
-        const component = /** @type {CircularProgress | null} */ (canvas.getByRole('progressbar'));
-        await component?.promise;
+        const component = /** @type {CircularProgress | null} */ (
+            await waitFor(() => canvas.getByRole('progressbar'))
+        );
+        await component?.onRendered();
         await step('renders the circular progress component with 0% progress', async () => {
             expect(component).toBeInTheDocument();
             expect(canvas.getByText('0%')).toBeInTheDocument();
@@ -129,8 +135,10 @@ export const Complete = {
     },
     parameters: testParams,
     play: async ({ canvas, step }) => {
-        const component = /** @type {CircularProgress | null} */ (canvas.getByRole('progressbar'));
-        await component?.promise;
+        const component = /** @type {CircularProgress | null} */ (
+            await waitFor(() => canvas.getByRole('progressbar'))
+        );
+        await component?.onRendered();
 
         await step('renders the circular progress component with 100% progress', async () => {
             expect(component).toBeInTheDocument();

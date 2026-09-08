@@ -57,14 +57,15 @@ export const Disabled = {
         tooltip: 'Disabled Button'
     },
     parameters: testParams,
-    play: async ({ canvasElement, step }) => {
+    play: async ({ canvasElement, step, canvas }) => {
         const onClickAction = fn(() => {});
+        const button = await waitFor(() => canvas.getByRole('button'));
         const arpaButton = /** @type {IconButton} */ (canvasElement.querySelector('icon-button'));
         arpaButton.setConfig({ onClick: onClickAction });
-        await arpaButton.promise;
-        const button = arpaButton.button;
         await step('renders the disabled icon button', async () => {
-            expect(button).toBeDisabled();
+            await waitFor(() => {
+                expect(button).toHaveAttribute('disabled');
+            });
         });
 
         await step('does not call the onClick action when clicked', async () => {

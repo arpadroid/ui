@@ -962,10 +962,6 @@ class CustomElement extends ArpaElement {
         /* Called at the very end of rendering - ABSTRACT */
     }
 
-    onRendered(callback) {
-        /* Register callback for when rendered */
-    }
-
     onRenderReady(callback) {
         /* Register callback for when render-ready */
     }

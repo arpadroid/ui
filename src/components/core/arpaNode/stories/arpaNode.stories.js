@@ -71,6 +71,7 @@ export const Test = {
         await customElements.whenDefined('test-node');
         await customElements.whenDefined('arpa-node');
         const testNode = /** @type {TestNode} */ (canvasElement.querySelector('test-node'));
+        await testNode.onRendered();
         await step('Initializes all nodes after awaiting for promise', async () => {
             expect(testNode).toBeInTheDocument();
             await testNode.promise;

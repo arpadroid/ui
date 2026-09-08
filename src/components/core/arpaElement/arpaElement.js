@@ -91,8 +91,6 @@ class ArpaElement extends HTMLElement {
         /** @type {(() => unknown)[]} */
         this._unsubscribes = [];
         /** @type {(() => unknown)[]} */
-        this._onRenderedCallbacks = [];
-        /** @type {(() => unknown)[]} */
         this._onRenderReadyCallbacks = [];
         /** @type {(() => unknown)[]} */
         this._preRenderCallbacks = [];
@@ -455,6 +453,12 @@ class ArpaElement extends HTMLElement {
      */
     $onZonePlaced(_zone, _container) {}
 
+    // #endregion Set
+
+    /////////////////////
+    // #region Node API
+    /////////////////////
+
     /**
      * Sets a child element.
      * @param {string} name
@@ -464,6 +468,14 @@ class ArpaElement extends HTMLElement {
         if (!name) return;
         this.setNodeConfig(name, config);
         this.spawnNode(name, config);
+    }
+
+    /**
+     * Gets the configuration for a child element.
+     * @returns {ArpaNodeConfigType | undefined}
+     */
+    getChildrenConfig() {
+        return this.nodesConfig;
     }
 
     /**
@@ -548,16 +560,7 @@ class ArpaElement extends HTMLElement {
     addNodeConfig(nodeName, config = {}) {
         this.nodesConfig[nodeName] = mergeObjects(this.nodesConfig[nodeName] || {}, config);
     }
-
-    /**
-     * Gets the configuration for a child element.
-     * @returns {ArpaNodeConfigType | undefined}
-     */
-    getChildrenConfig() {
-        return this.nodesConfig;
-    }
-
-    // #endregion Set
+    // #endregion Node API
 
     /////////////////////
     // #region Utils
@@ -807,9 +810,14 @@ class ArpaElement extends HTMLElement {
         // abstract method
     }
 
+    async $preRender() {
+        return true;
+    }
+
     async _render() {
         if (!this.canRender()) return;
         this._preRender();
+        await this.$preRender();
         const { attributes } = this._config;
         attributes && attr(this, attributes);
         await this.render();
@@ -846,18 +854,27 @@ class ArpaElement extends HTMLElement {
 
     async _onRenderComplete() {
         this._hasRendered = true;
-        this._onRenderedCallbacks?.forEach(callback => callback());
         await this._resolveRender();
+        await this.onRendered();
     }
 
-    async _resolveRender() {
-        const nodes = Object.values(this.nodes);
+    /**
+     * Waits for all specified nodes to be ready.
+     * @param {Record<string, ArpaElementContentNodeType>} [$nodes]
+     * @returns {Promise<boolean>}
+     */
+    async waitForNodes($nodes = this.nodes) {
+        const nodes = Object.values($nodes);
         for (const node of nodes) {
             const { promise } = this.batcher?.writes.get(node) || {};
             promise instanceof Promise && (await promise);
         }
-        await this.$resolveRender();
+        return true;
+    }
+
+    async _resolveRender() {
         await this.handleContent();
+        await this.$resolveRender();
         await this.$onComplete();
         return this.resolvePromise?.(true);
     }
@@ -882,12 +899,15 @@ class ArpaElement extends HTMLElement {
         // abstract method
     }
 
-    /**
-     * Called when the element has finished rendering.
-     * @param {() => unknown} callback
-     */
-    onRendered(callback) {
-        this._hasRendered ? callback() : this._onRenderedCallbacks?.push(callback);
+    async onRendered() {
+        await this.promise;
+        await this.waitForNodes();
+        await this.$onRendered();
+        return true;
+    }
+
+    $onRendered() {
+        // abstract method called after the element has been rendered
     }
 
     /**
