@@ -7,7 +7,6 @@ import Button from '../button/button.js';
 
 class IconButton extends Button {
     /**
-     * Returns the default configuration.
      * @returns {IconButtonConfigType}
      */
     getDefaultConfig() {

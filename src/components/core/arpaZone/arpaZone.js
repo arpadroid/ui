@@ -194,6 +194,11 @@ class ArpaZone extends HTMLElement {
                 if (this.element?.$onZonePlaced?.(this, zoneElement) === false) {
                     return false;
                 }
+                if ('$onZoneInserted' in zoneElement && typeof zoneElement?.$onZoneInserted === 'function') {
+                    if (zoneElement?.$onZoneInserted?.(this, zoneElement) === false) {
+                        return false;
+                    }
+                }
             }
         });
         this.element?.batcher?.remove(this);

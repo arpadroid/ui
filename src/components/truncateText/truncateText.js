@@ -1,6 +1,7 @@
 /**
  * @typedef {import('./truncateText.types').TruncateTextConfigType } TruncateTextConfigType
  * @typedef {import('../buttons/button/button.js').default} ArpaButton
+ * @typedef {import('../core/arpaZone/arpaZone.js').default} ArpaZone
  */
 import ArpaElement from '../core/arpaElement/arpaElement.js';
 import { classNames, defineCustomElement } from '@arpadroid/tools';
@@ -40,12 +41,16 @@ class TruncateText extends ArpaElement {
         };
     }
 
+    async canRenderButton() {
+        return this.getProp('hasButton') && this.canTruncate();
+    }
+
     renderButton() {
         return html`<arpa-node
             name="button"
             tag="arpa-button"
             on-click="{toggleTruncate}"
-            can-render="hasButton && canTruncate()"
+            can-render="canRenderButton()"
             rhs-icon="{icon}"
             variant="minimal"
             button-class="${classNames(this.getProp('buttonClasses'))}"
@@ -76,7 +81,10 @@ class TruncateText extends ArpaElement {
 
     canTruncate() {
         const maxLength = this.getMaxLength();
-        const content = (this._textContent || this.textContent || '').trim();
+        let content = (this._textContent || this.textContent || '').trim();
+        if (!content) {
+            content = this.contentNode?.textContent?.trim() || '';
+        }
         return content.length > maxLength;
     }
 
@@ -101,8 +109,11 @@ class TruncateText extends ArpaElement {
             this.contentNode?.replaceWith(this.truncatedNode);
             this.ellipsisNode && this.truncatedNode?.after(this.ellipsisNode);
         }
-        this.button?.setContent(this.getProp('lblShow'));
-        this.button?.setProp('rhsIcon', this.getProp('icon'));
+        this.waitForArpaNodes().then(() => {
+            this.button = /** @type {ArpaButton} */ (this.nodes.button);
+            this.button?.setContent(this.getProp('lblShow'));
+            this.button?.setProp('rhsIcon', this.getProp('icon'));
+        });
     }
 
     showFullContent() {
@@ -147,13 +158,12 @@ class TruncateText extends ArpaElement {
 
     $onContentSet() {
         this._textContent = this.contentNode?.textContent?.trim() || '';
+        this._childNodes = [...(this.contentNode?.childNodes || [])];
         this.reRender();
     }
 
     async $initializeNodes() {
         await super.$initializeNodes();
-        this.button = /** @type {ArpaButton} */ (this.nodes.button);
-        await this.button?.promise;
         this.ellipsisNode = /** @type {HTMLElement} */ (this.nodes.ellipsis);
         this.ellipsisNode?.remove();
         return true;
@@ -164,13 +174,29 @@ class TruncateText extends ArpaElement {
             const button = this.querySelector('.truncateText__button');
             button?.remove();
         }
+
         if (this.hasProp('isTruncated')) {
             this.setAttribute('is-truncated', '');
-            this.truncateText();
         } else {
-            this.showFullContent();
+            this.removeAttribute('is-truncated');
         }
         return true;
+    }
+
+    /**
+     * Called when a zone is inserted into the element.
+     * @param {ArpaZone} zone
+     * @returns {boolean}
+     */
+    $onZoneInserted(zone) {
+        if (this._hasRendered) {
+            if (this.contentNode instanceof HTMLElement) {
+                this.contentNode.style.display = 'none';
+                this.contentNode?.append(...zone.fragment.childNodes);
+            }
+            this.$onContentSet();
+        }
+        return false;
     }
 
     // #endregion LIFECYCLE

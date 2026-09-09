@@ -42,7 +42,7 @@ export const ArpaElementRender = {
     name: 'ArpaElement - Render',
     render: () => {
         return html`
-            <arpa-element id="test-element" class="test-element">
+            <arpa-element class-name="testComponent" class-names="class1,class2" id="test-element" class="test-element">
                 <template template-type="content"> ${TEMPLATE} </template>
                 ArpaElement content
             </arpa-element>
@@ -54,8 +54,6 @@ export const ArpaElementRender = {
             <script>
                 var element = /** @type {ArpaElement} */ (document.getElementById('test-element'));
                 element.setConfig({
-                    className: 'testComponent',
-                    classNames: ['class1', 'class2'],
                     attributes: {
                         'data-test': 'testValue'
                     },
@@ -198,11 +196,9 @@ export const TestElementCustomTemplate = {
                     </arpa-zone>
                 </fieldset>
             </template>
-            <!-- Any content in the global scope will be rendered in the body template child since it's marked as isContent -->
-            <i18n-text key="ui.arpaElement.docs.description.component"></i18n-text>
-            <!-- You can also explicitly target the body zone using a zone element -->
             <arpa-zone name="body">
                 <h4>Use arpa-nodes to conveniently re-configure components.</h4>
+                <i18n-text key="ui.arpaElement.docs.description.component"></i18n-text>
             </arpa-zone>
             <arpa-zone name="header">
                 <span>Header Implementation Content</span>

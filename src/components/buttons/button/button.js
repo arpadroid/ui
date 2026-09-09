@@ -33,10 +33,13 @@ class Button extends ArpaElement {
      * @returns {string} The resolved aria-label for the button.
      */
     getAriaLabel() {
-        if (this.hasContent('content') || this.textContent.trim()?.length) return '';
         const { ariaLabel, label, tooltip } = this.getProperties('ariaLabel', 'label', 'tooltip');
-        const aria = ariaLabel || label || tooltip || '';
-        return this.resolveAriaLabel(aria) || '';
+        const textContent = this.textContent?.trim();
+        let defaultVal = tooltip || '';
+        if (this.hasContent('content') || textContent?.length > 0) {
+            defaultVal = textContent;
+        }
+        return this.resolveAriaLabel(ariaLabel || label || defaultVal) || '';
     }
 
     _preRender() {
@@ -77,6 +80,7 @@ class Button extends ArpaElement {
 
     async $initializeNodes() {
         await super.$initializeNodes();
+        await this.onNodesReady();
         const button = this.querySelector('button');
         /** @type {HTMLButtonElement | null} */
         this.button = button;
@@ -109,6 +113,24 @@ class Button extends ArpaElement {
     async click() {
         await this.promise;
         this.button?.click();
+    }
+
+    /**
+     * Sets the tooltip text for the button.
+     * @param {string} tooltip - The tooltip text to set.
+     * @returns {Promise<boolean>}
+     */
+    setTooltip(tooltip) {
+        return this.setProp('tooltip', tooltip);
+    }
+
+    /**
+     * Sets the button icon.
+     * @param {string} icon - The icon to set.
+     * @returns {Promise<boolean>}
+     */
+    setIcon(icon) {
+        return this.setProp('icon', icon);
     }
 }
 

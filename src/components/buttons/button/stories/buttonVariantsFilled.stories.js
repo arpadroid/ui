@@ -62,7 +62,7 @@ export const Submit = {
     play: async ({ canvas, canvasElement, step }) => {
         await customElements.whenDefined('arpa-button');
         const buttonComponent = /** @type {Button} */ (canvasElement.querySelector('arpa-button'));
-        await buttonComponent?.promise;
+        await buttonComponent?.onNodesReady();
 
         await step('renders the submit button with the correct type', async () => {
             await waitFor(() => {

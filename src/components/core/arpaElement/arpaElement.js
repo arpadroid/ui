@@ -64,7 +64,7 @@ class ArpaElement extends HTMLElement {
     isArpaElement = true;
     /** @type {Record<string, unknown>} */
     context = {};
-    /** @type {HTMLElement | ArpaElement} */
+    /** @type {HTMLElement | ArpaElement | string} */
     zoneTarget;
     /** @type {ArpaElementContentNodeType | null} */
     contentNode = null;
@@ -257,11 +257,10 @@ class ArpaElement extends HTMLElement {
      * Sets the value of a property in the element's configuration and updates the corresponding attribute.
      * @param {string} name
      * @param {any} value
-     * @returns {this}
+     * @returns {Promise<boolean>}
      */
     setProp(name, value) {
-        setProp(this, name, value);
-        return this;
+        return setProp(this, name, value);
     }
 
     /**
@@ -299,7 +298,7 @@ class ArpaElement extends HTMLElement {
      * @returns {string}
      */
     getClassName(name) {
-        let rv = this._config.className || this.getAttribute('class')?.split(' ')[0];
+        let rv = this.getProp('className') || this.getAttribute('class')?.split(' ')[0];
         if (typeof name === 'string') {
             rv += `__${name}`;
         }
@@ -452,6 +451,14 @@ class ArpaElement extends HTMLElement {
      * @returns {undefined | boolean | void} Return false to prevent the default behavior of adding the zone contents to the container.
      */
     $onZonePlaced(_zone, _container) {}
+
+    /**
+     * Called when a zone is inserted into the element. Override this method to perform actions after a zone is inserted.
+     * @param {ArpaZone} _zone - The zone that was inserted.
+     * @param {Element | undefined} _container - The container element where the zone was inserted.
+     * @returns {undefined | boolean | void} Return false to prevent the default behavior of adding the zone contents to the container.
+     */
+    $onZoneInserted(_zone, _container) {}
 
     // #endregion Set
 
@@ -737,7 +744,7 @@ class ArpaElement extends HTMLElement {
 
     _addClassNames() {
         const _classes = /** @type {string[]} */ (getArrayProp(this, 'classNames')) || [];
-        const classes = classNames(this._config?.className, ..._classes, this.getAttribute('class'));
+        const classes = classNames(this.getProp('className'), _classes, this.getAttribute('class'));
         this.setAttribute('class', classes);
     }
 
@@ -785,7 +792,6 @@ class ArpaElement extends HTMLElement {
     async connectedCallback(forceRender = false) {
         this._preRenderCallbacks?.forEach(callback => typeof callback === 'function' && callback());
         this._preRenderCallbacks = [];
-        await this.onReady();
         this._addClassNames();
         this._isReady = true;
         if (!this._hasInitialized) {
@@ -855,20 +861,45 @@ class ArpaElement extends HTMLElement {
     async _onRenderComplete() {
         this._hasRendered = true;
         await this._resolveRender();
-        await this.onRendered();
     }
 
     /**
      * Waits for all specified nodes to be ready.
      * @param {Record<string, ArpaElementContentNodeType>} [$nodes]
+     * @param {{ onRendered?: boolean }} config
      * @returns {Promise<boolean>}
      */
-    async waitForNodes($nodes = this.nodes) {
+    async waitForNodes($nodes = this.nodes, config = {}) {
+        const { onRendered = true } = config;
+        /** @type {ArpaElementContentNodeType[]} */
         const nodes = Object.values($nodes);
         for (const node of nodes) {
-            const { promise } = this.batcher?.writes.get(node) || {};
-            promise instanceof Promise && (await promise);
+            if (onRendered && 'onRendered' in node && typeof node?.onRendered === 'function') {
+                await node.onRendered();
+            } else {
+                const { promise } = this.batcher?.writes.get(node) || {};
+                promise instanceof Promise && (await promise);
+            }
         }
+        return true;
+    }
+
+    /**
+     * Waits for all specified nodes to be ready.
+     * @param {Record<string, ArpaNode>} $arpaNodes
+     * @returns {Promise<boolean>}
+     */
+    async waitForArpaNodes($arpaNodes = this.arpaNodes) {
+        const arpaNodes = Object.values($arpaNodes);
+        for (const arpaNode of arpaNodes) {
+            await arpaNode.promise;
+        }
+        return true;
+    }
+
+    async onNodesReady() {
+        await this.waitForArpaNodes();
+        await this.waitForNodes(this.nodes);
         return true;
     }
 

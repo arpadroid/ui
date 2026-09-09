@@ -166,6 +166,7 @@ export function setAttribute(element, name, value) {
  * @param {ArpaElement} element
  * @param {string} name
  * @param {import('../arpaElement.types').ArpaElementContentType} value
+ * @returns {Promise<boolean>}
  */
 export async function setProp(element, name, value) {
     name = dashedToCamel(name);
@@ -176,4 +177,5 @@ export async function setProp(element, name, value) {
     if (value && nodeConfig) {
         element.editNode(name, { content: value });
     }
+    return true;
 }

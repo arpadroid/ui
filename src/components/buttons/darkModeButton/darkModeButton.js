@@ -41,12 +41,12 @@ class DarkModeButton extends IconButton {
         }
         if (styleNode.disabled) {
             styleNode.removeAttribute('disabled');
-            this.setProp('icon', this.getProp('iconLight'));
-            this.setProp('tooltip', this.getProp('labelLight'));
+            this.setIcon(this.getProp('iconLight'));
+            this.setTooltip(this.getProp('labelLight'));
         } else {
             styleNode.disabled = true;
-            this.setProp('icon', this.getProp('icon'));
-            this.setProp('tooltip', this.getProp('label').toString());
+            this.setIcon(this.getProp('icon'));
+            this.setTooltip(this.getProp('label').toString());
         }
     }
 }
