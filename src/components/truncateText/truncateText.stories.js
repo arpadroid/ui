@@ -92,7 +92,7 @@ export const TestWithButton = {
 
         await step('Collapses the text when the read less button is clicked.', async () => {
             const readLessButton = canvas.getByRole('button', { name: /read less/i });
-            readLessButton.click();
+            await userEvent.click(readLessButton);
             await waitFor(() =>
                 expect(truncateTextNode.textContent).toContain(
                     'In the vast expanse of the cosmos, stars are born from cloud'

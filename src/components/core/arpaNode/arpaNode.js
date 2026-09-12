@@ -20,6 +20,7 @@ class ArpaNode extends HTMLElement {
         this.nodesContainer = this.closest('.template-nodes-container');
         this._initializeContent();
         this.setConfig(config);
+        this.initializeElement();
         this.promise = new Promise((resolve, reject) => {
             this.resolvePromise = resolve;
             this.rejectPromise = reject;
@@ -152,15 +153,15 @@ class ArpaNode extends HTMLElement {
 
     async handleDefer() {
         await new Promise(resolve => requestAnimationFrame(resolve));
-
         let deferFn = this.getProp('defer');
         let rv = undefined;
         if (typeof deferFn === 'string') {
             deferFn = this.element?.[/** @type {keyof ArpaElement} */ (deferFn)];
         }
+
         if (typeof deferFn === 'function') {
-            await new Promise(resolve => requestAnimationFrame(resolve));
-            rv = await deferFn.call(this.element);
+            deferFn = deferFn.bind(this.element);
+            rv = await deferFn({ arpaNode: this, name: this.getProp('name') });
         } else {
             await this.element?.promise;
         }
@@ -168,7 +169,7 @@ class ArpaNode extends HTMLElement {
     }
 
     /**
-     * @param {ArpaElement | undefined | null} [element] The arpa element to register with this node.
+     * @param {ArpaElement | undefined | null} [element]
      */
     registerElement(element) {
         if (element) {
@@ -182,6 +183,11 @@ class ArpaNode extends HTMLElement {
         }
     }
 
+    initializeElement() {
+        if (this.element) return;
+        this.registerElement(getArpaElement(this));
+    }
+
     async connectedCallback() {
         const name = this.getProp('name');
         if (!name) {
@@ -191,8 +197,7 @@ class ArpaNode extends HTMLElement {
             return Promise.reject(new Error(msg));
         }
 
-        /** @type {ArpaElement | null}  */
-        this.element = getArpaElement(this);
+        this.initializeElement();
 
         if (!this.element) {
             const msg = 'An arpa-node must have a parent arpa-element';
@@ -202,7 +207,6 @@ class ArpaNode extends HTMLElement {
         }
 
         if (this.hasAttribute('defer')) {
-            this.registerElement(this.element);
             const rv = await this.handleDefer();
             if (!rv) {
                 this.remove();
