@@ -21,6 +21,15 @@ class ArpaZone extends HTMLElement {
         this._initializeContent();
         this.setConfig(config);
         this._initializeZone();
+        this.promise = new Promise((resolve, reject) => {
+            this.resolvePromise = resolve;
+            this.rejectPromise = reject;
+        }).catch(err => {
+            const message = err.message || 'Failed Rendering Zone:';
+            const payload = err;
+            delete payload.message;
+            console.error(message, payload);
+        });
     }
 
     _initializeContent() {
@@ -99,10 +108,18 @@ class ArpaZone extends HTMLElement {
     /**
      * Returns the zone container element for this zone.
      * @param {ArpaElement | null} [container]
-     * @returns {HTMLElement | null | undefined}
+     * @returns {import('../arpaNode/arpaNode').ArpaElementContentNodeType | null | undefined}
      */
     selectZoneElement(container = this.element) {
         const zoneName = this.getProp('name');
+        for (const node of Object.values(this.element?.nodes || {})) {
+            if (zoneName === node.getAttribute('zone')) {
+                return node;
+            }
+        }
+        /**
+         * The below is risky because it relies on a querySelector which may not always return the correct element.
+         */
         return container?.querySelector(`[zone="${zoneName}"]`);
     }
 
@@ -166,17 +183,19 @@ class ArpaZone extends HTMLElement {
         if (!zoneElement) {
             const name = this.getAttribute('name');
             LOST_ZONES.add(name);
-            console.error(`No zone element found for zone "${name}".`);
             this.remove();
+            this.rejectPromise?.({
+                message: `No element found for zone "${name}".`
+            });
             return;
         }
-
         this.zoneElement = zoneElement;
         this.apply(this.zoneElement);
     }
 
     /**
      * @param {Element | undefined | null} zoneElement
+     * @returns {void | boolean}
      */
     apply(zoneElement = this.zoneElement) {
         if (!zoneElement) return;
@@ -186,22 +205,36 @@ class ArpaZone extends HTMLElement {
         } else if (this.hasAttribute('prepend-content')) {
             method = 'prepend';
         }
-
-        this.element?.batcher?.write(zoneElement, {
-            method,
-            value: this.fragment,
-            callback: () => {
-                if (this.element?.$onZonePlaced?.(this, zoneElement) === false) {
-                    return false;
-                }
-                if ('$onZoneInserted' in zoneElement && typeof zoneElement?.$onZoneInserted === 'function') {
-                    if (zoneElement?.$onZoneInserted?.(this, zoneElement) === false) {
-                        return false;
-                    }
-                }
+        if (this.element?.$onZonePlaced?.(this, zoneElement) === false) {
+            return false;
+        }
+        if ('$onZoneInserted' in zoneElement && typeof zoneElement?.$onZoneInserted === 'function') {
+            if (zoneElement?.$onZoneInserted?.(this, zoneElement) === false) {
+                return false;
             }
-        });
-        this.element?.batcher?.remove(this);
+        }
+
+        //@ts-ignore
+        zoneElement[method](this.fragment);
+
+        this.remove();
+        // return zoneElement;
+        // this.element?.batcher?.write(zoneElement, {
+        //     method,
+        //     value: this.fragment,
+        //     callback: () => {
+        //         if (this.element?.$onZonePlaced?.(this, zoneElement) === false) {
+        //             return false;
+        //         }
+        //         if ('$onZoneInserted' in zoneElement && typeof zoneElement?.$onZoneInserted === 'function') {
+        //             if (zoneElement?.$onZoneInserted?.(this, zoneElement) === false) {
+        //                 return false;
+        //             }
+        //         }
+        //     }
+        // });
+        // this.element?.batcher?.remove(this);
+        this.resolvePromise?.(true);
     }
 }
 

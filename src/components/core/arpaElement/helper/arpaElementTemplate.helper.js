@@ -443,7 +443,7 @@ export function getNodeAttributes(element, name, config = {}, attributes = {}) {
  * @param {ArpaNodeConfigType} [config] - The configuration object.
  * @returns {string}
  */
-export function getNodeContent(element, name, config = {}) {
+export function getNodeContent(element, name = 'content', config = {}) {
     let content = config.content || (name && element?.getProp(name)) || '';
     typeof content === 'function' && (content = content());
     const rv = processTemplate(
@@ -631,6 +631,7 @@ export function getNodesConfigBlueprint(element, blueprint) {
         const name = node.getAttribute('name');
         if (!name) return;
         const attr = getAttributes(node);
+        element.arpaNodes[name] = node;
         /** @type {ArpaNodeConfigType} */
         const cnf = {
             attr: {},

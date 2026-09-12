@@ -140,10 +140,6 @@ class TruncateText extends ArpaElement {
         return ['is-truncated'];
     }
 
-    getContentNode() {
-        return this.querySelector('.truncateText__content');
-    }
-
     /**
      * Handles attribute changes for the component.
      * @param {string} name

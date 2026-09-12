@@ -88,7 +88,9 @@ export const ButtonWithTooltip = {
         await step('renders the tooltip', async () => {
             expect(button).toBeInTheDocument();
             await button.focus();
-            expect(canvas.getByText(buttonTooltipContent)).toBeVisible();
+            await waitFor(() => {
+                expect(canvas.getByText(buttonTooltipContent)).toBeVisible();
+            });
         });
     }
 };

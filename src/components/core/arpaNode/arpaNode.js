@@ -167,10 +167,19 @@ class ArpaNode extends HTMLElement {
         return typeof rv !== 'undefined' ? rv : true;
     }
 
-    registerElement() {
-        const name = this.getProp('name');
-        if (!this.element) return;
-        this.element.arpaNodes[name] = this;
+    /**
+     * @param {ArpaElement | undefined | null} [element] The arpa element to register with this node.
+     */
+    registerElement(element) {
+        if (element) {
+            /** @type {ArpaElement | null} */
+            this.element = element;
+            const name = this.getProp('name');
+            element.arpaNodes[name] = this;
+            if (this?.hasAttribute('is-content')) {
+                element.arpaNodes.content = this;
+            }
+        }
     }
 
     async connectedCallback() {
@@ -193,7 +202,7 @@ class ArpaNode extends HTMLElement {
         }
 
         if (this.hasAttribute('defer')) {
-            this.registerElement();
+            this.registerElement(this.element);
             const rv = await this.handleDefer();
             if (!rv) {
                 this.remove();
@@ -205,13 +214,13 @@ class ArpaNode extends HTMLElement {
         if (!this.node) {
             this.node = /** @type {ArpaElementContentNodeType & {arpaNode?: ArpaNode}} */ (this.renderNode());
         }
-
         if (this.node) {
             this.node.arpaNode = this;
             this.element.nodes[name] = this.node;
             this.replaceWith(this.node);
+        } else {
+            this.remove();
         }
-        this.remove();
         this.resolvePromise?.(true);
     }
 }

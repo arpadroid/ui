@@ -45,7 +45,7 @@ export function getProp(element, name, config = element._config ?? {}) {
     rv =
         element.getAttribute(camelToDashed(name)) ||
         config[configName] ||
-        ('getPayload' in element && element.getPayload?.()?.[configName]);
+        ('payload' in element && element.payload?.[configName]);
     if (rv === 'undefined') {
         rv = undefined;
     }

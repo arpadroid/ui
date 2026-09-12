@@ -133,9 +133,14 @@ export const ButtonDialog = {
         `;
     },
     play: async ({ canvas, step, canvasElement }) => {
+        const button = canvas.getByRole('button', { name: /Open Dialog/i });
+        expect(button).toBeInTheDocument();
+        await waitFor(() => {
+            const dialogNode = /** @type {Dialog} */ (canvasElement.querySelector('arpa-dialog'));
+            expect(dialogNode).toBeInTheDocument();
+        });
         const dialogNode = /** @type {Dialog} */ (canvasElement.querySelector('arpa-dialog'));
         await dialogNode.promise;
-        const button = canvas.getByRole('button', { name: /Open Dialog/i });
         expect(dialogNode).not.toHaveAttribute('open');
         await step('Clicks on the button and opens the dialog', async () => {
             await userEvent.click(button);

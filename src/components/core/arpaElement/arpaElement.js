@@ -97,6 +97,8 @@ class ArpaElement extends HTMLElement {
         /** @type {Set<string> | undefined} */
         this.zonesByName = new Set();
         this._zones = new Set();
+        /** @type {Record<string, unknown>} */
+        this.payload = {};
         this.i18nKey = dashedToCamel(this.tagName.toLowerCase());
         this.batcher = getBatcher();
         this.$preInitialize();
@@ -207,7 +209,11 @@ class ArpaElement extends HTMLElement {
      * @returns {ArpaElementContentNodeType | null} The content node for the element.
      */
     getContentNode() {
-        return this.nodes?.content || this.querySelector('[is-content]');
+        return (
+            this.nodes.content ||
+            Object.values(this.nodes)?.find(node => node?.hasAttribute?.('is-content')) ||
+            this.querySelector(`.${getClass(this, 'content')}`)
+        );
     }
 
     /**
@@ -215,9 +221,6 @@ class ArpaElement extends HTMLElement {
      * @returns {Promise<ArpaElementContentNodeType | null>} The content node for the element.
      */
     async getContentNodeAsync() {
-        if (!this.nodes?.content) {
-            await this.promise;
-        }
         let node = this.getContentNode();
         /** @todo Remove hack with setTimeout. */
         if (!node) {
@@ -235,7 +238,7 @@ class ArpaElement extends HTMLElement {
                 return arpaNode.node;
             }
         }
-        return node || this;
+        return node;
     }
 
     /**
@@ -421,7 +424,9 @@ class ArpaElement extends HTMLElement {
         if (!contentNode || !childNodes) return false;
         this.contentNode = contentNode;
         this._childNodes = childNodes;
-        'promise' in contentNode && (await contentNode.promise);
+        if (contentNode !== this && 'promise' in contentNode) {
+            await contentNode.promise;
+        }
         replace && (contentNode.innerHTML = '');
         if (
             contentNode !== this &&
@@ -440,6 +445,16 @@ class ArpaElement extends HTMLElement {
 
         callOnContentSet && this.$onContentSet();
         return true;
+    }
+
+    async handleContent() {
+        if (this.hasNodesConfig() && this._config.handleContent && this._childNodes?.length) {
+            return this.setContent(this._childNodes, {
+                callOnContentSet: false,
+                replace: false
+            });
+        }
+        return false;
     }
 
     $onContentSet() {}
@@ -806,61 +821,30 @@ class ArpaElement extends HTMLElement {
         }
     }
 
-    // #endregion
-
-    ////////////////////////
-    // #region Render
-    ///////////////////////
-
-    _preRender() {
-        // abstract method
-    }
-
-    async $preRender() {
-        return true;
-    }
-
-    async _render() {
-        if (!this.canRender()) return;
-        this._preRender();
-        await this.$preRender();
-        const { attributes } = this._config;
-        attributes && attr(this, attributes);
-        await this.render();
-        this._initializeTemplateNodes();
-        await this.$initializeNodes();
-        this._onRenderReadyCallbacks?.forEach(callback => typeof callback === 'function' && callback());
-        this._onRenderReadyCallbacks = [];
-        this.$onDomReady();
-        this._onRenderComplete();
-    }
-
-    _initializeTemplateNodes() {
-        const conf = this.getChildrenConfig();
-        if (!conf) return;
-        for (const name of Object.keys(conf)) {
-            const className = getClass(this, name);
-            /** @type {HTMLElement | null} */
-            const node = this.querySelector(`.${className}`);
-            node && (this.nodes[name] = node);
+    /**
+     * Waits for all specified nodes to be ready.
+     * @param {Record<string, ArpaNode>} $arpaNodes
+     * @returns {Promise<boolean>}
+     */
+    async waitForArpaNodes($arpaNodes = this.arpaNodes) {
+        const arpaNodes = Object.values($arpaNodes);
+        for (const arpaNode of arpaNodes) {
+            await arpaNode.promise;
         }
-    }
-
-    async $initializeNodes() {
         return true;
     }
 
-    canRender() {
-        return canRender(this);
-    }
-
-    $onDomReady() {
-        // abstract method
-    }
-
-    async _onRenderComplete() {
-        this._hasRendered = true;
-        await this._resolveRender();
+    /**
+     * Waits for all specified zones to be ready.
+     * @param {Set<ArpaZone> | ArpaZone[]} $zones
+     * @returns {Promise<boolean>}
+     */
+    async waitForZones($zones = this._zones || new Set()) {
+        const promises = Array.from($zones).map(zone => zone.promise);
+        for (const promise of promises) {
+            await promise;
+        }
+        return true;
     }
 
     /**
@@ -884,23 +868,54 @@ class ArpaElement extends HTMLElement {
         return true;
     }
 
-    /**
-     * Waits for all specified nodes to be ready.
-     * @param {Record<string, ArpaNode>} $arpaNodes
-     * @returns {Promise<boolean>}
-     */
-    async waitForArpaNodes($arpaNodes = this.arpaNodes) {
-        const arpaNodes = Object.values($arpaNodes);
-        for (const arpaNode of arpaNodes) {
-            await arpaNode.promise;
-        }
-        return true;
-    }
-
     async onNodesReady() {
         await this.waitForArpaNodes();
         await this.waitForNodes(this.nodes);
         return true;
+    }
+
+    // #endregion
+
+    ////////////////////////
+    // #region Render
+    ///////////////////////
+
+    _preRender() {
+        // abstract method
+    }
+
+    async $preRender() {
+        return true;
+    }
+
+    async $initializeNodes() {
+        return true;
+    }
+
+    async _render() {
+        if (!this.canRender()) return;
+        this._preRender();
+        await this.$preRender();
+        const { attributes } = this._config;
+        attributes && attr(this, attributes);
+        await this.render();
+        this._initializeNodes();
+        await this.$initializeNodes();
+        this._onRenderReadyCallbacks?.forEach(callback => typeof callback === 'function' && callback());
+        this._onRenderReadyCallbacks = [];
+        this._hasRendered = true;
+        this._resolveRender();
+    }
+
+    _initializeNodes() {
+        const arpaNodes = Object.values(this.arpaNodes);
+        for (const arpaNode of arpaNodes) {
+            const name = arpaNode.getAttribute('name');
+            if (!name) continue;
+            /** @type {HTMLElement | null} */
+            const node = this.querySelector(`.${getClass(this, name)}`);
+            node && (this.nodes[name] = node);
+        }
     }
 
     async _resolveRender() {
@@ -915,14 +930,6 @@ class ArpaElement extends HTMLElement {
      * @returns {Promise<boolean | unknown>}
      */
     async $resolveRender() {
-        return true;
-    }
-
-    async handleContent() {
-        if (!this.hasNodesConfig() || !this._config.handleContent || !this._childNodes?.length) {
-            return false;
-        }
-        this.setContent(this._childNodes, { callOnContentSet: false, replace: false });
         return true;
     }
 
@@ -963,7 +970,8 @@ class ArpaElement extends HTMLElement {
      * @returns {Promise<boolean>} - Returns true when rendering is complete.
      */
     async render(template = '') {
-        await this._innerHTML(this.renderTemplate(template));
+        // await this._innerHTML(this.renderTemplate(template));
+        this.innerHTML = this.renderTemplate(template);
         return true;
     }
 
@@ -1024,6 +1032,10 @@ class ArpaElement extends HTMLElement {
         this._initializeTemplates();
         this.promise = this.getPromise();
         return await this._render();
+    }
+
+    canRender() {
+        return canRender(this);
     }
 
     // #endregion
