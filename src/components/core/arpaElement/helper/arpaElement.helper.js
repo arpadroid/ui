@@ -16,12 +16,19 @@ const FORBIDDEN_ATTRIBUTES = ['template', 'content', 'classNames', 'className'];
 
 /**
  * Returns the parent ArpaElement of the node.
- * @param {HTMLElement} element
+ * @param {HTMLElement & { arpaNode?: ArpaElement, _config?: { arpaElement?: ArpaElement } }} element
  * @returns {ArpaElement | null}
  */
 export function getArpaElement(element) {
     let node = element.parentElement;
+    if (element._config?.arpaElement?.isArpaElement) {
+        return element._config.arpaElement;
+    }
     while (node) {
+        if ('arpaElement' in node && node?.arpaElement) {
+            // @ts-ignore
+            return node.arpaElement;
+        }
         // @ts-ignore
         if (node?.isArpaElement || node?.tagName === 'ARPA-ELEMENT') {
             return /** @type {ArpaElement} */ (node);

@@ -828,9 +828,15 @@ class ArpaElement extends HTMLElement {
      */
     async waitForArpaNodes($arpaNodes = this.arpaNodes) {
         const arpaNodes = Object.values($arpaNodes);
-        for (const arpaNode of arpaNodes) {
-            await arpaNode.promise;
-        }
+        /** @type {Promise<any>[]} */
+        const promises = [];
+        arpaNodes.forEach(node => {
+            if (this.isRendering && node.hasAttribute('defer')) {
+                return;
+            }
+            promises.push(node.promise);
+        });
+        await Promise.allSettled(promises);
         return true;
     }
 
@@ -841,9 +847,7 @@ class ArpaElement extends HTMLElement {
      */
     async waitForZones($zones = this._zones || new Set()) {
         const promises = Array.from($zones).map(zone => zone.promise);
-        for (const promise of promises) {
-            await promise;
-        }
+        await Promise.allSettled(promises);
         return true;
     }
 
@@ -894,6 +898,7 @@ class ArpaElement extends HTMLElement {
 
     async _render() {
         if (!this.canRender()) return;
+        this.isRendering = true;
         this._preRender();
         await this.$preRender();
         const { attributes } = this._config;
@@ -904,7 +909,8 @@ class ArpaElement extends HTMLElement {
         this._onRenderReadyCallbacks?.forEach(callback => typeof callback === 'function' && callback());
         this._onRenderReadyCallbacks = [];
         this._hasRendered = true;
-        this._resolveRender();
+        await this._resolveRender();
+        this.isRendering = false;
     }
 
     _initializeNodes() {

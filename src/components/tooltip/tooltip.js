@@ -55,7 +55,7 @@ class Tooltip extends ArpaElement {
         return handler;
     }
 
-    canRenderHandler() {
+    async canRenderHandler() {
         return !this.findHandler();
     }
 
@@ -96,6 +96,7 @@ class Tooltip extends ArpaElement {
             <arpa-node
                 name="handler"
                 tag="icon-button"
+                defer="canRenderHandler"
                 can-render="canRenderHandler()"
                 variant="minimal"
                 icon="{icon}"
@@ -113,10 +114,10 @@ class Tooltip extends ArpaElement {
 
     async $initializeNodes() {
         await super.$initializeNodes();
-        await new Promise(resolve => requestAnimationFrame(resolve));
-        this.classList.add(`tooltip--${this.getPosition()}`);
-        /** @todo Remove this setTimeout delay. */
-        this.promise.then(() => this.setHandler());
+        await this.waitForArpaNodes();
+        const position = this.getPosition();
+        this.classList.add(`tooltip--${position}`);
+        this.setHandler();
         return true;
     }
 

@@ -187,7 +187,7 @@ export const DynamicUpdates = {
 
         await step('Expands the new text when the read more button is clicked.', async () => {
             const readMoreButton = await waitFor(() => canvas.getByRole('button', { name: /read more/i }));
-            await userEvent.click(readMoreButton, { delay: 10 });
+            await userEvent.click(readMoreButton, { delay: 150 });
             await waitFor(() => {
                 expect(truncateTextNode.nodes.content.textContent).toContain(
                     'New dynamic text that exceeds the maximum length and should be truncated.'

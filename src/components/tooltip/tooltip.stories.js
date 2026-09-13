@@ -35,10 +35,12 @@ export const Test = {
         await tooltipNode?.promise;
         const contentNode = await waitFor(() => canvas.getByText(content));
         await step('renders the tooltip', async () => {
-            const handler = canvas.getByRole('button');
-            expect(handler).toBeInTheDocument();
-            handler.focus();
-            expect(contentNode).toBeVisible();
+            await waitFor(() => {
+                const handler = canvas.getByRole('button');
+                expect(handler).toBeInTheDocument();
+                handler.focus();
+                expect(contentNode).toBeVisible();
+            });
         });
     }
 };
@@ -55,10 +57,12 @@ export const ShortText = {
         await tooltipNode?.promise;
         const contentNode = await waitFor(() => canvas.getByText('Short text'));
         await step('renders the tooltip', async () => {
-            const handler = canvas.getByRole('button');
-            expect(handler).toBeInTheDocument();
-            handler.focus();
-            expect(contentNode).toBeVisible();
+            await waitFor(() => {
+                const handler = canvas.getByRole('button');
+                expect(handler).toBeInTheDocument();
+                handler.focus();
+                expect(contentNode).toBeVisible();
+            });
         });
     }
 };

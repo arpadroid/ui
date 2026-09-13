@@ -109,7 +109,8 @@ class TruncateText extends ArpaElement {
             this.contentNode?.replaceWith(this.truncatedNode);
             this.ellipsisNode && this.truncatedNode?.after(this.ellipsisNode);
         }
-        this.waitForArpaNodes().then(() => {
+
+        this.promise.then(() => {
             this.button = /** @type {ArpaButton} */ (this.nodes.button);
             this.button?.setContent(this.getProp('lblShow'));
             this.button?.setProp('rhsIcon', this.getProp('icon'));
@@ -152,7 +153,8 @@ class TruncateText extends ArpaElement {
         }
     }
 
-    $onContentSet() {
+    async $onContentSet() {
+        await this.promise;
         this._textContent = this.contentNode?.textContent?.trim() || '';
         this._childNodes = [...(this.contentNode?.childNodes || [])];
         this.reRender();
@@ -188,7 +190,7 @@ class TruncateText extends ArpaElement {
         if (this._hasRendered) {
             if (this.contentNode instanceof HTMLElement) {
                 this.contentNode.style.display = 'none';
-                this.contentNode?.append(...zone.fragment.childNodes);
+                this.contentNode?.append(...(zone.fragment?.childNodes || []));
             }
             this.$onContentSet();
         }
