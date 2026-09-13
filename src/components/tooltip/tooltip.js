@@ -115,9 +115,15 @@ class Tooltip extends ArpaElement {
     async $initializeNodes() {
         await super.$initializeNodes();
         await this.waitForArpaNodes();
-        const position = this.getPosition();
-        this.classList.add(`tooltip--${position}`);
-        this.setHandler();
+        return true;
+    }
+
+    async $onComplete() {
+        this.promise.then(() => {
+            const position = this.getPosition();
+            this.classList.add(`tooltip--${position}`);
+            this.setHandler();
+        });
         return true;
     }
 
