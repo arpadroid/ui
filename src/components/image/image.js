@@ -385,7 +385,7 @@ class ArpaImage extends ArpaElement {
         const lazyLoad = this.hasLazyLoad();
         const hasNativeLazy = this.getProp('hasNativeLazy');
         return {
-            class: classNames({ 'image--lazy': Boolean(lazyLoad) ? 'image--lazy' : false }),
+            class: classNames({ 'image--lazy': Boolean(lazyLoad) ? 'image--lazy' : '' }),
             'data-src': lazyLoad && !hasNativeLazy ? src : '',
             lazyLoad: lazyLoad && !hasNativeLazy,
             loading: (lazyLoad && hasNativeLazy && 'lazy') || undefined,
@@ -527,29 +527,32 @@ class ArpaImage extends ArpaElement {
 
     async $initializeNodes() {
         await super.$initializeNodes();
-        const imagePosition = this.getProp('imagePosition');
-        this.image && imagePosition && (this.image.style.objectPosition = imagePosition);
-        return true;
-    }
-
-    async $onConnected() {
+        await super.waitForArpaNodes();
         /** @type {HTMLImageElement | null} */
         this.image = this.querySelector('img');
+
         /** @type {Tooltip | null} */
         this.thumbnail = this.querySelector('.image__thumbnail');
         /** @type {HTMLPictureElement | null} */
         this.picture = this.querySelector('picture');
         this.hasProp('hasDropArea') && this.initializeDropArea();
         this.initializeImage();
+
         const batchSize = this.getProp('lazyLoaderBatchSize');
-        this.hasLazyLoad() &&
-            !this.getProp('hasNativeLazy') &&
-            this.image &&
+        if (this.hasLazyLoad() && !this.getProp('hasNativeLazy') && this.image) {
             lazyLoader(this.image, Number(batchSize));
+        }
+
+        const imagePosition = this.getProp('imagePosition');
+        this.image && imagePosition && (this.image.style.objectPosition = imagePosition);
+
+        return true;
     }
 
-    $onDestroy() {
-        super.$onDestroy();
+    /**
+     * Currently not implemented because it screws any image that reconnects to the DOM.
+     */
+    $destroy() {
         this._hasRendered = false;
         this._hasLoaded = false;
         this._hasError = false;

@@ -42,7 +42,12 @@ export const ArpaElementRender = {
     name: 'ArpaElement - Render',
     render: () => {
         return html`
-            <arpa-element class-name="testComponent" class-names="class1,class2" id="test-element" class="test-element">
+            <arpa-element
+                class-name="testComponent"
+                class-names="class1,class2"
+                id="test-element"
+                class="test-element"
+            >
                 <template template-type="content"> ${TEMPLATE} </template>
                 ArpaElement content
             </arpa-element>
@@ -54,9 +59,6 @@ export const ArpaElementRender = {
             <script>
                 var element = /** @type {ArpaElement} */ (document.getElementById('test-element'));
                 element.setConfig({
-                    attributes: {
-                        'data-test': 'testValue'
-                    },
                     templateVars: {
                         testVar: () => 'Test Variable 1',
                         testVar2: 'Test Variable 2'
@@ -85,7 +87,6 @@ export const ArpaElementRender = {
 
         await step('applies attributes', async () => {
             expect(element).toHaveAttribute('id', 'test-element');
-            expect(element).toHaveAttribute('data-test', 'testValue');
         });
     }
 };

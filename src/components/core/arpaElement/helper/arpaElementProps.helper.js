@@ -89,22 +89,6 @@ export function getCallbackProp(element, propertyName) {
 }
 
 /**
- * Handles a callback property of a component defined as a string starting with ':'.
- * The callback method will be looked-up and called in the parent component.
- * @param {ArpaElement} element
- * @param {string} propertyName
- * @param {string} eventName
- * @returns {((...args: any[]) => void) | undefined}
- */
-export function handleCallbackProp(element, propertyName, eventName = '') {
-    const method = getCallbackProp(element, propertyName);
-    if (typeof method === 'function' && eventName) {
-        listen(element, eventName, method);
-    }
-    return method;
-}
-
-/**
  * Processes a condition string for template rendering. It supports negation with '!' and method calls with '()'.
  * @param {ArpaElement} element
  * @param {string} condition

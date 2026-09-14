@@ -32,8 +32,6 @@ class ArpaZone extends HTMLElement {
             console.error(message, {
                 name: this.getProp('name'),
                 zone: this,
-                element: this.element,
-                zoneElement: this.zoneElement,
                 ...payload
             });
         });
@@ -108,7 +106,7 @@ class ArpaZone extends HTMLElement {
         /** @type {ArpaElement | null} */
         this.element = this.element || getArpaElement(this);
         this.element?.zonesByName?.add(this.getProp('name'));
-        this.element?._zones?.add(this);
+        this.element?.zones?.add(this);
     }
 
     /**

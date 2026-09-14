@@ -110,10 +110,10 @@ class TruncateText extends ArpaElement {
             this.ellipsisNode && this.truncatedNode?.after(this.ellipsisNode);
         }
 
-        this.promise.then(() => {
+        this.promise.then(async() => {
             this.button = /** @type {ArpaButton} */ (this.nodes.button);
-            this.button?.setContent(this.getProp('lblShow'));
-            this.button?.setProp('rhsIcon', this.getProp('icon'));
+            this.button?.setContent?.(this.getProp('lblShow'));
+            this.button?.setProp?.('rhsIcon', this.getProp('icon'));
         });
     }
 
