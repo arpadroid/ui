@@ -209,7 +209,7 @@ class Dialog extends ArpaElement {
                 <arpa-node tag="circular-spinner" name="preloader" can-render="hasPreloader()"></arpa-node>
                 <arpa-node name="content" is-content></arpa-node>
             </div>
-            <arpa-node tag="footer" name="footer"> </arpa-node>
+            <arpa-node tag="footer" name="footer"></arpa-node>
         </div>`;
     }
 

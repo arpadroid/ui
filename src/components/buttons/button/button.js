@@ -3,7 +3,7 @@
  * @typedef {import('../../tooltip/tooltip').default} Tooltip
  * @typedef {import('../../icon/icon').default} Icon
  */
-import { listen, defineCustomElement } from '@arpadroid/tools';
+import { listen, defineCustomElement, getStringBetween } from '@arpadroid/tools';
 import ArpaElement from '../../core/arpaElement/arpaElement';
 
 const html = String.raw;
@@ -131,6 +131,18 @@ class Button extends ArpaElement {
      */
     setIcon(icon) {
         return this.setProp('icon', icon);
+    }
+
+    /**
+     * Sets the button label.
+     * @param {string} label - The label to set.
+     * @returns {Promise<boolean>}
+     */
+    async setLabel(label) {
+        const result = await this.setContent(label);
+        const plainLabel = getStringBetween(label, '>', '<') || label;
+        this.button?.setAttribute('aria-label', plainLabel);
+        return result;
     }
 }
 

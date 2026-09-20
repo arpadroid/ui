@@ -77,7 +77,10 @@ class ArpaElement extends HTMLElement {
         this._initializeTemplates();
         this._initializeContent();
         this.$initialize();
-        this.initializeArpaElement();
+        const { renderOnConnected } = this._config;
+        if (!renderOnConnected) {
+            this.initializeArpaElement();
+        }
     }
 
     _preInitialize() {
@@ -433,17 +436,19 @@ class ArpaElement extends HTMLElement {
      * Called when a zone is placed in the element. Override this method to perform actions after a zone is placed.
      * @param {ArpaZone} _zone - The zone that was placed.
      * @param {Element | undefined} _container - The container element where the zone was placed.
+     * @param {NodeList | Node[]} _children - The child nodes of the zone.
      * @returns {undefined | boolean | void} Return false to prevent the default behavior of adding the zone contents to the container.
      */
-    $onZonePlaced(_zone, _container) {}
+    $onZonePlaced(_zone, _container, _children) {}
 
     /**
      * Called when a zone is inserted into the element. Override this method to perform actions after a zone is inserted.
      * @param {ArpaZone} _zone - The zone that was inserted.
      * @param {Element | undefined} _container - The container element where the zone was inserted.
+     * @param {NodeList | Node[]} _children - The child nodes of the zone.
      * @returns {undefined | boolean | void} Return false to prevent the default behavior of adding the zone contents to the container.
      */
-    $onZoneInserted(_zone, _container) {}
+    $onZoneInserted(_zone, _container, _children) {}
 
     // #endregion Set
 
@@ -706,10 +711,14 @@ class ArpaElement extends HTMLElement {
     ////////////////////////
 
     async connectedCallback() {
+        const { renderOnConnected } = this._config;
+        if (renderOnConnected) {
+            await this.initializeArpaElement();
+        }
         await this.waitForArpaNodes();
         await this.$onConnected();
     }
-    
+
     /**
      * Called when the element is ready.
      * @returns {Promise<any>}
@@ -772,15 +781,17 @@ class ArpaElement extends HTMLElement {
     /**
      * Waits for all specified nodes to be ready.
      * @param {Record<string, ArpaNode>} $arpaNodes
+     * @param {{ waitForDeferred?: boolean }} config
      * @returns {Promise<boolean>}
      */
-    async waitForArpaNodes($arpaNodes = this.arpaNodes) {
+    async waitForArpaNodes($arpaNodes = this.arpaNodes, config = {}) {
         const arpaNodes = Object.values($arpaNodes);
         if (arpaNodes.length === 0) return true;
         /** @type {Promise<any>[]} */
         const promises = [];
+        const { waitForDeferred = false } = config;
         arpaNodes.forEach(node => {
-            if (this.isRendering && node.hasAttribute('defer')) {
+            if (!waitForDeferred && this.isRendering && node.hasAttribute('defer')) {
                 return;
             }
             promises.push(node.promise);

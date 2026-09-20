@@ -68,14 +68,14 @@ export const Test = {
     render: renderWithZones,
 
     play: async ({ canvasElement, canvas, step }) => {
-        await customElements.whenDefined('test-node');
         await customElements.whenDefined('arpa-node');
         const testNode = /** @type {TestNode} */ (canvasElement.querySelector('test-node'));
-        await testNode.onRendered();
+        await testNode.waitForArpaNodes(testNode.arpaNodes, { waitForDeferred: true });
         await step('Initializes all nodes after awaiting for promise', async () => {
-            expect(testNode).toBeInTheDocument();
-            await testNode.promise;
-            expect(testNode.nodes.button).toBeDefined();
+            await waitFor(() => {
+                expect(testNode).toBeInTheDocument();
+                expect(testNode.nodes.button).toBeDefined();
+            });
         });
 
         await step('Does not render arpa-nodes', async () => {

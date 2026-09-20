@@ -32,7 +32,7 @@ class Pager extends ArpaElement {
         observerMixin(this);
     }
 
-    $initializeProperties() {
+    async $initializeProperties() {
         this.list = this.closest('.arpaList');
         return true;
     }

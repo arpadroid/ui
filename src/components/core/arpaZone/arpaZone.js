@@ -19,7 +19,7 @@ class ArpaZone extends HTMLElement {
      */
     constructor(config) {
         super();
-        
+
         this.initialized = false;
         this.promise = new Promise((resolve, reject) => {
             this.resolvePromise = resolve;
@@ -30,8 +30,8 @@ class ArpaZone extends HTMLElement {
             delete payload.message;
             this.remove();
             console.error(message, {
-                name: this.getProp('name'),
-                zone: this,
+                zoneName: this.getProp('name'),
+                element: this.element?.tagName,
                 ...payload
             });
         });
@@ -94,12 +94,33 @@ class ArpaZone extends HTMLElement {
             return;
         }
         this.initialized = true;
+        await this.element?.waitForArpaNodes(this.element.arpaNodes);
+        await this.element.waitForNodes(this.element.nodes, { onRendered: false });
 
-        if (typeof this.element?.onRendered === 'function') {
-            this.element?.onRenderReady(() => this.onRenderReady());
-        } else {
-            this.onRenderReady();
+        this.onRenderReady();
+    }
+
+    async onRenderReady() {
+        const name = this.getAttribute('name');
+        /** @type {Element | undefined | null} */
+        let zoneElement = this.selectZoneElement() || (await this.findZoneElement());
+        if (zoneElement) {
+            'promise' in zoneElement && (await zoneElement.promise);
+            const target = await this.getZoneTarget(zoneElement);
+
+            if (target) {
+                zoneElement = target;
+            }
         }
+        if (!zoneElement) {
+            LOST_ZONES.add(name);
+            this.reject({
+                message: `No element found for zone "${name}".`
+            });
+            return;
+        }
+        this.zoneElement = zoneElement;
+        this.apply(this.zoneElement);
     }
 
     _initializeElement() {
@@ -119,13 +140,9 @@ class ArpaZone extends HTMLElement {
     }
 
     async findZoneElement(element = this.element) {
-        const containers = /** @type {(HTMLElement)[]} */ [...Object.values(element?.nodes || {})];
+        const containers = /** @type {(HTMLElement)[]} */ (Object.values(element?.nodes || {}));
         for (const container of containers) {
             if (!container || !(container instanceof HTMLElement)) continue;
-            if ('promise' in container) {
-                await container.promise;
-            }
-            // @ts-ignore
             const zoneElement = this.selectZoneElement(container);
             if (zoneElement) return zoneElement;
         }
@@ -150,7 +167,7 @@ class ArpaZone extends HTMLElement {
 
     /**
      * Returns the zone container element for this zone.
-     * @param {ArpaElement | null} [container]
+     * @param {ArpaElement | HTMLElement | null} [container]
      * @returns {import('../arpaNode/arpaNode').ArpaElementContentNodeType | null | undefined}
      */
     selectZoneElement(container = this.element) {
@@ -177,35 +194,13 @@ class ArpaZone extends HTMLElement {
             ('zoneTarget' in zoneElement && zoneElement?.zoneTarget) ||
             null;
         if ('getZoneTarget' in zoneElement && typeof zoneElement.getZoneTarget === 'function') {
-            zoneTarget = await zoneElement.getZoneTarget();
+            zoneTarget = await zoneElement.getZoneTarget(this, this.fragment?.childNodes);
         }
 
         if (typeof zoneTarget === 'string') {
             zoneTarget = zoneElement?.querySelector(zoneTarget);
         }
         return zoneTarget || zoneElement;
-    }
-
-    async onRenderReady() {
-        /** @type {Element | undefined | null} */
-        let zoneElement = this.selectZoneElement() || (await this.findZoneElement());
-        if (zoneElement) {
-            'promise' in zoneElement && (await zoneElement.promise);
-            const target = await this.getZoneTarget(zoneElement);
-            if (target) {
-                zoneElement = target;
-            }
-        }
-        if (!zoneElement) {
-            const name = this.getAttribute('name');
-            LOST_ZONES.add(name);
-            this.reject({
-                message: `No element found for zone "${name}".`
-            });
-            return;
-        }
-        this.zoneElement = zoneElement;
-        this.apply(this.zoneElement);
     }
 
     resolve(payload = true) {
@@ -227,12 +222,13 @@ class ArpaZone extends HTMLElement {
      * @returns {void | boolean} Returns false if any callback prevents the zone handling.
      */
     executeZoneHandlingCallbacks(element = this.element, zoneElement = this.zoneElement) {
-        if (element?.$onZonePlaced?.(this, zoneElement) === false) {
+        const children = this.fragment?.childNodes || [];
+        if (element?.$onZonePlaced?.(this, zoneElement, children) === false) {
             this.resolve(false);
             return false;
         }
         if (zoneElement && '$onZoneInserted' in zoneElement) {
-            if (zoneElement?.$onZoneInserted?.(this, zoneElement) === false) {
+            if (zoneElement?.$onZoneInserted?.(this, zoneElement, children) === false) {
                 this.resolve(false);
                 return false;
             }

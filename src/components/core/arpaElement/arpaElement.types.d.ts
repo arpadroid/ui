@@ -12,6 +12,7 @@ export type ArpaElementConfigType = {
     eventHandlerSelector?: string;
     handleContent?: boolean;
     nodesConfig?: Record<string, ArpaNodeConfigType> | undefined;
+    renderOnConnected?: boolean;
     template?: ArpaElementBluePrintType;
     templateContainer?: HTMLElement | string;
     templates?: TemplatesType;
