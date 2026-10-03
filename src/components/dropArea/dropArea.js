@@ -57,7 +57,7 @@ class DropArea extends ArpaElement {
             tag="button"
             on-click="{onHandlerClick}"
             on-drop="{onDrop}"
-            class="fieldInput"
+            class="arpaField__input"
             type="button"
         >
             <div class="dropArea__content">

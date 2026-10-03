@@ -173,7 +173,7 @@ class ArpaZone extends HTMLElement {
     selectZoneElement(container = this.element) {
         const zoneName = this.getProp('name');
         for (const node of Object.values(this.element?.nodes || {})) {
-            if (zoneName === node.getAttribute('zone')) {
+            if (typeof node?.getAttribute === 'function' && zoneName === node?.getAttribute('zone')) {
                 return node;
             }
         }

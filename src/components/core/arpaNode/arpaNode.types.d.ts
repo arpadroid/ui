@@ -1,4 +1,4 @@
-import ArpaElement  from '../arpaElement/arpaElement.js';
+import ArpaElement from '../arpaElement/arpaElement.js';
 import { ArpaElementContentType } from '../arpaElement/arpaElement.types';
 
 export type ArpaNodeAttributesType = Record<string, unknown> | (() => Record<string, unknown>);
@@ -11,6 +11,7 @@ export type ArpaNodeConfigType = {
     className?: string;
     content?: ArpaElementContentType;
     defer?: string | boolean;
+    disabled?: boolean;
     hasZone?: boolean | 'false';
     id?: string;
     isContent?: boolean;

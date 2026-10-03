@@ -183,6 +183,10 @@ class Dialog extends ArpaElement {
         variant && this.classList.add(`dialog--${variant}`);
     }
 
+    canRenderFooter() {
+        return this.hasContent('footer');
+    }
+
     $renderTemplate() {
         return html`<div class="dialog__wrapper">
             <arpa-node tag="header" name="header" can-render="hasHeader()">
@@ -209,7 +213,7 @@ class Dialog extends ArpaElement {
                 <arpa-node tag="circular-spinner" name="preloader" can-render="hasPreloader()"></arpa-node>
                 <arpa-node name="content" is-content></arpa-node>
             </div>
-            <arpa-node tag="footer" name="footer"></arpa-node>
+            <arpa-node tag="footer" name="footer" defer="canRenderFooter"></arpa-node>
         </div>`;
     }
 

@@ -10,15 +10,14 @@
  * @typedef {import('../arpaZone/arpaZone').default} ArpaZone
  */
 import { attrString, camelToDashed, dashedToCamel, getStringBetween, mergeObjects } from '@arpadroid/tools';
-import { defineCustomElement, attr, bind, classNames } from '@arpadroid/tools';
+import { defineCustomElement, attr, bind, classNames, DomBatcherTool } from '@arpadroid/tools';
 import { getCallbackProp } from './helper/arpaElementProps.helper.js';
 import { hasProp, getProp, setProp, getArrayProp } from './helper/arpaElementProps.helper.js';
 import { hasZone, sanitizeAttributes } from './helper/arpaElement.helper';
-import { canRender, hasContent } from './helper/arpaElement.helper';
+import { hasContent } from './helper/arpaElement.helper';
 import { renderTemplate, getClass, renderChild, renderChildNode } from './helper/arpaElementTemplate.helper';
 import { selectTemplates, spawnNode } from './helper/arpaElementTemplate.helper';
 import { I18nTool, I18n } from '@arpadroid/i18n';
-import { DomBatcherTool } from '@arpadroid/tools';
 
 const { arpaElementI18n } = I18nTool;
 
@@ -148,7 +147,8 @@ class ArpaElement extends HTMLElement {
             handleContent: true,
             templateTypes: ['content'],
             contentPosition: 'append',
-            nodesConfig: {}
+            nodesConfig: {},
+            reuseExistingNodes: true
         };
         return mergeObjects(defaultConfig, config);
     }
@@ -569,7 +569,7 @@ class ArpaElement extends HTMLElement {
      * @returns {string}
      */
     resolveAriaLabel(content) {
-        let label = content;
+        let label = /** @type {string} */ (content);
         if (typeof content === 'string') {
             if (content.startsWith('<i18n-text ')) {
                 const key = getStringBetween(content, 'key="', '"');
@@ -579,7 +579,8 @@ class ArpaElement extends HTMLElement {
                 }
             }
         }
-        return String(label);
+        label = String(label);
+        return getStringBetween(label, '>', '<') || label;
     }
 
     /**
@@ -756,11 +757,8 @@ class ArpaElement extends HTMLElement {
         // abstract method
     }
 
-    /**
-     * Called when the element is connected to the DOM.
-     */
-    $onConnected() {
-        // abstract method
+    async $onConnected() {
+        return true;
     }
 
     /**
@@ -884,9 +882,9 @@ class ArpaElement extends HTMLElement {
 
         this._onRenderReadyCallbacks?.forEach(callback => typeof callback === 'function' && callback());
         this._onRenderReadyCallbacks = [];
-
         await this.$resolveRender();
         await this.$onComplete();
+
         this.resolvePromise?.(true);
 
         this.isRendering = false;
@@ -953,8 +951,9 @@ class ArpaElement extends HTMLElement {
         return true;
     }
 
-    $onComplete() {
+    async $onComplete() {
         // abstract method
+        return true;
     }
 
     async onRendered() {

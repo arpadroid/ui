@@ -88,6 +88,7 @@ class ConfirmDialog extends Dialog {
         this.cancelBtn = /** @type {Button | null} */ (this.nodes.cancelBtn);
         this.confirmBtn = /** @type {Button | null} */ (this.nodes.confirmBtn);
         this.cancelBtn?.focus();
+        return true;
     }
 }
 

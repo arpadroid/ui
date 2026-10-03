@@ -1,19 +1,19 @@
 .comboBox {
-    background-color: var(--color-background);
-    border-radius: 0.8rem;
-    border: 1px solid var(--border-color);
-    box-shadow: var(--comboBox-shadow);
-    display: flex;
-    flex-direction: column;
-    max-height: 271px;
-    min-width: 190px;
-    overflow-x: hidden;
-    overflow: auto;
-    right: 0px;
     top: 100%;
-    transition: var(--theme-transition);
+    right: 0;
     z-index: 100;
+    display: flex;
     display: none;
+    flex-direction: column;
+    min-width: 190px;
+    max-height: 271px;
+    overflow: auto;
+    overflow-x: hidden;
+    background-color: var(--color-background);
+    border: 1px solid var(--border-color);
+    border-radius: 0.8rem;
+    box-shadow: var(--comboBox-shadow);
+    transition: var(--theme-transition);
 
     .listItem__title {
         font-size: 1rem;
@@ -25,45 +25,45 @@
 }
 
 .comboBox--loading {
-    min-height: 200px;
     display: flex !important;
     align-items: center;
     justify-content: center;
+    min-height: 200px;
 }
 
 .comboBox__item {
     cursor: pointer;
     transition: var(--theme-transition);
-}
 
-.comboBox__item button {
-    background: none;
-    border: none;
-}
+    button {
+        background: none;
+        border: none;
+    }
 
-.comboBox__item {
     > button,
     > a {
-        align-items: center;
-        color: var(--grey-600);
-        cursor: pointer;
         display: flex;
         flex: 1 1 auto;
+        gap: 12px;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        height: var(--input-height);
+        height: 3.5rem;
+        padding-right: var(--input-padding);
+        padding-left: var(--input-padding);
         font-family: var(--primary-font);
         font-size: 0.9rem;
         font-weight: 600;
-        gap: 12px;
-        height: var(--input-height);
-        justify-content: space-between;
-        padding-left: var(--input-padding);
-        padding-right: var(--input-padding);
-        height: 3.5rem;
+        color: var(--grey-600);
         text-align: left;
-        width: 100%;
+        cursor: pointer;
     }
+
     .listItem__main.listItem__main {
         display: flex;
         align-items: center;
+
         .listItem__contentWrapper {
             align-self: center;
         }
@@ -77,10 +77,10 @@
     > button:hover,
     > a:focus,
     > a:hover {
+        color: var(--field-option-active-color);
         outline: none;
         background-color: var(--field-option-active-background);
-        color: var(--field-option-active-color);
-        
+
         arpa-icon {
             color: var(--field-option-active-color);
         }
@@ -88,9 +88,9 @@
         .listItem__title,
         .listItem__content,
         .listItem__contentWrapper,
-        .fieldOption__label {
-            color: var(--field-option-active-color);
+        .comboBox__item__label {
             font-weight: var(--field-option-active-weight);
+            color: var(--field-option-active-color);
             letter-spacing: -0.2px;
         }
     }
@@ -102,10 +102,14 @@
         .listItem__title,
         .listItem__content,
         .listItem__contentWrapper,
-        .fieldOption__label {
+        .comboBox__item__label {
             font-weight: var(--field-option-active-weight);
             text-decoration: underline;
             text-decoration-thickness: 2px;
         }
     }
+}
+
+.comboBox__item__label {
+    text-align: left;
 }

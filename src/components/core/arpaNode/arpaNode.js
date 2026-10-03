@@ -6,7 +6,7 @@
 import { defineCustomElement, getAttributes, mergeObjects } from '@arpadroid/tools';
 import { getArpaElement } from '../arpaElement/helper/arpaElement.helper';
 import { renderChild } from '../arpaElement/helper/arpaElementTemplate.helper';
-import { getProp } from '../arpaElement/helper/arpaElementProps.helper.js';
+import { evaluateProp, getProp } from '../arpaElement/helper/arpaElementProps.helper.js';
 import ArpaElement from '../arpaElement/arpaElement.js';
 class ArpaNode extends HTMLElement {
     /**
@@ -217,6 +217,12 @@ class ArpaNode extends HTMLElement {
         const html = renderChild(this.element, name, config, attr).trim();
         if (tag === 'fragment') {
             this.fragment.append(html);
+            const hasContent = this.fragment.childNodes.length > 0;
+            const canRenderStr = this.getProp('canRender');
+            const rv = canRenderStr.length && evaluateProp(this.element, canRenderStr);
+            if (!hasContent || rv === false) {
+                return;
+            }
             return this.fragment;
         }
         if (!html) return;

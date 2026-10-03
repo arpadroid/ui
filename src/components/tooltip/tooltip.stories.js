@@ -110,7 +110,7 @@ export const CustomHandler = {
             <arpa-tooltip ${attrString(args)}>
                 <div class="tooltip__handler">
                     <input
-                        class="fieldInput"
+                        class="arpaField__input"
                         type="text"
                         id="custom-handler"
                         placeholder="Focus to see tooltip"

@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 /**
  * @typedef {import('../../arpaNode/arpaNode.types').ArpaNodeConfigType} ArpaNodeConfigType
  * @typedef {import('../arpaElement.types').ArpaElementBluePrintType} ArpaElementBluePrintType
@@ -44,8 +45,12 @@ export function hasTemplateVariables(content, variables) {
 export function processTemplateVariable(name, value, element) {
     if (!value && typeof element?.getNodeConfig === 'function') {
         const child = element?.getNodeConfig(name);
-        // eslint-disable-next-line no-use-before-define
-        child && (value = renderChild(element, name, child));
+        if (child) {
+            value = renderChild(element, name, child);
+            if (typeof value === 'string' && value.indexOf('{') !== -1) {
+                value = processTemplate(value, element?.getTemplateVars?.() || {}, element);
+            }
+        }
     }
 
     if (!value && name.endsWith('()')) {
@@ -136,7 +141,10 @@ function getTemplateAttributeMatch(template, lastIndex, equalsIndex) {
  * @returns {Promise<(Element | ArpaElement)[]>}
  */
 export async function waitForEventHandlers(element, attr, value) {
-    const selector = `[${attr}="{${value}}"]`;
+    let selector = `[${attr}="{${value}}"]`;
+    if (attr.startsWith('$on-')) {
+        selector = selector.replace('$on-', '\\$on-');
+    }
     let eventHandlers = Array.from(element.querySelectorAll(selector));
     if (!eventHandlers.length && element.onRendered) {
         await element.onRendered();
@@ -197,9 +205,21 @@ export async function applyTemplateEventListener(element, attr, value, fn) {
     'promise' in element && (await element.promise);
     await element?.onRendered();
     const eventHandler = await getTemplateEventHandlers(element, attr, value);
-    const eventName = attr.replace('on-', '').replace(/-/g, '');
-    if (typeof fn === 'function') {
-        listen(eventHandler, eventName, fn);
+    if (attr.startsWith('on-')) {
+        const eventName = attr.replace('on-', '').replace(/-/g, '');
+        if (typeof fn === 'function') {
+            listen(eventHandler, eventName, fn);
+        }
+    } else if (attr.startsWith('$on-')) {
+        await element?.onRendered();
+        const node = Object.values(element.nodes).find(node => node.hasAttribute(attr));
+        if (!node) {
+            return;
+        }
+        const eventName = attr.replace('$on-', '').replace(/-/g, '');
+        if ('on' in node && typeof node.on === 'function') {
+            node.on(eventName, fn);
+        }
     }
 }
 
@@ -267,10 +287,9 @@ export function processTemplateAttributes(template, props = {}, element) {
         const value = processTemplateVariable(match.propName, props[match.propName], element);
         const renderedAttribute = attrString({ [match.attrName]: value });
 
-        if (element && !value && match.attrName.startsWith('on-')) {
+        if (element && !value && (match.attrName.startsWith('on-') || match.attrName.startsWith('$on-'))) {
             result.push(template.slice(lastIndex, match.nextIndex));
             handleTemplateEventListener(element, match.attrName, match.propName);
-
             lastIndex = match.nextIndex;
             searchIndex = lastIndex;
             continue;
@@ -361,13 +380,14 @@ export function getClass(element, name) {
  * @returns {ArpaNodeConfigType}
  */
 export function getDefaultNodeConfig(element, name) {
+    const classOverride = element?._config?.nodesConfig?.[name]?.className;
     return mergeObjects(
         {
             tag: 'div',
             hasZone: true,
             zoneName: name,
             propName: name,
-            className: getClass(element, name)
+            className: classOverride || getClass(element, name)
         },
         element?.getNodeConfig(name) || {}
     );
@@ -415,11 +435,13 @@ export function canRenderNode(element, name, config = {}, attributes = {}) {
  * @returns {Record<string, string>}
  */
 export function getNodeAttributes(element, name, config = {}, attributes = {}) {
-    const { className, id, hasZone, zoneName, isContent = false } = config;
+    const { id, hasZone, zoneName, isContent = false } = config;
     !attributes.isContent && (attributes.isContent = isContent);
     const attr = mergeObjects(config.attr || {}, attributes);
 
     id && (attr.id = id);
+    const className = attr.className || config.className;
+
     className && (attr.class = `${attr.class || ''} ${className}`.trim());
 
     attr.canRender && delete attr.canRender;
@@ -433,6 +455,7 @@ export function getNodeAttributes(element, name, config = {}, attributes = {}) {
             attr[key] = processTemplate(attr[key], element?.templateVars, element);
         }
     }
+
     return attr;
 }
 
@@ -481,7 +504,7 @@ export function setNodeContent(node, content) {
  */
 export function renderChild(element, name, config = {}, attributes = {}) {
     const defaults = getDefaultNodeConfig(element, name);
-    const { mustRender = false } = config;
+    const mustRender = config.mustRender || attributes.mustRender;
     config = mergeObjects(defaults, config);
     const canRender = canRenderNode(element, name, config, attributes);
 
@@ -651,6 +674,31 @@ export function getNodesConfigBlueprint(element, blueprint) {
 }
 
 /**
+ * Dedupe nodes in the template for the given component.
+ * @param {HTMLTemplateElement} template
+ * @returns {string | undefined} The deduped template if replacements were made, otherwise undefined.
+ */
+export function dedupeNodes(template) {
+    /** @type {ArpaNode[]} */
+    const arpaNodes = Array.from(template.content.querySelectorAll('arpa-node') || []);
+    /** @type {Record<string, ArpaNode>} */
+    const seen = {};
+    let hasReplacement = false;
+    arpaNodes.forEach(node => {
+        const name = node.getAttribute('name');
+        if (!name) return;
+        if (seen[name]) {
+            seen[name].replaceWith(node);
+            hasReplacement = true;
+        }
+        seen[name] = node;
+    });
+    if (hasReplacement) {
+        return template.innerHTML?.trim() || '';
+    }
+}
+
+/**
  * Renders the template for the element.
  * @param {ArpaElement} component
  * @param {string | null} [_template]
@@ -676,7 +724,24 @@ export function renderTemplate(component, _template, vars = component.getTemplat
         }
     }
     const result = template && processTemplate(template, vars, component);
-    return typeof result === 'string' ? result : '';
+    let rv = typeof result === 'string' ? result : '';
+    if (result) {
+        const tpl = document.createElement('template');
+        tpl.innerHTML = rv;
+        const templateZones = tpl.content.querySelectorAll('arpa-zone');
+        templateZones.forEach(zone => {
+            const name = zone.getAttribute('name');
+            if (name) {
+                component.zonesByName?.add(name);
+                component.zones?.add(zone);
+            }
+        });
+        const deduped = dedupeNodes(tpl);
+        if (deduped) {
+            rv = deduped;
+        }
+    }
+    return rv;
 }
 
 /**

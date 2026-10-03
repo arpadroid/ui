@@ -25,7 +25,8 @@ class TruncateText extends ArpaElement {
             lblHide: '{i18n:lblReadLess}',
             buttonClasses: [],
             hasButton: false,
-            isTruncated: true
+            isTruncated: true,
+            reuseExistingNodes: false
         };
         return super.getDefaultConfig(config);
     }

@@ -42,13 +42,16 @@ class Button extends ArpaElement {
         return this.resolveAriaLabel(ariaLabel || label || defaultVal) || '';
     }
 
-    _preRender() {
+    _printAttributes() {
+        super._printAttributes();
         this._config.disabled = this.hasAttribute('disabled') || this.getProp('variant') === 'disabled';
         this.removeAttribute('disabled');
     }
 
     $renderTemplate() {
-        return html`<button
+        return html`<arpa-node
+            name="button"
+            tag="button"
             aria-label="{getAriaLabel()}"
             class="{buttonClass}"
             type="{type}"
@@ -66,7 +69,15 @@ class Button extends ArpaElement {
                 zone-target=".tooltip__content"
                 position="{tooltipPosition}"
             ></arpa-node>
-        </button>`;
+        </arpa-node>`;
+    }
+
+    async $initializeNodes() {
+        await super.$initializeNodes();
+        await this.waitForArpaNodes();
+        this.button = /** @type {HTMLButtonElement | null} */ (this.nodes.button);
+        this.handleVariant();
+        return true;
     }
 
     /**
@@ -76,20 +87,6 @@ class Button extends ArpaElement {
     onClick(event) {
         const { onClick } = this._config;
         typeof onClick === 'function' && onClick(event, this);
-    }
-
-    async $initializeNodes() {
-        await super.$initializeNodes();
-        await this.onNodesReady();
-        const button = this.querySelector('button');
-        /** @type {HTMLButtonElement | null} */
-        this.button = button;
-        const { onClick } = this._config;
-        if (typeof onClick === 'function') {
-            listen(button, 'click', event => onClick(event, this));
-        }
-        this.handleVariant();
-        return true;
     }
 
     handleVariant() {
@@ -139,9 +136,9 @@ class Button extends ArpaElement {
      * @returns {Promise<boolean>}
      */
     async setLabel(label) {
+        await this.promise;
         const result = await this.setContent(label);
-        const plainLabel = getStringBetween(label, '>', '<') || label;
-        this.button?.setAttribute('aria-label', plainLabel);
+        this.button?.setAttribute('aria-label', this.resolveAriaLabel(label));
         return result;
     }
 }

@@ -55,19 +55,21 @@ export const Test = {
         dialogNode.on('confirm', onConfirm);
 
         await step('Renders the dialog', async () => {
-            expect(dialogsNode).toBeInTheDocument();
-            expect(dialogNode).toBeInTheDocument();
-            expect(dialogsNode).toContainElement(dialogNode);
-            expect(dialog.getByRole('heading', { name: /Delete/i })).toBeInTheDocument();
             await waitFor(() => {
+                expect(dialogsNode).toBeInTheDocument();
+                expect(dialogNode).toBeInTheDocument();
+                expect(dialogsNode).toContainElement(dialogNode);
+                expect(dialog.getByRole('heading', { name: /Delete/i })).toBeInTheDocument();
                 expect(dialog.getByText('Are you sure you want to delete this item?')).not.toBeNull();
             });
         });
 
         await step('Emits cancel event on cancel action', async () => {
             await dialogNode.open();
-            const cancelButton = await waitFor(() => dialog.getByRole('button', { name: /cancel/i }));
-            expect(cancelButton).toBeInTheDocument();
+            await waitFor(() => {
+                expect(dialog.getByRole('button', { name: /Cancel/i })).toBeInTheDocument();
+            });
+            const cancelButton = dialog.getByRole('button', { name: /cancel/i });
             await userEvent.click(cancelButton);
             await waitFor(() => expect(dialogNode).not.toHaveAttribute('open'));
             expect(onCancel).toHaveBeenCalledTimes(1);
