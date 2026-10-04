@@ -4,7 +4,7 @@
  * @typedef {import("../../arpaNode/arpaNode").default} ArpaNode
  * @typedef {import("../../arpaZone/arpaZone").default} ArpaZone
  */
-import { camelToDashed, listen, dashedToCamel } from '@arpadroid/tools';
+import { camelToDashed, dashedToCamel } from '@arpadroid/tools';
 import { getArpaElement } from './arpaElement.helper.js';
 
 /**
