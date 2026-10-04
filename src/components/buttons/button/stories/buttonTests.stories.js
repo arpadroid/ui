@@ -8,6 +8,7 @@
 import { waitFor, expect } from 'storybook/test';
 import ButtonStory from './button.stories';
 import { testParams } from '@arpadroid/module/storybook/helper';
+import { $attr } from '@arpadroid/tools';
 
 /** @type {Meta} */
 const ButtonTestsStory = {
@@ -16,20 +17,23 @@ const ButtonTestsStory = {
     title: 'UI/Buttons/Button/Tests'
 };
 
+const html = String.raw;
 /** @type {Story} */
 export const Test = {
     args: {
-        content: 'Click me',
         icon: 'check_circle',
         rhsIcon: 'person',
         tooltip: 'If you click me something awesome will happen.',
         tooltipPosition: 'top'
     },
+    render: ({ ...args }) => {
+        return html`<arpa-button ${$attr(args)}>Click me</arpa-button>`;
+    },
     parameters: testParams,
-    play: async ({ canvas, step }) => {
-        await customElements.whenDefined('arpa-button');
-        const buttonNode = /** @type {HTMLButtonElement} */ (canvas.getByRole('button'));
-        const buttonComponent = /** @type {Button} */ (buttonNode.closest('arpa-button'));
+    play: async ({ canvas, canvasElement, step }) => {
+        const buttonComponent = /** @type {Button} */ (canvasElement.querySelector('arpa-button'));
+        await buttonComponent.promise;
+        const buttonNode = await waitFor(() => canvas.getByRole('button'));
 
         await step('Renders the button', async () => {
             expect(buttonNode).toBeInTheDocument();
@@ -38,8 +42,9 @@ export const Test = {
 
         await step('Shows the tooltip when the button is focused', async () => {
             buttonNode.focus();
-            const tooltip = canvas.getByText('If you click me something awesome will happen.');
-            expect(tooltip).toBeVisible();
+            await waitFor(() =>
+                expect(canvas.getByText('If you click me something awesome will happen.')).toBeVisible()
+            );
         });
 
         await step('Sets a new icon', async () => {
@@ -77,10 +82,10 @@ export const DynamicRender = {
         tooltipPosition: undefined
     },
     parameters: testParams,
-    play: async ({ canvas, step }) => {
+    play: async ({ canvasElement, step }) => {
         await customElements.whenDefined('arpa-button');
-        const buttonNode = /** @type {HTMLButtonElement} */ (canvas.getByRole('button'));
-        const buttonComponent = /** @type {Button} */ (buttonNode.closest('arpa-button'));
+        const buttonComponent = /** @type {Button} */ (canvasElement.querySelector('arpa-button'));
+        await buttonComponent.promise;
 
         await step('Sets an RHS icon', async () => {
             buttonComponent.setProp('rhsIcon', 'person');

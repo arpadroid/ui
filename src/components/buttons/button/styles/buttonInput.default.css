@@ -4,20 +4,17 @@
 }
 
 .buttonInput.buttonInput {
-    box-shadow: var(--button-input-box-shadow);
-    border-radius: var(--input-border-radius);
     border: 2px solid white;
-    button {
-        border-radius: 2px;
+    border-radius: var(--input-border-radius);
+    box-shadow: var(--button-input-box-shadow);
+
+    &:hover,
+    &:has(input:checked) {
+        box-shadow: var(--button-input-box-shadow-active);
     }
 
     &:has(input[type='radio']),
     &:has(input[type='checkbox']) {
         max-height: 2.8rem;
-    }
-
-    &:has(input:checked),
-    &:hover {
-        box-shadow: var(--button-input-box-shadow-active);
     }
 }

@@ -937,13 +937,6 @@ class CustomElement extends ArpaElement {
         /* Called during cleanup */
     }
 
-    _onPlaceZone(payload) {
-        /* Called when zones are placed */
-    }
-
-    _onLostZone(payload) {
-        /* Called when zones are lost */
-    }
 
     $renderTemplate() {
         /* Get the template to render */
@@ -969,16 +962,8 @@ class CustomElement extends ArpaElement {
         /* Called at the very end of rendering - ABSTRACT */
     }
 
-    onRendered(callback) {
-        /* Register callback for when rendered */
-    }
-
     onRenderReady(callback) {
         /* Register callback for when render-ready */
-    }
-
-    onPreRender(callback) {
-        /* Register callback for pre-render */
     }
 }
 ```

@@ -1,4 +1,5 @@
 /**
+ * @typedef {import('../core/arpaElement/arpaElement.types.js').ArpaElementContentNodeType} ArpaElementContentNodeType
  * @typedef {import('./tooltip.types.js').TooltipConfigType} TooltipConfigType
  * @typedef {import('../buttons/iconButton/iconButton.js').default} IconButton
  */
@@ -30,16 +31,10 @@ class Tooltip extends ArpaElement {
 
     /**
      * Returns the tooltip handler element.
-     * @returns {HTMLElement | null | undefined}
+     * @returns {ArpaElementContentNodeType}
      */
     getHandler() {
-        return /** @type {HTMLElement | null} */ (
-            this.handler || this.nodes?.handler || this.findHandler() || null
-        );
-    }
-
-    hasCursorPosition() {
-        return this.hasProp('has-cursor-position');
+        return this.handler || this.nodes?.handler || this.findHandler() || null;
     }
 
     /**
@@ -49,15 +44,18 @@ class Tooltip extends ArpaElement {
     findHandler() {
         if (this.handler instanceof HTMLElement) return this.handler;
         let handler = this.getProp('handler');
-        handler && typeof handler === 'string' && (handler = resolveNode(handler));
-        if (!(handler instanceof HTMLElement)) {
-            handler = this.closest('.tooltip__handler, button, a');
-            handler instanceof HTMLElement && this.classList.add('tooltip--contained');
+        const containedHandler = this.closest('.tooltip__handler, button, a');
+        if (containedHandler instanceof HTMLElement) {
+            handler = containedHandler;
+            this.classList.add('tooltip--contained');
+        }
+        if (!handler && typeof handler === 'string') {
+            handler = resolveNode(handler);
         }
         return handler;
     }
 
-    canRenderHandler() {
+    async canRenderHandler() {
         return !this.findHandler();
     }
 
@@ -65,11 +63,16 @@ class Tooltip extends ArpaElement {
      * Sets the tooltip handler element.
      * @param {HTMLElement | unknown} handler - The handler element.
      */
-    setHandler(handler) {
+    async setHandler(handler = this.getHandler()) {
         if (!(handler instanceof HTMLElement)) return;
         this.handler = handler;
-        this.handler.classList.add('tooltip__handler');
-        this.hasCursorPosition() && this._handleCursorPosition();
+        handler.classList.add('tooltip__handler');
+        if (this.hasProp('hasCursorPosition')) {
+            this._handleCursorPosition(handler);
+        }
+        if (!handler.isConnected && !handler.contains(this)) {
+            this.appendChild(handler);
+        }
     }
 
     /**
@@ -91,8 +94,9 @@ class Tooltip extends ArpaElement {
     $renderTemplate() {
         return html`
             <arpa-node
-                name="handler"
                 tag="icon-button"
+                name="handler"
+                defer="canRenderHandler"
                 can-render="canRenderHandler()"
                 variant="minimal"
                 icon="{icon}"
@@ -103,7 +107,6 @@ class Tooltip extends ArpaElement {
                 zone-name="tooltip-content"
                 tag="span"
                 role="tooltip"
-                aria-hidden="true"
                 tabindex="1"
             ></arpa-node>
         `;
@@ -111,31 +114,17 @@ class Tooltip extends ArpaElement {
 
     async $initializeNodes() {
         await super.$initializeNodes();
-        this.classList.add(`tooltip--${this.getPosition()}`);
-        this.setHandler(this.getHandler());
-        if (this.handler && !this.handler.isConnected && !this.handler.contains(this)) {
-            this.appendChild(this.handler);
-        }
+        await this.waitForArpaNodes();
         return true;
     }
 
-    /**
-     * Sets the tooltip content.
-     * @param {string | HTMLElement | HTMLCollection | NodeList} content - The content to set.
-     * @returns {Promise<void>}
-     */
-    async setContent(content = '') {
-        !this._hasRendered && (await this.promise);
-        const contentNode = this.contentNode || this.querySelector('.tooltip__content');
-        if (!contentNode) return;
-        contentNode.innerHTML = '';
-        if (typeof content === 'string') {
-            contentNode.innerHTML = content;
-        } else if (content instanceof HTMLElement) {
-            contentNode.appendChild(content);
-        } else if (content instanceof HTMLCollection || content instanceof NodeList) {
-            contentNode.append(...content);
-        }
+    async $onComplete() {
+        this.promise.then(() => {
+            const position = this.getPosition();
+            this.classList.add(`tooltip--${position}`);
+            this.setHandler();
+        });
+        return true;
     }
 
     /////////////////////////////////////
@@ -143,15 +132,12 @@ class Tooltip extends ArpaElement {
     ////////////////////////////////////
 
     _handleCursorPosition(handler = this.getHandler()) {
-        if (!this.contentNode) {
-            this.contentNode = this.querySelector('.tooltip__content');
-        }
-        if (this.contentNode) {
-            style(this.contentNode, { position: 'fixed', display: 'block' });
+        const contentNode = this.getContentNode();
+        if (contentNode instanceof HTMLElement) {
+            style(contentNode, { position: 'fixed', display: 'block' });
         }
         this._initializeCursorPosition();
         if (handler) {
-            // @ts-ignore
             listen(handler, ['mousemove', 'touchmove'], this._onMouseMove);
             listen(handler, ['mouseenter', 'touchmove'], this._onMouseEnter);
             listen(handler, ['mouseleave', 'touchend'], this._onMouseLeave);
@@ -172,7 +158,7 @@ class Tooltip extends ArpaElement {
     /**
      * Handles the mouse target update event.
      * @param {HTMLElement | null} target - The target element.
-     * @param {MouseEvent | TouchEvent} event
+     * @param {Event} event
      */
     _onMouseTargetUpdate(target, event) {
         const { onMouseTargetUpdate } = this._config || {};
@@ -182,22 +168,24 @@ class Tooltip extends ArpaElement {
     }
     /**
      * Handles the mouse move event.
-     * @param {MouseEvent | TouchEvent} event
+     * @param {Event} event
      */
     _onMouseMove(event) {
-        const { target, clientX, clientY } = normalizeTouchEvent(event);
+        const { target, clientX, clientY } = normalizeTouchEvent(
+            /** @type {MouseEvent | TouchEvent} */ (event)
+        );
         target !== this.mouseTarget && this._onMouseTargetUpdate(target, event);
         this.mouseTarget = /** @type {HTMLElement | null} */ (target);
         const offset = 16;
         const content = this.contentNode;
         const handler = this.handler;
-        if (!content) return;
+        if (!(content instanceof HTMLElement)) return;
 
-        const position = this.getProp('cursor-tooltip-position');
+        const position = this.getProp('cursorTooltipPosition');
         const rect = handler?.getBoundingClientRect();
         if (!rect) return;
 
-        const axis = this.getProp('cursor-position-axis') || 'x';
+        const axis = this.getProp('cursorPositionAxis') || 'x';
         if (axis === 'x') {
             /** @type {string | number} */
             let top = rect.top - content.clientHeight - offset;
@@ -234,7 +222,7 @@ class Tooltip extends ArpaElement {
     _initializeCursorPosition() {
         const positions = ['top', 'bottom', 'left', 'right'];
         positions.forEach(position => this?.classList?.remove(`tooltip--${position}`));
-        const cursorTooltipPosition = this.getProp('cursor-tooltip-position');
+        const cursorTooltipPosition = this.getProp('cursorTooltipPosition');
         cursorTooltipPosition && this?.classList?.add(`tooltip--${cursorTooltipPosition}`);
     }
 

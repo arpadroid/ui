@@ -1,12 +1,13 @@
 /**
  * @typedef {import('./arpaNode.types').ArpaNodeConfigType} ArpaNodeConfigType
  * @typedef {import('./arpaNode.types').ArpaNodeAttributesType} ArpaNodeAttributesType
- * @typedef {import('../arpaElement/arpaElement.js').default} ArpaElement
+ * @typedef {import('../arpaElement/arpaElement.types').ArpaElementContentNodeType} ArpaElementContentNodeType
  */
-import { defineCustomElement, getAttributes, mergeObjects, renderNode } from '@arpadroid/tools';
+import { defineCustomElement, getAttributes, mergeObjects } from '@arpadroid/tools';
 import { getArpaElement } from '../arpaElement/helper/arpaElement.helper';
 import { renderChild } from '../arpaElement/helper/arpaElementTemplate.helper';
-import { getProp } from '../arpaElement/helper/arpaElementProps.helper.js';
+import { evaluateProp, getProp } from '../arpaElement/helper/arpaElementProps.helper.js';
+import ArpaElement from '../arpaElement/arpaElement.js';
 class ArpaNode extends HTMLElement {
     /**
      * Creates an instance of ArpaNode.
@@ -14,10 +15,33 @@ class ArpaNode extends HTMLElement {
      */
     constructor(config) {
         super();
+
+        this.initialized = false;
+        this.promise = new Promise((resolve, reject) => {
+            this.resolvePromise = resolve;
+            this.rejectPromise = reject;
+        }).catch(err => {
+            const message = err.message || 'Failed Rendering ArpaNode:';
+            const payload = err;
+            delete payload.message;
+            console.error(message, {
+                name: this.getProp('name'),
+                arpaNode: this,
+                element: this.element,
+                ...payload
+            });
+        });
+
         this.canRender = this.getAttribute('can-render');
         this.fragment = document.createDocumentFragment();
+        this.nodesContainer = this.closest('.template-nodes-container');
+
         this._initializeContent();
         this.setConfig(config);
+        this._initializeElement();
+        if (this.element && this._config?.allowDisconnectedInitialization) {
+            this._initializeArpaNode();
+        }
     }
 
     _initializeContent() {
@@ -26,8 +50,8 @@ class ArpaNode extends HTMLElement {
             this.initialHTML = html;
             this.initialTextContent = this.textContent;
         }
+        this._childNodes = [...this.childNodes];
         this.fragment.append(...this.childNodes);
-        this._childNodes = [...this.fragment.childNodes];
     }
 
     /**
@@ -44,8 +68,8 @@ class ArpaNode extends HTMLElement {
      * @returns {ArpaNodeConfigType}
      */
     getDefaultConfig() {
-        /** @type {ArpaNodeConfigType} */
-        const config = {
+        return {
+            allowDisconnectedInitialization: true,
             attr: {},
             canRender: true,
             childNodes: this._childNodes,
@@ -54,16 +78,77 @@ class ArpaNode extends HTMLElement {
             tag: 'div',
             zoneName: undefined
         };
+    }
 
-        return config;
+    _initializeElement() {
+        if (this.element) return;
+        this.registerElement(getArpaElement(this));
+    }
+
+    async connectedCallback() {
+        this._initializeElement();
+        if (this.element && !this.initialized) {
+            this._initializeArpaNode();
+        }
+    }
+
+    resolve(payload = true) {
+        this.resolvePromise(payload);
+        this.remove();
+    }
+    /**
+     * Resolves the zone with the given payload and removes the element from the DOM.
+     * @param {Record<string, unknown>} [payload={}] The payload to pass to the resolve promise.
+     */
+    reject(payload = {}) {
+        this.rejectPromise(payload);
+        this.remove();
+    }
+
+    async _initializeArpaNode() {
+        if (this.initialized) return;
+        const name = this.getProp('name');
+        if (!name) {
+            return this.reject({
+                message: 'An arpa-node must have a name attribute or configuration property defined.',
+                arpaNode: this
+            });
+        }
+
+        this._initializeElement();
+
+        if (!this.element) {
+            return this.reject({
+                message: 'An arpa-node must have a parent arpa-element'
+            });
+        }
+
+        this.initialized = true;
+        if (this.hasAttribute('defer')) {
+            if (!(await this.handleDefer())) {
+                return this.resolve(true);
+            }
+        }
+
+        if (!this.node) {
+            this.node = /** @type {ArpaElementContentNodeType & {arpaNode?: ArpaNode}} */ (this.renderNode());
+        }
+
+        if (this.node) {
+            this.node.arpaNode = this;
+            this.element.nodes[name] = this.node;
+            this.replaceWith(this.node);
+        }
+        this.resolve(true);
     }
 
     getNodeAttributes() {
-        const attr = getAttributes(this, { camelCaseKeys: true });
+        const attr = getAttributes(this, {
+            camelCaseKeys: true,
+            convertFalseToBoolean: false
+        });
         for (const key in this.getDefaultConfig()) {
-            if (key in attr) {
-                delete attr[key];
-            }
+            if (key in attr) delete attr[key];
         }
         const { attr: configAttr = {} } = this._config || {};
         return mergeObjects(configAttr, attr);
@@ -101,7 +186,7 @@ class ArpaNode extends HTMLElement {
      * @param {ArpaNodeConfigType} config
      * @param {ArpaNodeAttributesType} attr
      */
-    registerNodeConfig(config, attr) {
+    registerNodeConfig(config = this.getConfig(), attr = this.getNodeAttributes()) {
         const elementPayload = {
             ...config,
             attr,
@@ -129,43 +214,52 @@ class ArpaNode extends HTMLElement {
             return;
         }
 
-        const html = renderChild(this.element, name, config, attr);
+        const html = renderChild(this.element, name, config, attr).trim();
         if (tag === 'fragment') {
             this.fragment.append(html);
+            const hasContent = this.fragment.childNodes.length > 0;
+            const canRenderStr = this.getProp('canRender');
+            const rv = canRenderStr.length && evaluateProp(this.element, canRenderStr);
+            if (!hasContent || rv === false) {
+                return;
+            }
             return this.fragment;
         }
-        const node = /** @type {HTMLElement} */ (renderNode(html));
+        if (!html) return;
+        const template = document.createElement('template');
+        template.innerHTML = html;
+        const node = template.content.firstElementChild;
         node?.appendChild(this.fragment);
         return node;
     }
 
-    connectedCallback() {
-        this._initializeContent();
-        const name = this.getProp('name');
-        if (!name) {
-            const msg = 'An arpa-node must have a name attribute or configuration property defined.';
-            console.error(msg, this);
-            return Promise.reject(new Error(msg));
-        }
-        /** @type {ArpaElement | null}  */
-        this.element = getArpaElement(this);
-        if (!this.element) {
-            const msg = 'An arpa-node must have a parent arpa-element';
-            console.error(msg, this);
-            return Promise.reject(new Error(msg));
-        }
-        if (!this.node) {
-            /** @type {((HTMLElement | DocumentFragment | Node) & {arpaNode?: ArpaNode})} */
-            this.node = this.renderNode();
+    async handleDefer() {
+        await new Promise(resolve => requestAnimationFrame(resolve));
+        let deferFn = this.getProp('defer');
+        let rv = undefined;
+        if (typeof deferFn === 'string') {
+            deferFn = this.element?.[/** @type {keyof ArpaElement} */ (deferFn)];
         }
 
-        if (this.node) {
-            this.element.nodes[name] = this.node;
-            this.node.arpaNode = this;
-            this.replaceWith(this.node);
-            this.remove();
-        } else {
-            this.remove();
+        if (typeof deferFn === 'function') {
+            deferFn = deferFn.bind(this.element);
+            rv = await deferFn({ arpaNode: this, name: this.getProp('name') });
+        }
+        return typeof rv !== 'undefined' ? rv : true;
+    }
+
+    /**
+     * @param {ArpaElement | undefined | null} [element]
+     */
+    registerElement(element) {
+        if (element) {
+            /** @type {ArpaElement | null} */
+            this.element = element;
+            const name = this.getProp('name');
+            element.arpaNodes[name] = this;
+            if (this?.hasAttribute('is-content')) {
+                element.arpaNodes.content = this;
+            }
         }
     }
 }

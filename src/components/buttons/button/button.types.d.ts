@@ -10,7 +10,7 @@ export type ButtonConfigType = ArpaElementConfigType & {
     label?: string;
     rhsIcon?: string;
     tooltip?: string;
-    '@onClick'?: (buttonInstance: Button) => void;
+    onClick?: (event: Event, buttonInstance: Button) => void;
     tooltipPosition?: 'top' | 'bottom' | 'left' | 'right';
     type?: 'button' | 'submit' | 'reset';
     variant?:

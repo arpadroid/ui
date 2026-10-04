@@ -1,4 +1,3 @@
-bundle-stats.html
 node_modules/
 coverage/
 *.bundled.css

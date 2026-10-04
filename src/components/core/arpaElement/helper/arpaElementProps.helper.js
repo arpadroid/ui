@@ -4,8 +4,8 @@
  * @typedef {import("../../arpaNode/arpaNode").default} ArpaNode
  * @typedef {import("../../arpaZone/arpaZone").default} ArpaZone
  */
-import { camelToDashed, listen, dashedToCamel } from '@arpadroid/tools';
-import { findNodeComponent } from '../../../../tools/zoneTool';
+import { camelToDashed, dashedToCamel } from '@arpadroid/tools';
+import { getArpaElement } from './arpaElement.helper.js';
 
 /**
  * Checks if an element has a property as an attribute or defined in the configuration.
@@ -26,6 +26,10 @@ export function hasProp(element, name, config = element._config) {
     if (typeof config[dashedToCamel(name)] !== 'undefined') {
         return config[dashedToCamel(name)];
     }
+    const payload = element?.getPayload?.() || {};
+    if (typeof payload[dashedToCamel(name)] !== 'undefined') {
+        return payload[dashedToCamel(name)];
+    }
 }
 
 /**
@@ -38,15 +42,18 @@ export function hasProp(element, name, config = element._config) {
 export function getProp(element, name, config = element._config ?? {}) {
     const configName = dashedToCamel(name);
     let rv;
-    rv = element.getAttribute(camelToDashed(name)) || config[configName];
+    rv =
+        element.getAttribute(camelToDashed(name)) ||
+        config[configName] ||
+        ('payload' in element && element.payload?.[configName]);
     if (rv === 'undefined') {
         rv = undefined;
     }
-    return rv;
+    return typeof rv === 'string' ? rv.trim() : rv;
 }
 
 /**
- * Gets the value of a property from the element's configuration or attributes as an array.
+ * Returns the value of a property from the element's configuration or attributes as an array.
  * @param {ArpaElement | ArpaNode} element
  * @param {string} name
  * @param {Record<string, unknown>} [config]
@@ -56,6 +63,10 @@ export function getArrayProp(element, name, config = element._config) {
     const value = getProp(element, name, config);
     if (typeof value === 'string') {
         return value.split(',').map(item => item.trim());
+    }
+
+    if (!Array.isArray(value)) {
+        return [value].filter(item => item !== undefined && item !== null);
     }
     return value;
 }
@@ -70,27 +81,11 @@ export function getCallbackProp(element, propertyName) {
     const val = getProp(element, propertyName);
     if (typeof val === 'string' && val?.[0] === ':') {
         const methodName = val.slice(1);
-        const parentComponent = findNodeComponent(/** @type {ArpaElement} */ (element.parentNode));
+        const parentComponent = getArpaElement(/** @type {ArpaElement} */ (element.parentNode));
         // @ts-ignore
         const method = parentComponent?.[methodName];
         return method?.bind(parentComponent);
     }
-}
-
-/**
- * Handles a callback property of a component defined as a string starting with ':'.
- * The callback method will be looked-up and called in the parent component.
- * @param {ArpaElement} element
- * @param {string} propertyName
- * @param {string} eventName
- * @returns {((...args: any[]) => void) | undefined}
- */
-export function handleCallbackProp(element, propertyName, eventName = '') {
-    const method = getCallbackProp(element, propertyName);
-    if (typeof method === 'function' && eventName) {
-        listen(element, eventName, method);
-    }
-    return method;
 }
 
 /**
@@ -112,7 +107,7 @@ export function evaluatePropToken(element, condition) {
         return false;
     }
 
-    const hasProp = Boolean(element.hasProp(propName));
+    const hasProp = Boolean(element.hasProp(propName) || element.hasContent(propName));
     return isNegation ? Boolean(!hasProp) : Boolean(hasProp);
 }
 
@@ -155,6 +150,7 @@ export function setAttribute(element, name, value) {
  * @param {ArpaElement} element
  * @param {string} name
  * @param {import('../arpaElement.types').ArpaElementContentType} value
+ * @returns {Promise<boolean>}
  */
 export async function setProp(element, name, value) {
     name = dashedToCamel(name);
@@ -165,4 +161,5 @@ export async function setProp(element, name, value) {
     if (value && nodeConfig) {
         element.editNode(name, { content: value });
     }
+    return true;
 }

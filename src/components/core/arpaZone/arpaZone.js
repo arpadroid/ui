@@ -1,12 +1,16 @@
 /**
  * @typedef {import('./arpaZone.types').ArpaZoneConfigType} ArpaZoneConfigType
- * @typedef {import('../arpaElement/arpaElement.js').default} ArpaElement
+ * @typedef {import('@arpadroid/tools').MethodWriteType} MethodWriteType
+ * @typedef {import('../arpaNode/arpaNode').ArpaElementContentNodeType} ArpaElementContentNodeType
  */
 import { defineCustomElement, mergeObjects } from '@arpadroid/tools';
 import { getArpaElement } from '../arpaElement/helper/arpaElement.helper';
 import { getProp } from '../arpaElement/helper/arpaElementProps.helper.js';
+import ArpaElement from '../arpaElement/arpaElement.js';
 
 export const LOST_ZONES = new Set();
+/**@type {ArpaZone[]} */
+export const QUEUE = [];
 
 class ArpaZone extends HTMLElement {
     /**
@@ -15,21 +19,35 @@ class ArpaZone extends HTMLElement {
      */
     constructor(config) {
         super();
-        this.fragment = document.createDocumentFragment();
+
+        this.initialized = false;
+        this.promise = new Promise((resolve, reject) => {
+            this.resolvePromise = resolve;
+            this.rejectPromise = reject;
+        }).catch(err => {
+            const message = err.message || 'Failed Rendering ArpaZone:';
+            const payload = err;
+            delete payload.message;
+            this.remove();
+            console.error(message, {
+                zoneName: this.getProp('name'),
+                element: this.element?.tagName,
+                ...payload
+            });
+        });
+
         this._initializeContent();
         this.setConfig(config);
-        this._initializeZone();
+        this._initializeElement();
+        if (this.element && this._config?.allowDisconnectedInitialization) {
+            this._initializeZone();
+        }
     }
 
     _initializeContent() {
+        this.fragment = document.createDocumentFragment();
         this.fragment.append(...this.childNodes);
         this._childNodes = [...this.fragment.childNodes];
-    }
-
-    _initializeZone() {
-        /** @type {ArpaElement | null} */
-        this.element = this.element || getArpaElement(this);
-        this.element?.zonesByName?.add(this.getProp('name'));
     }
 
     /**
@@ -46,12 +64,70 @@ class ArpaZone extends HTMLElement {
      * @returns {ArpaZoneConfigType}
      */
     getDefaultConfig() {
-        /** @type {ArpaZoneConfigType} */
-        const config = {
-            name: undefined
+        return {
+            allowDisconnectedInitialization: true
         };
+    }
 
-        return config;
+    async connectedCallback() {
+        if (this.element && !this.initialized) {
+            await this._initializeZone();
+        }
+    }
+
+    async _initializeZone() {
+        this._initializeElement();
+        const name = this.getProp('name');
+        if (!name) {
+            this.reject({
+                message: 'An arpa-zone must have a name attribute or configuration property defined.'
+            });
+            return;
+        }
+        if (!this.element) {
+            this.reject({
+                message: 'An arpa-zone must have a parent arpa-element',
+                zone: this,
+                name,
+                element: this.element
+            });
+            return;
+        }
+        this.initialized = true;
+        await this.element?.waitForArpaNodes(this.element.arpaNodes);
+        await this.element.waitForNodes(this.element.nodes, { onRendered: false });
+
+        this.onRenderReady();
+    }
+
+    async onRenderReady() {
+        const name = this.getAttribute('name');
+        /** @type {Element | undefined | null} */
+        let zoneElement = this.selectZoneElement() || (await this.findZoneElement());
+        if (zoneElement) {
+            'promise' in zoneElement && (await zoneElement.promise);
+            const target = await this.getZoneTarget(zoneElement);
+
+            if (target) {
+                zoneElement = target;
+            }
+        }
+        if (!zoneElement) {
+            LOST_ZONES.add(name);
+            this.reject({
+                message: `No element found for zone "${name}".`
+            });
+            return;
+        }
+        this.zoneElement = zoneElement;
+        this.apply(this.zoneElement);
+    }
+
+    _initializeElement() {
+        /** @type {ArpaElement | null} */
+        this.element = this.element || getArpaElement(this);
+        this.element?.zonesByName?.add(this.getProp('name'));
+        this.element?.zones?.add(this);
     }
 
     /**
@@ -64,65 +140,132 @@ class ArpaZone extends HTMLElement {
     }
 
     async findZoneElement(element = this.element) {
-        const containers = /** @type {(HTMLElement)[]} */ [...Object.values(element?.nodes || {})];
+        const containers = /** @type {(HTMLElement)[]} */ (Object.values(element?.nodes || {}));
         for (const container of containers) {
             if (!container || !(container instanceof HTMLElement)) continue;
-            if (container instanceof HTMLElement && 'promise' in container) {
-                await container.promise;
-            }
-            // @ts-ignore
-            const zoneElement = this.getZoneElement(container);
+            const zoneElement = this.selectZoneElement(container);
+            if (zoneElement) return zoneElement;
+        }
+        return await this.waitForZoneElement();
+    }
+
+    /**
+     * Polls for the zone element on successive animation frames instead of a blind fixed delay.
+     * @param {number} [maxRetries]
+     * @returns {Promise<Element | null | undefined>}
+     */
+    async waitForZoneElement(maxRetries = 10) {
+        for (let i = 0; i < maxRetries; i++) {
+            const zoneElement = this.selectZoneElement();
             if (zoneElement) {
                 return zoneElement;
             }
+            await new Promise(resolve => requestAnimationFrame(resolve));
         }
+        return this.selectZoneElement();
     }
 
     /**
      * Returns the zone container element for this zone.
-     * @param {ArpaElement | null} [container]
-     * @returns {HTMLElement | null | undefined}
+     * @param {ArpaElement | HTMLElement | null} [container]
+     * @returns {import('../arpaNode/arpaNode').ArpaElementContentNodeType | null | undefined}
      */
-    getZoneElement(container = this.element) {
+    selectZoneElement(container = this.element) {
         const zoneName = this.getProp('name');
+        for (const node of Object.values(this.element?.nodes || {})) {
+            if (typeof node?.getAttribute === 'function' && zoneName === node?.getAttribute('zone')) {
+                return node;
+            }
+        }
+        /**
+         * The below is risky because it relies on a querySelector which may not always return the correct element.
+         */
         return container?.querySelector(`[zone="${zoneName}"]`);
     }
 
-    async connectedCallback() {
-        this._initializeZone();
-        const name = this.getProp('name');
-        if (!name) {
-            console.error('An arpa-zone must have a name attribute or configuration property defined.');
-            return;
+    /**
+     * Returns the target element for the zone, which is either specified by the 'zone-target' attribute or defaults to the zone element itself.
+     * @param {import('../arpaNode/arpaNode').ArpaElementContentNodeType} zoneElement
+     * @returns {Promise<Element | null | undefined>}
+     */
+    async getZoneTarget(zoneElement) {
+        let zoneTarget =
+            zoneElement.getAttribute('zone-target') ||
+            ('zoneTarget' in zoneElement && zoneElement?.zoneTarget) ||
+            null;
+        if ('getZoneTarget' in zoneElement && typeof zoneElement.getZoneTarget === 'function') {
+            zoneTarget = await zoneElement.getZoneTarget(this, this.fragment?.childNodes);
         }
-        if (!this.element) {
-            console.error('An arpa-zone must have a parent arpa-element');
-            return;
-        }
-        await this.element.promise;
-        let zoneElement = /** @type { ArpaElement | null } */ (
-            this.getZoneElement() || (await this.findZoneElement())
-        );
 
-        const zoneTarget = zoneElement?.getAttribute('zone-target');
-        if (zoneElement && zoneTarget) {
-            zoneElement?.promise && (await zoneElement?.promise);
-            const zoneTargetNode = zoneElement?.querySelector(zoneTarget);
-            // @ts-ignore
-            zoneTargetNode && (zoneElement = zoneTargetNode);
+        if (typeof zoneTarget === 'string') {
+            zoneTarget = zoneElement?.querySelector(zoneTarget);
         }
-        zoneElement?.append(this.fragment);
+        return zoneTarget || zoneElement;
+    }
 
-        if (!zoneElement) {
-            LOST_ZONES.add(name);
-            console.error(`No zone element found for zone "${name}". `, {
-                zoneElement,
-                zoneTarget,
-                element: this.element,
-                html: this.fragment?.textContent,
-                parent: this.parentNode
-            });
+    resolve(payload = true) {
+        this.resolvePromise?.(payload);
+        this.remove();
+    }
+    /**
+     * Resolves the zone with the given payload and removes the element from the DOM.
+     * @param {Record<string, unknown>} [payload={}] The payload to pass to the resolve promise.
+     */
+    reject(payload = {}) {
+        this.rejectPromise?.(payload);
+        this.remove();
+    }
+
+    /**
+     * Executes the zone handling callbacks for the given zone element.
+     * @param {ArpaElementContentNodeType | undefined} zoneElement
+     * @returns {void | boolean} Returns false if any callback prevents the zone handling.
+     */
+    executeZoneHandlingCallbacks(element = this.element, zoneElement = this.zoneElement) {
+        const children = this.fragment?.childNodes || [];
+        if (element?.$onZonePlaced?.(this, zoneElement, children) === false) {
+            this.resolve(false);
+            return false;
         }
+        if (zoneElement && '$onZoneInserted' in zoneElement) {
+            if (zoneElement?.$onZoneInserted?.(this, zoneElement, children) === false) {
+                this.resolve(false);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * @returns {MethodWriteType}
+     */
+    getApplyMethod() {
+        /** @type {MethodWriteType} */
+        let method = 'append';
+        if (this.hasAttribute('replace-content')) {
+            method = 'replaceChildren';
+        } else if (this.hasAttribute('prepend-content')) {
+            method = 'prepend';
+        }
+        return method;
+    }
+
+    /**
+     * @param {Element |undefined | null} zoneElement
+     * @returns {void | boolean}
+     */
+    apply(zoneElement = this.zoneElement) {
+        if (!zoneElement || !this.fragment?.childNodes.length) {
+            this.resolve(false);
+            return false;
+        }
+        if (this.executeZoneHandlingCallbacks(this.element, zoneElement) === false) {
+            return false;
+        }
+        const method = this.getApplyMethod();
+        // @ts-expect-error
+        zoneElement[method]?.(this.fragment);
+        this.resolve(true);
     }
 }
 

@@ -6,28 +6,30 @@
  * @typedef {import('../dialogs/dialogs').default} Dialogs
  */
 
-import { expect, within, waitFor } from 'storybook/test';
-import { renderDialog } from '../dialog/dialogStoryUtil';
-import ConfirmDialogStory from '../confirmDialog/confirmDialog.stories';
+import { expect, within, waitFor, userEvent, fn } from 'storybook/test';
 import { defaultParams, testParams } from '@arpadroid/module/storybook/helper';
+import { $attr } from '@arpadroid/tools';
 
 const dialogText = 'Are you sure you want to delete this item?';
-const tagName = 'delete-dialog';
+const html = String.raw;
+
+const onConfirm = fn(() => {});
+const onCancel = fn(() => {});
 
 /** @type {Meta} */
 const DeleteDialogStory = {
-    ...ConfirmDialogStory,
     title: 'UI/Dialogs/Delete',
-    component: tagName,
+    component: 'delete-dialog',
     args: {
-        ...ConfirmDialogStory.args,
         id: 'delete',
         title: 'Delete',
-        // @ts-ignore - zoneContent is not typed on the ConfirmDialogConfigType, but it is used in the renderDialog function to set the content of the dialog.
-        zoneContent: dialogText,
-        open: true
+        open: true,
+        container: '#storybook-root'
     },
-    render: args => renderDialog(args, tagName)
+    beforeEach: async ({ canvasElement }) => canvasElement.querySelector('arpa-dialogs')?.remove(),
+    render: args => {
+        return html`<delete-dialog ${$attr(args)}>${dialogText}</delete-dialog>`;
+    }
 };
 
 /** @type {Story} */
@@ -43,46 +45,44 @@ export const Test = {
         id: 'delete-test'
     },
     play: async context => {
-        const { step, args } = context;
-
-        await customElements.whenDefined(tagName);
-        await customElements.whenDefined('arpa-dialogs');
-        const dialogsNode = /** @type {Dialogs} */ (document.querySelector('arpa-dialogs'));
-        const dialogNode = /** @type {DeleteDialog} */ (document.querySelector(tagName));
+        const { step } = context;
+        const dialogNode = /** @type {DeleteDialog} */ (document.querySelector('delete-dialog'));
         await dialogNode?.promise;
+        const dialogsNode = /** @type {Dialogs} */ (document.querySelector('arpa-dialogs'));
 
         const dialog = within(dialogNode);
-        dialogNode.on('confirm', args['@onConfirm']);
-        dialogNode.on('cancel', args['@onCancel']);
+        dialogNode.on('cancel', onCancel);
+        dialogNode.on('confirm', onConfirm);
 
         await step('Renders the dialog', async () => {
-            expect(dialogsNode).toBeInTheDocument();
-            expect(dialogNode).toBeInTheDocument();
-            expect(dialogsNode).toContainElement(dialogNode);
-            expect(dialog.getByRole('heading', { name: /Delete/i })).toBeInTheDocument();
             await waitFor(() => {
+                expect(dialogsNode).toBeInTheDocument();
+                expect(dialogNode).toBeInTheDocument();
+                expect(dialogsNode).toContainElement(dialogNode);
+                expect(dialog.getByRole('heading', { name: /Delete/i })).toBeInTheDocument();
                 expect(dialog.getByText('Are you sure you want to delete this item?')).not.toBeNull();
             });
         });
 
         await step('Emits cancel event on cancel action', async () => {
             await dialogNode.open();
-
-            const cancelButton = dialog.getByRole('button', { name: /cancel/i });
-            expect(cancelButton).toBeInTheDocument();
-            cancelButton.click();
             await waitFor(() => {
-                expect(args['@onCancel']).toHaveBeenCalled();
+                expect(dialog.getByRole('button', { name: /Cancel/i })).toBeInTheDocument();
             });
+            const cancelButton = dialog.getByRole('button', { name: /cancel/i });
+            await userEvent.click(cancelButton);
+            await waitFor(() => expect(dialogNode).not.toHaveAttribute('open'));
+            expect(onCancel).toHaveBeenCalledTimes(1);
         });
 
         await step('Emits confirm event on confirm action', async () => {
             await dialogNode.open();
             const confirmButton = dialog.getByRole('button', { name: /delete/i });
             expect(confirmButton).toBeInTheDocument();
-            confirmButton.click();
+            await userEvent.click(confirmButton);
             await waitFor(() => {
-                expect(args['@onConfirm']).toHaveBeenCalled();
+                expect(dialogNode).not.toHaveAttribute('open');
+                expect(onConfirm).toHaveBeenCalled();
             });
         });
 

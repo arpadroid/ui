@@ -1,7 +1,6 @@
 :root {
     /* Text */
-    --color-white: #ffffff;
-
+    --color-white: #fff;
     --text-color: var(--grey-750);
     --text-inverted-color: var(--grey-50);
     --label-color: var(--grey-600);
@@ -12,7 +11,6 @@
     --color-primary-dark: var(--blue-navy);
     --color-primary-light: #8cbff1;
     --color-primary-lightest: #cadff5;
-
     --primary-hilight: var(--blue-lightest);
     --primary-highlight-outline: var(--blue-navy);
 
@@ -27,7 +25,6 @@
     --color-tertiary-dark: var(--purple-dark);
     --color-tertiary-light: var(--purple-light);
     --color-tertiary-lightest: var(--purple-lightest);
-
     --color-highlight: var(--yellow);
     --color-highlight-dark: var(--yellow-banana);
     --color-highlight-light: var(--yellow-butter);
@@ -55,18 +52,16 @@
     --color-error-dark: var(--red-dark);
     --color-error-light: var(--red-light);
     --color-error-lightest: var(--red-lightest);
-
     --color-background: var(--grey-20);
-    --overlay-95: rgba(247, 247, 247, 0.95);
-    --overlay: rgba(247, 247, 247, 0.9);
-    --overlay-medium: rgba(247, 247, 247, 0.75);
-    --overlay-light: rgba(247, 247, 247, 0.5);
+    --overlay-95: rgb(247 247 247 / 95%);
+    --overlay: rgb(247 247 247 / 90%);
+    --overlay-medium: rgb(247 247 247 / 75%);
+    --overlay-light: rgb(247 247 247 / 50%);
     --selected-hilight: var(--blue-light);
-    --group-box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px 2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+    --group-box-shadow: rgb(50 50 93 / 25%) 0px 6px 12px 2px, rgb(0 0 0 / 30%) 0px 3px 7px -3px;
     --current-hilight: var(--yellow-lightest);
 
     /* Backgrounds */
     --bg-light-green: #d4ebce;
-
     --bg-light-red: #ffeeec;
 }

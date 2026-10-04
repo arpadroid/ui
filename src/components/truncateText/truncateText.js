@@ -1,9 +1,10 @@
 /**
  * @typedef {import('./truncateText.types').TruncateTextConfigType } TruncateTextConfigType
  * @typedef {import('../buttons/button/button.js').default} ArpaButton
+ * @typedef {import('../core/arpaZone/arpaZone.js').default} ArpaZone
  */
 import ArpaElement from '../core/arpaElement/arpaElement.js';
-import { classNames, defineCustomElement, listen } from '@arpadroid/tools';
+import { classNames, defineCustomElement } from '@arpadroid/tools';
 
 const html = String.raw;
 class TruncateText extends ArpaElement {
@@ -24,13 +25,10 @@ class TruncateText extends ArpaElement {
             lblHide: '{i18n:lblReadLess}',
             buttonClasses: [],
             hasButton: false,
-            isTruncated: true
+            isTruncated: true,
+            reuseExistingNodes: false
         };
         return super.getDefaultConfig(config);
-    }
-
-    async $initialize() {
-        this.toggleTruncate = this.toggleTruncate.bind(this);
     }
 
     ////////////////////////////
@@ -44,16 +42,21 @@ class TruncateText extends ArpaElement {
         };
     }
 
+    async canRenderButton() {
+        return this.getProp('hasButton') && this.canTruncate();
+    }
+
     renderButton() {
         return html`<arpa-node
             name="button"
             tag="arpa-button"
-            can-render="hasButton && canTruncate()"
+            on-click="{toggleTruncate}"
+            can-render="canRenderButton()"
             rhs-icon="{icon}"
             variant="minimal"
             button-class="${classNames(this.getProp('buttonClasses'))}"
         >
-            {lblShow}
+            ${this.getProp('lblShow')}
         </arpa-node>`;
     }
 
@@ -81,7 +84,10 @@ class TruncateText extends ArpaElement {
 
     canTruncate() {
         const maxLength = this.getMaxLength();
-        const content = (this._textContent || this.textContent || '').trim();
+        let content = (this._textContent || this.textContent || '').trim();
+        if (!content) {
+            content = this.contentNode?.textContent?.trim() || '';
+        }
         return content.length > maxLength;
     }
 
@@ -89,26 +95,36 @@ class TruncateText extends ArpaElement {
         return this.truncatedNode?.isConnected;
     }
 
-    async truncateText() {
+    truncateText() {
         const maxLength = this.getMaxLength();
         const text = this.contentNode?.textContent?.trim();
-        if (!maxLength || !text?.length || text?.length <= maxLength) return;
+        if (!maxLength || !text?.length || text?.length <= maxLength) {
+            this.removeAttribute('is-truncated');
+            return;
+        }
         if (!this.truncatedNode) {
             this.truncatedNode = this.contentNode?.cloneNode();
         }
         const content = text?.slice(0, maxLength);
-        this.truncatedNode.textContent = content;
-        this.contentNode?.replaceWith(this.truncatedNode);
-        this.ellipsisNode && this.truncatedNode?.after(this.ellipsisNode);
-        this.buttonComponent?.setProp('content', this.getProp('lblShow'));
-        this.buttonComponent?.setProp('rhsIcon', this.getProp('icon'));
+
+        if (this.truncatedNode instanceof HTMLElement) {
+            this.truncatedNode.textContent = content;
+            this.contentNode?.replaceWith(this.truncatedNode);
+            this.ellipsisNode && this.truncatedNode?.after(this.ellipsisNode);
+        }
+        this.button = /** @type {ArpaButton} */ (this.nodes.button);
+        this.button?.setLabel?.(this.getProp('lblShow'));
+        this.button?.setProp?.('rhsIcon', this.getProp('icon'));
     }
 
     showFullContent() {
-        this.truncatedNode?.replaceWith(this.contentNode);
+        if (this.contentNode instanceof HTMLElement && this.truncatedNode instanceof HTMLElement) {
+            this.truncatedNode?.replaceWith(this.contentNode);
+        }
         this.ellipsisNode?.remove();
-        this.buttonComponent?.setProp('content', this.getProp('lblHide'));
-        this.buttonComponent?.setProp('rhsIcon', this.getProp('iconHide'));
+        this.button?.setLabel(this.getProp('lblHide'));
+        this.button?.setProp('rhsIcon', this.getProp('iconHide'));
+        this.removeAttribute('is-truncated');
     }
 
     toggleTruncate() {
@@ -137,34 +153,48 @@ class TruncateText extends ArpaElement {
         }
     }
 
-    $onContentSet() {
-        this._textContent = this.contentNode?.textContent;
+    async $onContentSet() {
+        await this.promise;
+        this._textContent = this.contentNode?.textContent?.trim() || '';
+        this._childNodes = [...(this.contentNode?.childNodes || [])];
         this.reRender();
     }
 
     async $initializeNodes() {
         await super.$initializeNodes();
-        this.buttonComponent = /** @type {ArpaButton} */ (this.nodes.button);
-        this.buttonComponent?.promise.then(() => {
-            this.button = this.buttonComponent?.button;
-            this.button && listen(this.button, 'click', this.toggleTruncate);
-        });
         this.ellipsisNode = /** @type {HTMLElement} */ (this.nodes.ellipsis);
-        this.ellipsisNode.remove();
+        this.ellipsisNode?.remove();
         return true;
     }
 
-    $onComplete() {
+    async $onComplete() {
         if (!this.canTruncate()) {
             const button = this.querySelector('.truncateText__button');
             button?.remove();
         }
+
         if (this.hasProp('isTruncated')) {
             this.setAttribute('is-truncated', '');
-            this.truncateText();
         } else {
-            this.showFullContent();
+            this.removeAttribute('is-truncated');
         }
+        return true;
+    }
+
+    /**
+     * Called when a zone is inserted into the element.
+     * @param {ArpaZone} zone
+     * @returns {boolean}
+     */
+    $onZoneInserted(zone) {
+        if (this._hasRendered) {
+            if (this.contentNode instanceof HTMLElement) {
+                this.contentNode.style.display = 'none';
+                this.contentNode?.append(...(zone.fragment?.childNodes || []));
+            }
+            this.$onContentSet();
+        }
+        return false;
     }
 
     // #endregion LIFECYCLE

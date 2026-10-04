@@ -1,11 +1,12 @@
 /**
  * @typedef {import('../arpaNode.types.js').ArpaNodeConfigType} ArpaNodeConfigType
- * @typedef {import('../arpaNode.js').default} ArpaNode
+ * @typedef {import('./testNode.js').default} TestNode
  * @typedef {import('@storybook/web-components-vite').Meta<ArpaNodeConfigType>} Meta
  * @typedef {import('@storybook/web-components-vite').StoryObj<ArpaNodeConfigType>} StoryObj
  */
 
 import { expect, waitFor } from 'storybook/test';
+import { $attr } from '@arpadroid/tools';
 
 const html = String.raw;
 
@@ -40,6 +41,7 @@ function renderWithZones() {
             </arpa-zone>
             <arpa-zone name="aside">
                 <span>Aside -> Zone</span>
+                <arpa-node tag="arpa-button" name="button">Aside -> Zone Button</arpa-node>
             </arpa-zone>
         </test-node>
     `;
@@ -50,15 +52,6 @@ export const Default = {
     name: 'Render',
     render: renderWithZones
 };
-
-/**
- * Sets up the test environment by waiting for the custom elements to be defined.
- * @returns {Promise<void>}
- */
-async function playSetup() {
-    await customElements.whenDefined('test-node');
-    await customElements.whenDefined('arpa-node');
-}
 
 /**
  * Asserts that no arpa-node elements are present in the given element.
@@ -75,7 +68,16 @@ export const Test = {
     render: renderWithZones,
 
     play: async ({ canvasElement, canvas, step }) => {
-        await playSetup();
+        await customElements.whenDefined('arpa-node');
+        const testNode = /** @type {TestNode} */ (canvasElement.querySelector('test-node'));
+        await testNode.waitForArpaNodes(testNode.arpaNodes, { waitForDeferred: true });
+        await step('Initializes all nodes after awaiting for promise', async () => {
+            await waitFor(() => {
+                expect(testNode).toBeInTheDocument();
+                expect(testNode.nodes.button).toBeDefined();
+            });
+        });
+
         await step('Does not render arpa-nodes', async () => {
             await waitFor(() => assertNoArpaNodes(canvasElement));
         });
@@ -127,7 +129,6 @@ export const NoZones = {
         `;
     },
     play: async ({ canvasElement, step }) => {
-        await playSetup();
         await step('Does not render arpa-nodes', async () => {
             await waitFor(() => assertNoArpaNodes(canvasElement));
         });
@@ -142,21 +143,15 @@ export const Programmatic = {
         canRender: true,
         content: 'Programmatic content'
     },
-    decorators: [
-        Story => {
-            const wrapper = document.createElement('arpa-element');
-            wrapper.className = 'my-wrapper';
-            const storyElement = Story();
-            customElements.whenDefined('arpa-element').then(() => {
-                // @ts-ignore
-                wrapper?.appendChild(storyElement);
-            });
-            return wrapper;
-        }
-    ],
-    play: async ({ canvasElement, canvas, step }) => {
-        await playSetup();
-        await step('Does not render arpa-nodes', async () => {
+    render: () => {
+        return html`<arpa-element class="my-wrapper"></arpa-element>`;
+    },
+    play: async ({ canvasElement, canvas, step, args }) => {
+        const arpaElement = canvasElement.querySelector('arpa-element');
+        arpaElement && (arpaElement.innerHTML = html`<arpa-node ${$attr(args)}>${args.content}</arpa-node>`);
+        await step('Renders programmatic content', async () => {
+            expect(arpaElement).toBeInTheDocument();
+            expect(arpaElement).toHaveClass('my-wrapper');
             await waitFor(() => assertNoArpaNodes(canvasElement));
             expect(
                 canvas.getByRole('heading', { name: 'Programmatic content', level: 1 })

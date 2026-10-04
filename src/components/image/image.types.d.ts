@@ -69,3 +69,16 @@ export interface ImageSourcesType {
     large?: string;
     xlarge?: string;
 }
+
+/**
+ * @todo: Implement sizes from ListItem into Image Component
+ */
+export type ImageSizeStylesType = {
+    width?: string | number | 'auto';
+    height?: string | number | 'auto';
+    aspectRatio?: string | number | 'auto';
+    maxWidth?: string | number | 'auto';
+    maxHeight?: string | number | 'auto';
+    minWidth?: string | number | 'auto';
+    minHeight?: string | number | 'auto';
+};

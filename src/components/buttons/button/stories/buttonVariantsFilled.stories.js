@@ -5,7 +5,7 @@
  * @typedef {import('@storybook/web-components-vite').StoryObj<ButtonConfigType>} Story
  */
 
-import { expect } from 'storybook/test';
+import { expect, waitFor } from 'storybook/test';
 
 /** @type {Meta} */
 const ButtonVariantsStory = {
@@ -62,13 +62,16 @@ export const Submit = {
     play: async ({ canvas, canvasElement, step }) => {
         await customElements.whenDefined('arpa-button');
         const buttonComponent = /** @type {Button} */ (canvasElement.querySelector('arpa-button'));
-        await buttonComponent?.promise;
-        const buttonNode = /** @type {HTMLButtonElement} */ (
-            canvas.getByRole('button', { name: /Submit Button/i })
-        );
+        await buttonComponent?.onNodesReady();
+
         await step('renders the submit button with the correct type', async () => {
-            expect(buttonNode).toBeInTheDocument();
-            expect(buttonNode).toHaveAttribute('type', 'submit');
+            await waitFor(() => {
+                const buttonNode = /** @type {HTMLButtonElement} */ (
+                    canvas.getByRole('button', { name: /Submit Button/i })
+                );
+                expect(buttonNode).toBeInTheDocument();
+                expect(buttonNode).toHaveAttribute('type', 'submit');
+            });
         });
     }
 };

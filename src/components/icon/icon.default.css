@@ -3,13 +3,13 @@
     --icon-color: var(--grey-400);
 }
 
-arpa-icon.icon {
-    align-items: center;
-    color: var(--grey-400);
+.icon {
     display: flex;
-    font-size: var(--icon-size);
-    height: var(--icon-size);
+    align-items: center;
     width: var(--icon-size);
+    height: var(--icon-size);
+    font-size: var(--icon-size);
+    color: var(--grey-400);
     text-align: center;
 }
 

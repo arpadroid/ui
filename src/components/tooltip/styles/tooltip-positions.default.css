@@ -107,10 +107,10 @@
 
 /* BOTTOM RIGHT */
 .tooltip.tooltip--bottom-right .tooltip__content {
-    right: -0.3rem;
+    right: 0;
     bottom: 0%;
     left: auto;
-    margin-bottom: -0.75rem;
+    margin-bottom: -0.5rem;
     transform: translateX(0%) translateY(100%);
 
     &::before,

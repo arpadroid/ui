@@ -13,6 +13,7 @@ export type InputComboConfigType = {
     position?: PlaceToolOptionsType;
     onOpen?: () => void;
     onClose?: () => void;
+    comboContainer?: HTMLElement | string | Document;
     containerSelector?: string;
 };
 

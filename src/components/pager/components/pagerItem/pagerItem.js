@@ -72,12 +72,12 @@ class PagerItem extends ArpaElement {
     }
 
     hasInput() {
-        return (
-            this.pagerComponent?.hasProp('has-input') ??
-            (this.hasProp('has-input') &&
-                !this.classList.contains('pager__next') &&
-                !this.classList.contains('pager__prev'))
-        );
+        const totalPages = this.pagerComponent?.getTotalPages() || 0;
+        const maxNodes = Number(this.pagerComponent?._config?.maxNodes) || 0;
+        if (totalPages <= maxNodes) {
+            return false;
+        }
+        return !this.classList.contains('pager__next') && !this.classList.contains('pager__prev');
     }
 
     // #endregion Get
@@ -90,16 +90,18 @@ class PagerItem extends ArpaElement {
      * Renders the pager item.
      * @param {string | undefined} template - The template to render.
      * @param {boolean} reRender - Whether to re-render the item.
+     * @returns {Promise<boolean>}
      */
-    render(template, reRender = false) {
+    async render(template, reRender = false) {
         this.grabPagerComponent();
-        super.render(template);
+        await super.render(template);
         if (!this.contentNode || reRender) {
             this.innerHTML = '';
             this.contentNode = /** @type {HTMLElement } */ (this.renderContent());
             this.contentNode && this.appendChild(this.contentNode);
             this.appendChildren();
         }
+        return true;
     }
 
     renderInput() {

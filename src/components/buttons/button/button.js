@@ -3,7 +3,7 @@
  * @typedef {import('../../tooltip/tooltip').default} Tooltip
  * @typedef {import('../../icon/icon').default} Icon
  */
-import { listen, defineCustomElement } from '@arpadroid/tools';
+import { listen, defineCustomElement, getStringBetween } from '@arpadroid/tools';
 import ArpaElement from '../../core/arpaElement/arpaElement';
 
 const html = String.raw;
@@ -16,13 +16,13 @@ class Button extends ArpaElement {
      * @returns {ButtonConfigType}
      */
     getDefaultConfig() {
-        this.bind('_onClick');
         /** @type {ButtonConfigType} */
         const config = {
             className: 'arpaButton',
             type: 'button',
             buttonClass: 'arpaButton__button',
-            tooltipPosition: 'left'
+            tooltipPosition: 'left',
+            eventHandlerSelector: 'button'
         };
 
         return /** @type {ButtonConfigType} */ (super.getDefaultConfig(config));
@@ -33,26 +33,32 @@ class Button extends ArpaElement {
      * @returns {string} The resolved aria-label for the button.
      */
     getAriaLabel() {
-        if (this.hasContent('content')) return '';
         const { ariaLabel, label, tooltip } = this.getProperties('ariaLabel', 'label', 'tooltip');
-        const aria = ariaLabel || label || tooltip || '';
-        return this.resolveAriaLabel(aria) || '';
+        const textContent = this.textContent?.trim();
+        let defaultVal = tooltip || '';
+        if (this.hasContent('content') || textContent?.length > 0) {
+            defaultVal = textContent;
+        }
+        return this.resolveAriaLabel(ariaLabel || label || defaultVal) || '';
     }
 
-    _preRender() {
-        super._preRender();
+    _printAttributes() {
+        super._printAttributes();
         this._config.disabled = this.hasAttribute('disabled') || this.getProp('variant') === 'disabled';
         this.removeAttribute('disabled');
     }
 
     $renderTemplate() {
-        return html`<button
+        return html`<arpa-node
+            name="button"
+            tag="button"
             aria-label="{getAriaLabel()}"
             class="{buttonClass}"
             type="{type}"
             variant="{variant}"
             zone="{buttonZone}"
             disabled="{disabled}"
+            on-click="{onClick}"
         >
             <arpa-node tag="arpa-icon" name="icon"></arpa-node>
             <arpa-node tag="span" is-content name="content">{label}</arpa-node>
@@ -63,25 +69,24 @@ class Button extends ArpaElement {
                 zone-target=".tooltip__content"
                 position="{tooltipPosition}"
             ></arpa-node>
-        </button>`;
-    }
-
-    _onClick() {
-        const { '@onClick': onClick } = this._config;
-        if (typeof onClick === 'function') {
-            onClick(this);
-        }
+        </arpa-node>`;
     }
 
     async $initializeNodes() {
         await super.$initializeNodes();
-        const button = this.querySelector('button');
-        if (!button) return false;
-        listen(button, 'click', this._onClick);
-        /** @type {HTMLButtonElement | null} */
-        this.button = button;
+        await this.waitForArpaNodes();
+        this.button = /** @type {HTMLButtonElement | null} */ (this.nodes.button);
         this.handleVariant();
         return true;
+    }
+
+    /**
+     * Handles the button onClick event, invoking the configured onClick callback if it exists.
+     * @param {Event} event
+     */
+    onClick(event) {
+        const { onClick } = this._config;
+        typeof onClick === 'function' && onClick(event, this);
     }
 
     handleVariant() {
@@ -95,6 +100,46 @@ class Button extends ArpaElement {
                 this.button?.setAttribute('type', 'submit');
             }
         }
+    }
+
+    async focus() {
+        await this.promise;
+        this.button?.focus();
+    }
+
+    async click() {
+        await this.promise;
+        this.button?.click();
+    }
+
+    /**
+     * Sets the tooltip text for the button.
+     * @param {string} tooltip - The tooltip text to set.
+     * @returns {Promise<boolean>}
+     */
+    setTooltip(tooltip) {
+        return this.setProp('tooltip', tooltip);
+    }
+
+    /**
+     * Sets the button icon.
+     * @param {string} icon - The icon to set.
+     * @returns {Promise<boolean>}
+     */
+    setIcon(icon) {
+        return this.setProp('icon', icon);
+    }
+
+    /**
+     * Sets the button label.
+     * @param {string} label - The label to set.
+     * @returns {Promise<boolean>}
+     */
+    async setLabel(label) {
+        await this.promise;
+        const result = await this.setContent(label);
+        this.button?.setAttribute('aria-label', this.resolveAriaLabel(label));
+        return result;
     }
 }
 

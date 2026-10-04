@@ -1,7 +1,6 @@
 {
     "extends": "./node_modules/@arpadroid/module/src/tsconfig/esnext/tsconfig.json",
     "compilerOptions": {
-        "baseUrl": ".",
         "moduleResolution": "bundler",
         "outDir": "./.tmp/.types",
         "preserveSymlinks": true,
@@ -9,6 +8,6 @@
         "skipLibCheck": false,
         "types": ["jest"]
     },
-    "include": ["src/**/*", "scripts", ".storybook"],
+    "include": ["src/**/*", "scripts"],
     "exclude": ["node_modules", "dist"]
 }

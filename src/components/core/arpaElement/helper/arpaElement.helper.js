@@ -7,8 +7,6 @@
 
 import {} from '@arpadroid/tools';
 import { sortKeys } from '@arpadroid/tools';
-import { hasZone } from '../../../../tools/zoneTool';
-import { destroyComponentZones } from '../../../../tools/zoneTool';
 
 const FORBIDDEN_ATTRIBUTES = ['template', 'content', 'classNames', 'className'];
 
@@ -18,27 +16,26 @@ const FORBIDDEN_ATTRIBUTES = ['template', 'content', 'classNames', 'className'];
 
 /**
  * Returns the parent ArpaElement of the node.
- * @param {HTMLElement} element
+ * @param {HTMLElement & { arpaNode?: ArpaElement, _config?: { arpaElement?: ArpaElement } }} element
  * @returns {ArpaElement | null}
  */
 export function getArpaElement(element) {
     let node = element.parentElement;
+    if (element._config?.arpaElement?.isArpaElement) {
+        return element._config.arpaElement;
+    }
     while (node) {
+        if ('arpaElement' in node && node?.arpaElement) {
+            // @ts-ignore
+            return node.arpaElement;
+        }
         // @ts-ignore
-        if (node?.isArpaElement) {
+        if (node?.isArpaElement || node?.tagName === 'ARPA-ELEMENT') {
             return /** @type {ArpaElement} */ (node);
         }
         node = node.parentElement;
     }
     return null;
-}
-
-/**
- * Destroys the zones of a component.
- * @param {ArpaElement} element - The component to destroy.
- */
-export function onDestroy(element) {
-    destroyComponentZones(element);
 }
 
 // #endregion Global Helpers
@@ -117,6 +114,32 @@ export function sanitizeAttributes(element, attributes) {
 /////////////////////////////////
 // #region Template Rendering
 ///////////////////////////////
+
+/**
+ * Checks if a component has a zone registered.
+ * @param {ArpaElement} component
+ * @param {string} zoneName
+ * @returns {boolean} Whether the zone is registered.
+ */
+export function hasRegisteredZone(component, zoneName) {
+    return component?.getAttribute('zone-registry')?.split(',').includes(zoneName) || false;
+}
+
+/**
+ * Checks if a node has a zone with a specific name.
+ * @param {ArpaElement} component - An HTML node.
+ * @param {string} name
+ * @returns {boolean} Whether the node has the zone.
+ */
+export function hasZone(component, name) {
+    const parent = /** @type {ArpaElement | null} */ (component.parentElement);
+    return (
+        hasRegisteredZone(component, name) ||
+        component?.zonesByName?.has(name) ||
+        parent?.zonesByName?.has(name) ||
+        false
+    );
+}
 
 /**
  * Checks if an element has content.

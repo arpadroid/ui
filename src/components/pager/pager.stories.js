@@ -2,11 +2,11 @@
  * @typedef {import('./pager').default} Pager
  * @typedef {import('./pager.types').PagerConfigType} PagerConfigType
  * @typedef {import('@storybook/web-components-vite').Meta<PagerConfigType>} Meta
- * @typedef {import('@storybook/web-components-vite').StoryObj<PagerConfigType>} StoryObj
+ * @typedef {import('@storybook/web-components-vite').StoryObj<PagerConfigType>} Story
  */
 import { defaultParams, testParams } from '@arpadroid/module/storybook/helper';
 import { attrString, getURLParam } from '@arpadroid/tools';
-import { waitFor, userEvent, fireEvent, expect } from 'storybook/test';
+import { waitFor, userEvent, expect, fireEvent } from 'storybook/test';
 
 const html = String.raw;
 /** @type {Meta} */
@@ -40,36 +40,28 @@ const PagerStory = {
     `
 };
 
-/**
- * Setup function for the pager stories.
- * @param {HTMLElement} canvasElement
- * @returns {Promise<{pagerNode: Pager}>}
- */
-async function playSetup(canvasElement) {
-    await customElements.whenDefined('arpa-pager');
-    const pagerNode = /** @type {Pager} */ (canvasElement.querySelector('arpa-pager'));
-    await pagerNode?.promise;
-    return { pagerNode };
-}
-
-/** @type {StoryObj} */
+/** @type {Story} */
 export const Default = {
     name: 'Render',
     parameters: defaultParams
 };
 
-/** @type {StoryObj} */
+/** @type {Story} */
 export const Test = {
     parameters: testParams,
     play: async ({ canvas, canvasElement, step }) => {
-        const setup = await playSetup(canvasElement);
-        const { pagerNode } = setup;
+        await customElements.whenDefined('arpa-pager');
+
+        const pagerNode = /** @type {Pager} */ (canvasElement.querySelector('arpa-pager'));
+        await pagerNode?.promise;
 
         await step('Renders the pager with the given props', async () => {
-            const pagination = canvas.getByRole('navigation', { name: /Test pager/i });
-            expect(pagination).toBeInTheDocument();
-            expect(pagination).toHaveClass('pager');
-            expect(pagination).toHaveAttribute('aria-label', 'Test pager');
+            await waitFor(() => {
+                const pagination = canvas.getByRole('navigation', { name: /Test pager/i });
+                expect(pagination).toBeInTheDocument();
+                expect(pagination).toHaveClass('pager');
+                expect(pagination).toHaveAttribute('aria-label', 'Test pager');
+            });
         });
 
         await step(
@@ -81,23 +73,24 @@ export const Test = {
         );
 
         await step('Renders the input field for the selected item', async () => {
-            const input = canvas.getByRole('spinbutton', { name: /Current page/i });
-            expect(input).toBeInTheDocument();
-            expect(input).toHaveAttribute('type', 'number');
-            expect(input).toHaveAttribute('name', 'page');
-            expect(input).toHaveAttribute('value', '2');
-            expect(input).toHaveAttribute('min', '1');
-            expect(input).toHaveAttribute('max', '100');
+            await waitFor(() => {
+                const input = canvas.getByRole('spinbutton', { name: /Current page/i });
+                expect(input).toBeInTheDocument();
+                expect(input).toHaveAttribute('type', 'number');
+                expect(input).toHaveAttribute('name', 'page');
+                expect(input).toHaveAttribute('value', '2');
+                expect(input).toHaveAttribute('min', '1');
+                expect(input).toHaveAttribute('max', '100');
+            });
         });
 
         await step('Clicks on the next button', async () => {
             const nextLink = canvas.getByRole('link', { name: /Next page/i });
             const currentPage = pagerNode.getCurrentPage();
             expect(currentPage).toBe(2);
-            await new Promise(resolve => setTimeout(resolve, 100));
-            await nextLink.click();
+            await userEvent.click(nextLink);
             await waitFor(() => {
-                expect(nextLink).toHaveAttribute('data-page', '3');
+                expect(nextLink).toHaveAttribute('data-page', '4');
                 const currentPage = getURLParam('page');
                 expect(currentPage).toBe('3');
                 expect(pagerNode.getCurrentPage()).toBe(3);

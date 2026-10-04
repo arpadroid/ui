@@ -1,14 +1,19 @@
 .tooltip {
     --triangle-width: 0.5rem;
-    --border-color: var(--grey-200);
+    --border-color: var(--grey-300);
     --bg-color: var(--grey-20);
-    --text-color: var(--grey-600);
-    --tooltip-padding: 0.5rem 0.75rem;
-    --handler-color: var(--text-color);
-    --handler-color-hover: var(--color-primary);
+    --text-color: var(--grey-700);
+    --icon-color: var(--text-color);
+    --tooltip-padding: 0.35rem 0.75rem;
+    --handler-color: var(--grey-500);
+    --handler-color-hover: var(--grey-700);
 
     position: relative;
     display: flex;
+
+    .icon {
+        color: var(--handler-color);
+    }
 }
 
 .tooltip__content,
@@ -22,7 +27,7 @@
     font-size: 0.85rem;
     font-weight: 600;
     line-height: 1.2rem;
-    color: var(--handler-color);
+    color: var(--text-color);
     text-align: left;
     text-justify: inter-word;
     white-space: normal;
@@ -44,6 +49,7 @@
     }
 }
 
+.tooltip:hover,
 .tooltip:focus-within {
     .tooltip__handler {
         .button__content,
@@ -73,4 +79,18 @@
     [role='tooltip'] {
         max-width: calc(100vw - 2rem);
     }
+}
+
+.tooltip[variant="error"] {
+    --text-color: var(--red-dark);
+    --border-color: var(--red-medium);
+    --handler-color: var(--red-dark);
+    --handler-color-hover: var(--red-dark);
+}
+
+.tooltip[variant="info"] {
+    --text-color: var(--color-primary-dark);
+    --handler-color: var(--color-primary-dark);
+    --handler-color-hover: var(--color-primary-dark);
+    --border-color: var(--color-primary-dark);
 }

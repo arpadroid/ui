@@ -1,6 +1,7 @@
 /**
  * @typedef {import('./dialog.types').DialogConfigType} DialogConfigType
  * @typedef {import('../dialogs/dialogs.js').default} Dialogs
+ * @typedef {import('../../buttons/button/button.js').default} ArpaButton
  */
 
 import ArpaElement from '../../core/arpaElement/arpaElement.js';
@@ -21,7 +22,6 @@ class Dialog extends ArpaElement {
      * @returns {DialogConfigType}
      */
     getDefaultConfig() {
-        this.bind('open', 'close');
         /** @type {DialogConfigType} */
         const config = {
             open: false,
@@ -29,6 +29,7 @@ class Dialog extends ArpaElement {
             persist: false,
             variant: 'default',
             canClose: true,
+            container: document.body,
             attributes: {
                 role: 'dialog'
             }
@@ -37,6 +38,7 @@ class Dialog extends ArpaElement {
     }
 
     $preInitialize() {
+        this.bind('open', 'close');
         this.originalParent = /** @type {HTMLElement & { dialog?: Dialog }} */ (
             this.parentNode instanceof HTMLElement ? this.parentNode : null
         );
@@ -46,22 +48,16 @@ class Dialog extends ArpaElement {
         observerMixin(this);
     }
 
-    /**
-     * Manual allocation of zones.
-     * @param {import('../../../tools/zoneTool.types.js').ZoneToolPlaceZoneType} payload
-     * @returns {boolean | undefined}
-     */
-    _onLostZone({ zoneName, zone }) {
-        if (!zoneName || !zone) return false;
-        if (['content'].includes(zoneName) && zone._parentNode === this) {
-            this.promise.then(() => this.contentNode?.append(...zone.childNodes));
-            return true;
-        }
+    async $resolveRender() {
+        return await this._initializeDialog();
     }
 
-    async _resolveRender() {
-        await this._initializeDialog();
-        return this.resolvePromise?.(true);
+    getContainer() {
+        let container = this.getProp('container') || document.body;
+        if (typeof container === 'string') {
+            container = document.querySelector(container) || document.body;
+        }
+        return container;
     }
 
     /**
@@ -70,37 +66,40 @@ class Dialog extends ArpaElement {
      * @returns {Promise<boolean | undefined>}
      */
     async _initializeDialog() {
-        this._initializeButton();
+        await this._initializeButton();
         const dialogsTagName = 'arpa-dialogs';
         /** @type {Dialogs | null} */
         this.dialogs = this.dialogs || this.closest(dialogsTagName);
-        if (this.dialogs) return;
+        if (this.dialogs) {
+            return;
+        }
         const dialogsId = this.getProp('dialogs-id') || dialogsTagName;
-
         this.dialogs = /** @type {Dialogs | null} */ (document.getElementById(dialogsId));
         if (this.dialogs) {
             await this.dialogs.promise;
             await this.dialogs.addDialog(this);
+            this.initialized = true;
             return true;
-        }
-        if (!this.dialogs) {
+        } else {
             this.dialogs = /** @type {Dialogs | null} */ (
                 renderNode(html`<arpa-dialogs ${attrString({ id: dialogsId })}></arpa-dialogs>`)
             );
-            this.dialogs && document.body.appendChild(this.dialogs);
+            const container = this.getContainer();
+            this.dialogs && container.appendChild(this.dialogs);
             await this.dialogs?.promise;
         }
-        if (this.parentNode !== this.dialogs) {
-            if (typeof this.dialogs?.addDialog !== 'function') {
-                await customElements.whenDefined(dialogsTagName);
-            }
+        if (this.parentNode !== this.dialogs && !this.initialized) {
             await this.dialogs?.addDialog(this);
+            this.initialized = true;
         }
     }
 
     async _initializeButton() {
-        const button = await this.getButton();
-        button && listen(button, 'click', this.open);
+        const btn = await this.getButton();
+        listen(btn, 'click', this.open);
+        const arpaButton = /** @type {ArpaButton} */ (this.closest('arpa-button'));
+        arpaButton && (await arpaButton?.promise);
+        return arpaButton;
     }
 
     async getButton() {
@@ -108,7 +107,7 @@ class Dialog extends ArpaElement {
         if (button) return button;
         /** @type {HTMLElement & { dialog?: Dialog, promise?: Promise<void> } | undefined} */
         const parent = this.originalParent;
-        parent && (await parent?.promise);
+        parent?.promise && (await parent?.promise);
         return parent?.closest('button') || parent?.querySelector('button');
     }
 
@@ -130,15 +129,26 @@ class Dialog extends ArpaElement {
         document.body.style.overflow = 'hidden';
         this.setAttribute('open', '');
         this.signal('open');
-        this.callCallback('@onOpen', this);
+        this.callCallback('onOpen', this);
+        this.canClose() && document.addEventListener('keyup', this.$onKeyUp);
     }
 
     close() {
         document.body.style.overflow = '';
         this.removeAttribute('open');
         this.signal('close');
-        this.callCallback('@onClose', this);
+        this.callCallback('onClose', this);
+        this.canClose() && document.removeEventListener('keyup', this.$onKeyUp);
     }
+
+    /**
+     * Closes the dialog when the escape key is pressed.
+     * @param {KeyboardEvent} event
+     * @private
+     */
+    $onKeyUp = event => {
+        event.key === 'Escape' && this.close();
+    };
 
     isOpen() {
         return this.hasProp('open');
@@ -161,9 +171,7 @@ class Dialog extends ArpaElement {
         return typeof promise?.finally === 'function';
     }
 
-    ////////////////////////////
     // #endregion Accessors
-    ////////////////////////////
 
     ////////////////////////////
     // #region Rendering
@@ -173,6 +181,10 @@ class Dialog extends ArpaElement {
         super._preRender();
         const { variant } = this.getProperties('variant');
         variant && this.classList.add(`dialog--${variant}`);
+    }
+
+    canRenderFooter() {
+        return this.hasContent('footer');
     }
 
     $renderTemplate() {
@@ -187,6 +199,7 @@ class Dialog extends ArpaElement {
                 <arpa-node name="headerActions">
                     <arpa-node
                         tag="icon-button"
+                        on-click="{close}"
                         can-render="canClose"
                         variant="minimal"
                         name="close"
@@ -200,17 +213,11 @@ class Dialog extends ArpaElement {
                 <arpa-node tag="circular-spinner" name="preloader" can-render="hasPreloader()"></arpa-node>
                 <arpa-node name="content" is-content></arpa-node>
             </div>
-            <arpa-node tag="footer" name="footer"> </arpa-node>
+            <arpa-node tag="footer" name="footer" defer="canRenderFooter"></arpa-node>
         </div>`;
     }
 
     async $initializeNodes() {
-        this.wrapperNode = this.querySelector('.dialog__wrapper');
-        this.headerNode = this.querySelector('.dialog__header');
-        this.contentNode = this.querySelector('.dialog__content');
-        this.footerNode = this.querySelector('.dialog__footer');
-        this.closeBtn = this.querySelector('.dialog__close');
-        this.closeBtn?.addEventListener('click', this.close);
         this.preloader = this.querySelector('.dialog__preloader');
         const { promise } = this._config;
         promise?.finally(() => {

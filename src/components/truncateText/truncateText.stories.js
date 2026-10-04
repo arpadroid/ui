@@ -1,25 +1,21 @@
 /**
  * @typedef {import('./truncateText.types.js').TruncateTextConfigType } TruncateTextConfigType
  * @typedef {import('./truncateText.js').default} TruncateText
+ * @typedef {import('../core/arpaElement/arpaElement.types').ArpaElementContentNodeType} ArpaElementContentNodeType
  * @typedef {import('@storybook/web-components-vite').Meta<TruncateTextConfigType & {children: string}>} Meta
  * @typedef {import('@storybook/web-components-vite').StoryObj} Story
  */
-import { attrString } from '@arpadroid/tools';
-import { waitFor, expect } from 'storybook/test';
+import { waitFor, expect, userEvent } from 'storybook/test';
 import { defaultParams, testParams } from '@arpadroid/module/storybook/helper';
+import { $attr } from '@arpadroid/tools';
+
 const html = String.raw;
 
-/**
- * Sets up the testing environment for the truncate text component.
- * @param {HTMLElement} canvasElement
- * @returns {Promise<{truncateTextNode: TruncateText}>}
- */
-async function playSetup(canvasElement) {
-    await customElements.whenDefined('truncate-text');
-    const truncateTextNode = /** @type {TruncateText} */ (canvasElement.querySelector('truncate-text'));
-    await truncateTextNode?.promise;
-    return { truncateTextNode };
-}
+const text = `In the vast expanse of the cosmos, stars are born from clouds of dust, only to collapse and
+scatter that dust again when they die. Every atom in your body was forged in the heart of a dying star,
+millions of years before the Earth existed. Yet here you are, a collection of star-stuff, capable of looking
+up at the night sky and wondering about your origins. The universe is as much within you as it is outside of
+you.`;
 
 /** @type {Meta} */
 const TruncateTextStory = {
@@ -29,28 +25,8 @@ const TruncateTextStory = {
     parameters: {
         layout: 'padded'
     },
-    args: {
-        maxLength: 79,
-        children:
-            'In the vast expanse of the cosmos, stars are born from clouds of dust, only to collapse and scatter that dust again when they die. Every atom in your body was forged in the heart of a dying star, millions of years before the Earth existed. Yet here you are, a collection of star-stuff, capable of looking up at the night sky and wondering about your origins. The universe is as much within you as it is outside of you.'
-    },
-    render: args => {
-        const { children, ...rest } = args;
-        return html`
-            <style>
-                #storybook-root {
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    height: 100%;
-                }
-                truncate-text {
-                    width: 100%;
-                    max-width: 620px;
-                }
-            </style>
-            <truncate-text ${attrString(rest)}> ${children} </truncate-text>
-        `;
+    render: ({ ...args }) => {
+        return html`<truncate-text ${$attr(args)}>${text}</truncate-text>`;
     }
 };
 
@@ -67,12 +43,12 @@ export const Test = {
         maxLength: 60
     },
     play: async ({ canvasElement, step, canvas }) => {
-        const setup = await playSetup(canvasElement);
-        const { truncateTextNode } = setup;
+        const truncateTextNode = /** @type {TruncateText} */ (canvasElement.querySelector('truncate-text'));
+        await truncateTextNode?.promise;
         await step('Renders the truncate text component with a custom max length.', async () => {
             await waitFor(() => {
                 expect(truncateTextNode).toBeInTheDocument();
-                expect(truncateTextNode.textContent).toContain(
+                expect(truncateTextNode.textContent.trim()).toContain(
                     'In the vast expanse of the cosmos, stars are born from cloud'
                 );
                 expect(canvas.queryByText('...')).toBeInTheDocument();
@@ -89,8 +65,9 @@ export const TestWithButton = {
     },
     parameters: testParams,
     play: async ({ canvasElement, step, canvas }) => {
-        const setup = await playSetup(canvasElement);
-        const { truncateTextNode } = setup;
+        const truncateTextNode = /** @type {TruncateText} */ (canvasElement.querySelector('truncate-text'));
+        await truncateTextNode?.promise;
+        const contentNode = truncateTextNode?.nodes.content;
         await step('Renders the truncate text component with a read more button.', async () => {
             await waitFor(() => {
                 const readMoreButton = canvas.getByRole('button', { name: /read more/i });
@@ -104,12 +81,9 @@ export const TestWithButton = {
 
         await step('Expands the text when the read more button is clicked.', async () => {
             const readMoreButton = canvas.getByRole('button', { name: /read more/i });
-            readMoreButton.click();
-            await waitFor(() =>
-                expect(truncateTextNode.textContent).toContain(
-                    'The universe is as much within you as it is outside of you.'
-                )
-            );
+            await userEvent.click(readMoreButton);
+            // @ts-ignore
+            expect(contentNode).toHaveTextContent(text, { exact: false });
             expect(truncateTextNode).not.toHaveAttribute('is-truncated');
             expect(canvas.queryByText('...')).not.toBeInTheDocument();
             expect(canvas.queryByRole('button', { name: /read more/i })).not.toBeInTheDocument();
@@ -118,7 +92,7 @@ export const TestWithButton = {
 
         await step('Collapses the text when the read less button is clicked.', async () => {
             const readLessButton = canvas.getByRole('button', { name: /read less/i });
-            readLessButton.click();
+            await userEvent.click(readLessButton);
             await waitFor(() =>
                 expect(truncateTextNode.textContent).toContain(
                     'In the vast expanse of the cosmos, stars are born from cloud'
@@ -146,7 +120,8 @@ export const WithButtonInlineLayout = {
     },
     parameters: testParams,
     play: async ({ canvasElement, step, canvas }) => {
-        await playSetup(canvasElement);
+        const truncateTextNode = /** @type {TruncateText} */ (canvasElement.querySelector('truncate-text'));
+        await truncateTextNode?.promise;
         await step(
             'Renders the truncate text component with a read more button in inline layout.',
             async () => {
@@ -163,17 +138,21 @@ export const WithButtonInlineLayout = {
 /** @type {Story} */
 export const ShortText = {
     args: {
-        children: 'Short text that should not be truncated.',
         maxLength: 50,
         hasButton: true
     },
     parameters: testParams,
+    render: ({ ...args }) => {
+        return html`<truncate-text ${$attr(args)}>Short text that should not be truncated.</truncate-text>`;
+    },
     play: async ({ canvasElement, step, canvas }) => {
-        const setup = await playSetup(canvasElement);
-        const { truncateTextNode } = setup;
+        const truncateTextNode = /** @type {TruncateText} */ (canvasElement.querySelector('truncate-text'));
+        await truncateTextNode?.promise;
         await step('Renders the full text without truncation for short text.', async () => {
             expect(truncateTextNode).toBeInTheDocument();
-            expect(truncateTextNode.textContent.trim()).toBe('Short text that should not be truncated.');
+            await waitFor(() => {
+                expect(truncateTextNode.textContent.trim()).toBe('Short text that should not be truncated.');
+            });
             expect(canvas.queryByText('...')).not.toBeInTheDocument();
             expect(canvas.queryByRole('button', { name: /read more/i })).not.toBeInTheDocument();
             expect(canvas.queryByRole('button', { name: /read less/i })).not.toBeInTheDocument();
@@ -189,9 +168,13 @@ export const DynamicUpdates = {
     },
     parameters: testParams,
     play: async ({ canvasElement, step, canvas }) => {
-        const { truncateTextNode } = await playSetup(canvasElement);
+        const truncateTextNode = /** @type {TruncateText} */ (canvasElement.querySelector('truncate-text'));
+        await truncateTextNode?.promise;
+
+        truncateTextNode.setAttribute('is-truncated', '');
+
         await step('Dynamically updates the text content and re-applies truncation.', async () => {
-            truncateTextNode.setContent(
+            await truncateTextNode.setContent(
                 'New dynamic text that exceeds the maximum length and should be truncated.'
             );
             await waitFor(() => {
@@ -203,15 +186,15 @@ export const DynamicUpdates = {
         });
 
         await step('Expands the new text when the read more button is clicked.', async () => {
-            const readMoreButton = canvas.getByRole('button', { name: /read more/i });
-            readMoreButton.click();
-            await waitFor(() =>
-                expect(truncateTextNode.textContent).toContain(
+            const readMoreButton = await waitFor(() => canvas.getByRole('button', { name: /read more/i }));
+            await userEvent.click(readMoreButton, { delay: 150 });
+            await waitFor(() => {
+                expect(truncateTextNode.nodes.content.textContent).toContain(
                     'New dynamic text that exceeds the maximum length and should be truncated.'
-                )
-            );
-            expect(truncateTextNode).not.toHaveAttribute('is-truncated');
-            expect(canvas.queryByText('...')).not.toBeInTheDocument();
+                );
+                expect(truncateTextNode).not.toHaveAttribute('is-truncated');
+                expect(canvas.queryByText('...')).not.toBeInTheDocument();
+            });
         });
 
         await step(

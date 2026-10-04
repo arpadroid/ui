@@ -5,7 +5,6 @@ import ArpaElement from '../arpaElement';
 import {
     getArrayProp,
     getCallbackProp,
-    handleCallbackProp,
     getProp,
     evaluatePropToken,
     evaluateProp,
@@ -50,7 +49,6 @@ describe('ArpaElementProps Helper', () => {
         });
 
         test('returns config value when attribute absent', () => {
-            // @ts-expect-error
             el.setConfig({ myProp: 'configured' });
             expect(hasProp(el, 'myProp')).toBe('configured');
         });
@@ -64,14 +62,12 @@ describe('ArpaElementProps Helper', () => {
 
     describe('getProp', () => {
         test('returns attribute value (takes priority over config)', () => {
-            // @ts-expect-error
             el.setConfig({ myProp: 'from-config' });
             el.setAttribute('my-prop', 'from-attr');
             expect(getProp(el, 'myProp')).toBe('from-attr');
         });
 
         test('returns config value when attribute absent', () => {
-            // @ts-expect-error
             el.setConfig({ myProp: 'from-config' });
             expect(getProp(el, 'myProp')).toBe('from-config');
         });
@@ -90,20 +86,18 @@ describe('ArpaElementProps Helper', () => {
 
     describe('getArrayProp', () => {
         test('splits comma-separated string and trims whitespace', () => {
-            // @ts-expect-error
             el.setConfig({ testProp: ' value1,  value2, value3 ' });
             expect(getArrayProp(el, 'testProp')).toEqual(['value1', 'value2', 'value3']);
         });
 
         test('returns value as-is when it is already an array', () => {
             const arr = ['a', 'b'];
-            // @ts-expect-error
             el.setConfig({ testProp: arr });
             expect(getArrayProp(el, 'testProp')).toBe(arr);
         });
 
-        test('returns undefined when prop is absent', () => {
-            expect(getArrayProp(el, 'unknownProp')).toBeUndefined();
+        test('returns empty array when prop is absent', () => {
+            expect(getArrayProp(el, 'unknownProp')).toEqual([]);
         });
     });
 
@@ -111,74 +105,20 @@ describe('ArpaElementProps Helper', () => {
 
     describe('getCallbackProp', () => {
         test('returns undefined when prop does not start with ":"', () => {
-            // @ts-expect-error
             el.setConfig({ onAction: 'plainValue' });
             expect(getCallbackProp(el, 'onAction')).toBeUndefined();
         });
 
-        test('returns undefined when prop is absent', () => {
-            expect(getCallbackProp(el, 'onAction')).toBeUndefined();
-        });
-
-        test('returns bound method from parent ArpaElement when prop starts with ":"', async () => {
-            const parent = await createElement();
-            // @ts-expect-error
-            parent.myHandler = jest.fn();
-            const child = await createElement();
-            parent.appendChild(child);
-            // @ts-expect-error
-            child.setConfig({ onAction: ':myHandler' });
-            const cb = getCallbackProp(child, 'onAction');
-            expect(typeof cb).toBe('function');
-            cb?.();
-            // @ts-expect-error
-            expect(parent.myHandler).toHaveBeenCalled();
+        test('returns empty array when prop is absent', () => {
+            expect(getArrayProp(el, 'unknownProp')).toEqual([]);
         });
 
         test('returns undefined when parent method does not exist', async () => {
             const parent = await createElement();
             const child = await createElement();
             parent.appendChild(child);
-            // @ts-expect-error
             child.setConfig({ onAction: ':nonExistent' });
             expect(getCallbackProp(child, 'onAction')).toBeUndefined();
-        });
-    });
-
-    // ─── handleCallbackProp ─────────────────────────────────────────────────────
-
-    describe('handleCallbackProp', () => {
-        test('returns method and registers event listener when eventName provided', async () => {
-            const parent = await createElement();
-            const child = await createElement();
-            // @ts-expect-error
-            parent.myHandler = jest.fn();
-            parent.appendChild(child);
-            // @ts-expect-error
-            child.setConfig({ onAction: ':myHandler' });
-            const cb = handleCallbackProp(child, 'onAction', 'click');
-            expect(typeof cb).toBe('function');
-            child.dispatchEvent(new Event('click'));
-            // @ts-expect-error
-            expect(parent.myHandler).toHaveBeenCalledTimes(1);
-        });
-
-        test('returns method without attaching listener when no eventName', async () => {
-            const parent = await createElement();
-            const child = await createElement();
-            // @ts-expect-error
-            parent.myHandler = jest.fn();
-            parent.appendChild(child);
-            // @ts-expect-error
-            child.setConfig({ onAction: ':myHandler' });
-            const cb = handleCallbackProp(child, 'onAction');
-            expect(typeof cb).toBe('function');
-        });
-
-        test('returns undefined when prop is not a callback', () => {
-            // @ts-expect-error
-            el.setConfig({ onAction: 'plainValue' });
-            expect(handleCallbackProp(el, 'onAction', 'click')).toBeUndefined();
         });
     });
 

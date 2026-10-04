@@ -16,8 +16,11 @@ const ButtonStory = {
     component: 'arpa-button',
     args: {
         icon: 'check_circle',
-        tooltip: 'The button component ',
+        tooltip: 'Button tooltip',
         tooltipPosition: 'bottom'
+    },
+    render: ({ ...args }) => {
+        return html`<arpa-button ${$attr(args)}>Button</arpa-button>`;
     }
 };
 
@@ -26,7 +29,6 @@ export const Default = {
     parameters: defaultParams,
     name: 'Render',
     args: {
-        content: html`Button`,
         icon: 'check_circle',
         tooltip: 'This is a tooltip.',
         tooltipPosition: 'top'
@@ -49,19 +51,58 @@ export const Zones = {
             </arpa-button>
         `;
     },
-    play: async ({ canvasElement, canvas, step }) => {
+    play: async ({ canvasElement, step }) => {
         step('shows the tooltip on focus', async () => {
-            await customElements.whenDefined('arpa-button');
-            const buttonNode = canvas.getByRole('button');
-            expect(buttonNode).toBeInTheDocument();
-            buttonNode.focus();
-            await new Promise(resolve => setTimeout(resolve, 300)); // Wait for tooltip to appear
+            const button = /** @type {Button} */ (canvasElement.querySelector('arpa-button'));
+            await button.promise;
+            await button.focus();
             await waitFor(() => {
                 const tooltip = canvasElement.querySelector('arpa-tooltip');
                 expect(tooltip).toBeVisible();
                 expect(tooltip).toHaveTextContent(
                     'This zone can be used to define custom tooltip content with any html.'
                 );
+            });
+        });
+    }
+};
+
+/** @type {Story} */
+export const Disabled = {
+    args: {
+        disabled: true
+    },
+    play: async ({ step, canvas, canvasElement }) => {
+        const buttonComponent = /** @type {Button} */ (canvasElement.querySelector('arpa-button'));
+        await buttonComponent.promise;
+        await step('renders the button', async () => {
+            const button = canvas.getByRole('button');
+            expect(button).toBeInTheDocument();
+            expect(button).toBeDisabled();
+            await waitFor(() => {
+                expect(buttonComponent).not.toHaveAttribute('disabled');
+            });
+        });
+    },
+    render: ({ ...args }) => {
+        return html`<arpa-button ${$attr(args)}>Disabled Button</arpa-button>`;
+    }
+};
+
+/** @type {Story} */
+export const Focused = {
+    args: {
+        tooltip: 'Button tooltip'
+    },
+    render: ({ ...args }) => {
+        return html`<arpa-button ${$attr(args)}>Focused Button</arpa-button>`;
+    },
+    play: async ({ step, canvas, canvasElement }) => {
+        const button = /** @type {Button} */ (canvasElement.querySelector('arpa-button'));
+        await button.focus();
+        step('focuses the button', async () => {
+            await waitFor(() => {
+                expect(canvas.getByText('Button tooltip')).toBeVisible();
             });
         });
     }

@@ -7,11 +7,6 @@ class DarkModeButton extends IconButton {
     /** @type {DarkModeButtonConfigType} */
     _config = this._config;
 
-    $initialize() {
-        super.$initialize();
-        this.bind('_onClick');
-    }
-
     /**
      * Returns the default configuration.
      * @returns {DarkModeButtonConfigType}
@@ -35,9 +30,10 @@ class DarkModeButton extends IconButton {
 
     /**
      * Toggles Dark Mode styles and updates the icon and label when the button is clicked.
+     * @param {Event} event
      */
-    _onClick() {
-        super._onClick();
+    onClick(event) {
+        super.onClick(event);
         const styleNode = document.getElementById('dark-styles');
         if (!(styleNode instanceof HTMLLinkElement)) {
             console.error('Dark mode styles not found.');
@@ -45,12 +41,12 @@ class DarkModeButton extends IconButton {
         }
         if (styleNode.disabled) {
             styleNode.removeAttribute('disabled');
-            this.setProp('icon', this.getProp('iconLight'));
-            this.setProp('tooltip', this.getProp('labelLight'));
+            this.setIcon(this.getProp('iconLight'));
+            this.setTooltip(this.getProp('labelLight'));
         } else {
             styleNode.disabled = true;
-            this.setProp('icon', this.getProp('icon'));
-            this.setProp('tooltip', this.getProp('label').toString());
+            this.setIcon(this.getProp('icon'));
+            this.setTooltip(this.getProp('label').toString());
         }
     }
 }
