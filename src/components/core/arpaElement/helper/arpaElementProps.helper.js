@@ -49,7 +49,7 @@ export function getProp(element, name, config = element._config ?? {}) {
     if (rv === 'undefined') {
         rv = undefined;
     }
-    return rv;
+    return typeof rv === 'string' ? rv.trim() : rv;
 }
 
 /**

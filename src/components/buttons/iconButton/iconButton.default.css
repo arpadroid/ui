@@ -1,12 +1,14 @@
-.iconButton {
-    --size: 2.75rem;
+.iconButton,
+nav-link.iconButton__button {
+    --size: 2.5rem;
     --height: var(--size);
     --border-radius: 50%;
+    --border-color: var(--grey-150);
     --active-bg: var(--input-bg-color);
 }
 
 .iconButton__icon {
-    --icon-size: calc(var(--size) / 1.45);
+    --icon-size: calc(var(--size) / 1.6);
 }
 
 .iconButton__button,
