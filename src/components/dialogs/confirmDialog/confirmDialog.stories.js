@@ -66,7 +66,6 @@ export const Test = {
             'Clicks on cancel button and expects the dialog to close and cancel signal to be fired.',
             async () => {
                 await waitFor(() => {
-                    expect(dialog.getByRole('button', { name: /Cancel/i })).toBeInTheDocument();
                     expect(dialogNode).toHaveAttribute('open');
                     expect(dialog.getByRole('button', { name: /Cancel/i })).toBeInTheDocument();
                 });
@@ -83,7 +82,7 @@ export const Test = {
             expect(dialogNode).toHaveAttribute('open');
             expect(button).toBeInTheDocument();
             expect(dialogNode).toHaveAttribute('open');
-            await userEvent.click(button);
+            await userEvent.click(button, { delay: 50 });
             await waitFor(() => {
                 expect(dialogNode).not.toHaveAttribute('open');
                 expect(onConfirm).toHaveBeenCalledWith([{ id: 1 }], undefined, undefined);

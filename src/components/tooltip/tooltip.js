@@ -94,8 +94,8 @@ class Tooltip extends ArpaElement {
     $renderTemplate() {
         return html`
             <arpa-node
-                name="handler"
                 tag="icon-button"
+                name="handler"
                 defer="canRenderHandler"
                 can-render="canRenderHandler()"
                 variant="minimal"
