@@ -140,29 +140,21 @@ class ArpaZone extends HTMLElement {
     }
 
     async findZoneElement(element = this.element) {
-        const containers = /** @type {(HTMLElement)[]} */ (Object.values(element?.nodes || {}));
-        for (const container of containers) {
-            if (!container || !(container instanceof HTMLElement)) continue;
-            const zoneElement = this.selectZoneElement(container);
-            if (zoneElement) return zoneElement;
+        await element?.waitForArpaNodes();
+        let zoneElement = this.selectZoneElement(element);
+        if (zoneElement) {
+            return zoneElement;
         }
-        return await this.waitForZoneElement();
-    }
-
-    /**
-     * Polls for the zone element on successive animation frames instead of a blind fixed delay.
-     * @param {number} [maxRetries]
-     * @returns {Promise<Element | null | undefined>}
-     */
-    async waitForZoneElement(maxRetries = 10) {
-        for (let i = 0; i < maxRetries; i++) {
-            const zoneElement = this.selectZoneElement();
-            if (zoneElement) {
-                return zoneElement;
-            }
-            await new Promise(resolve => requestAnimationFrame(resolve));
+        await element?.promise;
+        zoneElement = this.selectZoneElement(element);
+        if (zoneElement) {
+            return zoneElement;
         }
-        return this.selectZoneElement();
+        await element?.waitForArpaNodes();
+        zoneElement = this.selectZoneElement(element);
+        if (zoneElement) {
+            return zoneElement;
+        }
     }
 
     /**
@@ -172,9 +164,11 @@ class ArpaZone extends HTMLElement {
      */
     selectZoneElement(container = this.element) {
         const zoneName = this.getProp('name');
-        for (const node of Object.values(this.element?.nodes || {})) {
-            if (typeof node?.getAttribute === 'function' && zoneName === node?.getAttribute('zone')) {
-                return node;
+        if (container && 'nodes' in container) {
+            for (const node of Object.values(container?.nodes || {})) {
+                if (typeof node?.getAttribute === 'function' && zoneName === node?.getAttribute('zone')) {
+                    return node;
+                }
             }
         }
         /**
@@ -209,7 +203,7 @@ class ArpaZone extends HTMLElement {
     }
     /**
      * Resolves the zone with the given payload and removes the element from the DOM.
-     * @param {Record<string, unknown>} [payload={}] The payload to pass to the resolve promise.
+     * @param {Record<string, unknown>} [payload]
      */
     reject(payload = {}) {
         this.rejectPromise?.(payload);
@@ -218,8 +212,9 @@ class ArpaZone extends HTMLElement {
 
     /**
      * Executes the zone handling callbacks for the given zone element.
+     * @param {ArpaElement | null | undefined} element
      * @param {ArpaElementContentNodeType | undefined} zoneElement
-     * @returns {void | boolean} Returns false if any callback prevents the zone handling.
+     * @returns {void | boolean}
      */
     executeZoneHandlingCallbacks(element = this.element, zoneElement = this.zoneElement) {
         const children = this.fragment?.childNodes || [];

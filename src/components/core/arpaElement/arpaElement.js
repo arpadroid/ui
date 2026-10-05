@@ -720,14 +720,6 @@ class ArpaElement extends HTMLElement {
         await this.$onConnected();
     }
 
-    /**
-     * Called when the element is ready.
-     * @returns {Promise<any>}
-     */
-    async onReady() {
-        return Promise.resolve();
-    }
-
     disconnectedCallback() {
         if (!this.isConnected) {
             this._unsubscribes?.forEach(unsubscribe => typeof unsubscribe === 'function' && unsubscribe());

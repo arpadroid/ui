@@ -98,7 +98,7 @@ class ArpaNode extends HTMLElement {
     }
     /**
      * Resolves the zone with the given payload and removes the element from the DOM.
-     * @param {Record<string, unknown>} [payload={}] The payload to pass to the resolve promise.
+     * @param {Record<string, unknown>} [payload]
      */
     reject(payload = {}) {
         this.rejectPromise(payload);
