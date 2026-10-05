@@ -30,7 +30,7 @@ class DropArea extends ArpaElement {
             label: '{i18n:txtDropFiles}',
             className: 'dropArea',
             classNames: [() => this.hasProp('hasInput') && 'dropArea--hasInput'],
-            icon: 'file_upload',
+            icon: 'arrow_upload_ready',
             handler: undefined,
             hasInput: true
         });
@@ -58,6 +58,7 @@ class DropArea extends ArpaElement {
             on-click="{onHandlerClick}"
             on-drop="{onDrop}"
             class="arpaField__input"
+            class-names="arpaField__input"
             type="button"
         >
             <div class="dropArea__content">

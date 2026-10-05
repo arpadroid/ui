@@ -36,7 +36,7 @@ export const TestSingle = {
 
         await step('renders the drop area', async () => {
             expect(dropAreaNode).toBeInTheDocument();
-            expect(canvas.getByText(/Upload File/i)).toBeInTheDocument();
+            expect(canvas.getByText(/drop\/click to upload/i)).toBeInTheDocument();
             expect(handlerNode).toBeInTheDocument();
         });
 

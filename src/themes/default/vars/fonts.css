@@ -1,14 +1,45 @@
 :root {
-    --font-xxs: 10px;
-    --font-xs: 11px;  
-    --font-s: 12px;
-    --font-m: 14px;
-    --font-l: 16px;
-    --font-xl: 18px;
-    --font-xxl: 24px;
-    --font-3xl: 28px;
-    --font-4xl: 32px;
-    --font-5xl: 36px;
+    --font-xxs: 0.625rem;
+    --font-xs: 0.6875rem;
+    --font-s: 0.75rem;
+    --font-m: 0.875rem;
+    --font-l: 1rem;
+    --font-xl: 1.125rem;
+    --font-xxl: 1.5rem;
+    --font-3xl: 1.75rem;
+    --font-4xl: 2rem;
+    --font-5xl: 2.25rem;
+
+    /* Roboto */
+    --font-roboto: roboto, arial, helvetica, sans-serif;
+
+    /* Recursive */
+    --font-recursive: recursive, arial, helvetica, sans-serif;
+
+    /* Quicksand */
+    --font-quicksand: quicksand, arial, helvetica, sans-serif;
+    --font-quicksand-bold: quicksandbold, arial, helvetica, sans-serif;
+
+    /* Raleway */
+    --font-raleway: raleway, arial, helvetica, sans-serif;
+    --font-raleway-italic: ralewayitalic, arial, helvetica, sans-serif;
+
+    /* Avant Garde */
+    --font-avant-garde: avantgarde-bk, times, helvetica, sans-serif;
+    --font-avant-garde-exlt: avantgarde-extralight, arial, helvetica, sans-serif;
+    --font-avant-garde-lt: avantgarde-light, arial, helvetica, sans-serif;
+    --font-avant-garde-thin: avantgarde-thin, arial, helvetica, sans-serif;
+
+    /* DIN */
+    --font-din: din, arial, helvetica, sans-serif;
+    --font-din-light: din-light, arial, helvetica, sans-serif;
+    --font-din-bold: din-bold, arial, helvetica, sans-serif;
+    --font-din-md: din-medium, arial, helvetica, sans-serif;
+
+    /* Vars */
+    --primary-font: var(--font-quicksand);
+    --secondary-font: var(--font-avant-garde);
+    --tertiary-font: var(--font-avant-garde-exlt);
 }
 
 @font-face {
@@ -67,7 +98,6 @@
     src: url('fonts/Quicksand.ttf');
 }
 
-
 @font-face {
     font-family: QuicksandBold;
     font-weight: 800;
@@ -92,42 +122,4 @@
 @font-face {
     font-family: Recursive;
     src: url('fonts/Recursive.ttf');
-}
-
-
-
-:root {
-
-    /* Roboto */
-    --font-roboto: Roboto, Arial, Helvetica, sans-serif;
-
-    /* Recursive */
-    --font-recursive: Recursive, Arial, Helvetica, sans-serif;
-
-    /* Quicksand */
-    --font-quicksand: Quicksand, Arial, Helvetica, sans-serif;
-    --font-quicksand-bold: QuicksandBold, Arial, Helvetica, sans-serif;
-
-    /* Raleway */
-    --font-raleway: Raleway, Arial, Helvetica, sans-serif;
-    --font-raleway-italic: RalewayItalic, Arial, Helvetica, sans-serif;
-    
-
-    /* Avant Garde */
-    --font-avant-garde: AvantGarde-Bk, Times, Helvetica, sans-serif;
-    --font-avant-garde-exlt: AvantGarde-ExtraLight, Arial, Helvetica, sans-serif;
-    --font-avant-garde-lt: AvantGarde-Light, Arial, Helvetica, sans-serif;
-    --font-avant-garde-thin: AvantGarde-Thin, Arial, Helvetica, sans-serif;
-
-    /* DIN */
-    --font-din: DIN, Arial, Helvetica, sans-serif;
-    --font-din-light: DIN-LIGHT, Arial, Helvetica, sans-serif;
-    --font-din-bold: DIN-BOLD, Arial, Helvetica, sans-serif;
-    --font-din-md: DIN-MEDIUM, Arial, Helvetica, sans-serif;
-
-    /* Vars */
-    --primary-font: var(--font-quicksand);
-    --secondary-font: var(--font-avant-garde);
-    --tertiary-font: var(--font-avant-garde-exlt);
-    
 }

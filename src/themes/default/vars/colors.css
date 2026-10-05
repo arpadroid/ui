@@ -9,6 +9,7 @@
     /* Primary */
     --color-primary: var(--blue);
     --color-primary-dark: var(--blue-navy);
+    --color-primary-medium: #3390ff;
     --color-primary-light: #8cbff1;
     --color-primary-lightest: #cadff5;
     --primary-hilight: var(--blue-lightest);
@@ -58,7 +59,9 @@
     --overlay-medium: rgb(247 247 247 / 75%);
     --overlay-light: rgb(247 247 247 / 50%);
     --selected-hilight: var(--blue-light);
-    --group-box-shadow: rgb(50 50 93 / 25%) 0px 6px 12px 2px, rgb(0 0 0 / 30%) 0px 3px 7px -3px;
+    --group-box-shadow:
+        rgb(50 50 93 / 25%) 0rem 0.375rem 0.75rem 0.125rem,
+        rgb(0 0 0 / 30%) 0rem 0.1875rem 0.4375rem -0.1875rem;
     --current-hilight: var(--yellow-lightest);
 
     /* Backgrounds */
