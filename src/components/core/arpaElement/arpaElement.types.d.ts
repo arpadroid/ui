@@ -19,6 +19,7 @@ export type ArpaElementConfigType = {
     templateTypes?: TemplateContentMode[];
     templateVars?: Record<string, unknown> | (() => Record<string, unknown>);
     variant?: string;
+    reuseExistingNodes?: boolean;
 };
 
 export type ArpaElementBluePrintType = string | (() => string);

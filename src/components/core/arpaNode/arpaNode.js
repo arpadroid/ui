@@ -202,6 +202,11 @@ class ArpaNode extends HTMLElement {
 
     renderNode() {
         if (!this.element) return;
+        const existingNode = /** @type {HTMLElement | null} */ (this.element.nodes[this.getProp('name')]);
+        if (existingNode && this.element?._config?.reuseExistingNodes) {
+            // console.log('hey I exist', existingNode);
+            // return existingNode;
+        }
         const name = this.getProp('name');
         const elementNodeConfig = this.element.getNodeConfig(name);
         const config = this.getConfig();

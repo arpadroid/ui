@@ -130,7 +130,7 @@ arpa-button button arpa-tooltip.tooltip {
 */
 
 .arpaButton__button:not(:disabled, [data-invalid], [variant='minimal']) {
-    &:hover,
+    /* &:hover,
     &:focus {
         .arpaButton__content {
             text-decoration: underline;
@@ -138,7 +138,7 @@ arpa-button button arpa-tooltip.tooltip {
             text-decoration-color: var(--button-underline-color);
             text-underline-offset: var(--button-underline-offset);
         }
-    }
+    } */
 
     &:hover {
         outline: var(--button-outline-hover);
