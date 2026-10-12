@@ -32,6 +32,9 @@ class ArpaZone extends HTMLElement {
             console.error(message, {
                 zoneName: this.getProp('name'),
                 element: this.element?.tagName,
+                zone: this,
+                _childNodes: this._childNodes,
+                childNodes: this.childNodes,
                 ...payload
             });
         });
@@ -107,14 +110,13 @@ class ArpaZone extends HTMLElement {
         if (zoneElement) {
             'promise' in zoneElement && (await zoneElement.promise);
             const target = await this.getZoneTarget(zoneElement);
-
             if (target) {
                 zoneElement = target;
             }
         }
         if (!zoneElement) {
             LOST_ZONES.add(name);
-            this.reject({
+            this.isConnected && this.reject({
                 message: `No element found for zone "${name}".`
             });
             return;

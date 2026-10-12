@@ -867,6 +867,9 @@ class ArpaElement extends HTMLElement {
         this._addClassNames();
         this._printAttributes();
         await this.render();
+        if (this._isReRender) {
+            this._pruneDetachedNodes();
+        }
 
         this._initializeNodes();
         await this.$initializeNodes();
@@ -922,6 +925,17 @@ class ArpaElement extends HTMLElement {
     async render(template = '') {
         this.innerHTML = this.renderTemplate(template);
         return true;
+    }
+
+    /**
+     * Drops node references left over from a previous render so zones and lookups do not target detached nodes.
+     */
+    _pruneDetachedNodes() {
+        for (const [name, node] of Object.entries(this.nodes)) {
+            if (node !== this && !this.contains(node)) {
+                delete this.nodes[name];
+            }
+        }
     }
 
     _initializeNodes() {
@@ -1020,6 +1034,7 @@ class ArpaElement extends HTMLElement {
 
     async reRender() {
         this._hasRendered = false;
+        this._isReRender = true;
         this._initializeTemplates();
         this.promise = this.getPromise();
         return await this._render();
