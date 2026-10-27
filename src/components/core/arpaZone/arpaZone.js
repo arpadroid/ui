@@ -73,6 +73,9 @@ class ArpaZone extends HTMLElement {
     }
 
     async connectedCallback() {
+        if (!this.element) {
+            this._initializeElement();
+        }
         if (this.element && !this.initialized) {
             await this._initializeZone();
         }
@@ -96,10 +99,10 @@ class ArpaZone extends HTMLElement {
             });
             return;
         }
+
         this.initialized = true;
         await this.element?.waitForArpaNodes(this.element.arpaNodes);
-        await this.element.waitForNodes(this.element.nodes, { onRendered: false });
-
+        await this.element.waitForNodes(this.element.nodes, { onRendered: true });
         this.onRenderReady();
     }
 
@@ -116,9 +119,10 @@ class ArpaZone extends HTMLElement {
         }
         if (!zoneElement) {
             LOST_ZONES.add(name);
-            this.isConnected && this.reject({
-                message: `No element found for zone "${name}".`
-            });
+            this.isConnected &&
+                this.reject({
+                    message: `No element found for zone "${name}".`
+                });
             return;
         }
         this.zoneElement = zoneElement;
@@ -157,6 +161,8 @@ class ArpaZone extends HTMLElement {
         if (zoneElement) {
             return zoneElement;
         }
+        await element?.onRendered();
+        return this.selectZoneElement(element);
     }
 
     /**
@@ -168,10 +174,20 @@ class ArpaZone extends HTMLElement {
         const zoneName = this.getProp('name');
         if (container && 'nodes' in container) {
             for (const node of Object.values(container?.nodes || {})) {
-                if (typeof node?.getAttribute === 'function' && zoneName === node?.getAttribute('zone')) {
+                if (
+                    typeof node?.getAttribute === 'function' &&
+                    zoneName === node.getAttribute('zone') &&
+                    (node === container || container.contains(node))
+                ) {
                     return node;
                 }
             }
+        }
+
+        if (container instanceof HTMLElement && 'renderContainer' in container) {
+            const rc = container.renderContainer;
+            const rv = rc instanceof HTMLElement && rc.querySelector(`[zone="${zoneName}"]`);
+            if (rv) return rv;
         }
         /**
          * The below is risky because it relies on a querySelector which may not always return the correct element.

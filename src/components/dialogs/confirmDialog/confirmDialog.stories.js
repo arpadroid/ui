@@ -46,7 +46,10 @@ export const Test = {
     },
     play: async ({ step }) => {
         const dialogNode = /** @type {ConfirmDialog} */ (document.querySelector('confirm-dialog'));
-        await dialogNode?.promise;
+        dialogNode.setAttribute('open', 'true');
+        await dialogNode.promise;
+        await dialogNode?.onRendered();
+        
         /** @type {Dialogs | null} */
         const dialogsNode = document.querySelector('arpa-dialogs');
         const dialog = within(dialogNode);
@@ -66,7 +69,7 @@ export const Test = {
             'Clicks on cancel button and expects the dialog to close and cancel signal to be fired.',
             async () => {
                 await waitFor(() => {
-                    expect(dialogNode).toHaveAttribute('open');
+                    expect(dialogNode.hasProp('open')).toBe(true);
                     expect(dialog.getByRole('button', { name: /Cancel/i })).toBeInTheDocument();
                 });
                 const cancelButton = dialog.getByRole('button', { name: /Cancel/i });
@@ -81,8 +84,10 @@ export const Test = {
             const button = dialog.getByRole('button', { name: /Confirm/i });
             expect(dialogNode).toHaveAttribute('open');
             expect(button).toBeInTheDocument();
-            expect(dialogNode).toHaveAttribute('open');
-            await userEvent.click(button, { delay: 50 });
+            await waitFor(() => {
+                expect(dialogNode).toHaveAttribute('open');
+            });
+            await userEvent.click(button, { delay: 100 });
             await waitFor(() => {
                 expect(dialogNode).not.toHaveAttribute('open');
                 expect(onConfirm).toHaveBeenCalledWith([{ id: 1 }], undefined, undefined);

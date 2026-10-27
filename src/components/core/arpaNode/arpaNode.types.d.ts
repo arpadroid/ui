@@ -11,7 +11,7 @@ export type ArpaNodeConfigType = {
     className?: string;
     content?: ArpaElementContentType;
     defer?: string | boolean;
-    disabled?: boolean;
+    disabled?: boolean | 'string';
     hasZone?: boolean | 'false';
     id?: string;
     isContent?: boolean;

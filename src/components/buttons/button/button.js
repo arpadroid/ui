@@ -3,7 +3,7 @@
  * @typedef {import('../../tooltip/tooltip').default} Tooltip
  * @typedef {import('../../icon/icon').default} Icon
  */
-import { listen, defineCustomElement, getStringBetween } from '@arpadroid/tools';
+import { defineCustomElement } from '@arpadroid/tools';
 import ArpaElement from '../../core/arpaElement/arpaElement';
 
 const html = String.raw;

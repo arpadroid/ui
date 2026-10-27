@@ -7,6 +7,8 @@ export * from './components/core/arpaElement/helper/arpaElementProps.helper.js';
 export {
     canRender,
     getArpaElement,
+    getArpaElementWithTag,
+    getArpaElementMatch,
     getUserConfig,
     hasContent,
     sanitizeAttributeEffect,

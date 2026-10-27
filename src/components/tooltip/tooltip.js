@@ -10,6 +10,7 @@ const html = String.raw;
 class Tooltip extends ArpaElement {
     /** @type {TooltipConfigType} */
     _config = this._config;
+    zoneTarget = '.tooltip__content';
 
     /**
      * Creates a new Tooltip instance.

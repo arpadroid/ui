@@ -17,8 +17,12 @@ class IconButton extends Button {
             className: 'iconButton',
             nodesConfig: {
                 content: { canRender: false },
+                /**
+                 * @todo Verify below tooltip node configuration, suspect not taking effect.
+                 */
                 tooltip: {
                     content: () => {
+                        console.log('Some content');
                         return this.getProp('tooltip') || this.getProp('label') || '{label}';
                     }
                 }

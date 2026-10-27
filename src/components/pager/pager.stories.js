@@ -85,7 +85,7 @@ export const Test = {
         });
 
         await step('Clicks on the next button', async () => {
-            const nextLink = canvas.getByRole('link', { name: /Next page/i });
+            const nextLink = await waitFor(() => canvas.getByRole('link', { name: /Next page/i }));
             const currentPage = pagerNode.getCurrentPage();
             expect(currentPage).toBe(2);
             await userEvent.click(nextLink);
@@ -109,7 +109,7 @@ export const Test = {
         });
 
         await step('Clicks on the last button', async () => {
-            const lastButton = canvas.getByRole('link', { name: /100/i });
+            const lastButton = await waitFor(() => canvas.getByRole('link', { name: /100/i }));
             await userEvent.click(lastButton);
             await waitFor(() => {
                 expect(pagerNode).toHaveAttribute('current-page', '100');
@@ -121,11 +121,14 @@ export const Test = {
 
         await step('Clicks next and loops back to the first page', async () => {
             /** @type {HTMLAnchorElement} */
-            const nextButton = canvas.getByRole('link', { name: /Next page/i });
+            await waitFor(() => canvas.getByRole('link', { name: /Next page/i }));
+            const nextButton = /** @type {HTMLAnchorElement} */ (
+                canvas.getByRole('link', { name: /Next page/i })
+            );
             await waitFor(() => {
                 expect(getURLParam('page', nextButton.href)).toBe('1');
             });
-            await userEvent.click(nextButton);
+            await userEvent.click(nextButton, { delay: 50 });
             await waitFor(() => {
                 expect(pagerNode).toHaveAttribute('current-page', '1');
                 const currentPage = getURLParam('page');
@@ -137,10 +140,8 @@ export const Test = {
         await step(
             'Clicks on the first button and focuses inside an input, types 50 and sets page with enter key.',
             async () => {
-                await waitFor(() => {
-                    expect(canvasElement.querySelector('pager-item[page="1"] input')).toBeInTheDocument();
-                });
-                const input = canvasElement.querySelector('pager-item[page="1"] input');
+                const input = await waitFor(() => canvas.getByRole('spinbutton'));
+                expect(input).toBeInTheDocument();
                 if (!(input instanceof HTMLElement)) {
                     throw new Error('Expected pager input element to exist');
                 }

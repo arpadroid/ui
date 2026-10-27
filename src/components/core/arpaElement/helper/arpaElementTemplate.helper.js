@@ -146,14 +146,10 @@ export async function waitForEventHandlers(element, attr, value) {
         selector = selector.replace('$on-', '\\$on-');
     }
     let eventHandlers = Array.from(element.querySelectorAll(selector));
-    if (!eventHandlers.length && element.onRendered) {
+    if (!eventHandlers.length) {
         await element.onRendered();
         await new Promise(resolve => setTimeout(resolve, 10));
         eventHandlers = Array.from(element.querySelectorAll(selector));
-        if (!eventHandlers.length) {
-            await new Promise(resolve => setTimeout(resolve, 0));
-            eventHandlers = Array.from(element.querySelectorAll(selector));
-        }
     }
     return eventHandlers;
 }
@@ -204,14 +200,13 @@ export async function applyTemplateEventListener(element, attr, value, fn) {
     if (!element) return;
     'promise' in element && (await element.promise);
     await element?.onRendered();
-    const eventHandler = await getTemplateEventHandlers(element, attr, value);
+    const eventHandlers = await getTemplateEventHandlers(element, attr, value);
     if (attr.startsWith('on-')) {
-        const eventName = attr.replace('on-', '').replace(/-/g, '');
-        if (typeof fn === 'function') {
-            listen(eventHandler, eventName, fn);
+        if (eventHandlers.length && typeof fn === 'function') {
+            const eventName = attr.replace('on-', '').replace(/-/g, '');
+            listen(eventHandlers, eventName, fn);
         }
     } else if (attr.startsWith('$on-')) {
-        await element?.onRendered();
         const node = Object.values(element.nodes).find(node => node.hasAttribute(attr));
         if (!node) {
             return;
@@ -270,6 +265,9 @@ export function processTemplateAttributes(template, props = {}, element) {
     if (!template) {
         return '';
     }
+    if (typeof template === 'string' && !template.includes('=')) {
+        return template;
+    }
 
     const result = [];
     let lastIndex = 0;
@@ -315,6 +313,9 @@ export function processTemplateAttributes(template, props = {}, element) {
 export function _processTemplate(template, props = {}, element) {
     if (!template) {
         return '';
+    }
+    if (!template.includes('{')) {
+        return template;
     }
     const result = [];
     let startIndex = 0;
@@ -635,6 +636,8 @@ export async function applyTemplateAttributes(element, template, _payload = {}, 
  */
 export function getNodesConfigBlueprint(element, blueprint) {
     blueprint = String(blueprint || element.$renderBlueprint() || '');
+    if (!blueprint.toLowerCase().includes('<arpa-node')) return;
+
     const tpl = document.createElement('template');
     tpl.innerHTML = blueprint;
     /** @type {ArpaNode[]} */
@@ -725,7 +728,9 @@ export function renderTemplate(component, _template, vars = component.getTemplat
     }
     const result = template && processTemplate(template, vars, component);
     let rv = typeof result === 'string' ? result : '';
-    if (result) {
+    // Skip the extra HTML parse unless the markup contains zones or nodes to register/dedupe.
+    const lowerRv = rv.toLowerCase();
+    if (lowerRv.includes('<arpa-zone') || lowerRv.includes('<arpa-node')) {
         const tpl = document.createElement('template');
         tpl.innerHTML = rv;
         const templateZones = tpl.content.querySelectorAll('arpa-zone');

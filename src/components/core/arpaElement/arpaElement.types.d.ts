@@ -20,6 +20,7 @@ export type ArpaElementConfigType = {
     templateVars?: Record<string, unknown> | (() => Record<string, unknown>);
     variant?: string;
     reuseExistingNodes?: boolean;
+    fastRender?: boolean;
 };
 
 export type ArpaElementBluePrintType = string | (() => string);

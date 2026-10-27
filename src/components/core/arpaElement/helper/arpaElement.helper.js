@@ -16,7 +16,7 @@ const FORBIDDEN_ATTRIBUTES = ['template', 'content', 'classNames', 'className'];
 
 /**
  * Returns the parent ArpaElement of the node.
- * @param {HTMLElement & { arpaNode?: ArpaElement, _config?: { arpaElement?: ArpaElement } }} element
+ * @param {HTMLElement & { arpaNode?: ArpaElement, _config?: { arpaElement?: ArpaElement, renderContainerElement?: ArpaElement   } }} element
  * @returns {ArpaElement | null}
  */
 export function getArpaElement(element) {
@@ -26,16 +26,43 @@ export function getArpaElement(element) {
     }
     while (node) {
         if ('arpaElement' in node && node?.arpaElement) {
-            // @ts-ignore
-            return node.arpaElement;
+            return /** @type {ArpaElement} */ (node.arpaElement);
         }
-        // @ts-ignore
-        if (node?.isArpaElement || node?.tagName === 'ARPA-ELEMENT') {
+        if ('renderContainerElement' in node && node.renderContainerElement) {
+            return /** @type {ArpaElement} */ (node.renderContainerElement);
+        }
+        if (('isArpaElement' in node && node?.isArpaElement) || node?.tagName === 'ARPA-ELEMENT') {
             return /** @type {ArpaElement} */ (node);
         }
         node = node.parentElement;
     }
     return null;
+}
+
+/**
+ * Returns the nearest ArpaElement that satisfies the callback.
+ * @param {HTMLElement} element
+ * @param {(el: ArpaElement) => boolean} callback
+ * @returns {ArpaElement | void}
+ */
+export function getArpaElementMatch(element, callback) {
+    let el = getArpaElement(element);
+    while (el) {
+        if (callback(el)) return el;
+        if (el) {
+            el = getArpaElement(el);
+        }
+    }
+}
+
+/**
+ * Returns the nearest ArpaElement with the given tag.
+ * @param {HTMLElement} element
+ * @param {string} tag
+ * @returns {ArpaElement | void}
+ */
+export function getArpaElementWithTag(element, tag) {
+    return getArpaElementMatch(element, el => el.tagName.toLowerCase() === tag);
 }
 
 // #endregion Global Helpers

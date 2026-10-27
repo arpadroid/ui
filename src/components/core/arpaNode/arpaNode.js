@@ -142,11 +142,15 @@ class ArpaNode extends HTMLElement {
         this.resolve(true);
     }
 
-    getNodeAttributes() {
-        const attr = getAttributes(this, {
-            camelCaseKeys: true,
-            convertFalseToBoolean: false
-        });
+    /**
+     * @param {Record<string, string | boolean>} [attributes]
+     * @returns {Record<string, any>}
+     */
+    getNodeAttributes(attributes) {
+        const attr = attributes
+            ? { ...attributes }
+            : getAttributes(this, { camelCaseKeys: true, convertFalseToBoolean: false });
+
         for (const key in this.getDefaultConfig()) {
             if (key in attr) delete attr[key];
         }
@@ -154,15 +158,19 @@ class ArpaNode extends HTMLElement {
         return mergeObjects(configAttr, attr);
     }
 
-    getConfig() {
-        const config = getAttributes(this, {
-            camelCaseKeys: true
-        });
+    /**
+     * @param {Record<string, string | boolean>} [attributes]
+     * @returns {ArpaNodeConfigType}
+     */
+    getConfig(attributes) {
+        const config = attributes ? { ...attributes } : getAttributes(this, { camelCaseKeys: true });
         // Remove any keys that are not in the default config.
         const defaultConfig = this.getDefaultConfig();
         for (const key in config) {
             if (!(key in defaultConfig)) {
                 delete config[key];
+            } else if (config[key] === 'false') {
+                config[key] = false;
             }
         }
         if (!config.zoneName) {
@@ -202,16 +210,15 @@ class ArpaNode extends HTMLElement {
 
     renderNode() {
         if (!this.element) return;
-        const existingNode = /** @type {HTMLElement | null} */ (this.element.nodes[this.getProp('name')]);
-        if (existingNode && this.element?._config?.reuseExistingNodes) {
-            // console.log('hey I exist', existingNode);
-            // return existingNode;
-        }
         const name = this.getProp('name');
         const elementNodeConfig = this.element.getNodeConfig(name);
-        const config = this.getConfig();
+        const attributes = getAttributes(this, {
+            camelCaseKeys: true,
+            convertFalseToBoolean: false
+        });
+        const config = this.getConfig(attributes);
+        const attr = this.getNodeAttributes(attributes);
         const { tag } = config;
-        const attr = this.getNodeAttributes();
         attr.canRender = config.canRender;
 
         this.registerNodeConfig(config, attr);
@@ -248,6 +255,7 @@ class ArpaNode extends HTMLElement {
 
         if (typeof deferFn === 'function') {
             deferFn = deferFn.bind(this.element);
+            await new Promise(resolve => setTimeout(resolve, 0));
             rv = await deferFn({ arpaNode: this, name: this.getProp('name') });
         }
         return typeof rv !== 'undefined' ? rv : true;

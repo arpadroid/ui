@@ -186,11 +186,13 @@ class ArpaElement extends HTMLElement {
      * @returns {ArpaElementContentNodeType | null} The content node for the element.
      */
     getContentNode() {
-        return (
-            this.nodes.content ||
-            Object.values(this.nodes)?.find(node => node?.hasAttribute?.('is-content')) ||
-            this.querySelector(`.${getClass(this, 'content')}`)
-        );
+        if (this.nodes.content) return this.nodes.content;
+        for (const name in this.nodes) {
+            if (!Object.prototype.hasOwnProperty.call(this.nodes, name)) continue;
+            const node = this.nodes[name];
+            if (node?.hasAttribute?.('is-content')) return node;
+        }
+        return this.querySelector(`.${getClass(this, 'content')}`);
     }
 
     /**
@@ -797,6 +799,7 @@ class ArpaElement extends HTMLElement {
      */
     async waitForZones($zones = this.zones || new Set()) {
         const promises = Array.from($zones).map(zone => zone.promise);
+        if (promises.length === 0) return true;
         await Promise.allSettled(promises);
         return true;
     }
@@ -923,7 +926,27 @@ class ArpaElement extends HTMLElement {
      * @returns {Promise<boolean>} - Returns true when rendering is complete.
      */
     async render(template = '') {
-        this.innerHTML = this.renderTemplate(template);
+        const { fastRender } = this._config;
+        const content = this.renderTemplate(template);
+        if (fastRender) {
+            await this._innerHTML(content);
+            return true;
+        }
+        this.replaceChildren();
+
+        if (!this.renderContainer) {
+            this.renderContainer = /** @type {HTMLDivElement & {renderContainerElement: ArpaElement}} */ (
+                document.createElement('div')
+            );
+        }
+        this.renderContainer.renderContainerElement = this;
+        this.renderContainer.innerHTML = content;
+        await this.waitForArpaNodes();
+        await this.waitForNodes();
+        await this.batcher?.append(this, this.renderContainer.childNodes, {
+            batchSize: 120
+        });
+
         return true;
     }
 
@@ -939,8 +962,9 @@ class ArpaElement extends HTMLElement {
     }
 
     _initializeNodes() {
-        const arpaNodes = Object.values(this.arpaNodes);
-        for (const arpaNode of arpaNodes) {
+        for (const arpaNodeKey in this.arpaNodes) {
+            if (!Object.prototype.hasOwnProperty.call(this.arpaNodes, arpaNodeKey)) continue;
+            const arpaNode = this.arpaNodes[arpaNodeKey];
             const name = arpaNode.getAttribute('name');
             if (!name) continue;
             /** @type {HTMLElement | null} */
@@ -1065,10 +1089,21 @@ class ArpaElement extends HTMLElement {
     /**
      * Batches an innerHTML operation for the element.
      * @param {string} html
+     * @param {{batchSize?: number, timeout?: number}} [config]
      * @returns {Promise<void | boolean> | undefined}
      */
-    _innerHTML(html) {
-        return this.batcher?.innerHTML(this, html);
+    _innerHTML(html, config) {
+        return this.batcher?.innerHTML(this, html, config);
+    }
+
+    /**
+     * Appends nodes to the element.
+     * @param {HTMLElement[] | NodeList} nodes
+     * @param {{batchSize?: number}} [config]
+     * @returns {Promise<void | boolean> | undefined}
+     */
+    _append(nodes, config) {
+        return this.batcher?.append(this, nodes, config);
     }
 
     /**
