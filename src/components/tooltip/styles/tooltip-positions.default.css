@@ -8,19 +8,19 @@
     .tooltip__content {
         right: 100%;
         left: auto;
-        margin-right: 12px;
+        margin-right: 0.75rem;
 
         &::before,
         &::after {
             top: 50%;
-            right: -8px;
+            right: -0.5rem;
             border-color: transparent transparent transparent var(--border-color);
             border-width: var(--triangle-width) 0 var(--triangle-width) var(--triangle-width);
             transform: translateY(-50%);
         }
 
         &::after {
-            right: -5px;
+            right: -0.3125rem;
             border-color: transparent transparent transparent var(--bg-color);
         }
     }
@@ -34,19 +34,19 @@
     .tooltip__content {
         right: auto;
         left: 100%;
-        margin-left: 8px;
+        margin-left: 0.5rem;
 
         &::before,
         &::after {
             top: 50%;
-            left: -8px;
+            left: -0.5rem;
             border-color: transparent var(--border-color) transparent transparent;
             border-width: var(--triangle-width) var(--triangle-width) var(--triangle-width) 0;
             transform: translateY(-50%);
         }
 
         &::after {
-            left: -5px;
+            left: -0.3125rem;
             border-color: transparent var(--bg-color) transparent;
         }
     }
@@ -70,7 +70,7 @@
     }
 
     &::after {
-        margin-top: -3px;
+        margin-top: -0.1875rem;
         border-color: var(--bg-color) transparent transparent transparent;
     }
 }
@@ -110,7 +110,7 @@
     right: 0;
     bottom: 0%;
     left: auto;
-    margin-bottom: -0.5rem;
+    margin-bottom: -0.75rem;
     transform: translateX(0%) translateY(100%);
 
     &::before,
@@ -124,7 +124,7 @@
     }
 
     &::after {
-        margin-bottom: -3px;
+        margin-bottom: -0.1875rem;
         border-color: transparent transparent var(--bg-color) transparent;
     }
 }
@@ -146,7 +146,7 @@
     }
 
     &::after {
-        margin-bottom: -3px;
+        margin-bottom: -0.1875rem;
         border-color: transparent transparent var(--bg-color) transparent;
     }
 }
@@ -156,5 +156,19 @@
     top: 100%;
     bottom: auto;
     left: 0;
-    margin-top: 8px;
+    margin-top: 0.75rem;
+
+    &::before,
+    &::after {
+        bottom: 100%;
+        left: 0.5rem;
+        border-color: transparent transparent var(--border-color) transparent;
+        border-width: 0 var(--triangle-width) var(--triangle-width) var(--triangle-width);
+        transform: translateX(0%);
+    }
+
+    &::after {
+        margin-bottom: -0.1875rem;
+        border-color: transparent transparent var(--bg-color) transparent;
+    }
 }

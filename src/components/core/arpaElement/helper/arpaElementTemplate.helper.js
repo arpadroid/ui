@@ -148,6 +148,9 @@ export async function waitForEventHandlers(element, attr, value) {
     let eventHandlers = Array.from(element.querySelectorAll(selector));
     if (!eventHandlers.length) {
         await element.onRendered();
+        eventHandlers = Array.from(element.querySelectorAll(selector));
+    }
+    if (!eventHandlers.length) {
         await new Promise(resolve => setTimeout(resolve, 10));
         eventHandlers = Array.from(element.querySelectorAll(selector));
     }

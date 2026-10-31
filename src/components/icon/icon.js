@@ -11,6 +11,7 @@ class Icon extends HTMLElement {
     connectedCallback() {
         if (['', 'none'].includes(this.innerHTML)) {
             this.remove();
+            return;
         }
         const iconClass = 'icon--' + mechanize(this.innerHTML);
         this.classList.add(iconClass);

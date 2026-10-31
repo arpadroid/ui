@@ -22,7 +22,7 @@
     z-index: 1;
     display: none;
     width: max-content;
-    max-width: 380px;
+    max-width: 23.75rem;
     padding: var(--tooltip-padding);
     font-size: 0.85rem;
     font-weight: 600;
@@ -32,9 +32,9 @@
     text-justify: inter-word;
     white-space: normal;
     background-color: var(--bg-color);
-    border: 2px solid var(--border-color);
+    border: 0.125rem solid var(--border-color);
     border-radius: 0.5rem;
-    box-shadow: 1px 1px 4px 0 rgb(0 0 0 / 10%);
+    box-shadow: 0.0625rem 0.0625rem 0.25rem 0 rgb(0 0 0 / 10%);
     transition: var(--theme-transition);
 
     &::before,
@@ -81,14 +81,14 @@
     }
 }
 
-.tooltip[variant="error"] {
+.tooltip[variant='error'] {
     --text-color: var(--red-dark);
     --border-color: var(--red-medium);
     --handler-color: var(--red-dark);
     --handler-color-hover: var(--red-dark);
 }
 
-.tooltip[variant="info"] {
+.tooltip[variant='info'] {
     --text-color: var(--color-primary-dark);
     --handler-color: var(--color-primary-dark);
     --handler-color-hover: var(--color-primary-dark);

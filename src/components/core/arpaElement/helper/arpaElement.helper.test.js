@@ -7,10 +7,14 @@ describe('ArpaElement Helper', () => {
             <div class="testDiv">{content}</div>
             <div class="testDiv2">{secondaryContent}</div>
         `;
-        const content = processTemplate(template, {
-            content: 'Some content',
-            secondaryContent: 'some other content'
-        }, undefined);
+        const content = processTemplate(
+            template,
+            {
+                content: 'Some content',
+                secondaryContent: 'some other content'
+            },
+            undefined
+        );
         const container = document.createElement('div');
         container.innerHTML = content;
 

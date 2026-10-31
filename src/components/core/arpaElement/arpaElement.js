@@ -495,11 +495,11 @@ class ArpaElement extends HTMLElement {
     attachNode(node, name) {
         const locator = this.nodesConfig?.[name]?.locator;
         const { previousSibling, parentNode, nextSibling } = locator || {};
-        if (previousSibling?.isConnected) {
+        if (previousSibling) {
             previousSibling.parentNode?.insertBefore(node, previousSibling.nextSibling);
-        } else if (nextSibling?.isConnected) {
+        } else if (nextSibling) {
             nextSibling.parentNode?.insertBefore(node, nextSibling);
-        } else if (parentNode?.isConnected) {
+        } else if (parentNode) {
             parentNode.appendChild(node);
         } else {
             this.appendChild(node);
@@ -515,9 +515,11 @@ class ArpaElement extends HTMLElement {
     editNode(name, config = {}) {
         if (!name) return null;
         this.setNodeConfig(name, mergeObjects(this.getNodeConfig(name) || {}, config));
-        const node = this.spawnNode(name, config);
+        const node = /** @type {HTMLElement} */ (this.spawnNode(name, config));
         if (node && !node?.isConnected) {
-            this.attachNode(node, name);
+            this.batcher?.writeFn(node, () => {
+                this.attachNode(node, name);
+            });
         }
         return node;
     }
@@ -696,6 +698,9 @@ class ArpaElement extends HTMLElement {
     // #region Templates
     //////////////////////////
 
+    /**
+     * @returns {void | boolean}
+     */
     _initializeTemplates() {
         const templates = selectTemplates(this);
         templates.forEach(template => {
@@ -859,16 +864,16 @@ class ArpaElement extends HTMLElement {
     }
 
     async _render() {
-        const canRender = this.$canRender();
-        if (canRender === false) return;
-
+        if (this.$canRender() === false) {
+            return;
+        }
         this.isRendering = true;
-
         this._preRender();
         await this.$preRender();
 
         this._addClassNames();
         this._printAttributes();
+
         await this.render();
         if (this._isReRender) {
             this._pruneDetachedNodes();
@@ -933,7 +938,6 @@ class ArpaElement extends HTMLElement {
             return true;
         }
         this.replaceChildren();
-
         if (!this.renderContainer) {
             this.renderContainer = /** @type {HTMLDivElement & {renderContainerElement: ArpaElement}} */ (
                 document.createElement('div')

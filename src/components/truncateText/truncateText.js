@@ -164,15 +164,16 @@ class TruncateText extends ArpaElement {
         await super.$initializeNodes();
         this.ellipsisNode = /** @type {HTMLElement} */ (this.nodes.ellipsis);
         this.ellipsisNode?.remove();
-        return true;
-    }
-
-    async $onComplete() {
+        await this.waitForArpaNodes(this.arpaNodes, { waitForDeferred: true });
         if (!this.canTruncate()) {
             const button = this.querySelector('.truncateText__button');
             button?.remove();
         }
 
+        return true;
+    }
+
+    async $onComplete() {
         if (this.hasProp('isTruncated')) {
             this.setAttribute('is-truncated', '');
         } else {

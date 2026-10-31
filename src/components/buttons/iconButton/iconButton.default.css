@@ -1,5 +1,6 @@
 .iconButton,
-nav-link.iconButton__button {
+nav-link.iconButton__button,
+arpa-link.iconButton__button {
     --size: 2.5rem;
     --height: var(--size);
     --border-radius: 50%;
