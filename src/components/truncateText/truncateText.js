@@ -185,9 +185,9 @@ class TruncateText extends ArpaElement {
     /**
      * Called when a zone is inserted into the element.
      * @param {ArpaZone} zone
-     * @returns {boolean}
+     * @returns {Promise<boolean>}
      */
-    $onZoneInserted(zone) {
+    async $onZoneInserted(zone) {
         if (this._hasRendered) {
             if (this.contentNode instanceof HTMLElement) {
                 this.contentNode.style.display = 'none';

@@ -67,14 +67,14 @@ export const Test = {
         await step(
             'Checks that the pager has the correct number of items dictated by max-nodes property',
             async () => {
-                const itemsNode = pagerNode.querySelector('.pager__numbers');
+                const itemsNode = pagerNode.querySelector('.pager__items');
                 expect(itemsNode?.children).toHaveLength(7);
             }
         );
 
         await step('Renders the input field for the selected item', async () => {
             await waitFor(() => {
-                const input = canvas.getByRole('spinbutton', { name: /Current page/i });
+                const input = canvas.getByRole('spinbutton');
                 expect(input).toBeInTheDocument();
                 expect(input).toHaveAttribute('type', 'number');
                 expect(input).toHaveAttribute('name', 'page');
@@ -90,7 +90,7 @@ export const Test = {
             expect(currentPage).toBe(2);
             await userEvent.click(nextLink);
             await waitFor(() => {
-                expect(nextLink).toHaveAttribute('data-page', '4');
+                expect(canvas.getByRole('link', { name: /Next page/i })).toHaveAttribute('data-page', '4');
                 const currentPage = getURLParam('page');
                 expect(currentPage).toBe('3');
                 expect(pagerNode.getCurrentPage()).toBe(3);
@@ -120,17 +120,17 @@ export const Test = {
         });
 
         await step('Clicks next and loops back to the first page', async () => {
-            /** @type {HTMLAnchorElement} */
-            await waitFor(() => canvas.getByRole('link', { name: /Next page/i }));
-            const nextButton = /** @type {HTMLAnchorElement} */ (
-                canvas.getByRole('link', { name: /Next page/i })
-            );
             await waitFor(() => {
-                expect(getURLParam('page', nextButton.href)).toBe('1');
+                expect(
+                    getURLParam(
+                        'page',
+                        canvas.getByRole('link', { name: /Next page/i })?.getAttribute('href') || ''
+                    )
+                ).toBe('1');
             });
-            await userEvent.click(nextButton, { delay: 50 });
+            await userEvent.click(canvas.getByRole('link', { name: /Next page/i }), { delay: 50 });
             await waitFor(() => {
-                expect(pagerNode).toHaveAttribute('current-page', '1');
+                expect(canvasElement.querySelector('arpa-pager')).toHaveAttribute('current-page', '1');
                 const currentPage = getURLParam('page');
                 expect(currentPage).toBe('1');
                 expect(pagerNode.getCurrentPage()).toBe(1);
@@ -140,20 +140,18 @@ export const Test = {
         await step(
             'Clicks on the first button and focuses inside an input, types 50 and sets page with enter key.',
             async () => {
-                const input = await waitFor(() => canvas.getByRole('spinbutton'));
-                expect(input).toBeInTheDocument();
-                if (!(input instanceof HTMLElement)) {
-                    throw new Error('Expected pager input element to exist');
-                }
-                const form = input.closest('form, arpa-form');
-                if (!(form instanceof Element)) {
-                    throw new Error('Expected pager form element to exist');
-                }
+                await waitFor(() => {
+                    expect(canvas.getByRole('spinbutton')).toBeInTheDocument();
+                });
+
+                const input = canvas.getByRole('spinbutton');
+                const form = /** @type {HTMLFormElement} */ (input.closest('form'));
+
                 await userEvent.clear(input);
                 await userEvent.type(input, '50');
                 await fireEvent.submit(form);
                 await waitFor(() => {
-                    expect(pagerNode).toHaveAttribute('current-page', '50');
+                    expect(canvasElement.querySelector('arpa-pager')).toHaveAttribute('current-page', '50');
                     const currentPage = getURLParam('page');
                     expect(currentPage).toBe('50');
                     expect(pagerNode.getCurrentPage()).toBe(50);

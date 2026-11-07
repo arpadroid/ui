@@ -2,25 +2,25 @@ import { ArpaNodeConfigType } from '../arpaNode/arpaNode.types';
 import ArpaElement, { ArpaNode } from './arpaElement';
 
 export type ArpaElementConfigType = {
-    attributes?: Record<string, string>;
     attributeList?: string[]; // Attributes that must be printed if they exist in config
+    attributes?: Record<string, string>;
     blueprint?: ArpaElementBluePrintType;
     className?: string;
     classNames?: (string | (() => string))[];
     content?: ArpaElementContentType;
     contentPosition?: 'prepend' | 'append' | 'top' | 'replace' | 'bottom';
     eventHandlerSelector?: string;
+    fastRender?: boolean;
     handleContent?: boolean;
     nodesConfig?: Record<string, ArpaNodeConfigType> | undefined;
     renderOnConnected?: boolean;
+    reuseExistingNodes?: boolean;
     template?: ArpaElementBluePrintType;
     templateContainer?: HTMLElement | string;
     templates?: TemplatesType;
     templateTypes?: TemplateContentMode[];
     templateVars?: Record<string, unknown> | (() => Record<string, unknown>);
     variant?: string;
-    reuseExistingNodes?: boolean;
-    fastRender?: boolean;
 };
 
 export type ArpaElementBluePrintType = string | (() => string);

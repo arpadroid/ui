@@ -448,9 +448,9 @@ class ArpaElement extends HTMLElement {
      * @param {ArpaZone} _zone - The zone that was inserted.
      * @param {Element | undefined} _container - The container element where the zone was inserted.
      * @param {NodeList | Node[]} _children - The child nodes of the zone.
-     * @returns {undefined | boolean | void} Return false to prevent the default behavior of adding the zone contents to the container.
+     * @returns {Promise<undefined | boolean | void>} Return false to prevent the default behavior of adding the zone contents to the container.
      */
-    $onZoneInserted(_zone, _container, _children) {}
+    async $onZoneInserted(_zone, _container, _children) {}
 
     // #endregion Set
 
@@ -1069,7 +1069,7 @@ class ArpaElement extends HTMLElement {
     }
 
     /**
-     * @returns {false | void}
+     * @returns {boolean | void}
      */
     $canRender() {
         // abstract method

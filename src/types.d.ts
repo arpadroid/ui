@@ -16,7 +16,6 @@ export {
 
 export * from './components/inputCombo/inputCombo.types';
 export * from './components/pager/pager.types';
-export * from './components/pager/components/pagerItem/pagerItem.types';
 export * from './components/buttons/button/button.types';
 export * from './components/buttons/iconButton/iconButton.types';
 export * from './components/dialogs/dialog/dialog.types';

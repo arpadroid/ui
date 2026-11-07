@@ -1,25 +1,158 @@
 arpa-pager {
+    --pagerItem-font: var(--primary-font);
+    --pagerItem-font-weight: 400;
+    --pagerItem-font-size: 1rem;
+    --pagerItem-color: var(--grey-550);
+    --pagerItem-selected-color: var(--color-primary);
+    --pagerItem-active-color: var(--color-primary);
+    --pagerItem-size: 2.2rem;
+
     display: flex;
     flex-direction: row;
     gap: 0;
     align-items: center;
     justify-content: center;
     width: 100%;
-    padding: 12px 20px;
+    padding: 0.75rem 1.25rem;
     margin-left: auto;
     container-name: pager-container;
     container-type: normal;
-    border-radius: 8px;
+    background: var(--overlay-95);
+    border-radius: 0.25rem;
 
     &:empty {
         display: none;
     }
 }
 
-.pager__numbers {
+.pager__items {
     display: flex;
     flex-flow: row wrap;
-    gap: 0 2px;
+    gap: 0 0.125rem;
     align-items: center;
     justify-content: center;
+}
+
+/*
+ * Pager Item
+ */
+
+.pager__item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--pagerItem-size);
+    height: var(--pagerItem-size);
+    padding: 0;
+    margin: 0 1px;
+    text-align: center;
+    border-radius: 0.5rem;
+}
+
+/*
+* Next/Previous buttons
+*/
+.pager__nextControl,
+.pager__prevControl {
+    display: flex;
+    align-items: center;
+
+    .icon {
+        width: 2rem;
+        height: 2rem;
+        font-size: 2rem;
+    }
+}
+
+a.pager__item:hover,
+a.pager__item:hover arpa-icon {
+    font-weight: 600;
+    color: var(--pagerItem-active-color);
+}
+
+a.pager__item:focus {
+    font-weight: 600;
+    color: var(--pagerItem-active-color);
+    outline: none;
+
+    .icon {
+        color: var(--pagerItem-active-color);
+    }
+
+    &::after {
+        position: absolute;
+        bottom: 0.25rem;
+        display: block;
+        width: 0.6rem;
+        height: 0.125rem;
+        content: '';
+        background: var(--blue-medium);
+        border-radius: 0.125rem;
+    }
+}
+
+/*
+ * Input
+ */
+
+.pager__item,
+.pager__input {
+    font-family: var(--pagerItem-font);
+    font-size: var(--pagerItem-font-size);
+    font-weight: var(--pagerItem-font-weight);
+    color: var(--pagerItem-color);
+}
+
+.pager__input {
+    width: var(--pagerItem-size);
+    height: var(--pagerItem-size);
+    padding: 0;
+    text-align: center;
+    appearance: textfield;
+    background: transparent;
+    border: none;
+    border-top: 0.125rem solid transparent;
+    border-bottom: 0.125rem solid var(--grey-400);
+    border-radius: 0;
+    box-shadow: none;
+
+    &:focus {
+        outline: none;
+        border: 0.125rem solid var(--blue-medium);
+        border-radius: 0.25rem;
+    }
+}
+
+/* Remove input arrows */
+.pager__input::-webkit-inner-spin-button,
+.pager__input::-webkit-outer-spin-button {
+    margin: 0;
+    appearance: none;
+}
+
+.pager__spacer {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: var(--pagerItem-size);
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--grey-400);
+    transform: translateY(-0.375rem);
+}
+
+/*
+* Active
+*/
+.pager__item[is-active] {
+    font-weight: 700;
+    color: var(--pagerItem-selected-color);
+
+    .pager__input,
+    .pager__content {
+        font-weight: 700;
+        color: var(--pagerItem-selected-color);
+    }
 }

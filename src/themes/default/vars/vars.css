@@ -1,9 +1,10 @@
 :root {
     --main-bg-color: brown;
-    --box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.2);
-    --max-page-width: 1600px;
-    --comboBox-shadow: rgba(0, 0, 0, 0.3) 3px 3px 7px 0px;
+    --box-shadow: 0 0 0.3125rem 0 rgb(0 0 0 / 20%);
+    --max-page-width: 100rem;
+    --comboBox-shadow: rgb(0 0 0 / 30%) 0.1875rem 0.1875rem 0.4375rem 0rem;
     --theme-transition: background-color 0.4s ease-out, color 0.4s ease-out, border 0.4s ease-out,
         opacity 0.4s ease-out, box-shadow 0.4s ease-out, transform 0.2s var(--easeInExpo), height 0.2s var(--easeInExpo);
+
     interpolate-size: allow-keywords;
 }

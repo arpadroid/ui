@@ -1,27 +1,18 @@
 /**
  * @typedef {import('./pager.types').PagerConfigType} PagerConfigType
  * @typedef {import('./pager.types').PagerUpdateCallbackType} PagerUpdateCallbackType
- * @typedef {import('./components/pagerItem/pagerItem.js').default} PagerItem
- * @typedef {import('../pager/components/pagerItem/pagerItem.types').PagerItemConfigType} PagerItemConfigType
  */
-import { getURLParam, observerMixin, attrString, renderNode, editURL, listen } from '@arpadroid/tools';
-import { defineCustomElement, dummySignal, dummyListener, dummyOff } from '@arpadroid/tools';
+import { getURLParam, observerMixin, editURL, mergeObjects, sanitizeURL, classNames } from '@arpadroid/tools';
+import { defineCustomElement, dummySignal, dummyListener, dummyOff, mapHTML, $attr } from '@arpadroid/tools';
 import ArpaElement from '../core/arpaElement/arpaElement.js';
 
 const html = String.raw;
 class Pager extends ArpaElement {
-    ///////////////////////////////
-    // #region Initialization
-    ////////////////////////////
-
     /** @type {PagerConfigType} */
     _config = this._config;
-    /** @type {Record<string, PagerItem>} */
-    pagerItems = {};
 
     /**
-     * Creates a new pager component.
-     * @param {PagerConfigType} config - The configuration object.
+     * @param {PagerConfigType} config
      */
     constructor(config) {
         super(config);
@@ -38,35 +29,29 @@ class Pager extends ArpaElement {
     }
 
     /**
-     * Sets the configuration.
-     * @param {PagerConfigType} config
-     */
-    setConfig(config = {}) {
-        config.renderMode = 'minimal';
-        super.setConfig(config);
-    }
-
-    /**
-     * Returns the default configuration.
      * @returns {PagerConfigType}
      */
     getDefaultConfig() {
         this.i18nKey = 'ui.pager';
-        return {
+        /** @type {PagerConfigType} */
+        const config = {
             id: 'pager',
             className: 'pager',
             currentPage: 1,
             totalPages: 1,
             maxNodes: 7,
             hasArrowControls: false,
+            prevIcon: 'chevron_left',
+            nextIcon: 'chevron_right',
+            lblNextPage: this.i18nText('lblNextPage'),
+            lblPrevPage: this.i18nText('lblPrevPage'),
             urlParam: 'page',
-            itemComponent: 'pager-item',
-            adjustSelectedPosition: true,
-            ariaLabel: this.i18nText('label')
+            spacerContent: '...',
+            ariaLabel: this.i18nText('label'),
+            fastRender: true
         };
+        return mergeObjects(super.getDefaultConfig(), config);
     }
-
-    // #endregion Initialization
 
     ////////////////////
     // #region Get
@@ -76,44 +61,24 @@ class Pager extends ArpaElement {
         return this.getProp('id') || 'pager';
     }
 
-    /**
-     * Gets the current page.
-     * @returns {number}
-     */
     getCurrentPage() {
         const urlParam = this.getUrlParam();
         const currentPage = this.getProp('current-page');
         return parseFloat(getURLParam(urlParam) ?? currentPage);
     }
 
-    /**
-     * Returns the URL parameter name that dictates the current page.
-     * @returns {string}
-     */
     getUrlParam() {
         return this.getProp('url-param') ?? 'page';
     }
 
-    /**
-     * Gets the total number of pages.
-     * @returns {number}
-     */
     getTotalPages() {
         return parseFloat(this.getProp('total-pages'));
     }
 
-    /**
-     * Returns the maximum number of links that the pager should display.
-     * @returns {number}
-     */
     getMaxNodes() {
         return parseFloat(this.getProp('max-nodes'));
     }
 
-    /**
-     * Returns the next page.
-     * @returns {number}
-     */
     getNextPage() {
         let nextPage = this.getCurrentPage() + 1;
         if (nextPage > this.getTotalPages()) {
@@ -122,10 +87,6 @@ class Pager extends ArpaElement {
         return nextPage;
     }
 
-    /**
-     * Returns the previous page.
-     * @returns {number}
-     */
     getPrevPage() {
         let prevPage = this.getCurrentPage() - 1;
         if (prevPage < 1) {
@@ -134,25 +95,36 @@ class Pager extends ArpaElement {
         return prevPage;
     }
 
-    getItemComponent() {
-        return this.getProp('item-component') || 'pager-item';
-    }
-
     /**
-     * Returns the pager items by page number.
-     * @param {number | string} page - The page number.
-     * @returns {PagerItem | null} Returns the pager item for the specified page.
+     * @param {number} page
+     * @returns {string}
      */
-    getItemByPage(page) {
-        return this.pagerItems[`pagerItem-${page}`] || null;
+    getLink(page) {
+        const urlParam = this.getUrlParam();
+        return editURL(sanitizeURL(window.location.href), {
+            [urlParam || 'page']: page
+        });
     }
 
     /**
-     * Determines whether the pager has arrow controls.
+     * @param {number} page
+     * @returns {string}
+     */
+    getItemTag(page) {
+        if (Number(page) === Number(this.getCurrentPage())) {
+            return 'div';
+        }
+        return 'a';
+    }
+
+    /**
+     * @param {number | string} page
      * @returns {boolean}
      */
-    hasArrowControls() {
-        return Boolean(this.hasProp('hasArrowControls'));
+    hasInput(page) {
+        const totalPages = this.getTotalPages() || 0;
+        const maxNodes = Number(this.getProp('maxNodes')) || 0;
+        return totalPages > maxNodes && Number(page) === Number(this.getCurrentPage());
     }
 
     // #region Get
@@ -166,10 +138,32 @@ class Pager extends ArpaElement {
      * @param {number} page - The current page.
      * @param {number} totalPages - The total number of pages.
      */
-    setPager(page, totalPages) {
+    async setPager(page, totalPages) {
+        const focused = document.activeElement;
         this.setCurrentPage(page);
         totalPages && this.setTotalPages(totalPages);
+        this.nodes = {};
+        this.arpaNodes = {};
+
         this.reRender();
+        await this.onRendered();
+        await this.promise;
+        if (focused instanceof HTMLElement) {
+            if (focused.classList.contains('pager__prevControl')) {
+                if (this.nodes.prevControl instanceof HTMLElement) {
+                    this.nodes.prevControl?.focus();
+                }
+            } else if (focused.classList.contains('pager__nextControl')) {
+                if (this.nodes.nextControl instanceof HTMLElement) {
+                    this.nodes.nextControl?.focus();
+                }
+            } else if (
+                focused.classList.contains('pager__item') ||
+                focused.classList.contains('pager__input')
+            ) {
+                this.focusInput();
+            }
+        }
     }
 
     /**
@@ -190,7 +184,7 @@ class Pager extends ArpaElement {
         this.setAttribute('total-pages', String(totalPages));
     }
 
-    // #endregion ACCESSORS
+    // #endregion Set
 
     /////////////////////
     // #region Render
@@ -205,18 +199,15 @@ class Pager extends ArpaElement {
         }
     }
 
-    async $initializeNodes() {
-        await super.$initializeNodes();
-        this.renderPager();
-        return true;
-    }
-
-    renderPager() {
+    /**
+     * Computes the pager nodes.
+     * @returns {import('./pager.types').PagerComputeResult | null}
+     */
+    computePager() {
         const currentPage = this.getCurrentPage();
         const totalPages = this.getTotalPages();
         if (totalPages <= 1) {
-            this.replaceChildren();
-            return;
+            return null;
         }
         const _maxNodes = this.getMaxNodes();
         let maxNodes = totalPages < _maxNodes ? totalPages : _maxNodes;
@@ -233,178 +224,133 @@ class Pager extends ArpaElement {
             end = totalPages - 1;
             start -= maxNodes - (end - start);
         }
-        this.addNodes(start, end, totalPages, hasLeftSpacer, hasRightSpacer);
+        return { start, end, totalPages, hasLeftSpacer, hasRightSpacer };
     }
 
-    /**
-     * Adds the pager nodes.
-     * @param {number} start
-     * @param {number} end
-     * @param {number} totalPages
-     * @param {boolean} hasLeftSpacer
-     * @param {boolean} hasRightSpacer
-     */
-    addNodes(start, end, totalPages, hasLeftSpacer, hasRightSpacer) {
-        this.innerHTML = '';
-        this.addPrev(this);
-        this.itemsNode = document.createElement('div');
-        this.itemsNode.classList.add('pager__numbers');
-        this.appendChild(this.itemsNode);
-        /**
-         * Updates the number item.
-         * @type {PagerUpdateCallbackType}
-         */
-        const onUpdate = payload => this.updateNumberItem(payload.node);
-        this.renderItem(1, { onUpdate });
-        hasLeftSpacer && this.addSpacer('pagerItem-spacer-left');
-        this.addNumberItems(start, end);
-        hasRightSpacer && this.addSpacer('pagerItem-spacer-right');
-        this.renderItem(totalPages, { onUpdate });
-        this.addNext(this);
-    }
-
-    /**
-     * Renders a pager item.
-     * @param {number | undefined} page - The page number.
-     * @param {PagerItemConfigType} config - The configuration object.
-     * @returns {Promise<PagerItem>} Returns the rendered pager item.
-     */
-    async renderItem(page, config = {}) {
-        const isCurrent = this.getCurrentPage() === Number(page);
+    $renderBlueprint() {
         const {
-            id = `pagerItem-${page}`,
-            content = page?.toString(),
-            isActive = this.getCurrentPage() === Number(page),
-            container = this.itemsNode,
-            onUpdate,
-            className,
-            ariaLabel
-        } = config;
-        let item = this.pagerItems[id];
-        if (!item) {
-            const attr = { page, 'is-active': isActive, class: className, ariaLabel };
-            const itemComponent = this.getItemComponent();
-            const itemHTML = html`<${itemComponent} ${attrString(attr)}>${content}</${itemComponent}>`;
-            item = /** @type {PagerItem} */ (renderNode(itemHTML));
-            this.pagerItems[id] = item;
-        } else if (typeof onUpdate === 'function') {
-            onUpdate({ isCurrent, node: item });
-        }
-        this._handleClick(item);
-        container?.appendChild(item);
-        return item;
+            start = 0,
+            end = 1,
+            totalPages,
+            hasLeftSpacer = false,
+            hasRightSpacer = false
+        } = this.computePager() || { totalPages: 0 };
+
+        if (totalPages <= 1) return '';
+        const nodeRange = Array.from({ length: end - start + 1 }, (_, i) => start + i);
+        return html`
+            <arpa-node
+                name="prevControl"
+                tag="a"
+                aria-label="{lblPrevPage}"
+                class="pager__item"
+                can-render="hasArrowControls"
+                href="${this.getLink(this.getPrevPage())}"
+                data-page="{getPrevPage()}"
+                on-click="{onLinkClick}"
+            >
+                <arpa-icon>{prevIcon}</arpa-icon>
+            </arpa-node>
+
+            <arpa-node name="items" tag="div">
+                ${this.renderPageItem(1)}
+
+                <arpa-node name="leftSpacer" tag="span" class="pager__spacer" can-render="${hasLeftSpacer}">
+                    {spacerContent}
+                </arpa-node>
+
+                ${mapHTML(nodeRange, index => this.renderPageItem(index))}
+
+                <arpa-node name="rightSpacer" tag="span" class="pager__spacer" can-render="${hasRightSpacer}">
+                    {spacerContent}
+                </arpa-node>
+
+                ${this.renderPageItem(totalPages)}
+            </arpa-node>
+            <arpa-node
+                name="nextControl"
+                tag="a"
+                on-click="{onLinkClick}"
+                class="pager__item"
+                aria-label="{lblNextPage}"
+                can-render="hasArrowControls"
+                href="${this.getLink(this.getNextPage())}"
+                data-page="{getNextPage()}"
+            >
+                <arpa-icon>{nextIcon}</arpa-icon>
+            </arpa-node>
+        `;
+    }
+
+    $renderTemplate() {
+        return html`{prevControl}{items}{nextControl}`;
     }
 
     /**
-     * Adds a spacer to the pager.
-     * @param {string} id
+     * Checks if a page is active.
+     * @param {number} page
+     * @returns {boolean}
      */
-    addSpacer(id = 'pagerItem-spacer') {
-        this.renderItem(undefined, {
-            id,
-            content: '...',
-            container: this.itemsNode,
-            className: 'pager__spacer'
-        });
+    isActive(page) {
+        return this.getCurrentPage() == Number(page);
     }
 
     /**
-     * Adds the number items to the pager.
-     * @param {number} start
-     * @param {number} end
+     * Renders a page item.
+     * @param {number} page
+     * @returns {string}
      */
-    addNumberItems(start, end) {
-        for (let i = start; i <= end; i++) {
-            /**
-             * Updates the number item.
-             * @type {PagerUpdateCallbackType}
-             */
-            const onUpdate = ({ node }) => this.updateNumberItem(node);
-            this.renderItem(i, {
-                container: this.itemsNode,
-                onUpdate
-            });
-        }
+    renderPageItem(page) {
+        const tag = this.getItemTag(page);
+        const link = this.getLink(page);
+        const hasInput = this.hasInput(page);
+        return html`<arpa-node
+            name="page${page}"
+            class="${classNames(['pager__item', { pager__inputContainer: hasInput }])}"
+            tag="${tag}"
+            data-page="${page}"
+            href="${link}"
+            ${$attr({
+                'is-active': this.isActive(page),
+                'on-click': hasInput ? undefined : '{onLinkClick}'
+            })}
+        >
+            ${(!hasInput && page) || ''} ${this.renderInput(page)}
+        </arpa-node>`;
     }
 
     /**
-     * Updates a number item.
-     * @param {PagerItem & HTMLElement} node - The node to be updated.
-     * @returns {void}
+     * @param {number} page
+     * @returns {string}
      */
-    updateNumberItem(node) {
-        if (Number(node.getAttribute('page')) === this.getCurrentPage()) {
-            node.setAttribute('is-active', '');
-            node.render(undefined, true);
-        } else if (node.hasAttribute('is-active')) {
-            node.removeAttribute('is-active');
-            node.render(undefined, true);
-        }
+    renderInput(page) {
+        if (!this.hasInput(page)) return '';
+        return html`
+            <arpa-node
+                name="inputForm"
+                tag="arpa-form"
+                id="pager-item-input--${this.getId()}"
+                class="pagerItem__form"
+                variant="mini"
+                on-submit="{onSubmitInput}"
+            >
+                <input
+                    class="pager__input"
+                    name="${this.getUrlParam()}"
+                    aria-label="Current page"
+                    type="number"
+                    value="${page}"
+                    placeholder="${page}"
+                    min="1"
+                    max="${this.getTotalPages()}"
+                />
+            </arpa-node>
+        `;
     }
 
-    // #region Arrows
-
-    /**
-     * Adds the previous page arrow control link.
-     * @param {Pager} container - The container to which the arrow control is added.
-     */
-    addPrev(container = this) {
-        if (!this.hasArrowControls()) return;
-        /**
-         * Updates the number item.
-         * @type {PagerUpdateCallbackType}
-         */
-        const onUpdate = ({ node }) => this.updateArrowControl(node, this.getPrevPage());
-        this.renderItem(this.getPrevPage(), {
-            content: html`<arpa-icon>chevron_left</arpa-icon>`,
-            container,
-            id: 'pagerItem-prev',
-            className: 'pager__prev',
-            ariaLabel: this.i18nText('lblPrevPage'),
-            onUpdate
-        });
-    }
-
-    /**
-     * Adds the next page arrow control link.
-     * @param {HTMLElement} container - The container to which the arrow control is added.
-     */
-    addNext(container = this) {
-        if (!this.hasArrowControls()) return;
-        /**
-         * Updates the number item.
-         * @type {PagerUpdateCallbackType}
-         */
-        const onUpdate = ({ node }) => this.updateArrowControl(node, this.getNextPage());
-        this.renderItem(this.getNextPage(), {
-            content: html`<arpa-icon>chevron_right</arpa-icon>`,
-            container,
-            id: 'pagerItem-next',
-            className: 'pager__next',
-            ariaLabel: this.i18nText('lblNextPage'),
-            onUpdate
-        });
-    }
-
-    /**
-     * Updates the arrow control link.
-     * @param {PagerItem} node
-     * @param {number} page - The page number.
-     */
-    updateArrowControl(node, page) {
-        node.setAttribute('page', String(page));
-        const link = node.querySelector('a');
-        if (link) {
-            link.href = editURL(link.href, { [this.getUrlParam()]: page });
-            link.setAttribute('data-page', String(page));
-        }
-    }
-
-    // #endregion ARROWS
-
-    // #endregion RENDERING
-
+    //////////////////////
     // #region Events
+    /////////////////////
 
     /**
      * Assigns a function to be called when the page changes.
@@ -415,32 +361,43 @@ class Pager extends ArpaElement {
     }
 
     /**
-     * Adds click event listeners to the pager item handler nodes.
-     * @param {ArpaElement} node - The node to which the event is attached.
+     * Handles the submit event.
+     * @param {Event} event - The event object.
      */
-    async _handleClick(node) {
-        await this.promise;
-        node.promise && (await node.promise);
-        const clickHandlers = node.querySelectorAll('a.pagerItem__content, button.pagerItem__content');
-        listen(clickHandlers, 'click', this.onLinkClick);
+    onSubmitInput(event) {
+        event.preventDefault();
+        const form = event.target;
+        if (form instanceof HTMLFormElement) {
+            const input = form?.querySelector('input');
+            const total = this.getTotalPages();
+            let page = Number(input?.value) || 1;
+            if (page < 1) page = 1;
+            if (page > total) page = total;
+            if (typeof this._config.onClick === 'function') {
+                this._config.onClick({
+                    page,
+                    event
+                });
+            }
+            this.onLinkClick(event);
+        }
     }
 
     /**
      * Handles the click event on the pager item link.
      * @param {Event} event
-     * @param {number | string} [page] - The page number.
      */
-    onLinkClick(event, page) {
-        const { onClick } = this._config;
-        /** @type {PagerItem | null} */
-        const pagerItem =
-            (event?.target instanceof HTMLElement && event?.target?.closest(this.getItemComponent())) || null;
+    onLinkClick(event) {
+        const target = /** @type {HTMLElement} */ (event.target);
+        const pagerItem = /** @type {HTMLAnchorElement | null} */ (target?.closest('a') || target);
+        if (pagerItem?.tagName !== 'A') return;
 
-        page = Number(page || pagerItem?.getAttribute('page'));
+        let page = Number(pagerItem?.getAttribute('data-page'));
         const totalPages = this.getTotalPages();
-        if (page > totalPages) {
+        if (Number(page) > Number(totalPages)) {
             page = totalPages;
         }
+
         const payload = {
             page,
             node: pagerItem,
@@ -449,13 +406,11 @@ class Pager extends ArpaElement {
 
         this.signal('change', payload);
 
+        const { onClick } = this._config;
         if (typeof onClick === 'function') {
+            event.preventDefault();
             onClick(payload);
         }
-
-        requestAnimationFrame(() => {
-            this.focusInput();
-        });
     }
 
     focusInput() {

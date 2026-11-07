@@ -417,6 +417,9 @@ export function canRenderNode(element, name, config = {}, attributes = {}) {
     }
 
     let canRenderStr = (typeof attrCanRender === 'string' && attrCanRender) || '';
+    if (canRenderStr === 'false') return false;
+    if (canRenderStr === 'true') return true;
+
     !canRenderStr && typeof canRender === 'string' && (canRenderStr = canRender);
 
     if (canRenderStr && typeof element?.hasProp === 'function') {
@@ -639,7 +642,7 @@ export async function applyTemplateAttributes(element, template, _payload = {}, 
  */
 export function getNodesConfigBlueprint(element, blueprint) {
     blueprint = String(blueprint || element.$renderBlueprint() || '');
-    if (!blueprint.toLowerCase().includes('<arpa-node')) return;
+    if (!blueprint.toLowerCase().includes('arpa-node')) return;
 
     const tpl = document.createElement('template');
     tpl.innerHTML = blueprint;
@@ -733,7 +736,7 @@ export function renderTemplate(component, _template, vars = component.getTemplat
     let rv = typeof result === 'string' ? result : '';
     // Skip the extra HTML parse unless the markup contains zones or nodes to register/dedupe.
     const lowerRv = rv.toLowerCase();
-    if (lowerRv.includes('<arpa-zone') || lowerRv.includes('<arpa-node')) {
+    if (lowerRv.includes('arpa-zone') || lowerRv.includes('arpa-node')) {
         const tpl = document.createElement('template');
         tpl.innerHTML = rv;
         const templateZones = tpl.content.querySelectorAll('arpa-zone');

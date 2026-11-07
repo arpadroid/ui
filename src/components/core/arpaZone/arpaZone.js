@@ -232,16 +232,25 @@ class ArpaZone extends HTMLElement {
      * Executes the zone handling callbacks for the given zone element.
      * @param {ArpaElement | null | undefined} element
      * @param {ArpaElementContentNodeType | undefined} zoneElement
-     * @returns {void | boolean}
+     * @returns {Promise<void | boolean>}
      */
-    executeZoneHandlingCallbacks(element = this.element, zoneElement = this.zoneElement) {
+    async executeZoneHandlingCallbacks(element = this.element, zoneElement = this.zoneElement) {
         const children = this.fragment?.childNodes || [];
         if (element?.$onZonePlaced?.(this, zoneElement, children) === false) {
             this.resolve(false);
             return false;
         }
-        if (zoneElement && '$onZoneInserted' in zoneElement) {
-            if (zoneElement?.$onZoneInserted?.(this, zoneElement, children) === false) {
+
+        if (zoneElement) {
+            const tag = zoneElement?.tagName.toLowerCase();
+            if (!('$onZoneInserted' in zoneElement) && tag.includes('-')) {
+                await element?.promise;
+            }
+
+            if (
+                '$onZoneInserted' in zoneElement &&
+                (await zoneElement?.$onZoneInserted?.(this, zoneElement, children)) === false
+            ) {
                 this.resolve(false);
                 return false;
             }
@@ -265,14 +274,14 @@ class ArpaZone extends HTMLElement {
 
     /**
      * @param {Element |undefined | null} zoneElement
-     * @returns {void | boolean}
+     * @returns {Promise<void| boolean>}
      */
-    apply(zoneElement = this.zoneElement) {
+    async apply(zoneElement = this.zoneElement) {
         if (!zoneElement || !this.fragment?.childNodes.length) {
             this.resolve(false);
             return false;
         }
-        if (this.executeZoneHandlingCallbacks(this.element, zoneElement) === false) {
+        if ((await this.executeZoneHandlingCallbacks(this.element, zoneElement)) === false) {
             return false;
         }
         const method = this.getApplyMethod();

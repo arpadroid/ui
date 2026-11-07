@@ -1,22 +1,22 @@
 :root {
-    --grey-1000: #ffffff;
+    --grey-1000: #fff;
     --grey-950: #f2f2f2;
     --grey-900: #e6e6e6;
     --grey-850: #d9d9d9;
-    --grey-800: #cccccc;
+    --grey-800: #ccc;
     --grey-750: #bfbfbf;
     --grey-700: #b3b3b3;
     --grey-650: #a6a6a6;
-    --grey-600: #999999;
+    --grey-600: #999;
     --grey-550: #8c8c8c;
     --grey-500: #808080;
     --grey-450: #737373;
-    --grey-400: #666666;
+    --grey-400: #666;
     --grey-350: #595959;
     --grey-300: #4d4d4d;
     --grey-250: #404040;
     --grey-225: #3a3a3a;
-    --grey-200: #333333;
+    --grey-200: #333;
     --grey-175: #2d2d2d;
     --grey-150: #262626;
     --grey-125: #202020;
@@ -27,7 +27,7 @@
     --grey-30: #070707;
     --grey-20: #050505;
     --grey-10: #030303;
-    --grey-0: #000000;
+    --grey-0: #000;
 
     /**
      * Colors
@@ -35,13 +35,11 @@
 
     --color-primary: #2a8cef;
     --color-tertiary: var(--color-blue-neon-light);
-
     --color-background: var(--grey-100);
     --color-card-hilight: var(--primary-hilight);
     --color-error-bg: var(--grey-150);
     --color-error-outline: var(--color-light-red);
     --color-icon-active: var(--grey-650);
-
     --red-lightest: #302625;
 
     /** 
@@ -56,9 +54,9 @@
      * Overlays
      */
 
-    --overlay-95: rgba(26, 26, 26, 0.95);
-    --overlay: rgba(26, 26, 26, 0.9);
-    --overlay-light: rgba(28, 28, 28, 0.5);
+    --overlay-95: rgb(26 26 26 / 95%);
+    --overlay: rgb(26 26 26 / 90%);
+    --overlay-light: rgb(28 28 28 / 50%);
 
     /** 
      * Highlights
@@ -66,15 +64,10 @@
 
     --primary-hilight: var(--grey-150);
     --primary-highlight-outline: var(--color-primary);
-
     --selected-hilight: #004387;
     --current-hilight: #092037;
-
-    --group-box-shadow: rgba(94, 94, 94, 0.25) 0px 1px 6px 1px, rgba(53, 53, 53, 0.3) 0px 1px 2px 0px;
-    --select-combo-box-shadow: rgba(89, 89, 89, 0.5) 0px 2px 8px 0px;
-
-    --search-hilight: #8883e2;
-    --search-hilight: var(--color-tertiary);
+    --group-box-shadow: rgb(94 94 94 / 25%) 0rem 0.0625rem 0.375rem 0.0625rem, rgb(53 53 53 / 30%) 0rem 0.0625rem 0.125rem 0rem;
+    --select-combo-box-shadow: rgb(89 89 89 / 50%) 0rem 0.125rem 0.5rem 0rem;
     --search-hilight: var(--color-yellow);
 
     /** 
@@ -85,12 +78,12 @@
     --striped-area: repeating-linear-gradient(
         45deg,
         var(--grey-150),
-        var(--grey-150) 10px,
-        var(--color-background) 10px,
-        var(--color-background) 20px
+        var(--grey-150) 0.625rem,
+        var(--color-background) 0.625rem,
+        var(--color-background) 1.25rem
     );
-    --striped-area-outline: 2px solid var(--grey-150);
-    --striped-area-border: 2px solid var(--color-background);
+    --striped-area-outline: 0.125rem solid var(--grey-150);
+    --striped-area-border: 0.125rem solid var(--color-background);
 
     /** Messages **/
     --bg-info: var(--grey-150);
@@ -109,10 +102,8 @@
     --button-box-shadow: none;
     --button-input-box-shadow-active: none;
     --button-input-box-shadow: none;
-
     --input-box-shadow: none;
     --field-option-active-background: var(--grey-150);
-
     --input-bg-color: var(--grey-150);
     --image-bg-color: var(--grey-150);
 }
