@@ -151,11 +151,11 @@ class Pager extends ArpaElement {
         if (focused instanceof HTMLElement) {
             if (focused.classList.contains('pager__prevControl')) {
                 if (this.nodes.prevControl instanceof HTMLElement) {
-                    this.nodes.prevControl?.focus();
+                    this.nodes.prevControl?.focus({ preventScroll: true });
                 }
             } else if (focused.classList.contains('pager__nextControl')) {
                 if (this.nodes.nextControl instanceof HTMLElement) {
-                    this.nodes.nextControl?.focus();
+                    this.nodes.nextControl?.focus({ preventScroll: true });
                 }
             } else if (
                 focused.classList.contains('pager__item') ||
@@ -416,7 +416,7 @@ class Pager extends ArpaElement {
     focusInput() {
         /** @type {HTMLElement | null | undefined} */
         const focusable = this?.querySelector('input[type="number"]');
-        typeof focusable?.focus === 'function' && focusable?.focus();
+        typeof focusable?.focus === 'function' && focusable?.focus({ preventScroll: true });
     }
 
     // #endregion EVENTS

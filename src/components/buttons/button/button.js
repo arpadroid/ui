@@ -49,9 +49,10 @@ class Button extends ArpaElement {
     }
 
     $renderTemplate() {
+        const tag = this.hasProp('readOnly') ? 'span' : 'button';
         return html`<arpa-node
             name="button"
-            tag="button"
+            tag="${tag}"
             aria-label="{getAriaLabel()}"
             class="{buttonClass}"
             type="{type}"

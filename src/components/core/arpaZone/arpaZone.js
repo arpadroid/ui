@@ -208,8 +208,10 @@ class ArpaZone extends HTMLElement {
         if ('getZoneTarget' in zoneElement && typeof zoneElement.getZoneTarget === 'function') {
             zoneTarget = await zoneElement.getZoneTarget(this, this.fragment?.childNodes);
         }
-
         if (typeof zoneTarget === 'string') {
+            if (this.element && 'onRendered' in this.element) {
+                await this.element.onRendered();
+            }
             zoneTarget = zoneElement?.querySelector(zoneTarget);
         }
         return zoneTarget || zoneElement;

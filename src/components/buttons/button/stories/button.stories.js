@@ -59,7 +59,8 @@ export const Zones = {
             await waitFor(() => {
                 const tooltip = canvasElement.querySelector('arpa-tooltip');
                 expect(tooltip).toBeVisible();
-                expect(tooltip).toHaveTextContent(
+                const tooltipContent = tooltip?.querySelector('.tooltip__content');
+                expect(tooltipContent).toHaveTextContent(
                     'This zone can be used to define custom tooltip content with any html.'
                 );
             });

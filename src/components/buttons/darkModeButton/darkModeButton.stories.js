@@ -23,6 +23,7 @@ export const Test = {
     name: 'Test',
     play: async ({ canvasElement, step, canvas }) => {
         const button = /** @type {DarkModeButton} */ (canvasElement.querySelector('dark-mode-button'));
+        await button?.onRendered();
         const darkStyles = document.getElementById('dark-styles');
         darkStyles?.setAttribute('disabled', '');
 
@@ -36,7 +37,6 @@ export const Test = {
         });
 
         await step('Clicks the button and expects dark mode', async () => {
-            await new Promise(resolve => setTimeout(resolve, 10));
             await button?.click();
             await waitFor(() => {
                 const darkStyles = document.getElementById('dark-styles');

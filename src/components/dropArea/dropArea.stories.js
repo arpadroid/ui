@@ -31,7 +31,6 @@ export const TestSingle = {
         const dropAreaNode = canvasElement.querySelector('drop-area');
         const dropArea = /** @type {DropArea} */ (dropAreaNode);
         await dropArea.promise;
-        await new Promise(resolve => setTimeout(resolve, 0));
         const handlerNode = /** @type {HTMLElement} */ (dropArea.querySelector('.dropArea__handler'));
 
         await step('renders the drop area', async () => {
@@ -128,7 +127,7 @@ export const TestMultiple = {
         /** @type {DropArea | null} */
         const dropAreaNode = canvasElement.querySelector('drop-area');
         const dropArea = /** @type {DropArea} */ (dropAreaNode);
-        await dropArea.promise;
+        await dropArea.onRendered();
         await new Promise(resolve => setTimeout(resolve, 0));
         const handlerNode = dropArea.querySelector('.dropArea__handler');
 

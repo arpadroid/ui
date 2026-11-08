@@ -4,7 +4,7 @@
  * @typedef {import('../core/arpaZone/arpaZone.js').default} ArpaZone
  */
 import ArpaElement from '../core/arpaElement/arpaElement.js';
-import { classNames, defineCustomElement } from '@arpadroid/tools';
+import { $attr, classNames, defineCustomElement } from '@arpadroid/tools';
 
 const html = String.raw;
 class TruncateText extends ArpaElement {
@@ -48,6 +48,7 @@ class TruncateText extends ArpaElement {
 
     renderButton() {
         return html`<arpa-node
+            ${$attr({ readOnly: Boolean(this.closest('button')) })}
             name="button"
             tag="arpa-button"
             on-click="{toggleTruncate}"
