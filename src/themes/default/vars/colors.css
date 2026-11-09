@@ -55,6 +55,7 @@
     --color-error-lightest: var(--red-lightest);
     --color-background: var(--grey-20);
     --overlay-95: rgb(255 255 255 / 95%);
+    --overlay-98: rgb(255 255 255 / 98%);
     --overlay: rgb(247 247 247 / 90%);
     --overlay-medium: rgb(247 247 247 / 75%);
     --overlay-light: rgb(247 247 247 / 50%);
