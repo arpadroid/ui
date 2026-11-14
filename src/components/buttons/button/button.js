@@ -19,6 +19,7 @@ class Button extends ArpaElement {
         /** @type {ButtonConfigType} */
         const config = {
             className: 'arpaButton',
+            fastRender: true,
             type: 'button',
             buttonClass: 'arpaButton__button',
             tooltipPosition: 'left',

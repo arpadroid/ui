@@ -92,7 +92,6 @@
         .comboBox__item__label {
             font-weight: var(--field-option-active-weight);
             color: var(--field-option-active-color);
-            letter-spacing: -0.0125rem;
         }
     }
 

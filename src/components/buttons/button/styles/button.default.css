@@ -129,7 +129,7 @@ arpa-button button arpa-tooltip.tooltip {
 * Hover / Focus
 */
 
-.arpaButton__button:not(:disabled, [data-invalid], [variant='minimal']) {
+arpa-button .arpaButton__button:not(:disabled, [data-invalid], [variant='minimal']) {
     /* &:hover,
     &:focus {
         .arpaButton__content {
