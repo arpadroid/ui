@@ -38,7 +38,7 @@
     --blue-dark: #00008b;
     --blue-medium: #4169e1;
     --blue-light: #cae6ff;
-    --blue-lightest: #d8f1ff;
+    --blue-lightest: #e1f2fc;
     --blue: #0266c8;
     --blue-deep: #0000cd;
     --blue-royal: #4169e1;
@@ -125,7 +125,7 @@
     --red: #db3121;
     --red-darkest: #581507;
     --red-dark: #831a06;
-    --red-medium: #bf291b;
+    --red-medium: #b72a1d;
     --red-light: #f5b1b8;
     --red-lightest: #fff5f4;
     --red-orange: #f52a00;
@@ -135,7 +135,8 @@
      * Oranges 
      */
     --orange: #f80;
-    --orange-dark: #9b5300;
+    --orange-medium: #d47304;
+    --orange-dark: #9b5a00;
     --orange-tangerine: #f60;
     --orange-pumpkin: #f80;
     --orange-carrot: #f90;
@@ -180,8 +181,8 @@
     --green-dark: #006400;
     --green-forest: #228b22;
     --green-lime: #0f0;
-    --green-light: #90ee90;
-    --green-pale: #98fb98;
+    --green-light: #f4fcf2;
+    --green-pale: #bcfb98;
     --green-sea: #2e8b57;
     --green-sea-medium: #3cb371;
     --green-sea-dark: #8fbc8f;

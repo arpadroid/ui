@@ -73,6 +73,57 @@ export function processTemplateVariable(name, value, element) {
 }
 
 /**
+ * Processes a template string and replaces the placeholders with the provided props.
+ * @param {string} template
+ * @param {Record<string, unknown>} props
+ * @param {ArpaElement} [element]
+ * @returns {string}
+ */
+export function _processTemplate(template, props = {}, element) {
+    if (!template) {
+        return '';
+    }
+    if (!template.includes('{')) {
+        return template;
+    }
+    const result = [];
+    let startIndex = 0;
+    let matchIndex = 0;
+    while ((matchIndex = template.indexOf('{', startIndex)) !== -1) {
+        result.push(template.slice(startIndex, matchIndex));
+        const endIndex = template.indexOf('}', matchIndex);
+        if (endIndex === -1) {
+            break;
+        }
+        const placeholder = template.slice(matchIndex + 1, endIndex);
+        // @ts-ignore
+        if (!props[placeholder] && typeof element[placeholder] === 'function') {
+            result.push(`{${placeholder}}`);
+            startIndex = endIndex + 1;
+            continue;
+        }
+
+        const val = processTemplateVariable(placeholder, props[placeholder], element);
+        result.push(val);
+        startIndex = endIndex + 1;
+    }
+    result.push(template.slice(startIndex));
+    return result.join('');
+}
+
+/**
+ * Processes a template string and replaces the placeholders with the provided props.
+ * @param {string} template
+ * @param {Record<string, unknown>} props
+ * @param {ArpaElement} [element]
+ * @returns {string}
+ */
+export function processTemplate(template, props = {}, element) {
+    template = processTemplateAttributes(template, props, element);
+    return _processTemplate(template, props, element);
+}
+
+/**
  * Checks whether a character should be treated as template whitespace.
  * @param {string} value
  * @returns {boolean}
@@ -167,7 +218,6 @@ export async function waitForEventHandlers(element, attr, value) {
 export async function getTemplateEventHandlers(element, attr, value) {
     const handlers = new Set();
     const eventHandlers = await waitForEventHandlers(element, attr, value);
-
     for (let eventHandler of eventHandlers) {
         if (eventHandler.tagName.toLowerCase() === 'arpa-node') {
             const arpaNode = /** @type {ArpaNode} */ (eventHandler);
@@ -306,57 +356,6 @@ export function processTemplateAttributes(template, props = {}, element) {
     return result.join('');
 }
 
-/**
- * Processes a template string and replaces the placeholders with the provided props.
- * @param {string} template
- * @param {Record<string, unknown>} props
- * @param {ArpaElement} [element]
- * @returns {string}
- */
-export function _processTemplate(template, props = {}, element) {
-    if (!template) {
-        return '';
-    }
-    if (!template.includes('{')) {
-        return template;
-    }
-    const result = [];
-    let startIndex = 0;
-    let matchIndex = 0;
-    while ((matchIndex = template.indexOf('{', startIndex)) !== -1) {
-        result.push(template.slice(startIndex, matchIndex));
-        const endIndex = template.indexOf('}', matchIndex);
-        if (endIndex === -1) {
-            break;
-        }
-        const placeholder = template.slice(matchIndex + 1, endIndex);
-        // @ts-ignore
-        if (!props[placeholder] && typeof element[placeholder] === 'function') {
-            result.push(`{${placeholder}}`);
-            startIndex = endIndex + 1;
-            continue;
-        }
-
-        const val = processTemplateVariable(placeholder, props[placeholder], element);
-        result.push(val);
-        startIndex = endIndex + 1;
-    }
-    result.push(template.slice(startIndex));
-    return result.join('');
-}
-
-/**
- * Processes a template string and replaces the placeholders with the provided props.
- * @param {string} template
- * @param {Record<string, unknown>} props
- * @param {ArpaElement} [element]
- * @returns {string}
- */
-export function processTemplate(template, props = {}, element) {
-    template = processTemplateAttributes(template, props, element);
-    return _processTemplate(template, props, element);
-}
-
 // #endregion Template Processing
 
 /////////////////////////////////////////////////
@@ -459,6 +458,7 @@ export function getNodeAttributes(element, name, config = {}, attributes = {}) {
             attr[key] = attr[key](element);
         }
         if (typeof attr[key] === 'string') {
+            if (key.startsWith('on')) continue;
             attr[key] = processTemplate(attr[key], element?.templateVars, element);
         }
     }
@@ -609,7 +609,7 @@ export function getTemplateAttributes(template, prefix = '') {
     if (prefix) {
         return getAttributesWithPrefix(template, prefix);
     }
-    const attr = getAttributes(template);
+    const attr = getAttributes(template, { convertFalseToBoolean: false });
     delete attr['template-type'];
     delete attr['template-mode'];
     delete attr['template-container'];
@@ -627,7 +627,7 @@ export async function applyTemplateAttributes(element, template, _payload = {}, 
     const payload = { ...(element.templateVars || {}), ..._payload };
     const attributes = getTemplateAttributes(template, attributePrefix);
     for (const key in attributes) {
-        if (typeof attributes[key] === 'string') {
+        if (typeof attributes[key] === 'string' && !key.startsWith('on')) {
             attributes[key] = processTemplate(attributes[key], payload, element);
         }
     }

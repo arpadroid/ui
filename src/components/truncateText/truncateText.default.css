@@ -2,16 +2,45 @@ truncate-text {
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
+}
 
-    .truncateText__button {
-        font-size: 0.9rem;
-        font-weight: 600;
-        color: var(--grey-800);
+truncate-text[inline-layout] {
+    arpa-button {
+        display: inline-flex;
+    }
+}
+
+truncate-text[max-lines] {
+    --max-lines: 1000000;
+
+    .truncateText__content {
+        display: -webkit-box;
+        flex-direction: row-reverse;
+        overflow: hidden;
+        -webkit-line-clamp: var(--max-lines);
+        line-clamp: var(--max-lines);
+        -webkit-box-orient: vertical;
     }
 
-    &[inline-layout] {
-        arpa-button {
-            display: inline-flex;
+    &:not([is-truncated]) {
+        .truncateText__content {
+            display: contents;
         }
     }
+
+    .truncateText__miniButton {
+        float: right;
+        display: inline-flex;
+    }
+}
+
+truncate-text.truncateText--truncateLines:not([is-clamped]) {
+    .truncateText__miniButton {
+        display: none;
+    }
+}
+
+.truncateText__button {
+    display: flex;
+    margin-top: 0.5rem;
 }

@@ -69,6 +69,11 @@
     display: block;
 }
 
+/* stylelint-disable-next-line no-descending-specificity */
+.tooltip__handler:hover .tooltip__content {
+    z-index: 2;
+}
+
 .tooltip--contained {
     position: absolute;
     inset: 0;

@@ -214,6 +214,16 @@ class ArpaZone extends HTMLElement {
             }
             zoneTarget = zoneElement?.querySelector(zoneTarget);
         }
+
+        const childTargetSelector = this.getAttribute('child-target');
+        if (childTargetSelector) {
+            await this.element?.onRendered();
+            const childTarget = zoneElement.querySelector(childTargetSelector);
+            if (childTarget) {
+                return childTarget;
+            }
+        }
+
         return zoneTarget || zoneElement;
     }
 

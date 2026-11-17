@@ -8,7 +8,7 @@
 .arpaButton__button {
     &[variant='default'] {
         .arpaButton__content {
-            margin-bottom: 2px;
+            margin-bottom: 0.125rem;
         }
     }
 
@@ -22,20 +22,20 @@
         --button-icon-color: var(--button-variant-text-color);
         --button-color: var(--button-variant-text-color);
         --button-bg-color: var(--button-variant-color);
-        --button-border: 2px solid var(--button-variant-color);
-        --button-outline: 2px solid var(--button-variant-color);
+        --button-border: 0.125rem solid var(--button-variant-color);
+        --button-outline: 0.125rem solid var(--button-variant-color);
         --button-underline-color: var(--button-variant-light-color);
-        --button-underline-offset: 2px;
+        --button-underline-offset: 0.125rem;
 
         /* Hover state */
         --button-border-hover: 1px solid var(--button-variant-light-color);
         --button-color-hover: var(--button-variant-text-color);
         --button-icon-color-hover: var(--button-variant-text-color);
-        --button-outline-hover: 2px solid var(--button-variant-light-color);
+        --button-outline-hover: 0.125rem solid var(--button-variant-light-color);
 
         /* Active state */
-        --button-border-active: 2px solid var(--button-variant-light-color);
-        --button-outline-active: 2px solid var(--button-variant-light-color);
+        --button-border-active: 0.125rem solid var(--button-variant-light-color);
+        --button-outline-active: 0.125rem solid var(--button-variant-light-color);
         --button-color-active: var(--button-variant-text-color);
         --button-icon-color-active: var(--button-variant-text-color);
         --button-weight-active: 700;
@@ -49,7 +49,7 @@
         /* Hover state */
         --button-color-hover: var(--button-variant-color);
         --button-icon-color-hover: var(--button-variant-color);
-        --button-outline-hover: 2px solid var(--button-variant-color);
+        --button-outline-hover: 0.125rem solid var(--button-variant-color);
 
         /* Active state */
         --button-color-active: var(--button-variant-color);
@@ -104,14 +104,16 @@
     --button-bg-color: transparent;
     --button-box-shadow: none;
     --button-gap: 0.25rem;
-    --button-color: var(--grey-750);
+    --button-color: var(--grey-700);
     --button-icon-color: var(--grey-750);
+    --button-color-active: var(--color-primary-dark);
+    --button-border-active: 0px;
     --button-height: auto;
     --button-outline: none;
     --button-padding: 0;
     --button-underline-color: var(--grey-125);
-    --button-underline-thickness: 2px;
-    --button-underline-offset: 6px;
+    --button-underline-thickness: 0.125rem;
+    --button-underline-offset: 0.375rem;
     --button-weight: 800;
     --button-width: auto;
 
@@ -127,21 +129,21 @@
     arpa-icon {
         --icon-size: 1.2rem;
 
+        font-weight: 600;
         line-height: inherit;
     }
 
     &:hover,
     &:focus {
         --button-underline-color: var(--grey-125);
-        --button-color: var(--color-primary);
-        --button-icon-color: var(--color-primary);
         --button-weight: 700;
 
         .arpaButton__content {
             text-decoration: underline;
             text-decoration-thickness: var(--button-underline-thickness);
-            text-decoration-color: var(--grey-400);
-            text-underline-offset: 4px;
+            text-decoration-style: dashed;
+            text-decoration-color: var(--button-color-active);
+            text-underline-offset: 0.25rem;
         }
     }
 }

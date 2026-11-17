@@ -4,7 +4,7 @@
  * @typedef {import("../../arpaNode/arpaNode").default} ArpaNode
  * @typedef {import("../../arpaZone/arpaZone").default} ArpaZone
  */
-import { camelToDashed, dashedToCamel } from '@arpadroid/tools';
+import { camelToDashed, dashedToCamel, getStringBetween } from '@arpadroid/tools';
 import { getArpaElement } from './arpaElement.helper.js';
 
 /**
@@ -97,12 +97,22 @@ export function getCallbackProp(element, propertyName) {
 export function evaluatePropToken(element, condition) {
     const isNegation = condition.startsWith('!');
     const propName = isNegation ? condition.slice(1) : condition;
-    if (propName.endsWith('()')) {
-        const methodName = propName.slice(0, -2);
+    // Handle method call
+    if (propName.endsWith(')')) {
+        const $params = getStringBetween(condition, '(', ')');
+        /** @type {unknown[]} */
+        let params = [];
+        if ($params) {
+            params = $params.split(',').map(param => {
+                if (param.startsWith("'")) return param.slice(1, -1);
+                return Number(param);
+            });
+        }
+        const methodName = propName.slice(0, propName.indexOf('('));
         // @ts-ignore
-        const method = /** @type {() => boolean} */ (element[methodName]);
+        const method = /** @type {(...args: unknown[]) => boolean} */ (element[methodName]);
         if (typeof method === 'function') {
-            return isNegation ? Boolean(!method.call(element)) : Boolean(method.call(element));
+            return isNegation ? Boolean(!method.call(element)) : Boolean(method.call(element, ...params));
         }
         return false;
     }

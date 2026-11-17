@@ -12,4 +12,5 @@ export type TruncateTextConfigType = ArpaElementConfigType & {
     lblHide?: string;
     lblShow?: string;
     maxLength?: number;
+    maxLines?: number;
 };

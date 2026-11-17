@@ -31,6 +31,10 @@
     min-height: 12.5rem;
 }
 
+.comboBox__item__label {
+    text-align: left;
+}
+
 .comboBox__item {
     cursor: pointer;
     transition: var(--theme-transition);
@@ -59,14 +63,17 @@
         cursor: pointer;
     }
 
-    .listItem__main.listItem__main {
-        display: flex;
-        align-items: center;
-
-        .listItem__contentWrapper {
-            align-self: center;
-            padding: 0;
-            margin: 0;
+    &[aria-selected='true'] > button,
+    &[aria-selected='true'] > a,
+    > a[aria-current],
+    > button[aria-current] {
+        .listItem__title,
+        .listItem__content,
+        .listItem__contentWrapper,
+        .comboBox__item__label {
+            font-weight: var(--field-option-active-weight);
+            text-decoration: underline;
+            text-decoration-thickness: 0.125rem;
         }
     }
 
@@ -95,21 +102,14 @@
         }
     }
 
-    &[aria-selected='true'] > button,
-    &[aria-selected='true'] > a,
-    > a[aria-current],
-    > button[aria-current] {
-        .listItem__title,
-        .listItem__content,
-        .listItem__contentWrapper,
-        .comboBox__item__label {
-            font-weight: var(--field-option-active-weight);
-            text-decoration: underline;
-            text-decoration-thickness: 0.125rem;
+    .listItem__main.listItem__main {
+        display: flex;
+        align-items: center;
+
+        .listItem__contentWrapper {
+            align-self: center;
+            padding: 0;
+            margin: 0;
         }
     }
-}
-
-.comboBox__item__label {
-    text-align: left;
 }

@@ -1,7 +1,7 @@
 /**
  * @typedef {import('./truncateText.types.js').TruncateTextConfigType } TruncateTextConfigType
  * @typedef {import('./truncateText.js').default} TruncateText
- * @typedef {import('../core/arpaElement/arpaElement.types').ArpaElementContentNodeType} ArpaElementContentNodeType
+ * @typedef {import('../core/arpaElement/arpaElement.types.js').ArpaElementContentNodeType} ArpaElementContentNodeType
  * @typedef {import('@storybook/web-components-vite').Meta<TruncateTextConfigType & {children: string}>} Meta
  * @typedef {import('@storybook/web-components-vite').StoryObj} Story
  */
@@ -16,6 +16,8 @@ scatter that dust again when they die. Every atom in your body was forged in the
 millions of years before the Earth existed. Yet here you are, a collection of star-stuff, capable of looking
 up at the night sky and wondering about your origins. The universe is as much within you as it is outside of
 you.`;
+
+const shortText = 'In the vast expanse of the cosmos, stars are born from clouds of dust.';
 
 /** @type {Meta} */
 const TruncateTextStory = {
@@ -38,27 +40,6 @@ export const Default = {
 
 /** @type {Story} */
 export const Test = {
-    parameters: testParams,
-    args: {
-        maxLength: 60
-    },
-    play: async ({ canvasElement, step, canvas }) => {
-        const truncateTextNode = /** @type {TruncateText} */ (canvasElement.querySelector('truncate-text'));
-        await truncateTextNode?.promise;
-        await step('Renders the truncate text component with a custom max length.', async () => {
-            await waitFor(() => {
-                expect(truncateTextNode).toBeInTheDocument();
-                expect(truncateTextNode.textContent.trim()).toContain(
-                    'In the vast expanse of the cosmos, stars are born from cloud'
-                );
-                expect(canvas.queryByText('...')).toBeInTheDocument();
-            });
-        });
-    }
-};
-
-/** @type {Story} */
-export const TestWithButton = {
     args: {
         hasButton: true,
         maxLength: 60
@@ -68,6 +49,17 @@ export const TestWithButton = {
         const truncateTextNode = /** @type {TruncateText} */ (canvasElement.querySelector('truncate-text'));
         await truncateTextNode?.promise;
         const contentNode = truncateTextNode?.nodes.content;
+
+        await step('Renders the truncate text component with a custom max length.', async () => {
+            await waitFor(() => {
+                expect(truncateTextNode).toBeInTheDocument();
+                expect(truncateTextNode.textContent.trim()).toContain(
+                    'In the vast expanse of the cosmos, stars are born from cloud'
+                );
+                expect(canvas.queryByText('...')).toBeInTheDocument();
+            });
+        });
+
         await step('Renders the truncate text component with a read more button.', async () => {
             await waitFor(() => {
                 const readMoreButton = canvas.getByRole('button', { name: /read more/i });
@@ -107,39 +99,9 @@ export const TestWithButton = {
 };
 
 /** @type {Story} */
-export const WithButtonInlineLayout = {
-    name: 'Inline button and custom labels',
-    args: {
-        hasButton: true,
-        maxLength: 60,
-        inlineLayout: true,
-        lblShow: '{i18n:lblShowMore}',
-        lblHide: '{i18n:lblShowLess}',
-        icon: 'expand_more',
-        iconHide: 'expand_less'
-    },
-    parameters: testParams,
-    play: async ({ canvasElement, step, canvas }) => {
-        const truncateTextNode = /** @type {TruncateText} */ (canvasElement.querySelector('truncate-text'));
-        await truncateTextNode?.promise;
-        await step(
-            'Renders the truncate text component with a read more button in inline layout.',
-            async () => {
-                await waitFor(() => {
-                    const readMoreButton = canvas.getByRole('button', { name: /show more/i });
-                    expect(readMoreButton).toBeInTheDocument();
-                    expect(readMoreButton.closest('.truncateText__wrapper')).toBeInTheDocument();
-                });
-            }
-        );
-    }
-};
-
-/** @type {Story} */
 export const ShortText = {
     args: {
-        maxLength: 50,
-        hasButton: true
+        maxLength: 50
     },
     parameters: testParams,
     render: ({ ...args }) => {
@@ -209,6 +171,119 @@ export const DynamicUpdates = {
                 });
             }
         );
+    }
+};
+
+/** @type {Story} */
+export const InlineButton = {
+    // name: 'Inline button and custom labels',
+    args: {
+        hasButton: true,
+        maxLength: 60,
+        inlineLayout: true,
+        lblShow: '{i18n:lblShowMore}',
+        lblHide: '{i18n:lblShowLess}',
+        icon: 'expand_more',
+        iconHide: 'expand_less'
+    },
+    parameters: testParams,
+    play: async ({ canvasElement, step, canvas }) => {
+        const truncateTextNode = /** @type {TruncateText} */ (canvasElement.querySelector('truncate-text'));
+        await truncateTextNode?.promise;
+        await step(
+            'Renders the truncate text component with a read more button in inline layout.',
+            async () => {
+                await waitFor(() => {
+                    const readMoreButton = canvas.getByRole('button', { name: /show more/i });
+                    expect(readMoreButton).toBeInTheDocument();
+                    expect(readMoreButton.closest('.truncateText__wrapper')).toBeInTheDocument();
+                });
+            }
+        );
+    }
+};
+
+/** @type {Story} */
+export const Clamped = {
+    args: {
+        maxLines: 1
+    },
+    render: ({ ...args }) => {
+        return html`<truncate-text ${$attr(args)}>${text}</truncate-text>`;
+    },
+    parameters: defaultParams
+};
+
+/** @type {Story} */
+export const ClampedTest = {
+    args: {
+        maxLines: 2
+    },
+    render: ({ ...args }) => html`
+        <style>
+            truncate-text {
+                max-width: 250px;
+            }
+        </style>
+        <truncate-text ${$attr(args)}>${shortText}</truncate-text>
+    `,
+    parameters: testParams,
+    play: async ({ canvasElement, step, canvas }) => {
+        await new Promise(resolve => setTimeout(resolve, 20));
+        const truncateTextNode = /** @type {TruncateText} */ (canvasElement.querySelector('truncate-text'));
+        await truncateTextNode?.promise;
+
+        await step(
+            'Renders the truncate text component with a mini read more button in inline layout.',
+            async () => {
+                await waitFor(() => {
+                    expect(truncateTextNode).toHaveAttribute('is-clamped');
+                    const readMoreButton = canvas.getByRole('button', { name: /read more/i });
+                    expect(readMoreButton).toBeInTheDocument();
+                    expect(readMoreButton.closest('.truncateText__wrapper')).toBeInTheDocument();
+                });
+            }
+        );
+
+        await step('Clicks on the read more button and shows more text', async () => {
+            const readMoreButton = canvas.getByRole('button', { name: /read more/i });
+            await userEvent.click(readMoreButton, { delay: 10 });
+            await waitFor(() => {
+                expect(truncateTextNode).not.toHaveAttribute('is-clamped');
+                expect(canvas.getByText(/read less/i)).toBeInTheDocument();
+                expect(canvas.getByText('visibility_off')).toBeInTheDocument();
+            });
+        });
+
+        await step('Clicks on the read less button and shows less text', async () => {
+            const readLessButton = canvas.getByRole('button', { name: /read more/i });
+            await userEvent.click(readLessButton, { delay: 10 });
+            await waitFor(() => {
+                expect(truncateTextNode).toHaveAttribute('is-clamped');
+                expect(canvas.getByText(/read more/i)).toBeInTheDocument();
+                expect(canvas.getByText('visibility')).toBeInTheDocument();
+            });
+        });
+
+        await step('Changes size and verifies layout', async () => {
+            await new Promise(resolve => setTimeout(resolve, 20));
+            const readMoreButton = canvas.getByRole('button', { name: /read more/i });
+
+            truncateTextNode.style.maxWidth = '500px';
+            await waitFor(() => {
+                expect(truncateTextNode).not.toHaveAttribute('is-clamped');
+                expect(readMoreButton).not.toBeVisible();
+            });
+
+            truncateTextNode.style.maxWidth = '250px';
+
+            await waitFor(() => {
+                expect(truncateTextNode).toHaveAttribute('is-clamped');
+                expect(readMoreButton).toBeVisible();
+            });
+
+            truncateTextNode.style.maxWidth = '100%';
+        });
     }
 };
 

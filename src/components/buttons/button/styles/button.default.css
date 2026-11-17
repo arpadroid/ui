@@ -1,38 +1,39 @@
 :root {
-    --button-border: 2px solid var(--grey-50);
+    --button-color: var(--grey-600);
+    --button-border: 0.125rem solid var(--grey-50);
     --button-bg-color: var(--color-background);
-    --button-box-shadow: -5px -5px 10px var(--grey-0), 3px 3px 5px var(--grey-300);
-    --button-color: var(--grey-500);
+    --button-box-shadow:
+        -0.3125rem -0.3125rem 0.625rem var(--grey-0), 0.1875rem 0.1875rem 0.3125rem var(--grey-300);
     --button-gap: 0.5rem;
     --button-height: 3rem;
-    --button-icon-color: var(--grey-400);
-    --button-outline: 2px solid var(--border-color);
+    --button-outline: 0.125rem solid var(--border-color);
     --button-padding: 0 1rem 0 1rem;
-    --button-radius: 12px;
+    --button-radius: 0.75rem;
     --button-underline-color: var(--grey-125);
-    --button-underline-thickness: 2px;
-    --button-underline-offset: 6px;
+    --button-underline-thickness: 0.125rem;
+    --button-underline-offset: 0.375rem;
     --button-weight: 800;
     --button-width: auto;
 
     /* Active state */
-    --button-border-active: 2px solid var(--grey-150);
+    --button-border-active: 0.125rem solid var(--grey-150);
     --button-color-active: var(--grey-700);
-    --button-icon-color-active: var(--grey-700);
-    --button-outline-active: 2px solid var(--grey-50);
+    --button-outline-active: 0.125rem solid var(--grey-50);
     --button-weight-active: 700;
 
     /* Hover state */
-    --button-border-hover: 2px solid var(--grey-125);
-    --button-color-hover: var(--grey-600);
-    --button-icon-color-hover: var(--grey-600);
-    --button-outline-hover: 2px solid var(--grey-175);
+    --button-border-hover: 0.125rem solid var(--grey-125);
+    --button-outline-hover: 0.125rem solid var(--grey-175);
     --button-weight-hover: 700;
 }
 
 .arpaButton__button {
     --icon-size: 1.2rem;
     --theme-transition-speed: 0.1s;
+    --button-color-hover: var(--button-color-active);
+    --button-icon-color: var(--button-color);
+    --button-icon-color-active: var(--button-color-active);
+    --button-icon-color-hover: var(--button-color-active);
 
     position: relative;
     display: flex;
@@ -59,7 +60,7 @@
     }
 
     arpa-icon {
-        color: var(--button-icon-color);
+        color: var(--button-color);
         transition: var(--theme-transition);
 
         --icon-size: 1.4rem;
@@ -76,9 +77,9 @@
     font-weight: var(--button-weight);
     color: var(--button-color);
     letter-spacing: normal;
-    letter-spacing: 0.2px;
+    letter-spacing: 0.0125rem;
     white-space: nowrap;
-    text-underline-offset: 4px;
+    text-underline-offset: 0.25rem;
     background-color: var(--button-bg-color);
 }
 
@@ -129,7 +130,7 @@ arpa-button button arpa-tooltip.tooltip {
 * Hover / Focus
 */
 
-arpa-button .arpaButton__button:not(:disabled, [data-invalid], [variant='minimal']) {
+arpa-button .arpaButton__button:not(:disabled, [data-invalid]) {
     /* &:hover,
     &:focus {
         .arpaButton__content {
@@ -141,23 +142,27 @@ arpa-button .arpaButton__button:not(:disabled, [data-invalid], [variant='minimal
     } */
 
     &:hover {
-        outline: var(--button-outline-hover);
-        border: var(--button-border-hover);
+        &:not([variant='minimal']) {
+            outline: var(--button-outline-hover);
+            border: var(--button-border-hover);
+        }
 
         .arpaButton__content {
             color: var(--button-color-hover);
         }
 
-        arpa-icon {
-            color: var(--button-icon-color-hover);
+        .icon {
+            color: var(--button-color-active);
         }
     }
 
     &:focus {
-        outline: var(--button-outline-active);
-        border: var(--button-border-active);
-        box-shadow: var(--button-box-shadow-hover);
-        box-shadow: inset 1px 1px 3px rgb(61 61 61 / 50%);
+        &:not([variant='minimal']) {
+            outline: var(--button-outline-active);
+            border: var(--button-border-active);
+            box-shadow: var(--button-box-shadow-hover);
+            box-shadow: inset 0.0625rem 0.0625rem 0.1875rem rgb(61 61 61 / 50%);
+        }
 
         .arpaButton__content {
             font-weight: var(--button-weight-active);
@@ -165,7 +170,7 @@ arpa-button .arpaButton__button:not(:disabled, [data-invalid], [variant='minimal
         }
 
         .icon {
-            color: var(--button-icon-color-active);
+            color: var(--button-color-active);
         }
     }
 }

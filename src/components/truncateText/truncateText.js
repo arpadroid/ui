@@ -1,6 +1,7 @@
 /**
  * @typedef {import('./truncateText.types').TruncateTextConfigType } TruncateTextConfigType
  * @typedef {import('../buttons/button/button.js').default} ArpaButton
+ * @typedef {import('../buttons/iconButton/iconButton.js').default} IconButton
  * @typedef {import('../core/arpaZone/arpaZone.js').default} ArpaZone
  */
 import ArpaElement from '../core/arpaElement/arpaElement.js';
@@ -13,6 +14,9 @@ class TruncateText extends ArpaElement {
      * @returns {TruncateTextConfigType}
      */
     getDefaultConfig() {
+        if (this.hasAttribute('max-lines')) {
+            this.setAttribute('is-clamped', '');
+        }
         this.i18nKey = 'ui.truncateText';
         /** @type {TruncateTextConfigType} */
         const config = {
@@ -21,12 +25,13 @@ class TruncateText extends ArpaElement {
             ellipsis: '...',
             icon: 'visibility',
             iconHide: 'visibility_off',
-            lblShow: '{i18n:lblReadMore}',
-            lblHide: '{i18n:lblReadLess}',
+            lblShow: this.i18nText('lblReadMore'),
+            lblHide: this.i18nText('lblReadLess'),
             buttonClasses: [],
-            hasButton: false,
+            hasButton: true,
             isTruncated: true,
-            reuseExistingNodes: false
+            reuseExistingNodes: false,
+            inlineLayout: false
         };
         return super.getDefaultConfig(config);
     }
@@ -42,8 +47,8 @@ class TruncateText extends ArpaElement {
         };
     }
 
-    async canRenderButton() {
-        return this.getProp('hasButton') && this.canTruncate();
+    canRenderButton() {
+        return !this.hasProp('maxLines') && this.getProp('hasButton') && this.canTruncate();
     }
 
     renderButton() {
@@ -61,13 +66,27 @@ class TruncateText extends ArpaElement {
         </arpa-node>`;
     }
 
+    renderMiniButton() {
+        return html`<arpa-zone name="content" append-content>
+            <arpa-node
+                name="miniButton"
+                tag="icon-button"
+                on-click="{toggleTruncate}"
+                tooltip="${this.i18nText('lblReadMore')}"
+                icon="{icon}"
+                variant="mini"
+            >
+            </arpa-node>
+        </arpa-zone>`;
+    }
+
     $renderTemplate() {
         const isInline = this.hasProp('inlineLayout');
         return html`
             <arpa-node tag="span" name="wrapper">
-                <arpa-node tag="span" name="content" is-content></arpa-node>
+                <arpa-node tag="span" name="content" is-content> </arpa-node>
                 <arpa-node tag="span" name="ellipsis" can-render="ellipsis"></arpa-node>
-                ${isInline ? this.renderButton() : ''}
+                ${this.getMaxLines() ? this.renderMiniButton() : ''} ${isInline ? this.renderButton() : ''}
             </arpa-node>
             ${!isInline ? this.renderButton() : ''}
         `;
@@ -75,67 +94,8 @@ class TruncateText extends ArpaElement {
 
     // #endregion Rendering
 
-    //////////////////////////////
-    // #region Truncation
-    /////////////////////////////
-
-    getMaxLength() {
-        return parseFloat(this.getProp('maxLength'));
-    }
-
-    canTruncate() {
-        const maxLength = this.getMaxLength();
-        let content = (this._textContent || this.textContent || '').trim();
-        if (!content) {
-            content = this.contentNode?.textContent?.trim() || '';
-        }
-        return content.length > maxLength;
-    }
-
-    isTruncated() {
-        return this.truncatedNode?.isConnected;
-    }
-
-    truncateText() {
-        const maxLength = this.getMaxLength();
-        const text = this.contentNode?.textContent?.trim();
-        if (!maxLength || !text?.length || text?.length <= maxLength) {
-            this.removeAttribute('is-truncated');
-            return;
-        }
-        if (!this.truncatedNode) {
-            this.truncatedNode = this.contentNode?.cloneNode();
-        }
-        const content = text?.slice(0, maxLength);
-
-        if (this.truncatedNode instanceof HTMLElement) {
-            this.truncatedNode.textContent = content;
-            this.contentNode?.replaceWith(this.truncatedNode);
-            this.ellipsisNode && this.truncatedNode?.after(this.ellipsisNode);
-        }
-        this.button = /** @type {ArpaButton} */ (this.nodes.button);
-        this.button?.setLabel?.(this.getProp('lblShow'));
-        this.button?.setProp?.('rhsIcon', this.getProp('icon'));
-    }
-
-    showFullContent() {
-        if (this.contentNode instanceof HTMLElement && this.truncatedNode instanceof HTMLElement) {
-            this.truncatedNode?.replaceWith(this.contentNode);
-        }
-        this.ellipsisNode?.remove();
-        this.button?.setLabel(this.getProp('lblHide'));
-        this.button?.setProp('rhsIcon', this.getProp('iconHide'));
-        this.removeAttribute('is-truncated');
-    }
-
-    toggleTruncate() {
-        this.isTruncated() ? this.removeAttribute('is-truncated') : this.setAttribute('is-truncated', '');
-    }
-
-    // #endregion Truncation
-
     ////////////////////////////
-    // #region LIFECYCLE
+    // #region Lifecycle
     ////////////////////////////
 
     static get observedAttributes() {
@@ -180,6 +140,8 @@ class TruncateText extends ArpaElement {
         } else {
             this.removeAttribute('is-truncated');
         }
+        this.initializeClampBehavior();
+
         return true;
     }
 
@@ -200,6 +162,131 @@ class TruncateText extends ArpaElement {
     }
 
     // #endregion LIFECYCLE
+
+    //////////////////////////////
+    // #region Truncation
+    /////////////////////////////
+
+    getMaxLength() {
+        return parseFloat(this.getProp('maxLength'));
+    }
+
+    canTruncate() {
+        const maxLength = this.getMaxLength();
+        let content = (this._textContent || this.textContent || '').trim();
+        if (!content) {
+            content = this.contentNode?.textContent?.trim() || '';
+        }
+        return content.length > maxLength;
+    }
+
+    isTruncated() {
+        return (
+            this.truncatedNode?.isConnected ||
+            this.classList.contains(this.getProp('className') + '--truncateLines')
+        );
+    }
+
+    getMaxLines() {
+        if (this.hasAttribute('truncate-content')) {
+            return undefined;
+        }
+        const maxLines = this.getProp('maxLines');
+        if (!maxLines) return undefined;
+        return parseInt(maxLines, 10) || 1;
+    }
+
+    truncateText() {
+        const maxLines = this.getMaxLines();
+        if (maxLines) {
+            this.classList.add(this.getProp('className') + '--truncateLines');
+            this.style.setProperty('--max-lines', maxLines.toString());
+            this.computeClampState();
+        } else {
+            const maxLength = this.getMaxLength();
+            const text = this.contentNode?.textContent?.trim();
+            if (!maxLength || !text?.length || text?.length <= maxLength) {
+                this.removeAttribute('is-truncated');
+                return;
+            }
+            if (!this.truncatedNode) {
+                this.truncatedNode = this.contentNode?.cloneNode();
+            }
+            const content = text?.slice(0, maxLength);
+
+            if (this.truncatedNode instanceof HTMLElement) {
+                this.truncatedNode.textContent = content;
+                this.contentNode?.replaceWith(this.truncatedNode);
+                this.ellipsisNode && this.truncatedNode?.after(this.ellipsisNode);
+            }
+        }
+        this.button = /** @type {ArpaButton} */ (this.nodes.button);
+        this.button?.setLabel?.(this.getProp('lblShow'));
+        this.button?.setProp?.('rhsIcon', this.getProp('icon'));
+        this.miniButton = this.nodes.miniButton;
+
+        this.miniButton?.setTooltip(this.getProp('lblShow'));
+        this.miniButton?.setIcon(this.getProp('icon'));
+    }
+
+    showFullContent() {
+        const maxLines = this.getMaxLines();
+        if (maxLines) {
+            this.classList.remove(this.getProp('className') + '--truncateLines');
+            this.style.setProperty('--max-lines', '10000000');
+            this.computeClampState();
+        } else {
+            if (this.contentNode instanceof HTMLElement && this.truncatedNode instanceof HTMLElement) {
+                this.truncatedNode?.replaceWith(this.contentNode);
+            }
+            this.ellipsisNode?.remove();
+        }
+        this.button?.setLabel(this.getProp('lblHide'));
+        this.button?.setProp('rhsIcon', this.getProp('iconHide'));
+
+        this.miniButton = this.nodes.miniButton;
+        this.miniButton?.setIcon(this.getProp('iconHide'));
+        this.miniButton?.setTooltip(this.getProp('lblHide'));
+
+        this.removeAttribute('is-truncated');
+    }
+
+    toggleTruncate() {
+        this.isTruncated() ? this.removeAttribute('is-truncated') : this.setAttribute('is-truncated', '');
+    }
+
+    // #endregion Truncation
+
+    ///////////////////
+    // #region Clamp
+    //////////////////
+
+    async initializeClampBehavior() {
+        this.miniButton = /** @type {IconButton} */ (this.nodes.miniButton) || this.miniButton;
+        if (!this.miniButton) {
+            return;
+        }
+        /** @type {ReturnType<typeof setTimeout> | undefined} */
+        let resizeTimer;
+        const observer = new ResizeObserver(() => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => this.computeClampState(), 100);
+        });
+        observer.observe(this.nodes.content, { box: 'border-box' });
+    }
+
+    async computeClampState() {
+        await new Promise(resolve => setTimeout(resolve, 0));
+        const node = this.nodes.content;
+        const isClamped = node.scrollHeight > node.clientHeight;
+        if (isClamped) {
+            this.setAttribute('is-clamped', '');
+        } else {
+            this.removeAttribute('is-clamped');
+        }
+    }
+
+    // #endregion Clamp
 }
 
 defineCustomElement('truncate-text', TruncateText);
