@@ -5,7 +5,7 @@
  */
 import { defineCustomElement, getAttributes, mergeObjects } from '@arpadroid/tools';
 import { getArpaElement } from '../arpaElement/helper/arpaElement.helper';
-import { renderChild } from '../arpaElement/helper/arpaElementTemplate.helper';
+import { renderChild, handleDefer } from '../arpaElement/helper/arpaElementTemplate.helper';
 import { evaluateProp, getProp } from '../arpaElement/helper/arpaElementProps.helper.js';
 import ArpaElement from '../arpaElement/arpaElement.js';
 class ArpaNode extends HTMLElement {
@@ -125,7 +125,7 @@ class ArpaNode extends HTMLElement {
 
         this.initialized = true;
         if (this.hasAttribute('defer')) {
-            if (!(await this.handleDefer())) {
+            if (!(await handleDefer(this.element, this, this.getProp('defer'), name))) {
                 return this.resolve(true);
             }
         }
@@ -243,22 +243,6 @@ class ArpaNode extends HTMLElement {
         const node = template.content.firstElementChild;
         node?.appendChild(this.fragment);
         return node;
-    }
-
-    async handleDefer() {
-        await new Promise(resolve => requestAnimationFrame(resolve));
-        let deferFn = this.getProp('defer');
-        let rv = undefined;
-        if (typeof deferFn === 'string') {
-            deferFn = this.element?.[/** @type {keyof ArpaElement} */ (deferFn)];
-        }
-
-        if (typeof deferFn === 'function') {
-            deferFn = deferFn.bind(this.element);
-            await new Promise(resolve => setTimeout(resolve, 0));
-            rv = await deferFn({ arpaNode: this, name: this.getProp('name') });
-        }
-        return typeof rv !== 'undefined' ? rv : true;
     }
 
     /**

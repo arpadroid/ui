@@ -80,15 +80,43 @@ class TruncateText extends ArpaElement {
         </arpa-zone>`;
     }
 
+    $renderBlueprint() {
+        return html`
+            <arpa-node tag="span" name="ellipsis" can-render="ellipsis"></arpa-node>
+
+            <arpa-node
+                name="button"
+                tag="arpa-button"
+                ${$attr({ readOnly: Boolean(this.closest('button')) })}
+                on-click="{toggleTruncate}"
+                can-render="canRenderButton()"
+                rhs-icon="{icon}"
+                variant="minimal"
+                button-class="${classNames(this.getProp('buttonClasses'))}"
+            >
+                ${this.getProp('lblShow')}
+            </arpa-node>
+
+            <arpa-node
+                name="miniButton"
+                tag="icon-button"
+                on-click="{toggleTruncate}"
+                tooltip="${this.i18nText('lblReadMore')}"
+                icon="{icon}"
+                variant="mini"
+                can-render="getMaxLines()"
+            ></arpa-node>
+        `;
+    }
+
     $renderTemplate() {
         const isInline = this.hasProp('inlineLayout');
         return html`
             <arpa-node tag="span" name="wrapper">
-                <arpa-node tag="span" name="content" is-content> </arpa-node>
-                <arpa-node tag="span" name="ellipsis" can-render="ellipsis"></arpa-node>
-                ${this.getMaxLines() ? this.renderMiniButton() : ''} ${isInline ? this.renderButton() : ''}
+                <arpa-node tag="span" name="content" is-content>{miniButton}</arpa-node>
+                {ellipsis} ${isInline ? '{button}' : ''}
             </arpa-node>
-            ${!isInline ? this.renderButton() : ''}
+            ${!isInline ? '{button}' : ''}
         `;
     }
 
@@ -117,7 +145,10 @@ class TruncateText extends ArpaElement {
     async $onContentSet() {
         await this.promise;
         this._textContent = this.contentNode?.textContent?.trim() || '';
-        this._childNodes = [...(this.contentNode?.childNodes || [])];
+        this._childNodes = [...(this.contentNode?.childNodes || [])].filter(node => {
+            if (!(node instanceof HTMLElement)) return true;
+            return !node.classList?.contains('iconButton');
+        });
         this.reRender();
     }
 
@@ -270,13 +301,14 @@ class TruncateText extends ArpaElement {
         let resizeTimer;
         const observer = new ResizeObserver(() => {
             clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(() => this.computeClampState(), 100);
+            resizeTimer = setTimeout(() => this.computeClampState(), 200);
         });
         observer.observe(this.nodes.content, { box: 'border-box' });
+        this.computeClampState();
     }
 
     async computeClampState() {
-        await new Promise(resolve => setTimeout(resolve, 0));
+        await new Promise(resolve => setTimeout(resolve, 10));
         const node = this.nodes.content;
         const isClamped = node.scrollHeight > node.clientHeight;
         if (isClamped) {

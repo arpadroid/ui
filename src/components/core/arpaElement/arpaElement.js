@@ -16,7 +16,7 @@ import { hasProp, getProp, setProp, getArrayProp } from './helper/arpaElementPro
 import { hasZone, sanitizeAttributes } from './helper/arpaElement.helper';
 import { hasContent } from './helper/arpaElement.helper';
 import { renderTemplate, getClass, renderChild, renderChildNode } from './helper/arpaElementTemplate.helper';
-import { selectTemplates, spawnNode } from './helper/arpaElementTemplate.helper';
+import { selectTemplates, spawnNode, computeBlueprint } from './helper/arpaElementTemplate.helper';
 import { I18nTool, I18n } from '@arpadroid/i18n';
 
 const { arpaElementI18n } = I18nTool;
@@ -124,6 +124,13 @@ class ArpaElement extends HTMLElement {
             this.resolvePromise = resolve;
             this.rejectPromise = reject;
         });
+    }
+
+    initializeBlueprint() {
+        if (!this.blueprintInitialized) {
+            computeBlueprint(this);
+            this.blueprintInitialized = true;
+        }
     }
 
     $renderBlueprint() {
@@ -1023,7 +1030,7 @@ class ArpaElement extends HTMLElement {
     /**
      * Renders a node.
      * @param {string} name
-     * @param {ArpaNodeConfigType & { mustRender?: boolean }} [options]
+     * @param {ArpaNodeConfigType} [options]
      * @param {Record<string, string | boolean>} [attributes]
      * @returns {HTMLElement | Node | null} The rendered node.
      */

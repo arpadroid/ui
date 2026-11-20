@@ -72,7 +72,7 @@ class Pager extends ArpaElement {
     }
 
     getTotalPages() {
-        return parseFloat(this.getProp('total-pages'));
+        return parseFloat(this.getProp('totalPages'));
     }
 
     getMaxNodes() {
@@ -144,7 +144,6 @@ class Pager extends ArpaElement {
         totalPages && this.setTotalPages(totalPages);
         this.nodes = {};
         this.arpaNodes = {};
-
         this.reRender();
         await this.onRendered();
         await this.promise;
@@ -227,7 +226,7 @@ class Pager extends ArpaElement {
         return { start, end, totalPages, hasLeftSpacer, hasRightSpacer };
     }
 
-    $renderBlueprint() {
+    $renderTemplate() {
         const {
             start = 0,
             end = 1,
@@ -235,7 +234,6 @@ class Pager extends ArpaElement {
             hasLeftSpacer = false,
             hasRightSpacer = false
         } = this.computePager() || { totalPages: 0 };
-
         if (totalPages <= 1) return '';
         const nodeRange = Array.from({ length: end - start + 1 }, (_, i) => start + i);
         return html`
@@ -280,10 +278,6 @@ class Pager extends ArpaElement {
                 <arpa-icon>{nextIcon}</arpa-icon>
             </arpa-node>
         `;
-    }
-
-    $renderTemplate() {
-        return html`{prevControl}{items}{nextControl}`;
     }
 
     /**

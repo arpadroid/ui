@@ -400,11 +400,14 @@ export function getDefaultNodeConfig(element, name) {
  * Renders a child element.
  * @param {ArpaElement} element - The component to check.
  * @param {string} name
- * @param {ArpaNodeConfigType} [config] - The configuration object.
- * @param {Record<string, boolean | string>} [attributes] - Additional attributes to add to the element.
+ * @param {ArpaNodeConfigType} [config]
+ * @param {Record<string, boolean | string>} [attributes]
  * @returns {boolean | string}
  */
 export function canRenderNode(element, name, config = {}, attributes = {}) {
+    const mustRender = config?.mustRender || attributes.mustRender;
+    if (mustRender) return true;
+
     const { canRender = true } = config;
     const { canRender: attrCanRender = true } = attributes;
 
@@ -430,6 +433,32 @@ export function canRenderNode(element, name, config = {}, attributes = {}) {
     }
 
     return hasContent(element, name, config);
+}
+
+/**
+ * Renders a child element.
+ * @param {ArpaElement} element
+ * @param {string} name
+ * @param {ArpaNodeConfigType} [config]
+ * @param {Record<string, string | boolean>} [attributes]
+ * @returns {string}
+ */
+export function renderChild(element, name, config = {}, attributes = {}) {
+    const defaults = getDefaultNodeConfig(element, name);
+    config = mergeObjects(defaults, config);
+    const canRender = canRenderNode(element, name, config, attributes);
+
+    if (canRender) {
+        typeof config.attr === 'function' && (config.attr = config.attr());
+        const attr = getNodeAttributes(element, name, config, attributes);
+        const { tag } = config;
+        const isFragment = tag === 'fragment';
+        let content = isFragment ? '' : `<${tag} ${attrString(attr)}>`;
+        content += getNodeContent(element, name, config);
+        content += isFragment ? '' : `</${tag}>`;
+        return content;
+    }
+    return '';
 }
 
 /**
@@ -502,37 +531,10 @@ export function setNodeContent(node, content) {
 }
 
 /**
- * Renders a child element.
- * @param {ArpaElement} element
- * @param {string} name
- * @param {ArpaNodeConfigType & { mustRender?: boolean }} [config]
- * @param {Record<string, string | boolean>} [attributes]
- * @returns {string}
- */
-export function renderChild(element, name, config = {}, attributes = {}) {
-    const defaults = getDefaultNodeConfig(element, name);
-    const mustRender = config.mustRender || attributes.mustRender;
-    config = mergeObjects(defaults, config);
-    const canRender = canRenderNode(element, name, config, attributes);
-
-    if (mustRender || canRender) {
-        typeof config.attr === 'function' && (config.attr = config.attr());
-        const attr = getNodeAttributes(element, name, config, attributes);
-        const { tag } = config;
-        const isFragment = tag === 'fragment';
-        let content = isFragment ? '' : `<${tag} ${attrString(attr)}>`;
-        content += getNodeContent(element, name, config);
-        content += isFragment ? '' : `</${tag}>`;
-        return content;
-    }
-    return '';
-}
-
-/**
  * Renders a node.
  * @param {ArpaElement} element
  * @param {string} name
- * @param {ArpaNodeConfigType & { mustRender?: boolean }} [options]
+ * @param {ArpaNodeConfigType} [options]
  * @param {Record<string, string | boolean>} [attributes]
  * @returns {HTMLElement | Node | null} The rendered node.
  */
@@ -636,11 +638,34 @@ export async function applyTemplateAttributes(element, template, _payload = {}, 
 }
 
 /**
+ * Handles defer for a node.
+ * @param {ArpaElement} arpaElement
+ * @param {ArpaNode} arpaNode
+ * @param {(payload: { arpaNode: ArpaNode, name: string }) => any | string} deferFn
+ * @param {string} name
+ * @returns {Promise<boolean>}
+ */
+export async function handleDefer(arpaElement, arpaNode, deferFn, name) {
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    let rv = undefined;
+    if (typeof deferFn === 'string') {
+        deferFn = arpaElement?.[/** @type {keyof ArpaElement} */ (deferFn)];
+    }
+
+    if (typeof deferFn === 'function') {
+        deferFn = deferFn.bind(arpaElement);
+        await new Promise(resolve => setTimeout(resolve, 0));
+        rv = await deferFn({ arpaNode, name });
+    }
+    return typeof rv !== 'undefined' ? rv : true;
+}
+
+/**
  * Returns the configuration for the nodes defined in the template.
  * @param {ArpaElement} element
  * @param {string} [blueprint]
  */
-export function getNodesConfigBlueprint(element, blueprint) {
+export function computeBlueprint(element, blueprint) {
     blueprint = String(blueprint || element.$renderBlueprint() || '');
     if (!blueprint.toLowerCase().includes('arpa-node')) return;
 
@@ -678,7 +703,9 @@ export function getNodesConfigBlueprint(element, blueprint) {
                 cnf.attr[key] = attr[key];
             }
         });
-        element.setNodeConfig(name, mergeObjects(element.getNodeConfig(name), cnf));
+
+        const nodeConfig = mergeObjects(element.getNodeConfig(name), cnf);
+        element.setNodeConfig(name, nodeConfig);
     });
 }
 
@@ -715,7 +742,7 @@ export function dedupeNodes(template) {
  * @returns {string}
  */
 export function renderTemplate(component, _template, vars = component.getTemplateVars()) {
-    getNodesConfigBlueprint(component);
+    component.initializeBlueprint();
     const tplNode = component.templates?.content;
     const templateContent = tplNode?.innerHTML?.trim() || '';
     const templateMode = tplNode?.getAttribute('template-mode') || 'content';
@@ -764,9 +791,14 @@ export function renderTemplate(component, _template, vars = component.getTemplat
  */
 export async function applyTemplate(element, template, payload = {}) {
     if (template instanceof HTMLTemplateElement) {
+        const zones = template.content.querySelectorAll('arpa-zone');
+        zones.forEach(zone => {
+            const name = zone.getAttribute('name');
+            name && element.zonesByName?.add(name);
+        });
         applyTemplateAttributes(element, template, payload);
         // const templateMode = template?.getAttribute('template-mode') || 'content';
-        getNodesConfigBlueprint(element);
+        element.initializeBlueprint();
         element.templates.content = template;
     }
 }

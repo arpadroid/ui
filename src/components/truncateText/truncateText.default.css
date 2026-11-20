@@ -32,6 +32,25 @@ truncate-text[max-lines] {
         float: right;
         display: inline-flex;
     }
+
+    .iconButton {
+        float: right;
+        margin: 0.25rem;
+        margin-right: 0;
+        margin-bottom: 0.125rem;
+        margin-left: 0.75rem;
+
+        .tooltip__content {
+            padding: 0.125rem 0.75rem;
+            font-size: 0.85rem;
+        }
+
+        .iconButton__icon {
+            --icon-size: 1.3rem;
+
+            font-weight: 700;
+        }
+    }
 }
 
 truncate-text.truncateText--truncateLines:not([is-clamped]) {
@@ -43,4 +62,9 @@ truncate-text.truncateText--truncateLines:not([is-clamped]) {
 .truncateText__button {
     display: flex;
     margin-top: 0.5rem;
+}
+
+.truncateText__content {
+    padding-top: 0.125rem;
+    padding-bottom: 0.125rem;
 }

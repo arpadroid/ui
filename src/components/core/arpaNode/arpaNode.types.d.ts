@@ -7,6 +7,7 @@ export type ArpaNodeConfigType = {
     attr?: ArpaNodeAttributesType;
     arpaElement?: ArpaElement;
     canRender?: boolean | string | ((component: unknown) => boolean | string);
+    mustRender?: boolean | string;
     childNodes?: Node[];
     className?: string;
     content?: ArpaElementContentType;
