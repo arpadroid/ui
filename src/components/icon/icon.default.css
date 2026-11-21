@@ -13,6 +13,6 @@
     text-align: center;
 }
 
-arpa-icon[size="mini"] {
+arpa-icon[size='mini'] {
     color: var(--color-primary);
 }

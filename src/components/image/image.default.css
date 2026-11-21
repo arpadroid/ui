@@ -108,7 +108,7 @@ arpa-image {
 }
 
 .image--size-adaptive {
-    --listItem-imgSize: 100%;
+    --listItem-img-size: 100%;
 }
 
 .image__thumbnail {

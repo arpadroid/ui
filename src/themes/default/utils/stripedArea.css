@@ -2,19 +2,19 @@
     --striped-area: repeating-linear-gradient(
         50deg,
         var(--grey-50),
-        var(--grey-50) 10px,
-        var(--color-background) 10px,
-        var(--color-background) 20px
+        var(--grey-50) 0.625rem,
+        var(--color-background) 0.625rem,
+        var(--color-background) 1.25rem
     );
-    --striped-area-outline: 2px solid var(--grey-100);
-    --striped-area-border: 2px solid var(--color-background);
+    --striped-area-outline: 0.125rem solid var(--grey-300);
+    --striped-area-border: 0.125rem solid var(--color-background);
 }
 
 .stripedArea {
+    padding: 1rem;
+    outline: var(--striped-area-outline);
     background: var(--striped-area);
     border: var(--striped-area-border);
-    border-radius: 8px;
+    border-radius: 0.5rem;
     box-shadow: var(--box-shadow);
-    outline: var(--striped-area-outline);
-    padding: 16px;
 }

@@ -4,6 +4,16 @@ truncate-text {
     gap: 0.25rem;
 }
 
+.truncateText__content {
+    padding-top: 0.125rem;
+    padding-bottom: 0.125rem;
+}
+
+.truncateText__button {
+    display: flex;
+    margin-top: 0.5rem;
+}
+
 truncate-text[inline-layout] {
     arpa-button {
         display: inline-flex;
@@ -35,10 +45,7 @@ truncate-text[max-lines] {
 
     .iconButton {
         float: right;
-        margin: 0.25rem;
-        margin-right: 0;
-        margin-bottom: 0.125rem;
-        margin-left: 0.75rem;
+        margin: 0.25rem 0 0 0.25rem;
 
         .tooltip__content {
             padding: 0.125rem 0.75rem;
@@ -57,14 +64,4 @@ truncate-text.truncateText--truncateLines:not([is-clamped]) {
     .truncateText__miniButton {
         display: none;
     }
-}
-
-.truncateText__button {
-    display: flex;
-    margin-top: 0.5rem;
-}
-
-.truncateText__content {
-    padding-top: 0.125rem;
-    padding-bottom: 0.125rem;
 }
