@@ -50,6 +50,8 @@ export function processTemplateVariable(name, value, element) {
             if (typeof value === 'string' && value.indexOf('{') !== -1) {
                 value = processTemplate(value, element?.getTemplateVars?.() || {}, element);
             }
+            // if there is a node defined it takes priority over other values.
+            return value;
         }
     }
 

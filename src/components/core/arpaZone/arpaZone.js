@@ -11,6 +11,7 @@ import ArpaElement from '../arpaElement/arpaElement.js';
 export const LOST_ZONES = new Set();
 /**@type {ArpaZone[]} */
 export const QUEUE = [];
+const DEBUG = false;
 
 class ArpaZone extends HTMLElement {
     /**
@@ -119,7 +120,8 @@ class ArpaZone extends HTMLElement {
         }
         if (!zoneElement) {
             LOST_ZONES.add(name);
-            this.isConnected &&
+            DEBUG &&
+                this.isConnected &&
                 this.reject({
                     message: `No element found for zone "${name}".`
                 });
@@ -297,8 +299,15 @@ class ArpaZone extends HTMLElement {
             return false;
         }
         const method = this.getApplyMethod();
+        const arpaNodes = /** @type {HTMLElement[]} */ ([...this.fragment.querySelectorAll('arpa-node')]);
         // @ts-expect-error
         zoneElement[method]?.(this.fragment);
+        // Content placed in a disconnected tree gets no connectedCallback, so its nodes would stay unrendered.
+        arpaNodes.forEach(node => {
+            if (!node.isConnected && 'connectedCallback' in node) {
+                /** @type {() => void} */ (node.connectedCallback)();
+            }
+        });
         this.resolve(true);
     }
 }

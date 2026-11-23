@@ -67,7 +67,7 @@ class TruncateText extends ArpaElement {
     }
 
     renderMiniButton() {
-        return html`<arpa-zone name="content" append-content>
+        return html`
             <arpa-node
                 name="miniButton"
                 tag="icon-button"
@@ -77,7 +77,7 @@ class TruncateText extends ArpaElement {
                 variant="mini"
             >
             </arpa-node>
-        </arpa-zone>`;
+        `;
     }
 
     $renderBlueprint() {
@@ -182,13 +182,15 @@ class TruncateText extends ArpaElement {
      * @returns {Promise<boolean>}
      */
     async $onZoneInserted(zone) {
-        if (this._hasRendered) {
-            if (this.contentNode instanceof HTMLElement) {
-                this.contentNode.style.display = 'none';
-                this.contentNode?.append(...(zone.fragment?.childNodes || []));
-            }
-            this.$onContentSet();
+        // Zones can arrive mid-render, and contentNode is only set when the element had initial content.
+        !this._hasRendered && (await this.promise);
+        const contentNode = this.contentNode || (await this.getContentNodeAsync());
+        if (contentNode instanceof HTMLElement) {
+            this.contentNode = contentNode;
+            contentNode.style.display = 'none';
+            contentNode.append(...(zone.fragment?.childNodes || []));
         }
+        this.$onContentSet();
         return false;
     }
 

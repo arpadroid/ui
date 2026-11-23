@@ -39,6 +39,8 @@ truncate-text[max-lines] {
     }
 
     .truncateText__miniButton {
+        --button-color: var(--grey-400);
+
         float: right;
         display: inline-flex;
     }
