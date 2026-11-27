@@ -4,6 +4,7 @@ import Button from './button';
 export type ButtonConfigType = ArpaElementConfigType & {
     buttonClass?: string;
     buttonZone?: string;
+    buttonAttributes?: Record<string, string>;
     content?: string;
     disabled?: boolean;
     icon?: string;

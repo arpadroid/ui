@@ -41,11 +41,11 @@
     },
     "homepage": "https://github.com/arpadroid/ui#readme",
     "devDependencies": {
-        "@babel/preset-env": "^8.0.2"
+        "@babel/preset-env": "^8.0.7"
     },
     "peerDependencies": {
-        "@arpadroid/module": "file:../module",
         "@arpadroid/i18n": "file:../i18n",
+        "@arpadroid/module": "file:../module",
         "@arpadroid/tools": "file:../tools"
     },
     "dependencies": {

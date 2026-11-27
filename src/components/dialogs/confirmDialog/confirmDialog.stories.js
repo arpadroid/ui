@@ -87,7 +87,7 @@ export const Test = {
             await waitFor(() => {
                 expect(dialogNode).toHaveAttribute('open');
             });
-            await userEvent.click(button, { delay: 100 });
+            await userEvent.click(button, { delay: 10 });
             await waitFor(() => {
                 expect(dialogNode).not.toHaveAttribute('open');
                 expect(onConfirm).toHaveBeenCalledWith([{ id: 1 }], undefined, undefined);

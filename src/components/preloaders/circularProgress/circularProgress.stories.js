@@ -97,7 +97,7 @@ export const SimulateProgress = {
             expect(component).toBeInTheDocument();
             expect(canvas.getByText('0%')).toBeInTheDocument();
             for (let i = 10; i <= 100; i += 10) {
-                await new Promise(resolve => setTimeout(resolve, 50));
+                await new Promise(resolve => setTimeout(resolve, 10));
                 component?.setProgress(i);
                 expect(canvas.getByText(`${i}%`)).toBeInTheDocument();
                 expect(component?.getAttribute('aria-valuenow')).toBe(String(i));

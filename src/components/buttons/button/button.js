@@ -3,7 +3,7 @@
  * @typedef {import('../../tooltip/tooltip').default} Tooltip
  * @typedef {import('../../icon/icon').default} Icon
  */
-import { defineCustomElement } from '@arpadroid/tools';
+import { $attr, defineCustomElement } from '@arpadroid/tools';
 import ArpaElement from '../../core/arpaElement/arpaElement';
 
 const html = String.raw;
@@ -23,7 +23,8 @@ class Button extends ArpaElement {
             type: 'button',
             buttonClass: 'arpaButton__button',
             tooltipPosition: 'left',
-            eventHandlerSelector: 'button'
+            eventHandlerSelector: 'button',
+            buttonAttributes: {}
         };
 
         return /** @type {ButtonConfigType} */ (super.getDefaultConfig(config));
@@ -61,6 +62,7 @@ class Button extends ArpaElement {
             zone="{buttonZone}"
             disabled="{disabled}"
             on-click="{onClick}"
+            ${$attr(this._config.buttonAttributes || {})}
         >
             <arpa-node tag="arpa-icon" name="icon"></arpa-node>
             <arpa-node tag="span" is-content name="content">{label}</arpa-node>

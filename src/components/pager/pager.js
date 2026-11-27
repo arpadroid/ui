@@ -322,7 +322,7 @@ class Pager extends ArpaElement {
         return html`
             <arpa-node
                 name="inputForm"
-                tag="arpa-form"
+                tag="form"
                 id="pager-item-input--${this.getId()}"
                 class="pagerItem__form"
                 variant="mini"

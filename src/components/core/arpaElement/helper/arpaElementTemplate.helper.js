@@ -6,6 +6,7 @@
  * @typedef {import("../../arpaNode/arpaNode").default} ArpaNode
  * @typedef {import("../../arpaZone/arpaZone").default} ArpaZone
  * @typedef {import("../arpaElement").default} ArpaElement
+ * @typedef {import('../arpaElement.types').ArpaElementContentNodeType} ArpaElementContentNodeType
  */
 
 import { attr, getAttributes, listen, getAttributesWithPrefix } from '@arpadroid/tools';
@@ -245,6 +246,31 @@ export async function getTemplateEventHandlers(element, attr, value) {
 }
 
 /**
+ * @param {ArpaElementContentNodeType} node
+ * @param {(node: ArpaElementContentNodeType) => boolean | ArpaElementContentNodeType} callback
+ * @returns {ArpaElementContentNodeType | null}
+ */
+export function findChild(node, callback) {
+    if (!('nodes' in node)) return null;
+    for (const [, child] of Object.entries(node.nodes)) {
+        const matches = callback(child);
+        if (matches instanceof HTMLElement) {
+            return matches;
+        }
+        if (matches) {
+            return child;
+        }
+    }
+    for (const [, child] of Object.entries(node.nodes)) {
+        if ('nodes' in child) {
+            const found = findChild(child, callback);
+            if (found) return found;
+        }
+    }
+    return null;
+}
+
+/**
  * Applies an event listener for a template attribute.
  * @param {ArpaElement | undefined} element
  * @param {string} attr
@@ -252,20 +278,35 @@ export async function getTemplateEventHandlers(element, attr, value) {
  * @param {(event: Event) => void | null} fn
  */
 export async function applyTemplateEventListener(element, attr, value, fn) {
+    /**
+     * @todo Refactor to simplify.
+     */
     if (!element) return;
     'promise' in element && (await element.promise);
     await element?.onRendered();
-    const eventHandlers = await getTemplateEventHandlers(element, attr, value);
+
+    const findNode = () =>
+        findChild(
+            element,
+            item =>
+                item?.getAttribute?.(attr) === value ||
+                item.querySelector(`[${CSS.escape(attr)}="{${CSS.escape(value)}}"]`) ||
+                false
+        );
+
     if (attr.startsWith('on-')) {
+        const eventHandlers = await getTemplateEventHandlers(element, attr, value);
+        if (!eventHandlers.length) {
+            const node = findNode();
+            node && eventHandlers.push(node);
+        }
         if (eventHandlers.length && typeof fn === 'function') {
             const eventName = attr.replace('on-', '').replace(/-/g, '');
             listen(eventHandlers, eventName, fn);
         }
     } else if (attr.startsWith('$on-')) {
-        const node = Object.values(element.nodes).find(node => node.hasAttribute(attr));
-        if (!node) {
-            return;
-        }
+        const node = findNode();
+        if (!node) return;
         const eventName = attr.replace('$on-', '').replace(/-/g, '');
         if ('on' in node && typeof node.on === 'function') {
             node.on(eventName, fn);
