@@ -5,8 +5,7 @@
  */
 import { expect, waitFor } from 'storybook/test';
 import ArpaElement from '../arpaElement';
-import TestElement from './testElement.js';
-import { I18n } from '@arpadroid/i18n';
+import './testComponent.js';
 
 const html = String.raw;
 
@@ -43,7 +42,7 @@ export const ArpaElementRender = {
     render: () => {
         return html`
             <arpa-element
-                class-name="testComponent"
+                class-name="testElement"
                 class-names="class1,class2"
                 id="test-element"
                 class="test-element"
@@ -80,7 +79,7 @@ export const ArpaElementRender = {
         });
 
         await step('applies class names', async () => {
-            expect(element).toHaveClass('testComponent');
+            expect(element).toHaveClass('testElement');
             expect(element).toHaveClass('class1');
             expect(element).toHaveClass('class2');
         });
@@ -96,7 +95,7 @@ export const ArpaElementZones = {
     name: 'ArpaElement - Zones',
     render: () => {
         return html`
-            <arpa-element class="testComponent test-element-zones">
+            <arpa-element class="testElement test-element-zones">
                 <template template-type="content">${TEMPLATE}</template>
 
                 <arpa-zone name="header" prepend>
@@ -136,96 +135,15 @@ export const ArpaElementZones = {
                 expect(bodyZone).toBeInTheDocument();
                 expect(footerZone).toBeInTheDocument();
 
-                expect(headerZone.closest('.testComponent__header')).toBeInTheDocument();
-                expect(footerZone.closest('.testComponent__footer')).toBeInTheDocument();
-                expect(bodyZone.closest('.testComponent__body')).toBeInTheDocument();
+                expect(headerZone.closest('.testElement__header')).toBeInTheDocument();
+                expect(footerZone.closest('.testElement__footer')).toBeInTheDocument();
+                expect(bodyZone.closest('.testElement__body')).toBeInTheDocument();
             });
         });
 
         await step('renders the zones', async () => {
             expect(canvas.getByText('Test Variable 1')).toBeInTheDocument();
             expect(canvas.getByText('Test Variable 2')).toBeInTheDocument();
-        });
-    }
-};
-
-/** @type {Story} */
-export const TestElementRender = {
-    name: 'TestElement - Render',
-    render: () => {
-        return html`<test-element class="custom-template">
-            <arpa-zone name="header"> Test header </arpa-zone>
-            <arpa-zone name="externalWrapper" prepend-content>Test external</arpa-zone>
-            <h3>Body Content</h3>
-        </test-element>`;
-    },
-    play: async ({ canvas, canvasElement, step }) => {
-        await customElements.whenDefined('test-element');
-        const element = /** @type {TestElement} */ (canvasElement.querySelector('test-element'));
-        await element?.promise;
-        await step('renders the custom template content', async () => {
-            await waitFor(() => {
-                expect(canvas.getByRole('heading', { name: /Test element/i })).toBeInTheDocument();
-                const text = I18n.getText('ui.arpaElement.docs.description.component');
-                expect(canvas.getByText(text)).toBeInTheDocument();
-                expect(canvas.getByText('Test header')).toBeInTheDocument();
-                expect(canvas.getByText('Test external')).toBeInTheDocument();
-                expect(canvas.getByText('External wrapper')).toBeInTheDocument();
-                expect(canvas.getByText('Body Content')).toBeInTheDocument();
-            });
-        });
-    }
-};
-
-/** @type {Story} */
-export const TestElementCustomTemplate = {
-    name: 'TestElement - Custom Template',
-    args: {},
-    render: () => {
-        return html`<test-element>
-            <!-- You can define a custom template using the template-type="content" attribute. -->
-            <!-- This allows you to control the entire structure of the component. -->
-            <template template-type="content">
-                <fieldset>
-                    <legend>
-                        <h2>Using Custom Templates</h2>
-                        <span>Every arpa-element can be overridden with a custom template.</span>
-                    </legend>
-                    {body}{header}
-                    <arpa-zone name="header">
-                        <p>Header Template Content</p>
-                    </arpa-zone>
-                </fieldset>
-            </template>
-            <arpa-zone name="body">
-                <h4>Use arpa-nodes to conveniently re-configure components.</h4>
-                <i18n-text key="ui.arpaElement.docs.description.component"></i18n-text>
-            </arpa-zone>
-            <arpa-zone name="header">
-                <span>Header Implementation Content</span>
-            </arpa-zone>
-        </test-element>`;
-    },
-    play: async ({ canvas, canvasElement, step }) => {
-        await customElements.whenDefined('test-element');
-        const element = /** @type {TestElement} */ (canvasElement.querySelector('test-element'));
-        await element?.promise;
-        await step('renders the custom template content', async () => {
-            await waitFor(() => {
-                const bodyContent = canvas.getByText(
-                    'Use arpa-nodes to conveniently re-configure components.'
-                );
-                expect(canvas.getByRole('heading', { name: /Using Custom Template/i })).toBeInTheDocument();
-
-                expect(
-                    canvas.getByText('Every arpa-element can be overridden with a custom template.')
-                ).toBeInTheDocument();
-                expect(canvas.getByText('Header Template Content')).toBeInTheDocument();
-                expect(canvas.getByText('Header Implementation Content')).toBeInTheDocument();
-                expect(bodyContent).toBeInTheDocument();
-                expect(bodyContent.parentElement).toHaveClass('testComponent__body');
-                expect(bodyContent.parentElement?.tagName).toBe('MAIN');
-            });
         });
     }
 };

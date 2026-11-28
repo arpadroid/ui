@@ -183,7 +183,25 @@ export function hasContent(element, property, config = {}) {
             return true;
         }
     }
-    return hasZone(element, property);
+    if (hasZone(element, property)) {
+        return true;
+    }
+
+    const arpaNode = element.arpaNodes?.[property];
+    if (arpaNode?.hasAttribute('is-content')) {
+        return Boolean(
+            element._childNodes?.some(node => {
+                if (
+                    node instanceof HTMLElement &&
+                    ['arpa-node', 'arpa-zone'].includes(node.tagName.toLocaleLowerCase())
+                ) {
+                    return false;
+                }
+                return (node.textContent?.trim()?.length || 0) > 0;
+            })
+        );
+    }
+    return false;
 }
 
 /**

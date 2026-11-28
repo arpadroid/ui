@@ -4,6 +4,8 @@
 
 export * from './components/core/arpaElement/helper/arpaElementProps.helper.js';
 
+export * from './components/core/arpaElement/helper/arpaElementLocator.helper.js';
+
 export {
     canRender,
     getArpaElement,

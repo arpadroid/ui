@@ -11,6 +11,7 @@
 
 import { attr, getAttributes, listen, getAttributesWithPrefix } from '@arpadroid/tools';
 import { mergeObjects, renderNode, attrString, dashedToCamel } from '@arpadroid/tools';
+import { findChildrenByAttribute } from '../helper/arpaElementLocator.helper';
 import { hasContent } from '../helper/arpaElement.helper';
 import { evaluateProp } from './arpaElementProps.helper';
 
@@ -59,10 +60,9 @@ export function processTemplateVariable(name, value, element) {
     if (!value && name.endsWith('()')) {
         const methodName = dashedToCamel(name.slice(0, -2));
         // @ts-ignore
-        let method = element?.[methodName];
+        const method = element?.[methodName];
         if (typeof method === 'function') {
-            method = method.bind(element);
-            value = method();
+            value = method.call(element);
         }
     }
 
@@ -70,9 +70,11 @@ export function processTemplateVariable(name, value, element) {
         const i18nKey = name.slice(5);
         value = element?.i18nText(i18nKey) || value;
     }
-
-    value = value || element?.getProp(name) || '';
-    return value;
+    const propValue = element?.getProp(name) || '';
+    if (value === element?._config[name]) {
+        return propValue;
+    }
+    return value || propValue;
 }
 
 /**
@@ -188,89 +190,6 @@ function getTemplateAttributeMatch(template, lastIndex, equalsIndex) {
 }
 
 /**
- * Waits for event handler elements matching a template attribute to be available in the DOM.
- * @param {ArpaElement} element
- * @param {string} attr
- * @param {string} value
- * @returns {Promise<(Element | ArpaElement)[]>}
- */
-export async function waitForEventHandlers(element, attr, value) {
-    let selector = `[${attr}="{${value}}"]`;
-    if (attr.startsWith('$on-')) {
-        selector = selector.replace('$on-', '\\$on-');
-    }
-    let eventHandlers = Array.from(element.querySelectorAll(selector));
-    if (!eventHandlers.length) {
-        await element.onRendered();
-        eventHandlers = Array.from(element.querySelectorAll(selector));
-    }
-    if (!eventHandlers.length) {
-        await new Promise(resolve => setTimeout(resolve, 10));
-        eventHandlers = Array.from(element.querySelectorAll(selector));
-    }
-    return eventHandlers;
-}
-
-/**
- * Returns the event handler element for a template attribute.
- * @param {ArpaElement} element
- * @param {string} attr
- * @param {string} value
- * @returns {Promise<(Element | ArpaElement | null)[]>}
- */
-export async function getTemplateEventHandlers(element, attr, value) {
-    const handlers = new Set();
-    const eventHandlers = await waitForEventHandlers(element, attr, value);
-    for (let eventHandler of eventHandlers) {
-        if (eventHandler.tagName.toLowerCase() === 'arpa-node') {
-            const arpaNode = /** @type {ArpaNode} */ (eventHandler);
-            await arpaNode.promise;
-            if (arpaNode?.node instanceof HTMLElement) {
-                eventHandler = arpaNode.node;
-            }
-        }
-        if (!('getProp' in eventHandler)) {
-            handlers.add(eventHandler);
-            continue;
-        }
-        const arpaHandler = /** @type {ArpaElement} */ (eventHandler);
-        const eventHandlerSelector = arpaHandler.getProp('eventHandlerSelector');
-        if (eventHandlerSelector) {
-            await arpaHandler.promise;
-            for (const handler of arpaHandler.querySelectorAll(eventHandlerSelector)) {
-                handlers.add(handler);
-            }
-        }
-    }
-    return [...handlers];
-}
-
-/**
- * @param {ArpaElementContentNodeType} node
- * @param {(node: ArpaElementContentNodeType) => boolean | ArpaElementContentNodeType} callback
- * @returns {ArpaElementContentNodeType | null}
- */
-export function findChild(node, callback) {
-    if (!('nodes' in node)) return null;
-    for (const [, child] of Object.entries(node.nodes)) {
-        const matches = callback(child);
-        if (matches instanceof HTMLElement) {
-            return matches;
-        }
-        if (matches) {
-            return child;
-        }
-    }
-    for (const [, child] of Object.entries(node.nodes)) {
-        if ('nodes' in child) {
-            const found = findChild(child, callback);
-            if (found) return found;
-        }
-    }
-    return null;
-}
-
-/**
  * Applies an event listener for a template attribute.
  * @param {ArpaElement | undefined} element
  * @param {string} attr
@@ -278,39 +197,20 @@ export function findChild(node, callback) {
  * @param {(event: Event) => void | null} fn
  */
 export async function applyTemplateEventListener(element, attr, value, fn) {
-    /**
-     * @todo Refactor to simplify.
-     */
-    if (!element) return;
-    'promise' in element && (await element.promise);
-    await element?.onRendered();
-
-    const findNode = () =>
-        findChild(
-            element,
-            item =>
-                item?.getAttribute?.(attr) === value ||
-                item.querySelector(`[${CSS.escape(attr)}="{${CSS.escape(value)}}"]`) ||
-                false
-        );
-
+    if (!element || typeof fn !== 'function') return;
+    /** @type {ArpaElementContentNodeType[]} */
+    const eventHandlers = await findChildrenByAttribute(element, attr, value);
+    if (!eventHandlers.length) return;
     if (attr.startsWith('on-')) {
-        const eventHandlers = await getTemplateEventHandlers(element, attr, value);
-        if (!eventHandlers.length) {
-            const node = findNode();
-            node && eventHandlers.push(node);
-        }
-        if (eventHandlers.length && typeof fn === 'function') {
-            const eventName = attr.replace('on-', '').replace(/-/g, '');
-            listen(eventHandlers, eventName, fn);
-        }
+        const eventName = attr.replace('on-', '').replace(/-/g, '');
+        listen(eventHandlers, eventName, fn);
     } else if (attr.startsWith('$on-')) {
-        const node = findNode();
-        if (!node) return;
         const eventName = attr.replace('$on-', '').replace(/-/g, '');
-        if ('on' in node && typeof node.on === 'function') {
-            node.on(eventName, fn);
-        }
+        eventHandlers.forEach(handler => {
+            if ('on' in handler && typeof handler.on === 'function') {
+                handler.on(eventName, fn);
+            }
+        });
     }
 }
 
@@ -327,13 +227,13 @@ export function registerTemplateEventListener(element, attr, value) {
     if (typeof fn !== 'function') return null;
     const cacheKey = `${attr}:${value}`;
     if (element.templateListeners && typeof element?.templateListeners?.[cacheKey] === 'undefined') {
+        const bound = fn.bind(element);
         element.templateListeners[cacheKey] = {
-            fn: fn.bind(element),
+            fn: bound,
             attr,
             value
         };
     }
-
     return element?.templateListeners?.[cacheKey];
 }
 
@@ -380,7 +280,6 @@ export function processTemplateAttributes(template, props = {}, element) {
         }
         const value = processTemplateVariable(match.propName, props[match.propName], element);
         const renderedAttribute = attrString({ [match.attrName]: value });
-
         if (element && !value && (match.attrName.startsWith('on-') || match.attrName.startsWith('$on-'))) {
             result.push(template.slice(lastIndex, match.nextIndex));
             handleTemplateEventListener(element, match.attrName, match.propName);
@@ -474,7 +373,6 @@ export function canRenderNode(element, name, config = {}, attributes = {}) {
     if (config.isContent || attributes.isContent || config?.childNodes?.length) {
         return true;
     }
-
     return hasContent(element, name, config);
 }
 
