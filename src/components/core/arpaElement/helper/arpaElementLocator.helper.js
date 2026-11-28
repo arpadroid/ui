@@ -2,6 +2,19 @@
  * @typedef {import('../arpaElement.types').ArpaElementContentNodeType} ArpaElementContentNodeType
  */
 
+const DEBUG = false;
+
+let findCount = 0;
+let findChildrenByAttributeCount = 0;
+if (DEBUG) {
+    setTimeout(() => {
+        console.log({
+            findChildrenByAttributeCount,
+            findCount
+        });
+    }, 1000);
+}
+
 /**
  * @param {ArpaElementContentNodeType} node
  * @param {(node: ArpaElementContentNodeType, nodes: ArpaElementContentNodeType[]) => Promise<boolean | ArpaElementContentNodeType[]>} callback
@@ -34,14 +47,17 @@ export async function findChildren(node, callback) {
  * @returns {Promise<ArpaElementContentNodeType[]>}
  */
 export async function findChildrenByAttribute(element, attr, value) {
+    DEBUG && findChildrenByAttributeCount++;
     const children = await findChildren(element, async (child, children) => {
         if (child?.getAttribute?.(attr) === `{${value}}`) {
             children.push(child);
             return true;
         }
+        DEBUG && findCount++;
         if ('onRendered' in child) await child.onRendered();
         if ('promise' in child) await child.promise;
-        const selected = Array.from(child.querySelectorAll(`[${CSS.escape(attr)}="{${CSS.escape(value)}}"]`));
+        const selector = `[${CSS.escape(attr)}="{${CSS.escape(value)}}"]`;
+        const selected = Array.from(child.querySelectorAll(selector));
         if (selected) {
             children.push(...selected);
         }

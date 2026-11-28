@@ -53,7 +53,7 @@ export const Test = {
         await customElements.whenDefined('arpa-pager');
 
         const pagerNode = /** @type {Pager} */ (canvasElement.querySelector('arpa-pager'));
-        await pagerNode?.promise;
+        await pagerNode?.onRendered();
 
         await step('Renders the pager with the given props', async () => {
             await waitFor(() => {

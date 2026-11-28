@@ -64,13 +64,13 @@ export default class TestElement extends ArpaElement {
     }
 
     /**
-     * @param {Event} event
+     * @param {Event & {target?: HTMLElement}} event
      */
     onCtaClick(event) {
         if (typeof this._config.onCtaClick === 'function') {
             this._config.onCtaClick(event);
         }
-        console.log('👆 CTA clicked', event.target?.parentNode);
+        // console.log('👆 CTA clicked', event.target?.parentNode);
         this.signal('ctaclick', event);
     }
 

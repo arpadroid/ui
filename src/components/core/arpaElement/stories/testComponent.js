@@ -6,7 +6,8 @@ const html = String.raw;
 export default class TestComponent extends ArpaElement {
     getDefaultConfig() {
         const conf = {
-            className: 'testComponent'
+            className: 'testComponent',
+            onHasClicked: null
         };
         return mergeObjects(super.getDefaultConfig(), conf);
     }
@@ -14,7 +15,7 @@ export default class TestComponent extends ArpaElement {
     $renderTemplate() {
         return html`
             <test-element
-                $on-ctaclick="{onCta1Click}"
+                $on-ctaclick="{onHasClicked}"
                 title="Element 1"
                 primary-label="CTA 1"
                 secondary-label="CTA 2"
@@ -22,7 +23,7 @@ export default class TestComponent extends ArpaElement {
                 Primary Content
             </test-element>
             <test-element
-                $on-ctaclick="{onCtaTwoClick}"
+                $on-ctaclick="{onHasClicked2}"
                 title="Element 2"
                 primary-label="CTA 3"
                 secondary-label="CTA 4"
@@ -33,18 +34,18 @@ export default class TestComponent extends ArpaElement {
         `;
     }
 
-    onCta1Click() {
-        if (typeof this._config.onCta1Click === 'function') {
-            this._config.onCta1Click();
+    onHasClicked() {
+        if (typeof this._config.onHasClicked === 'function') {
+            this._config.onHasClicked();
         }
-        console.log('👆 Element 1/3 CTA clicked');
+        // console.log('👆 Element 1/3 CTA clicked');
     }
 
-    onCtaTwoClick() {
-        if (typeof this._config.onCta2Click === 'function') {
-            this._config.onCta2Click();
+    onHasClicked2() {
+        if (typeof this._config.onHasClicked2 === 'function') {
+            this._config.onHasClicked2();
         }
-        console.log('👆 Element 2 CTA clicked');
+        // console.log('👆 Element 2 CTA clicked');
     }
 }
 

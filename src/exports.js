@@ -22,7 +22,6 @@ export {
     applyTemplateAttributes,
     getTemplateAttributes,
     getTemplatesSelector,
-    hasTemplateVariables,
     processTemplate,
     processTemplateVariable,
     renderTemplate,

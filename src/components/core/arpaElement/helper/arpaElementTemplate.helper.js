@@ -20,24 +20,6 @@ import { evaluateProp } from './arpaElementProps.helper';
 //////////////////////////////////
 
 /**
- * Checks if a template string contains variables.
- * @param {string} content
- * @param {Record<string, unknown>} variables
- * @returns {boolean}
- */
-export function hasTemplateVariables(content, variables) {
-    if (!content || !variables) {
-        return false;
-    }
-    for (const key in variables) {
-        if (content.includes(`{${key}}`)) {
-            return true;
-        }
-    }
-    return false;
-}
-
-/**
  * Processes a template variable.
  * @param {string} name
  * @param {unknown} value
@@ -196,7 +178,7 @@ function getTemplateAttributeMatch(template, lastIndex, equalsIndex) {
  * @param {string} value
  * @param {(event: Event) => void | null} fn
  */
-export async function applyTemplateEventListener(element, attr, value, fn) {
+export async function applyTemplateListener(element, attr, value, fn) {
     if (!element || typeof fn !== 'function') return;
     /** @type {ArpaElementContentNodeType[]} */
     const eventHandlers = await findChildrenByAttribute(element, attr, value);
@@ -238,19 +220,6 @@ export function registerTemplateEventListener(element, attr, value) {
 }
 
 /**
- * Handles the event listener for a template attribute.
- * @param {ArpaElement} element
- * @param {string} attr
- * @param {string} value
- */
-export async function handleTemplateEventListener(element, attr, value) {
-    const payload = registerTemplateEventListener(element, attr, value);
-    if (typeof payload?.fn === 'function') {
-        applyTemplateEventListener(element, attr, value, payload?.fn);
-    }
-}
-
-/**
  * Processes a template attribute token.
  * @param {string} template
  * @param {Record<string, unknown>} props
@@ -282,7 +251,7 @@ export function processTemplateAttributes(template, props = {}, element) {
         const renderedAttribute = attrString({ [match.attrName]: value });
         if (element && !value && (match.attrName.startsWith('on-') || match.attrName.startsWith('$on-'))) {
             result.push(template.slice(lastIndex, match.nextIndex));
-            handleTemplateEventListener(element, match.attrName, match.propName);
+            registerTemplateEventListener(element, match.attrName, match.propName);
             lastIndex = match.nextIndex;
             searchIndex = lastIndex;
             continue;
@@ -428,7 +397,7 @@ export function getNodeAttributes(element, name, config = {}, attributes = {}) {
             attr[key] = attr[key](element);
         }
         if (typeof attr[key] === 'string') {
-            if (key.startsWith('on')) continue;
+            if (key.startsWith('on') || key.startsWith('$on')) continue;
             attr[key] = processTemplate(attr[key], element?.templateVars, element);
         }
     }

@@ -11,13 +11,15 @@
  */
 import { attrString, camelToDashed, dashedToCamel, getStringBetween, mergeObjects } from '@arpadroid/tools';
 import { defineCustomElement, attr, bind, classNames, DomBatcherTool } from '@arpadroid/tools';
+import { I18nTool, I18n } from '@arpadroid/i18n';
+
+import { hasZone, sanitizeAttributes, hasContent } from './helper/arpaElement.helper';
 import { getCallbackProp } from './helper/arpaElementProps.helper.js';
 import { hasProp, getProp, setProp, getArrayProp } from './helper/arpaElementProps.helper.js';
-import { hasZone, sanitizeAttributes } from './helper/arpaElement.helper';
-import { hasContent } from './helper/arpaElement.helper';
+
 import { renderTemplate, getClass, renderChild, renderChildNode } from './helper/arpaElementTemplate.helper';
 import { selectTemplates, spawnNode, computeBlueprint } from './helper/arpaElementTemplate.helper';
-import { I18nTool, I18n } from '@arpadroid/i18n';
+import { applyTemplateListener } from './helper/arpaElementTemplate.helper';
 
 const { arpaElementI18n } = I18nTool;
 
@@ -70,6 +72,8 @@ class ArpaElement extends HTMLElement {
      */
     constructor(config) {
         super();
+        /** @type {Record<string, ArpaElementListenerPayloadType>} */
+        this.templateListeners = {};
         this.promise = this.getPromise();
         this._preInitialize();
         this.setConfig(config);
@@ -86,8 +90,6 @@ class ArpaElement extends HTMLElement {
         this._hasInitialized = false;
         this._hasRendered = false;
         this.isArpaElement = true;
-        /** @type {Record<string, ArpaElementListenerPayloadType>} */
-        this.templateListeners = {};
         /** @type {(() => unknown)[]} */
         this._unsubscribes = [];
         /** @type {(() => unknown)[]} */
@@ -734,6 +736,16 @@ class ArpaElement extends HTMLElement {
         await this.$onConnected();
     }
 
+    async initializeTemplateListeners() {
+        await this.onRendered();
+        if (!Object.values(this.templateListeners).length) {
+            return;
+        }
+        for (const [, listener] of Object.entries(this.templateListeners)) {
+            applyTemplateListener(this, listener.attr, listener.value, listener?.fn);
+        }
+    }
+
     disconnectedCallback() {
         if (!this.isConnected) {
             this._unsubscribes?.forEach(unsubscribe => typeof unsubscribe === 'function' && unsubscribe());
@@ -894,6 +906,7 @@ class ArpaElement extends HTMLElement {
         this._onRenderReadyCallbacks = [];
         await this.$resolveRender();
         await this.$onComplete();
+        this.initializeTemplateListeners();
 
         this.resolvePromise?.(true);
 
